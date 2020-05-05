@@ -1,0 +1,60 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Solria.SAFT.Desktop.ViewModels;assembly=Solria.SAFT.Desktop"
+        xmlns:views="clr-namespace:Solria.SAFT.Desktop.Views;assembly=Solria.SAFT.Desktop"
+        xmlns:rxui="http://reactiveui.net"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Solria.SAFT.Desktop.Views.MainWindow"
+        Icon="/Assets/solria.ico"
+        Title="SolRIA SAFT - Validador">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+  <Grid RowDefinitions="Auto,*,30" ColumnDefinitions="Auto,*">
+
+    <Menu Grid.Row="0" Grid.ColumnSpan="2" Background="{DynamicResource ThemeAccentBrush4}" FontSize="16">
+      <MenuItem Header="_Ficheiro">
+        <MenuItem Header="_Abrir SAFT" Command="{Binding OpenSaftCommand}"/>
+        <MenuItem Header="_Abrir Transporte" Command="{Binding OpenTransportCommand}"/>
+        <MenuItem Header="_Abrir Stocks" Command="{Binding OpenStocksCommand}"/>
+        <Separator/>
+        <MenuItem Header="_Sair"/>
+      </MenuItem>
+      <MenuItem Header="_Cabeçalho">
+        <MenuItem Header="Erros"/>
+        <MenuItem Header="Cabeçalho"/>
+      </MenuItem>
+      <MenuItem Header="_Tabelas">
+        <MenuItem Header="Erros"/>
+        <MenuItem Header="Cabeçalho"/>
+      </MenuItem>
+    </Menu>
+
+    <!-- pages list -->
+    <StackPanel Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" IsVisible="{Binding ShowMenu}" Margin="10">
+      <Expander Header="Cabeçalho">
+        <ListBox Items="{Binding MenuHeader}" SelectedItem="{Binding SelectedMenu}"/>
+      </Expander>
+      <Expander Header="Tabelas">
+        <ListBox Items="{Binding MenuTables}" SelectedItem="{Binding SelectedMenu}"/>
+      </Expander>
+    </StackPanel>
+    
+    <!-- current view -->
+    <rxui:RoutedViewHost Grid.Row="1" Grid.Column="1" Router="{Binding Router}">
+      <rxui:RoutedViewHost.DefaultContent>
+        <views:MainMenuPageView />
+      </rxui:RoutedViewHost.DefaultContent>
+    </rxui:RoutedViewHost>
+
+    <!-- footer -->
+    <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Background="{DynamicResource ThemeAccentBrush4}">
+      <CheckBox x:Name="themeSelector" IsChecked="True" Content="Tema escuro" VerticalAlignment="Center" Margin="10,5,10,0"/>
+    </StackPanel>
+  </Grid>
+
+</Window>

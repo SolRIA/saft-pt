@@ -1,0 +1,58 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Solria.SAFT.Desktop.Views.ErrorPageView">
+  <Grid RowDefinitions="Auto,Auto,*">
+    <TextBlock Grid.Row="0" Margin="5" Text="{Binding NumErros}"/>
+
+    <StackPanel Orientation="Horizontal" Grid.Row="1">
+      <Border Margin="3" MaxHeight="30" Width="700" CornerRadius="3">
+        <Grid ColumnDefinitions="Auto,*">
+          <Button VerticalAlignment="Center" Height="24" Width="24" Grid.Column="0" Background="Transparent" BorderThickness="0">
+            <DrawingPresenter Drawing="{DynamicResource Material.Magnify}" HorizontalAlignment="Center" Height="20" Width="20"/>
+          </Button>
+          <TextBox Margin="5 0 0 0" Grid.Column="1" Text="{Binding Filtro, Mode=TwoWay}"
+               Watermark="Filtro por: Descrição"
+               BorderThickness="0"
+               MinWidth="200" VerticalAlignment="Center">
+          </TextBox>
+        </Grid>
+      </Border>
+
+      <Button Grid.Column="1" Width="100" Height="25" Margin="5" Padding="3" ToolTip.Tip="Exportar para Excel"
+              Command="{Binding DoPrintCommand}">
+        <StackPanel Orientation="Horizontal">
+          <DrawingPresenter Drawing="{DynamicResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
+          <TextBlock Text="Erros" />
+        </StackPanel>
+      </Button>
+    </StackPanel>
+
+
+    <DataGrid Grid.Row="2" IsReadOnly="True"
+              Items="{Binding ErrorMessages}"
+              SelectedItem="{Binding SelectedError}">
+      <DataGrid.Columns>
+        <!--<sf:GridTextColumn HeaderText="Campo">
+          <sf:GridTextColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock>
+                <Hyperlink Command="{Binding DataContext.DoOpenViewCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                           Style="{StaticResource ErrorLink}">
+                  <TextBlock Name="Field" Text="{Binding Field}" />
+                </Hyperlink>
+              </TextBlock>
+            </DataTemplate>
+          </sf:GridTextColumn.CellTemplate>
+        </sf:GridTextColumn>-->
+
+        <DataGridTextColumn Header="Campo" Binding="{Binding Field}" />
+        <DataGridTextColumn Header="Valor" Binding="{Binding Value}" />
+        <DataGridTextColumn Header="Descrição" Binding="{Binding Description}"/>
+      </DataGrid.Columns>
+    </DataGrid>
+
+  </Grid>
+</UserControl>

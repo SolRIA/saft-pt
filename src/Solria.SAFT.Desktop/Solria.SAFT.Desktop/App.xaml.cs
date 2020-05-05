@@ -1,0 +1,41 @@
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Markup.Xaml;
+using ReactiveUI;
+using Solria.SAFT.Desktop.Services;
+using Solria.SAFT.Desktop.ViewModels;
+using Solria.SAFT.Desktop.Views;
+using Splat;
+using System.Reflection;
+
+namespace Solria.SAFT.Desktop
+{
+    public class App : Application
+    {
+        public override void Initialize()
+        {
+            AvaloniaXamlLoader.Load(this);
+            Locator.CurrentMutable.RegisterViewsForViewModels(Assembly.GetExecutingAssembly());
+        }
+
+        public override void OnFrameworkInitializationCompleted()
+        {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                var mainWindow = new MainWindow();
+
+                IXmlSerializer xmlSerializer = new XmlSerializer();
+                ISaftValidator saftValidator = new SaftValidator(xmlSerializer);
+
+                Locator.CurrentMutable.RegisterConstant(saftValidator, typeof(ISaftValidator));
+                Locator.CurrentMutable.RegisterConstant(mainWindow, typeof(IDialogManager));
+
+                mainWindow.DataContext = new MainWindowViewModel();
+                desktop.MainWindow = mainWindow;
+
+            }
+
+            base.OnFrameworkInitializationCompleted();
+        }
+    }
+}
