@@ -10,22 +10,25 @@
     <StackPanel Orientation="Horizontal" Grid.Row="1">
       <Border Margin="3" MaxHeight="30" Width="700" CornerRadius="3">
         <Grid ColumnDefinitions="Auto,*">
-          <Button VerticalAlignment="Center" Height="24" Width="24" Grid.Column="0" Background="Transparent" BorderThickness="0">
+          <Button VerticalAlignment="Center" Command="{Binding SearchCommand}" Height="24" Width="24" Grid.Column="0" Background="Transparent" BorderThickness="0">
             <DrawingPresenter Drawing="{DynamicResource Material.Magnify}" HorizontalAlignment="Center" Height="20" Width="20"/>
           </Button>
           <TextBox Margin="5 0 0 0" Grid.Column="1" Text="{Binding Filtro, Mode=TwoWay}"
                Watermark="Filtro por: Descrição"
                BorderThickness="0"
                MinWidth="200" VerticalAlignment="Center">
+            <TextBox.KeyBindings>
+              <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
+            </TextBox.KeyBindings>
           </TextBox>
         </Grid>
       </Border>
 
-      <Button Grid.Column="1" Width="100" Height="25" Margin="5" Padding="3" ToolTip.Tip="Exportar para Excel"
+      <Button Grid.Column="1" Width="100" Height="35" Margin="5" Padding="3" ToolTip.Tip="Exportar para Excel"
               Command="{Binding DoPrintCommand}">
         <StackPanel Orientation="Horizontal">
           <DrawingPresenter Drawing="{DynamicResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
-          <TextBlock Text="Erros" />
+          <TextBlock Text="Excel" />
         </StackPanel>
       </Button>
     </StackPanel>

@@ -36,7 +36,10 @@ namespace Solria.SAFT.Desktop.ViewModels
                 "Erros",
                 "Cabeçalho"
             };
-
+            MenuTables = new string[]
+            {
+                "Clientes"
+            };
             this.WhenValueChanged(x => x.SelectedMenu)
                 .InvokeCommand(OpenMenuCommand);
         }
@@ -114,6 +117,8 @@ namespace Solria.SAFT.Desktop.ViewModels
                 GoTo(new ErrorPageViewModel(this));
             else if (menu == "Cabeçalho")
                 GoTo(new HeaderPageViewModel(this));
+            else if(menu == "Clientes")
+                GoTo(new CustomersPageViewModel(this));
         }
         private void GoTo(ViewModelBase vm)
         {

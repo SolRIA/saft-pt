@@ -13,6 +13,7 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaResource Remove="Views\CustomersPageView.xaml" />
     <AvaloniaResource Remove="Views\ErrorPageView.xaml" />
     <AvaloniaResource Remove="Views\HeaderPageView.xaml" />
     <AvaloniaResource Remove="Views\MainMenuPageView.xaml" />
@@ -20,6 +21,7 @@
   <ItemGroup>
     <None Remove="Assets\CommonValues.xaml" />
     <None Remove="Assets\Icons.xaml" />
+    <None Remove="Views\CustomersPageView.xaml" />
     <None Remove="Views\ErrorPageView.xaml" />
     <None Remove="Views\HeaderPageView.xaml" />
     <None Remove="Views\MainMenuPageView.xaml" />
@@ -38,6 +40,9 @@
     <Page Include="Assets\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <EmbeddedResource Include="Views\CustomersPageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\HeaderPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
@@ -49,6 +54,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\ErrorPageView - Copy.xaml.cs">
+      <DependentUpon>ErrorPageView.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\ErrorPageView.xaml.cs">
       <DependentUpon>ErrorPageView.xaml</DependentUpon>
     </Compile>

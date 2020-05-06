@@ -79,5 +79,5 @@ C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.D
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.pdb
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.genruntimeconfig.cache
-C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csprojAssemblyReference.cache
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csproj.CoreCompileInputs.cache
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csprojAssemblyReference.cache
