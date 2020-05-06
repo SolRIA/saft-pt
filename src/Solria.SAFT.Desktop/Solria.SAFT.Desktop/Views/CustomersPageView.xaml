@@ -5,31 +5,32 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Solria.SAFT.Desktop.Views.CustomersPageView">
   <Grid RowDefinitions="Auto,*">
-    <StackPanel Orientation="Horizontal" Grid.Row="0">
-        <Border ToolTip.Tip="Enter to search, ignore case">
-          <Grid ColumnDefinitions="Auto,*">
-            <Button VerticalAlignment="Center" Command="{Binding SearchCommand}" Height="24" Width="24" Background="Transparent" BorderThickness="0">
-              <DrawingPresenter Drawing="{DynamicResource Material.Magnify}" HorizontalAlignment="Center" Height="20" Width="20"/>
-            </Button>
-            <TextBox Grid.Column="1" Margin="5 0 0 0" Text="{Binding Filter, Mode=TwoWay}"
-								 Watermark="Filtro por: NIF, Nome, Código, Email, Telefone, Website ou Contacto"
-								 BorderThickness="0" MinWidth="200" VerticalAlignment="Center">
-              <TextBox.KeyBindings>
-                <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
-              </TextBox.KeyBindings>
-            </TextBox>
-          </Grid>
-        </Border>
 
-        <Button Margin="2" Width="100" Height="35" Padding="3" ToolTip.Tip="Exportar para Excel" Command="{Binding DoPrintCommand}">
-          <DrawingPresenter Drawing="{DynamicResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
-        </Button>
-        <Button Margin="2" Width="100" Height="35" Padding="3" ToolTip.Tip="Gerar script SolRIA POS" Command="{Binding GenerateScriptCommand}">
-          <DrawingPresenter Drawing="{DynamicResource Material.DatabaseExport}" HorizontalAlignment="Center"/>
-        </Button>
-      </StackPanel>
+    <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+      <TextBox Grid.Column="0" Margin="2" Text="{Binding Filter, Mode=TwoWay}"
+           Watermark="Filtro por: NIF, Nome, Código, Email, Telefone, Website ou Contacto"
+           VerticalAlignment="Center">
+        <TextBox.KeyBindings>
+          <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
+        </TextBox.KeyBindings>
+      </TextBox>
 
-    <DataGrid Grid.Row="1" IsReadOnly="True" 
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
+              Command="{Binding SearchCommand}" >
+        <DrawingPresenter Drawing="{DynamicResource Material.Magnify}" HorizontalAlignment="Center" />
+      </Button>
+
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="2" VerticalAlignment="Center"
+              Command="{Binding DoPrintCommand}">
+        <DrawingPresenter Drawing="{DynamicResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
+      </Button>
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Gerar script SolRIA POS" Grid.Column="3" VerticalAlignment="Center"
+              Command="{Binding GenerateScriptCommand}">
+        <DrawingPresenter Drawing="{DynamicResource Material.DatabaseExport}" HorizontalAlignment="Center"/>
+      </Button>
+    </Grid>
+
+    <DataGrid Grid.Row="1" IsReadOnly="True" FontSize="16"
               Items="{Binding CollectionView}">
       <DataGrid.Columns>
         <DataGridTextColumn Header="Código" Binding="{Binding CustomerID}" />

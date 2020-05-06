@@ -5,36 +5,31 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Solria.SAFT.Desktop.Views.ErrorPageView">
   <Grid RowDefinitions="Auto,Auto,*">
-    <TextBlock Grid.Row="0" Margin="5" Text="{Binding NumErros}"/>
 
-    <StackPanel Orientation="Horizontal" Grid.Row="1">
-      <Border Margin="3" MaxHeight="30" Width="700" CornerRadius="3">
-        <Grid ColumnDefinitions="Auto,*">
-          <Button VerticalAlignment="Center" Command="{Binding SearchCommand}" Height="24" Width="24" Grid.Column="0" Background="Transparent" BorderThickness="0">
-            <DrawingPresenter Drawing="{DynamicResource Material.Magnify}" HorizontalAlignment="Center" Height="20" Width="20"/>
-          </Button>
-          <TextBox Margin="5 0 0 0" Grid.Column="1" Text="{Binding Filtro, Mode=TwoWay}"
-               Watermark="Filtro por: Descrição"
-               BorderThickness="0"
-               MinWidth="200" VerticalAlignment="Center">
-            <TextBox.KeyBindings>
-              <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
-            </TextBox.KeyBindings>
-          </TextBox>
-        </Grid>
-      </Border>
+    <Grid ColumnDefinitions="*,Auto,Auto">
+      <TextBox Grid.Column="0" Margin="2" Text="{Binding Filter, Mode=TwoWay}"
+           Watermark="Filtro por: NIF, Nome, Código, Email, Telefone, Website ou Contacto"
+           VerticalAlignment="Center">
+        <TextBox.KeyBindings>
+          <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
+        </TextBox.KeyBindings>
+      </TextBox>
 
-      <Button Grid.Column="1" Width="100" Height="35" Margin="5" Padding="3" ToolTip.Tip="Exportar para Excel"
-              Command="{Binding DoPrintCommand}">
-        <StackPanel Orientation="Horizontal">
-          <DrawingPresenter Drawing="{DynamicResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
-          <TextBlock Text="Excel" />
-        </StackPanel>
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
+              Command="{Binding SearchCommand}" >
+        <DrawingPresenter Drawing="{DynamicResource Material.Magnify}" HorizontalAlignment="Center" />
       </Button>
-    </StackPanel>
+
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="2" VerticalAlignment="Center"
+              Command="{Binding DoPrintCommand}">
+        <DrawingPresenter Drawing="{DynamicResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
+      </Button>
+    </Grid>
+
+    <TextBlock Grid.Row="1" Margin="5" Text="{Binding NumErros}"/>
 
 
-    <DataGrid Grid.Row="2" IsReadOnly="True"
+    <DataGrid Grid.Row="2" IsReadOnly="True" FontSize="16"
               Items="{Binding ErrorMessages}"
               SelectedItem="{Binding SelectedError}">
       <DataGrid.Columns>

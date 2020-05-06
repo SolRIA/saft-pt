@@ -126,20 +126,6 @@ namespace Solria.SAFT.Desktop.ViewModels
 
         }
 
-        private string filter;
-        public string Filter
-        {
-            get => filter;
-            set => this.RaiseAndSetIfChanged(ref filter, value);
-        }
-
-        private DataGridCollectionView collectionView;
-        public DataGridCollectionView CollectionView
-        {
-            get => collectionView;
-            set => this.RaiseAndSetIfChanged(ref collectionView, value);
-        }
-
         public ReactiveCommand<Unit, Unit> DoPrintCommand { get; }
         public ReactiveCommand<Unit, Unit> GenerateScriptCommand { get; }
         public ReactiveCommand<Unit, Unit> SearchCommand { get; }

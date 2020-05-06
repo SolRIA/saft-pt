@@ -25,12 +25,12 @@
         <MenuItem Header="_Sair"/>
       </MenuItem>
       <MenuItem Header="_Cabeçalho">
-        <MenuItem Header="Erros"/>
-        <MenuItem Header="Cabeçalho"/>
+        <MenuItem Header="Erros" Command="{Binding OpenMenuCommand}" CommandParameter="Erros"/>
+        <MenuItem Header="Cabeçalho" Command="{Binding OpenMenuCommand}" CommandParameter="Cabeçalho"/>
       </MenuItem>
       <MenuItem Header="_Tabelas">
-        <MenuItem Header="Erros"/>
-        <MenuItem Header="Cabeçalho"/>
+        <MenuItem Header="Clientes" Command="{Binding OpenMenuCommand}" CommandParameter="Clientes"/>
+        <MenuItem Header="Produtos" Command="{Binding OpenMenuCommand}" CommandParameter="Produtos"/>
       </MenuItem>
     </Menu>
 

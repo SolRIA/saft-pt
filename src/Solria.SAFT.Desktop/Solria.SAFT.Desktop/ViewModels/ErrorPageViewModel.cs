@@ -64,20 +64,6 @@ namespace Solria.SAFT.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref numErros, value);
         }
 
-        private string filter;
-        public string Filter
-        {
-            get => filter;
-            set => this.RaiseAndSetIfChanged(ref filter, value);
-        }
-
-        private DataGridCollectionView collectionView;
-        public DataGridCollectionView CollectionView
-        {
-            get => collectionView;
-            set => this.RaiseAndSetIfChanged(ref collectionView, value);
-        }
-
         private Error selectedError;
         public Error SelectedError
         {

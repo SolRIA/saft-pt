@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Avalonia.Collections;
+using ReactiveUI;
 using System.Reactive.Disposables;
 
 namespace Solria.SAFT.Desktop.ViewModels
@@ -32,6 +33,20 @@ namespace Solria.SAFT.Desktop.ViewModels
         protected virtual void HandleDeactivation()
         {
 
+        }
+
+        private string filter;
+        public string Filter
+        {
+            get => filter;
+            set => this.RaiseAndSetIfChanged(ref filter, value);
+        }
+
+        private DataGridCollectionView collectionView;
+        public DataGridCollectionView CollectionView
+        {
+            get => collectionView;
+            set => this.RaiseAndSetIfChanged(ref collectionView, value);
         }
     }
 }

@@ -201,6 +201,11 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string ProductDescription { get; set; }
         public string ProductNumberCode { get; set; }
         public CustomsDetails CustomsDetails { get; set; }
+
+        //calculated fileds
+        public string Prices { get; set; }
+        public string Taxes { get; set; }
+
     }
     public class TaxTableEntry
     {

@@ -1,0 +1,53 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Solria.SAFT.Desktop.Views.ProductsPageView">
+  <Grid RowDefinitions="Auto,*">
+
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto">
+
+      <TextBox Grid.Column="0" Margin="2" Text="{Binding Filter, Mode=TwoWay}"
+               Watermark="Filtro por: NIF, Nome, Código, Email, Telefone, Website ou Contacto"
+               VerticalAlignment="Center">
+        <TextBox.KeyBindings>
+          <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
+        </TextBox.KeyBindings>
+      </TextBox>
+
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
+              Command="{Binding SearchCommand}" >
+        <DrawingPresenter Drawing="{DynamicResource Material.Magnify}" HorizontalAlignment="Center" />
+      </Button>
+
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="2" VerticalAlignment="Center"
+              Command="{Binding DoPrintCommand}">
+        <DrawingPresenter Drawing="{DynamicResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
+      </Button>
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Gerar script SolRIA POS" Grid.Column="3" VerticalAlignment="Center"
+              Command="{Binding GenerateScriptCommand}">
+        <DrawingPresenter Drawing="{DynamicResource Material.DatabaseExport}" HorizontalAlignment="Center"/>
+      </Button>
+    </Grid>
+
+    <DataGrid Grid.Row="1" IsReadOnly="True" FontSize="16"
+              Items="{Binding CollectionView}" >
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Código" Binding="{Binding ProductCode}" />
+        <DataGridTextColumn Header="Grupo" Binding="{Binding ProductGroup}" />
+        <DataGridTextColumn Header="Código barras" Binding="{Binding ProductNumberCode}" />
+        <DataGridTextColumn Header="Descrição" Binding="{Binding ProductDescription}" Width="*"/>
+        <DataGridTemplateColumn Header="Preços">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Prices}" Classes="number" FontSize="16"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTextColumn Header="IVA" Binding="{Binding Taxes}" />
+      </DataGrid.Columns>
+    </DataGrid>
+
+  </Grid>
+</UserControl>
