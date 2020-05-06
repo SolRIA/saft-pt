@@ -17,6 +17,9 @@
     <!-- icons -->
     <StyleInclude Source="avares://Solria.SAFT.Desktop/Assets/Icons.xaml" />
 
+    <!-- custom controls -->
+    <StyleInclude Source="avares://Solria.SAFT.Desktop/Controls/ProgressRing.xaml" />
+
     <!-- common values -->
     <StyleInclude Source="avares://Solria.SAFT.Desktop/Assets/CommonValues.xaml" />
 

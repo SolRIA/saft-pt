@@ -73,11 +73,11 @@ C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.D
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\libSkiaSharp.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp2.0\System.Drawing.Common.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Drawing.Common.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csproj.CoreCompileInputs.cache
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.AssemblyInfoInputs.cache
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.AssemblyInfo.cs
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csproj.CopyComplete
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.pdb
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.genruntimeconfig.cache
-C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csproj.CoreCompileInputs.cache
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csprojAssemblyReference.cache

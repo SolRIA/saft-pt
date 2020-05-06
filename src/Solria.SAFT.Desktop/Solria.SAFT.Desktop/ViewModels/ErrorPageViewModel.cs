@@ -3,21 +3,30 @@ using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
 using Solria.SAFT.Desktop.Services;
 using Splat;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Solria.SAFT.Desktop.ViewModels
 {
     public class ErrorPageViewModel : ViewModelBase
     {
-        readonly ISaftValidator saftValidator;
+        private readonly ISaftValidator saftValidator;
+        private readonly IDialogManager dialogManager;
 
         public ErrorPageViewModel(IScreen screen) : base(screen, MenuIds.ERRORS_PAGE)
         {
             saftValidator = Locator.Current.GetService<ISaftValidator>();
+            dialogManager = Locator.Current.GetService<IDialogManager>();
 
-            SearchCommand = ReactiveCommand.Create(OnSearch);
-            DoPrintCommand = ReactiveCommand.Create(OnDoPrint);
+            DoPrintCommand = ReactiveCommand.CreateFromTask(OnDoPrint);
+            SearchCommand = ReactiveCommand.Create<string>(OnSearch);
+            SearchClearCommand = ReactiveCommand.Create(OnSearchClear);
         }
 
         protected override void HandleActivation()
@@ -50,6 +59,11 @@ namespace Solria.SAFT.Desktop.ViewModels
                 NumErros = $"Foram encontrados {saftValidator.MensagensErro.Count()} erro(s)";
             else
                 NumErros = "Não foram encontrados erros";
+
+            this.WhenAnyValue(x => x.Filter)
+                .Throttle(TimeSpan.FromSeconds(1))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .InvokeCommand(SearchCommand);
         }
 
         protected override void HandleDeactivation()
@@ -71,16 +85,40 @@ namespace Solria.SAFT.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref selectedError, value);
         }
 
-        public ReactiveCommand<Unit, Unit> SearchCommand { get; }
         public ReactiveCommand<Unit, Unit> DoPrintCommand { get; }
+        public ReactiveCommand<string, Unit> SearchCommand { get; }
+        public ReactiveCommand<Unit, Unit> SearchClearCommand { get; }
 
-        private void OnSearch()
+        private async Task OnDoPrint()
+        {
+            if (CollectionView != null && CollectionView.SourceCollection != null && CollectionView.TotalItemCount > 0 && CollectionView.SourceCollection is IEnumerable<Error> errors)
+            {
+                var file = await dialogManager.SaveFileDialog(
+                    "Guardar erros",
+                    directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    initialFileName: "Erros.csv",
+                    ".csv");
+
+                if (string.IsNullOrWhiteSpace(file) == false)
+                {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    foreach (var c in errors)
+                    {
+                        stringBuilder.AppendLine($"{c.Field};{c.Value};{c.Description}");
+                    }
+
+                    File.WriteAllText(file, stringBuilder.ToString());
+                }
+            }
+        }
+
+        private void OnSearch(string _)
         {
             CollectionView.Refresh();
         }
-        private void OnDoPrint()
+        private void OnSearchClear()
         {
-
+            Filter = null;
         }
     }
 }

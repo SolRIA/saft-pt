@@ -5,7 +5,5 @@
     <Style.Resources>
       <sys:Double x:Key="MinHeightEntries">38</sys:Double>
     </Style.Resources>
-    
-    
   </Style>
 </Styles>

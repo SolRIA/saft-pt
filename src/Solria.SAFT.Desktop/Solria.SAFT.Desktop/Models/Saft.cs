@@ -215,6 +215,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string Description { get; set; }
         public decimal? TaxAmount { get; set; }
         public decimal? TaxPercentage { get; set; }
+        public string TaxExpirationDate { get; set; }
     }
     public class GeneralLedgerEntries
     {

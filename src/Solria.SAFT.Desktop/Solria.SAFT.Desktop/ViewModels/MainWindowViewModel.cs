@@ -39,7 +39,8 @@ namespace Solria.SAFT.Desktop.ViewModels
             MenuTables = new string[]
             {
                 "Clientes",
-                "Produtos"
+                "Produtos",
+                "Impostos"
             };
             this.WhenValueChanged(x => x.SelectedMenu)
                 .InvokeCommand(OpenMenuCommand);
@@ -122,6 +123,8 @@ namespace Solria.SAFT.Desktop.ViewModels
                 GoTo(new CustomersPageViewModel(this));
             else if (menu.Equals("Produtos", System.StringComparison.OrdinalIgnoreCase))
                 GoTo(new ProductsPageViewModel(this));
+            else if (menu.Equals("Impostos", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new TaxesPageViewModel(this));
         }
         private void GoTo(ViewModelBase vm)
         {

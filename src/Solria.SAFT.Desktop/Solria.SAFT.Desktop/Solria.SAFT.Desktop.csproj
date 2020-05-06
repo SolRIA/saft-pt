@@ -18,15 +18,18 @@
     <AvaloniaResource Remove="Views\HeaderPageView.xaml" />
     <AvaloniaResource Remove="Views\MainMenuPageView.xaml" />
     <AvaloniaResource Remove="Views\ProductsPageView.xaml" />
+    <AvaloniaResource Remove="Views\TaxesPageView.xaml" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\CommonValues.xaml" />
     <None Remove="Assets\Icons.xaml" />
+    <None Remove="Controls\ProgressRing.xaml" />
     <None Remove="Views\CustomersPageView.xaml" />
     <None Remove="Views\ErrorPageView.xaml" />
     <None Remove="Views\HeaderPageView.xaml" />
     <None Remove="Views\MainMenuPageView.xaml" />
     <None Remove="Views\ProductsPageView.xaml" />
+    <None Remove="Views\TaxesPageView.xaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.9.9" />
@@ -42,6 +45,12 @@
     <Page Include="Assets\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\ProgressRing.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <EmbeddedResource Include="Views\TaxesPageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\ProductsPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>

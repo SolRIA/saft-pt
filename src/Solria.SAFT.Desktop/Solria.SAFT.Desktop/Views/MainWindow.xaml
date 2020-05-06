@@ -8,7 +8,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Solria.SAFT.Desktop.Views.MainWindow"
         Icon="/Assets/solria.ico"
-        Title="SolRIA SAFT - Validador">
+        Title="SolRIA SAFT - Validador" WindowState="Maximized" WindowStartupLocation="CenterScreen">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
@@ -31,6 +31,10 @@
       <MenuItem Header="_Tabelas">
         <MenuItem Header="Clientes" Command="{Binding OpenMenuCommand}" CommandParameter="Clientes"/>
         <MenuItem Header="Produtos" Command="{Binding OpenMenuCommand}" CommandParameter="Produtos"/>
+        <MenuItem Header="Impostos" Command="{Binding OpenMenuCommand}" CommandParameter="Impostos"/>
+      </MenuItem>
+      <MenuItem Header="_Relatórios">
+        <MenuItem Header="ToDo" />
       </MenuItem>
     </Menu>
 

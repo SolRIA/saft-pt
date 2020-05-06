@@ -6,7 +6,7 @@
              x:Class="Solria.SAFT.Desktop.Views.ErrorPageView">
   <Grid RowDefinitions="Auto,Auto,*">
 
-    <Grid ColumnDefinitions="*,Auto,Auto">
+    <Grid ColumnDefinitions="*,Auto,Auto,Auto">
       <TextBox Grid.Column="0" Margin="2" Text="{Binding Filter, Mode=TwoWay}"
            Watermark="Filtro por: NIF, Nome, Código, Email, Telefone, Website ou Contacto"
            VerticalAlignment="Center">
@@ -17,10 +17,15 @@
 
       <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
               Command="{Binding SearchCommand}" >
-        <DrawingPresenter Drawing="{DynamicResource Material.Magnify}" HorizontalAlignment="Center" />
+        <DrawingPresenter Drawing="{DynamicResource Material.FilterOutline}" HorizontalAlignment="Center" />
       </Button>
 
-      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="2" VerticalAlignment="Center"
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="2" VerticalAlignment="Center"
+              Command="{Binding SearchClearCommand}" >
+        <DrawingPresenter Drawing="{DynamicResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
+      </Button>
+
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="3" VerticalAlignment="Center"
               Command="{Binding DoPrintCommand}">
         <DrawingPresenter Drawing="{DynamicResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
       </Button>

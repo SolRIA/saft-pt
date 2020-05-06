@@ -35,6 +35,13 @@ namespace Solria.SAFT.Desktop.ViewModels
 
         }
 
+        private bool isLoading;
+        public bool IsLoading
+        {
+            get => isLoading;
+            set => this.RaiseAndSetIfChanged(ref isLoading, value);
+        }
+
         private string filter;
         public string Filter
         {
