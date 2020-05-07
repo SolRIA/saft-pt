@@ -39,6 +39,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             MenuTables = new string[]
             {
                 "Clientes",
+                "Fornecedores",
                 "Produtos",
                 "Impostos"
             };
@@ -121,6 +122,8 @@ namespace Solria.SAFT.Desktop.ViewModels
                 GoTo(new HeaderPageViewModel(this));
             else if(menu.Equals("Clientes", System.StringComparison.OrdinalIgnoreCase))
                 GoTo(new CustomersPageViewModel(this));
+            else if (menu.Equals("Fornecedores", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new SuppliersPageViewModel(this));
             else if (menu.Equals("Produtos", System.StringComparison.OrdinalIgnoreCase))
                 GoTo(new ProductsPageViewModel(this));
             else if (menu.Equals("Impostos", System.StringComparison.OrdinalIgnoreCase))

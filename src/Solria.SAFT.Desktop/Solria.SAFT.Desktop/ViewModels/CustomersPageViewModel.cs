@@ -19,7 +19,7 @@ namespace Solria.SAFT.Desktop.ViewModels
         private readonly ISaftValidator saftValidator;
         private readonly IDialogManager dialogManager;
 
-        public CustomersPageViewModel(IScreen screen) : base(screen, MenuIds.ERRORS_PAGE)
+        public CustomersPageViewModel(IScreen screen) : base(screen, MenuIds.CUSTOMERS_PAGE)
         {
             saftValidator = Locator.Current.GetService<ISaftValidator>();
             dialogManager = Locator.Current.GetService<IDialogManager>();
@@ -123,11 +123,13 @@ namespace Solria.SAFT.Desktop.ViewModels
                                 return true;
                             if (customer.CustomerTaxID != null && customer.CustomerTaxID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
-                            if (customer.CustomerTaxID != null && customer.CustomerTaxID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
                             if (customer.Email != null && customer.Email.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
                             if (customer.Fax != null && customer.Fax.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                                return true;
+                            if (customer.Telephone != null && customer.Telephone.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                                return true;
+                            if (customer.Website != null && customer.Website.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
                         }
 

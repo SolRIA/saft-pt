@@ -30,6 +30,7 @@
       </MenuItem>
       <MenuItem Header="_Tabelas">
         <MenuItem Header="Clientes" Command="{Binding OpenMenuCommand}" CommandParameter="Clientes"/>
+        <MenuItem Header="Fornecedores" Command="{Binding OpenMenuCommand}" CommandParameter="Fornecedores"/>
         <MenuItem Header="Produtos" Command="{Binding OpenMenuCommand}" CommandParameter="Produtos"/>
         <MenuItem Header="Impostos" Command="{Binding OpenMenuCommand}" CommandParameter="Impostos"/>
       </MenuItem>
@@ -39,7 +40,7 @@
     </Menu>
 
     <!-- pages list -->
-    <StackPanel Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" IsVisible="{Binding ShowMenu}" Margin="10">
+    <StackPanel Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" IsVisible="{Binding ShowMenu}" Margin="20,10">
       <Expander Header="Cabeçalho">
         <ListBox Items="{Binding MenuHeader}" SelectedItem="{Binding SelectedMenu}"/>
       </Expander>

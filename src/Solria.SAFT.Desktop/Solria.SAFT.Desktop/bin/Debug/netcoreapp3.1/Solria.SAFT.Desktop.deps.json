@@ -8,19 +8,19 @@
     ".NETCoreApp,Version=v3.1": {
       "Solria.SAFT.Desktop/1.0.0": {
         "dependencies": {
-          "Avalonia": "0.9.9",
-          "Avalonia.Controls.DataGrid": "0.9.9",
-          "Avalonia.Desktop": "0.9.9",
-          "Avalonia.ReactiveUI": "0.9.9",
+          "Avalonia": "0.9.10",
+          "Avalonia.Controls.DataGrid": "0.9.10",
+          "Avalonia.Desktop": "0.9.10",
+          "Avalonia.ReactiveUI": "0.9.10",
           "System.Text.Encoding.CodePages": "4.7.0"
         },
         "runtime": {
           "Solria.SAFT.Desktop.dll": {}
         }
       },
-      "Avalonia/0.9.9": {
+      "Avalonia/0.9.10": {
         "dependencies": {
-          "Avalonia.Remote.Protocol": "0.9.9",
+          "Avalonia.Remote.Protocol": "0.9.10",
           "JetBrains.Annotations": "10.3.0",
           "Serilog": "2.5.0",
           "Serilog.Sinks.Debug": "1.0.0",
@@ -34,112 +34,112 @@
         },
         "runtime": {
           "lib/netcoreapp2.0/Avalonia.Animation.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Base.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Controls.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.DesignerSupport.dll": {
             "assemblyVersion": "0.7.0.0",
             "fileVersion": "0.7.0.0"
           },
           "lib/netcoreapp2.0/Avalonia.DesktopRuntime.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Diagnostics.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Dialogs.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Input.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Interactivity.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Layout.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Logging.Serilog.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Markup.Xaml.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Markup.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.OpenGL.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Styling.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Themes.Default.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.Visuals.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           },
           "lib/netcoreapp2.0/Avalonia.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           }
         }
       },
-      "Avalonia.Controls.DataGrid/0.9.9": {
+      "Avalonia.Controls.DataGrid/0.9.10": {
         "dependencies": {
-          "Avalonia": "0.9.9",
-          "Avalonia.Remote.Protocol": "0.9.9",
+          "Avalonia": "0.9.10",
+          "Avalonia.Remote.Protocol": "0.9.10",
           "JetBrains.Annotations": "10.3.0",
           "System.Reactive": "4.1.6"
         },
         "runtime": {
           "lib/netstandard2.0/Avalonia.Controls.DataGrid.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           }
         }
       },
-      "Avalonia.Desktop/0.9.9": {
+      "Avalonia.Desktop/0.9.10": {
         "dependencies": {
-          "Avalonia": "0.9.9",
-          "Avalonia.Direct2D1": "0.9.9",
-          "Avalonia.Native": "0.9.9",
-          "Avalonia.Skia": "0.9.9",
-          "Avalonia.Win32": "0.9.9",
-          "Avalonia.X11": "0.9.9"
+          "Avalonia": "0.9.10",
+          "Avalonia.Direct2D1": "0.9.10",
+          "Avalonia.Native": "0.9.10",
+          "Avalonia.Skia": "0.9.10",
+          "Avalonia.Win32": "0.9.10",
+          "Avalonia.X11": "0.9.10"
         },
         "runtime": {
           "lib/netstandard2.0/Avalonia.Desktop.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           }
         }
       },
-      "Avalonia.Direct2D1/0.9.9": {
+      "Avalonia.Direct2D1/0.9.10": {
         "dependencies": {
-          "Avalonia": "0.9.9",
+          "Avalonia": "0.9.10",
           "JetBrains.Annotations": "10.3.0",
           "SharpDX": "4.0.1",
           "SharpDX.DXGI": "4.0.1",
@@ -149,33 +149,33 @@
         },
         "runtime": {
           "lib/netstandard2.0/Avalonia.Direct2D1.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           }
         }
       },
-      "Avalonia.FreeDesktop/0.9.9": {
+      "Avalonia.FreeDesktop/0.9.10": {
         "dependencies": {
-          "Avalonia": "0.9.9",
+          "Avalonia": "0.9.10",
           "Tmds.DBus": "0.7.0"
         },
         "runtime": {
           "lib/netstandard2.0/Avalonia.FreeDesktop.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           }
         }
       },
-      "Avalonia.Native/0.9.9": {
+      "Avalonia.Native/0.9.10": {
         "dependencies": {
-          "Avalonia": "0.9.9",
+          "Avalonia": "0.9.10",
           "SharpGen.Runtime": "1.2.1",
           "SharpGen.Runtime.COM": "1.2.0"
         },
         "runtime": {
           "lib/netstandard2.0/Avalonia.Native.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           }
         },
         "runtimeTargets": {
@@ -186,37 +186,37 @@
           }
         }
       },
-      "Avalonia.ReactiveUI/0.9.9": {
+      "Avalonia.ReactiveUI/0.9.10": {
         "dependencies": {
-          "Avalonia": "0.9.9",
+          "Avalonia": "0.9.10",
           "ReactiveUI": "10.3.6",
           "System.Reactive": "4.1.6"
         },
         "runtime": {
           "lib/netstandard2.0/Avalonia.ReactiveUI.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           }
         }
       },
-      "Avalonia.Remote.Protocol/0.9.9": {
+      "Avalonia.Remote.Protocol/0.9.10": {
         "runtime": {
           "lib/netstandard2.0/Avalonia.Remote.Protocol.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           }
         }
       },
-      "Avalonia.Skia/0.9.9": {
+      "Avalonia.Skia/0.9.10": {
         "dependencies": {
-          "Avalonia": "0.9.9",
+          "Avalonia": "0.9.10",
           "Avalonia.Skia.Linux.Natives": "1.68.0.2",
           "SkiaSharp": "1.68.0"
         },
         "runtime": {
           "lib/netstandard2.0/Avalonia.Skia.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           }
         }
       },
@@ -238,28 +238,28 @@
           }
         }
       },
-      "Avalonia.Win32/0.9.9": {
+      "Avalonia.Win32/0.9.10": {
         "dependencies": {
-          "Avalonia": "0.9.9",
+          "Avalonia": "0.9.10",
           "System.Drawing.Common": "4.5.0"
         },
         "runtime": {
           "lib/netstandard2.0/Avalonia.Win32.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           }
         }
       },
-      "Avalonia.X11/0.9.9": {
+      "Avalonia.X11/0.9.10": {
         "dependencies": {
-          "Avalonia": "0.9.9",
-          "Avalonia.FreeDesktop": "0.9.9",
-          "Avalonia.Skia": "0.9.9"
+          "Avalonia": "0.9.10",
+          "Avalonia.FreeDesktop": "0.9.10",
+          "Avalonia.Skia": "0.9.10"
         },
         "runtime": {
           "lib/netstandard2.0/Avalonia.X11.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.10.0",
+            "fileVersion": "0.9.10.0"
           }
         }
       },
@@ -1895,68 +1895,68 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Avalonia/0.9.9": {
+    "Avalonia/0.9.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ZakhImZypL3c/GDuWggRtdu5Wc0SSWPSMc4y7rBIEoRFrV/DK5w3HHarkRX8Nc7VaH3kXKheWG1sKrjv1nbNkA==",
-      "path": "avalonia/0.9.9",
-      "hashPath": "avalonia.0.9.9.nupkg.sha512"
+      "sha512": "sha512-QL4+5ukdHrxxGQ4V1L2fFuzle2l5sTHw21KZoMrRlocISEpKOU3pwo4FEoEo9tGQIsAus56qjISZ752pZklymg==",
+      "path": "avalonia/0.9.10",
+      "hashPath": "avalonia.0.9.10.nupkg.sha512"
     },
-    "Avalonia.Controls.DataGrid/0.9.9": {
+    "Avalonia.Controls.DataGrid/0.9.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-IylESEpgTVcM7ExPv5YdrfUFY7NijI5Y/yHKDrXuq7Qy1AgUrhrYgrDh08leAsX8nl/6KdkTZRbOl0TTGZeRXA==",
-      "path": "avalonia.controls.datagrid/0.9.9",
-      "hashPath": "avalonia.controls.datagrid.0.9.9.nupkg.sha512"
+      "sha512": "sha512-wSx9v6x3kfINitczlVj0vHzlRsr2XI0cYvQhw9bnCe3m8RhTftjgqn1xUvez5oQbGvALxdIye8bvrNe6vdb1fQ==",
+      "path": "avalonia.controls.datagrid/0.9.10",
+      "hashPath": "avalonia.controls.datagrid.0.9.10.nupkg.sha512"
     },
-    "Avalonia.Desktop/0.9.9": {
+    "Avalonia.Desktop/0.9.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-2Ol1fj8lI6N42dNOpz8S4cm048DHIZjgWE5pQ0wf5p/Lw4zdAutHJTXzUXU6B42RwUyiU72g5EYXptAQ3nm1kQ==",
-      "path": "avalonia.desktop/0.9.9",
-      "hashPath": "avalonia.desktop.0.9.9.nupkg.sha512"
+      "sha512": "sha512-Mw9gVwwFZLeAWhx05/ACOO+rfhkZuCjCU5FZFIyJfJ9NFuS3Xw2Tdp5Mgivo5KQYaj3R/T+YtisDB7S0C9Qx0g==",
+      "path": "avalonia.desktop/0.9.10",
+      "hashPath": "avalonia.desktop.0.9.10.nupkg.sha512"
     },
-    "Avalonia.Direct2D1/0.9.9": {
+    "Avalonia.Direct2D1/0.9.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-0+mh59EmO+0oaoGGrE5iqtrEpS8JxeL45hQ1BBgE/JxrxSF7OW1X6ExVAGCJjtYH4s5maEHNLFCapHOUowDDpA==",
-      "path": "avalonia.direct2d1/0.9.9",
-      "hashPath": "avalonia.direct2d1.0.9.9.nupkg.sha512"
+      "sha512": "sha512-6rFoUMCsrP+T+j4BoTP3iuN+S2m9hSgyFymICiGqbxqk8zO1FtGZ+cSvOLkVuiFI5pGTCMVHOGG3zuHN6sX0XA==",
+      "path": "avalonia.direct2d1/0.9.10",
+      "hashPath": "avalonia.direct2d1.0.9.10.nupkg.sha512"
     },
-    "Avalonia.FreeDesktop/0.9.9": {
+    "Avalonia.FreeDesktop/0.9.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-2eMizkn5BCT+XPgsDiPey3CkckdY7DGnB5KXb/jA+Q/lZ1dz54boQ84Y0Ct2mTbv5hrYtQmZJ42xWC9m1N1LPA==",
-      "path": "avalonia.freedesktop/0.9.9",
-      "hashPath": "avalonia.freedesktop.0.9.9.nupkg.sha512"
+      "sha512": "sha512-aVUqY+vpswtbLx1jdBbKETKlOZboxktgBZgZzsslkwi91o1blV+BtO6rlZFAWunPJUQqaNo3Bcnp4v+dKnqJeA==",
+      "path": "avalonia.freedesktop/0.9.10",
+      "hashPath": "avalonia.freedesktop.0.9.10.nupkg.sha512"
     },
-    "Avalonia.Native/0.9.9": {
+    "Avalonia.Native/0.9.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ITzDS+sB+BW3esmd+Q6uwpSzhC2MbS0K3O2khYwG2uL15wti7SkO4AYsd/6CmPpp7yTjYKoM8MOVAf5tfbCHXg==",
-      "path": "avalonia.native/0.9.9",
-      "hashPath": "avalonia.native.0.9.9.nupkg.sha512"
+      "sha512": "sha512-n7Ia5hwSM0roth8unkG6BlpIMj3+8tzV5RExYPuhxius0dC97+f1DjvqmjqR0vYgsljDmdfgFgPGuyQ3glfYyg==",
+      "path": "avalonia.native/0.9.10",
+      "hashPath": "avalonia.native.0.9.10.nupkg.sha512"
     },
-    "Avalonia.ReactiveUI/0.9.9": {
+    "Avalonia.ReactiveUI/0.9.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ffrwmQWIJFBOXMjTPURKdfpJtp9sYj/PjL7dvHiCzn+obBURE6jetCL3LHxbVW3fj9HPe/MR0TzxipZP/54VSw==",
-      "path": "avalonia.reactiveui/0.9.9",
-      "hashPath": "avalonia.reactiveui.0.9.9.nupkg.sha512"
+      "sha512": "sha512-FJQ80jAyiblYyUdNGb9shAJt4fyED1liOL8vBzmqV+wMwawD6dQC7LXDDWeVhZJ3jOQyg6Or1haqEJX1EW28KA==",
+      "path": "avalonia.reactiveui/0.9.10",
+      "hashPath": "avalonia.reactiveui.0.9.10.nupkg.sha512"
     },
-    "Avalonia.Remote.Protocol/0.9.9": {
+    "Avalonia.Remote.Protocol/0.9.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-t7Lo5bqn3NBY3EhqBSqMMDG4OB+Mt9iJl6OaAjAceKfgeSDrVz3mwUbo7WSQwxGOBMsV50VpJkkweJH0sIsWUw==",
-      "path": "avalonia.remote.protocol/0.9.9",
-      "hashPath": "avalonia.remote.protocol.0.9.9.nupkg.sha512"
+      "sha512": "sha512-lnQ1tmad9GyF/33QD62bwLQA3TdSOZGXgj2in9ZzSAtmxBAf+XYJNbmK09CMRR1pbRF2q+MWUOrnzUyA3uuVGg==",
+      "path": "avalonia.remote.protocol/0.9.10",
+      "hashPath": "avalonia.remote.protocol.0.9.10.nupkg.sha512"
     },
-    "Avalonia.Skia/0.9.9": {
+    "Avalonia.Skia/0.9.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-OJcFykumY8e3ar5XwBi155yrtKHui2LT1rkGED4AHMxD/gdCzrgxN5K485oIZTBisgPj0/BKXmVm7/XA/kSWIQ==",
-      "path": "avalonia.skia/0.9.9",
-      "hashPath": "avalonia.skia.0.9.9.nupkg.sha512"
+      "sha512": "sha512-40jN55qA80ZokrnWE8bd1Q8CWwBsCYhmi2vnU3ER3XnqF0X8u39vSr9lIBix+Riua7TERfzjzzIv6bNPpWJ+AA==",
+      "path": "avalonia.skia/0.9.10",
+      "hashPath": "avalonia.skia.0.9.10.nupkg.sha512"
     },
     "Avalonia.Skia.Linux.Natives/1.68.0.2": {
       "type": "package",
@@ -1965,19 +1965,19 @@
       "path": "avalonia.skia.linux.natives/1.68.0.2",
       "hashPath": "avalonia.skia.linux.natives.1.68.0.2.nupkg.sha512"
     },
-    "Avalonia.Win32/0.9.9": {
+    "Avalonia.Win32/0.9.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-1Pb73hACPUbNkD+dk/lx/TA7T6dtoH1onW1i84xrQJL4J4dWARgcDighzc+xKDjPs38LfbfTuK1yTo4aPsyu+A==",
-      "path": "avalonia.win32/0.9.9",
-      "hashPath": "avalonia.win32.0.9.9.nupkg.sha512"
+      "sha512": "sha512-W2DYtnDGlEd9MWbzyBAvRfWBLHAWvrxQ23shcH01daLt/ex3IAJ6Wf/X5QkpnW5CU7uIeZk8TaYEZxsW6izqjg==",
+      "path": "avalonia.win32/0.9.10",
+      "hashPath": "avalonia.win32.0.9.10.nupkg.sha512"
     },
-    "Avalonia.X11/0.9.9": {
+    "Avalonia.X11/0.9.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-0cJOEBisyPcSo9eIb1FsGYVKlpoeOKspf220jFv3XDXvjQmGwREMPM4vM8ptvn71n3a/TDmOAvEhs/6poWH4Wg==",
-      "path": "avalonia.x11/0.9.9",
-      "hashPath": "avalonia.x11.0.9.9.nupkg.sha512"
+      "sha512": "sha512-LGgkoycbPZtbdOQxq9aRsg411wmI0lVzN6hVWmGj5TeJFyeA/aYTknRQ454+sbRO1t2/NFA57W8Qe6F7FXhWKA==",
+      "path": "avalonia.x11/0.9.10",
+      "hashPath": "avalonia.x11.0.9.10.nupkg.sha512"
     },
     "DynamicData/6.13.9": {
       "type": "package",

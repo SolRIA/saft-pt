@@ -20,7 +20,7 @@ namespace Solria.SAFT.Desktop.ViewModels
         readonly ISaftValidator saftValidator;
         readonly IDialogManager dialogManager;
 
-        public ProductsPageViewModel(IScreen screen) : base(screen, MenuIds.ERRORS_PAGE)
+        public ProductsPageViewModel(IScreen screen) : base(screen, MenuIds.PRODUCTS_PAGE)
         {
             saftValidator = Locator.Current.GetService<ISaftValidator>();
             dialogManager = Locator.Current.GetService<IDialogManager>();

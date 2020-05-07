@@ -19,7 +19,7 @@ namespace Solria.SAFT.Desktop.ViewModels
         private readonly ISaftValidator saftValidator;
         private readonly IDialogManager dialogManager;
 
-        public TaxesPageViewModel(IScreen screen) : base(screen, MenuIds.ERRORS_PAGE)
+        public TaxesPageViewModel(IScreen screen) : base(screen, MenuIds.TAXES_PAGE)
         {
             saftValidator = Locator.Current.GetService<ISaftValidator>();
             dialogManager = Locator.Current.GetService<IDialogManager>();

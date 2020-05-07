@@ -1,0 +1,53 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Solria.SAFT.Desktop.Controls;assembly=Solria.SAFT.Desktop"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Solria.SAFT.Desktop.Views.SuppliersPageView">
+  <Grid RowDefinitions="Auto,Auto,*">
+    <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+      <TextBox Grid.Column="0" Margin="2" Text="{Binding Filter, Mode=TwoWay}"
+           Watermark="Filtro por: NIF, Nome, Código, Email, Telefone, Website ou Contacto"
+           VerticalAlignment="Center">
+        <TextBox.KeyBindings>
+          <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
+        </TextBox.KeyBindings>
+      </TextBox>
+
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
+              Command="{Binding SearchCommand}" >
+        <DrawingPresenter Drawing="{DynamicResource Material.FilterOutline}" HorizontalAlignment="Center" />
+      </Button>
+
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="2" VerticalAlignment="Center"
+              Command="{Binding SearchClearCommand}" >
+        <DrawingPresenter Drawing="{DynamicResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
+      </Button>
+
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="2" VerticalAlignment="Center"
+              Command="{Binding DoPrintCommand}">
+        <DrawingPresenter Drawing="{DynamicResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
+      </Button>
+    </Grid>
+
+    <controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
+                           Grid.Row="1" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>
+
+    <DataGrid Grid.Row="1" IsReadOnly="True" FontSize="16"
+              Items="{Binding CollectionView}">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Código fornecedor" Binding="{Binding SupplierID}" />
+        <DataGridTextColumn Header="Nº conta" Binding="{Binding AccountID}" />
+        <DataGridTextColumn Header="NIF" Binding="{Binding SupplierTaxID}" />
+        <DataGridTextColumn Header="Nome" Binding="{Binding CompanyName}" Width="*"/>
+        <DataGridTextColumn Header="Contacto" Binding="{Binding Contact}" />
+        <DataGridTextColumn Header="Telefone" Binding="{Binding Telephone}" />
+        <DataGridTextColumn Header="Fax" Binding="{Binding Fax}" />
+        <DataGridTextColumn Header="Email" Binding="{Binding Email}" />
+        <DataGridTextColumn Header="Website" Binding="{Binding Website}" />
+        <DataGridTextColumn Header="Autofacturação" Binding="{Binding SelfBillingIndicator}" />
+      </DataGrid.Columns>
+    </DataGrid>
+  </Grid>
+</UserControl>
