@@ -77,7 +77,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
     {
         public string SettlementDiscount { get; set; }
         public decimal? SettlementAmount { get; set; }
-        public System.DateTime? SettlementDate { get; set; }
+        public DateTime? SettlementDate { get; set; }
         public string PaymentTerms { get; set; }
     }
     public class References
@@ -115,7 +115,6 @@ namespace Solria.SAFT.Desktop.Models.Saft
     {
         public string[] ARCNo { get; set; }
         public decimal IECAmount { get; set; }
-        public bool IECAmountSpecified { get; set; }
     }
     public class CustomsDetails
     {
@@ -234,12 +233,12 @@ namespace Solria.SAFT.Desktop.Models.Saft
     {
         public string TransactionID { get; set; }
         public string Period { get; set; }
-        public System.DateTime TransactionDate { get; set; }
+        public DateTime TransactionDate { get; set; }
         public string SourceID { get; set; }
         public string Description { get; set; }
         public string DocArchivalNumber { get; set; }
         public string TransactionType { get; set; }
-        public System.DateTime GLPostingDate { get; set; }
+        public DateTime GLPostingDate { get; set; }
         public string CustomerID { get; set; }
         public string SupplierID { get; set; }
         public GeneralLedgerEntriesJournalTransactionLines Lines { get; set; }
@@ -254,7 +253,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string RecordID { get; set; }
         public string AccountID { get; set; }
         public string SourceDocumentID { get; set; }
-        public System.DateTime SystemEntryDate { get; set; }
+        public DateTime SystemEntryDate { get; set; }
         public string Description { get; set; }
         public decimal DebitAmount { get; set; }
     }
@@ -289,18 +288,18 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string Hash { get; set; }
         public string HashControl { get; set; }
         public string Period { get; set; }
-        public System.DateTime InvoiceDate { get; set; }
+        public DateTime InvoiceDate { get; set; }
         public string InvoiceType { get; set; }
         public SpecialRegimes SpecialRegimes { get; set; }
         public string SourceID { get; set; }
         public string EACCode { get; set; }
-        public System.DateTime SystemEntryDate { get; set; }
+        public DateTime SystemEntryDate { get; set; }
         public string TransactionID { get; set; }
         public string CustomerID { get; set; }
         public ShippingPointStructure ShipTo { get; set; }
         public ShippingPointStructure ShipFrom { get; set; }
-        public System.DateTime? MovementEndTime { get; set; }
-        public System.DateTime? MovementStartTime { get; set; }
+        public DateTime? MovementEndTime { get; set; }
+        public DateTime? MovementStartTime { get; set; }
         public SourceDocumentsSalesInvoicesInvoiceLine[] Line { get; set; }
         public SourceDocumentsSalesInvoicesInvoiceDocumentTotals DocumentTotals { get; set; }
         public WithholdingTax[] WithholdingTax { get; set; }
@@ -308,7 +307,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
     public class SourceDocumentsSalesInvoicesInvoiceDocumentStatus
     {
         public string InvoiceStatus { get; set; }
-        public System.DateTime InvoiceStatusDate { get; set; }
+        public DateTime InvoiceStatusDate { get; set; }
         public string Reason { get; set; }
         public string SourceID { get; set; }
         public string SourceBilling { get; set; }
@@ -316,13 +315,18 @@ namespace Solria.SAFT.Desktop.Models.Saft
     public class ShippingPointStructure
     {
         public string[] DeliveryID { get; set; }
-        public System.DateTime? DeliveryDate { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         public string[] WarehouseID { get; set; }
         public string[] LocationID { get; set; }
         public AddressStructure Address { get; set; }
     }
     public class SourceDocumentsSalesInvoicesInvoiceLine
     {
+        /// <summary>
+		/// Link to the invoice
+		/// </summary>
+		public string InvoiceNo { get; set; }
+
         public string LineNumber { get; set; }
         public OrderReferences[] OrderReferences { get; set; }
         public string ProductCode { get; set; }
@@ -331,17 +335,16 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string UnitOfMeasure { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal? TaxBase { get; set; }
-        public System.DateTime TaxPointDate { get; set; }
+        public DateTime TaxPointDate { get; set; }
         public References[] References { get; set; }
         public string Description { get; set; }
-        [System.Xml.Serialization.XmlArrayItemAttribute("SerialNumber", IsNullable = false)] public string[] ProductSerialNumber { get; set; }
+        public string[] ProductSerialNumber { get; set; }
         public decimal CreditAmount { get; set; }
         public decimal DebitAmount { get; set; }
         public Tax Tax { get; set; }
         public string TaxExemptionReason { get; set; }
         public string TaxExemptionCode { get; set; }
         public decimal SettlementAmount { get; set; }
-        public bool SettlementAmountSpecified { get; set; }
         public CustomsInformation CustomsInformation { get; set; }
     }
     public class SourceDocumentsSalesInvoicesInvoiceDocumentTotals
@@ -367,9 +370,9 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string Hash { get; set; }
         public string HashControl { get; set; }
         public string Period { get; set; }
-        public System.DateTime MovementDate { get; set; }
+        public DateTime MovementDate { get; set; }
         public string MovementType { get; set; }
-        public System.DateTime SystemEntryDate { get; set; }
+        public DateTime SystemEntryDate { get; set; }
         public string TransactionID { get; set; }
         public string CustomerID { get; set; }
         public string SupplierID { get; set; }
@@ -378,8 +381,8 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string MovementComments { get; set; }
         public ShippingPointStructure ShipTo { get; set; }
         public ShippingPointStructure ShipFrom { get; set; }
-        public System.DateTime? MovementEndTime { get; set; }
-        public System.DateTime MovementStartTime { get; set; }
+        public DateTime? MovementEndTime { get; set; }
+        public DateTime MovementStartTime { get; set; }
         public string ATDocCodeID { get; set; }
         public SourceDocumentsMovementOfGoodsStockMovementLine[] Line { get; set; }
         public SourceDocumentsMovementOfGoodsStockMovementDocumentTotals DocumentTotals { get; set; }
@@ -387,7 +390,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
     public class SourceDocumentsMovementOfGoodsStockMovementDocumentStatus
     {
         public string MovementStatus { get; set; }
-        public System.DateTime MovementStatusDate { get; set; }
+        public DateTime MovementStatusDate { get; set; }
         public string Reason { get; set; }
         public string SourceID { get; set; }
         public string SourceBilling { get; set; }
@@ -402,7 +405,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string UnitOfMeasure { get; set; }
         public decimal UnitPrice { get; set; }
         public string Description { get; set; }
-        [System.Xml.Serialization.XmlArrayItemAttribute("SerialNumber", IsNullable = false)] public string[] ProductSerialNumber { get; set; }
+        public string[] ProductSerialNumber { get; set; }
         public decimal? CreditAmount { get; set; }
         public decimal? DebitAmount { get; set; }
         public MovementTax Tax { get; set; }
@@ -434,11 +437,11 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string Hash { get; set; }
         public string HashControl { get; set; }
         public string Period { get; set; }
-        public System.DateTime WorkDate { get; set; }
+        public DateTime WorkDate { get; set; }
         public string WorkType { get; set; }
         public string SourceID { get; set; }
         public string EACCode { get; set; }
-        public System.DateTime SystemEntryDate { get; set; }
+        public DateTime SystemEntryDate { get; set; }
         public string TransactionID { get; set; }
         public string CustomerID { get; set; }
         public SourceDocumentsWorkingDocumentsWorkDocumentLine[] Line { get; set; }
@@ -447,7 +450,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
     public class SourceDocumentsWorkingDocumentsWorkDocumentDocumentStatus
     {
         public string WorkStatus { get; set; }
-        public System.DateTime WorkStatusDate { get; set; }
+        public DateTime WorkStatusDate { get; set; }
         public string Reason { get; set; }
         public string SourceID { get; set; }
         public string SourceBilling { get; set; }
@@ -463,10 +466,10 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public decimal UnitPrice { get; set; }
         public decimal TaxBase { get; set; }
         public bool TaxBaseSpecified { get; set; }
-        public System.DateTime TaxPointDate { get; set; }
+        public DateTime TaxPointDate { get; set; }
         public References[] References { get; set; }
         public string Description { get; set; }
-        [System.Xml.Serialization.XmlArrayItemAttribute("SerialNumber", IsNullable = false)] public string[] ProductSerialNumber { get; set; }
+        public string[] ProductSerialNumber { get; set; }
         public decimal? CreditAmount { get; set; }
         public decimal? DebitAmount { get; set; }
         public Tax Tax { get; set; }
@@ -496,14 +499,14 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string ATCUD { get; set; }
         public string Period { get; set; }
         public string TransactionID { get; set; }
-        public System.DateTime TransactionDate { get; set; }
+        public DateTime TransactionDate { get; set; }
         public string PaymentType { get; set; }
         public string Description { get; set; }
         public string SystemID { get; set; }
         public SourceDocumentsPaymentsPaymentDocumentStatus DocumentStatus { get; set; }
         public PaymentMethod[] PaymentMethod { get; set; }
         public string SourceID { get; set; }
-        public System.DateTime SystemEntryDate { get; set; }
+        public DateTime SystemEntryDate { get; set; }
         public string CustomerID { get; set; }
         public SourceDocumentsPaymentsPaymentLine[] Line { get; set; }
         public SourceDocumentsPaymentsPaymentDocumentTotals DocumentTotals { get; set; }
@@ -512,7 +515,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
     public class SourceDocumentsPaymentsPaymentDocumentStatus
     {
         public string PaymentStatus { get; set; }
-        public System.DateTime PaymentStatusDate { get; set; }
+        public DateTime PaymentStatusDate { get; set; }
         public string Reason { get; set; }
         public string SourceID { get; set; }
         public string SourcePayment { get; set; }
@@ -532,7 +535,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
     public class SourceDocumentsPaymentsPaymentLineSourceDocumentID
     {
         public string OriginatingON { get; set; }
-        public System.DateTime InvoiceDate { get; set; }
+        public DateTime InvoiceDate { get; set; }
         public string Description { get; set; }
     }
     public class SourceDocumentsPaymentsPaymentDocumentTotals

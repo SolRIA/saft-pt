@@ -16,6 +16,7 @@
     <AvaloniaResource Remove="Views\CustomersPageView.xaml" />
     <AvaloniaResource Remove="Views\ErrorPageView.xaml" />
     <AvaloniaResource Remove="Views\HeaderPageView.xaml" />
+    <AvaloniaResource Remove="Views\InvoicesPageView.xaml" />
     <AvaloniaResource Remove="Views\MainMenuPageView.xaml" />
     <AvaloniaResource Remove="Views\ProductsPageView.xaml" />
     <AvaloniaResource Remove="Views\SuppliersPageView.xaml" />
@@ -24,10 +25,12 @@
   <ItemGroup>
     <None Remove="Assets\CommonValues.xaml" />
     <None Remove="Assets\Icons.xaml" />
+    <None Remove="Assets\Sidebar.xaml" />
     <None Remove="Controls\ProgressRing.xaml" />
     <None Remove="Views\CustomersPageView.xaml" />
     <None Remove="Views\ErrorPageView.xaml" />
     <None Remove="Views\HeaderPageView.xaml" />
+    <None Remove="Views\InvoicesPageView.xaml" />
     <None Remove="Views\MainMenuPageView.xaml" />
     <None Remove="Views\ProductsPageView.xaml" />
     <None Remove="Views\SuppliersPageView.xaml" />
@@ -38,9 +41,16 @@
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.9.10" />
     <PackageReference Include="Avalonia.Desktop" Version="0.9.10" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.10" />
+    <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
+    <PackageReference Include="NPOI" Version="2.5.1" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Assets\Sidebar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Assets\CommonValues.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -50,6 +60,9 @@
     <Page Include="Controls\ProgressRing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <EmbeddedResource Include="Views\InvoicesPageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\SuppliersPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
@@ -79,5 +92,10 @@
     <Compile Update="Views\ErrorPageView.xaml.cs">
       <DependentUpon>ErrorPageView.xaml</DependentUpon>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="SQL\v001.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

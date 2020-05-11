@@ -10,5 +10,6 @@
         public const string PRODUCTS_PAGE = "ProductsPage";
         public const string CUSTOMERS_PAGE = "CustomersPage";
         public const string SUPPLIERS_PAGE = "SuppliersPage";
+        public const string INVOICES_PAGE = "InvoicesPage";
     }
 }

@@ -16,7 +16,7 @@
         </TextBox.KeyBindings>
       </TextBox>
 
-      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar" Grid.Column="1" VerticalAlignment="Center"
               Command="{Binding SearchCommand}" >
         <DrawingPresenter Drawing="{DynamicResource Material.FilterOutline}" HorizontalAlignment="Center" />
       </Button>
@@ -35,7 +35,7 @@
     <controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
                            Grid.Row="1" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>
 
-    <DataGrid Grid.Row="1" IsReadOnly="True" FontSize="16"
+    <DataGrid Grid.Row="2" IsReadOnly="True" FontSize="16"
               Items="{Binding CollectionView}">
       <DataGrid.Columns>
         <DataGridTextColumn Header="Código" Binding="{Binding CustomerID}" />

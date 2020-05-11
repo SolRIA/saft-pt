@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Threading;
 using Solria.SAFT.Desktop.Services;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Solria.SAFT.Desktop.Views
     {
         private readonly StyleInclude _lightTheme;
         private readonly StyleInclude _darkTheme;
+        readonly TextBlock txtMessage;
 
         public MainWindow()
         {
@@ -40,11 +42,26 @@ namespace Solria.SAFT.Desktop.Views
                 Source = new Uri("resm:Avalonia.Themes.Default.Accents.BaseDark.xaml?assembly=Avalonia.Themes.Default")
             };
             Styles.Add(_darkTheme);
+
+            txtMessage = this.Find<TextBlock>("messages");
         }
 
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        public void UpdateVersionInfo(string version)
+        {
+            var txtVersion = this.Find<TextBlock>("version");
+            txtVersion.Text = version;
+        }
+        public void AddMessage(string message)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                txtMessage.Text = message;
+            });
         }
 
         public void ShowChildDialog(Window window)

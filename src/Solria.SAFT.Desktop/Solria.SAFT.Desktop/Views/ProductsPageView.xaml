@@ -10,7 +10,7 @@
     <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto">
 
       <TextBox Grid.Column="0" Margin="2" Text="{Binding Filter, Mode=TwoWay}"
-               Watermark="Filtro por: NIF, Nome, Código, Email, Telefone, Website ou Contacto"
+               Watermark="Filtro por: Código, Nome, Código barras ou Descrição"
                VerticalAlignment="Center">
         <TextBox.KeyBindings>
           <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>

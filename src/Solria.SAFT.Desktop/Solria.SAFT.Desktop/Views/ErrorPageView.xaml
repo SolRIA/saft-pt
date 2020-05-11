@@ -8,7 +8,7 @@
 
     <Grid ColumnDefinitions="*,Auto,Auto,Auto">
       <TextBox Grid.Column="0" Margin="2" Text="{Binding Filter, Mode=TwoWay}"
-           Watermark="Filtro por: NIF, Nome, Código, Email, Telefone, Website ou Contacto"
+           Watermark="Filtro por: Descrição"
            VerticalAlignment="Center">
         <TextBox.KeyBindings>
           <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
@@ -35,7 +35,7 @@
 
 
     <DataGrid Grid.Row="2" IsReadOnly="True" FontSize="16"
-              Items="{Binding ErrorMessages}"
+              Items="{Binding CollectionView}"
               SelectedItem="{Binding SelectedError}">
       <DataGrid.Columns>
         <!--<sf:GridTextColumn HeaderText="Campo">

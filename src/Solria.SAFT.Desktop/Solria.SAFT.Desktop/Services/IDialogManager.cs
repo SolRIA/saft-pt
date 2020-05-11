@@ -6,6 +6,8 @@ namespace Solria.SAFT.Desktop.Services
 {
     public interface IDialogManager
     {
+        void UpdateVersionInfo(string version);
+        void AddMessage(string message);
         void ShowChildDialog(Window window);
         Task ShowChildDialogAsync(Window window);
         Task ShowChildDialogAsync<T>(Window window);

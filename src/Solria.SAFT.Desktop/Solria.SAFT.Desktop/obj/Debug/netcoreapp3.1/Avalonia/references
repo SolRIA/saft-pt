@@ -26,14 +26,23 @@ C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Themes
 C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Visuals.dll
 C:\Users\frede\.nuget\packages\avalonia.win32\0.9.10\lib\netstandard2.0\Avalonia.Win32.dll
 C:\Users\frede\.nuget\packages\avalonia.x11\0.9.10\lib\netstandard2.0\Avalonia.X11.dll
+C:\Users\frede\.nuget\packages\portable.bouncycastle\1.8.6\lib\netstandard2.0\BouncyCastle.Crypto.dll
+C:\Users\frede\.nuget\packages\dapper\2.0.35\lib\netstandard2.0\Dapper.dll
 C:\Users\frede\.nuget\packages\dynamicdata\6.13.9\lib\netstandard2.0\DynamicData.dll
+C:\Users\frede\.nuget\packages\sharpziplib\1.2.0\lib\netstandard2.0\ICSharpCode.SharpZipLib.dll
 C:\Users\frede\.nuget\packages\jetbrains.annotations\10.3.0\lib\netstandard1.0\JetBrains.Annotations.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.CSharp.dll
+C:\Users\frede\.nuget\packages\microsoft.data.sqlite.core\3.1.3\lib\netstandard2.0\Microsoft.Data.Sqlite.dll
+C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.platformabstractions\1.1.0\lib\netstandard1.3\Microsoft.Extensions.PlatformAbstractions.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.VisualBasic.Core.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.VisualBasic.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.Win32.Primitives.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\mscorlib.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\netstandard.dll
+C:\Users\frede\.nuget\packages\npoi\2.5.1\lib\netstandard2.0\NPOI.dll
+C:\Users\frede\.nuget\packages\npoi\2.5.1\lib\netstandard2.0\NPOI.OOXML.dll
+C:\Users\frede\.nuget\packages\npoi\2.5.1\lib\netstandard2.0\NPOI.OpenXml4Net.dll
+C:\Users\frede\.nuget\packages\npoi\2.5.1\lib\netstandard2.0\NPOI.OpenXmlFormats.dll
 C:\Users\frede\.nuget\packages\reactiveui\10.3.6\lib\netcoreapp3.0\ReactiveUI.dll
 C:\Users\frede\.nuget\packages\serilog\2.5.0\lib\netstandard1.3\Serilog.dll
 C:\Users\frede\.nuget\packages\serilog.sinks.debug\1.0.0\lib\netstandard1.0\Serilog.Sinks.Debug.dll
@@ -46,6 +55,10 @@ C:\Users\frede\.nuget\packages\sharpgen.runtime.com\1.2.0\lib\netstandard1.1\Sha
 C:\Users\frede\.nuget\packages\sharpgen.runtime\1.2.1\lib\netstandard2.0\SharpGen.Runtime.dll
 C:\Users\frede\.nuget\packages\skiasharp\1.68.0\lib\netstandard1.3\SkiaSharp.dll
 C:\Users\frede\.nuget\packages\splat\9.0.5\lib\netstandard2.0\Splat.dll
+C:\Users\frede\.nuget\packages\sqlitepclraw.bundle_e_sqlite3\2.0.2\lib\netcoreapp3.0\SQLitePCLRaw.batteries_v2.dll
+C:\Users\frede\.nuget\packages\sqlitepclraw.core\2.0.2\lib\netstandard2.0\SQLitePCLRaw.core.dll
+C:\Users\frede\.nuget\packages\sqlitepclraw.bundle_e_sqlite3\2.0.2\lib\netcoreapp3.0\SQLitePCLRaw.nativelibrary.dll
+C:\Users\frede\.nuget\packages\sqlitepclraw.provider.dynamic_cdecl\2.0.2\lib\netstandard2.0\SQLitePCLRaw.provider.dynamic_cdecl.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.AppContext.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Buffers.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Collections.Concurrent.dll
@@ -59,6 +72,7 @@ C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ComponentModel.EventBasedAsync.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ComponentModel.Primitives.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ComponentModel.TypeConverter.dll
+C:\Users\frede\.nuget\packages\system.configuration.configurationmanager\4.5.0\ref\netstandard2.0\System.Configuration.ConfigurationManager.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Configuration.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Console.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Core.dll
@@ -150,6 +164,7 @@ C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Serialization.Json.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Serialization.Primitives.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Serialization.Xml.dll
+C:\Users\frede\.nuget\packages\system.security.accesscontrol\4.5.0\ref\netstandard2.0\System.Security.AccessControl.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Claims.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.Algorithms.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.Csp.dll
@@ -157,6 +172,7 @@ C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.Primitives.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.X509Certificates.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.dll
+C:\Program Files\dotnet\sdk\NuGetFallbackFolder\system.security.permissions\4.5.0\ref\netstandard2.0\System.Security.Permissions.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Principal.dll
 C:\Users\frede\.nuget\packages\system.security.principal.windows\4.5.0\ref\netstandard2.0\System.Security.Principal.Windows.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.SecureString.dll

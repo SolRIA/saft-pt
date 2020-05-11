@@ -26,8 +26,10 @@ namespace Solria.SAFT.Desktop
 
                 IXmlSerializer xmlSerializer = new XmlSerializer();
                 ISaftValidator saftValidator = new SaftValidator(xmlSerializer);
+                IDatabaseService databaseService = new DatabaseService();
 
                 Locator.CurrentMutable.RegisterConstant(saftValidator, typeof(ISaftValidator));
+                Locator.CurrentMutable.RegisterConstant(databaseService, typeof(IDatabaseService));
                 Locator.CurrentMutable.RegisterConstant(mainWindow, typeof(IDialogManager));
 
                 mainWindow.DataContext = new MainWindowViewModel();

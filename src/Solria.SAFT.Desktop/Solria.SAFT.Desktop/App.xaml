@@ -14,6 +14,9 @@
     <!-- datagrid -->
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Default.xaml"/>
 
+    <!-- sidebar -->
+    <!--<StyleInclude Source="avares://Solria.SAFT.Desktop/Assets/Sidebar.xaml"/>-->
+
     <!-- icons -->
     <StyleInclude Source="avares://Solria.SAFT.Desktop/Assets/Icons.xaml" />
 

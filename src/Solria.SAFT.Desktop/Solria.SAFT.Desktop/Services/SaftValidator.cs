@@ -54,6 +54,7 @@ namespace Solria.SAFT.Desktop.Services
         public async Task OpenSaftFileV4(string filename)
         {
             SaftFileName = filename;
+            MensagensErro.Clear();
 
             //deserialize the xml file
             SaftFileV4 = await xmlSerializer.Deserialize<Models.SaftV4.AuditFile>(SaftFileName);
@@ -149,6 +150,7 @@ namespace Solria.SAFT.Desktop.Services
         public async Task OpenSaftFileV3(string filename)
         {
             SaftFileName = filename;
+            MensagensErro.Clear();
 
             //deserialize the xml file
             SaftFileV3 = await xmlSerializer.Deserialize<Models.SaftV3.AuditFile>(SaftFileName);
@@ -244,6 +246,8 @@ namespace Solria.SAFT.Desktop.Services
         public async Task OpenStockFile(string filename)
         {
             StockFileName = filename;
+
+            MensagensErro.Clear();
 
             StockFile = await xmlSerializer.Deserialize<Models.StocksV2.StockFile>(StockFileName);
         }

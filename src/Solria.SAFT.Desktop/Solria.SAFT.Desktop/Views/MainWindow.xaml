@@ -10,9 +10,9 @@
         Icon="/Assets/solria.ico"
         Title="SolRIA SAFT - Validador" WindowState="Maximized" WindowStartupLocation="CenterScreen">
 
-    <Design.DataContext>
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+  <Design.DataContext>
+    <vm:MainWindowViewModel/>
+  </Design.DataContext>
 
   <Grid RowDefinitions="Auto,*,30" ColumnDefinitions="Auto,*">
 
@@ -21,6 +21,9 @@
         <MenuItem Header="_Abrir SAFT" Command="{Binding OpenSaftCommand}"/>
         <MenuItem Header="_Abrir Transporte" Command="{Binding OpenTransportCommand}"/>
         <MenuItem Header="_Abrir Stocks" Command="{Binding OpenStocksCommand}"/>
+        <Separator/>
+        <MenuItem Header="Recentes" Items="{Binding RecentFiles}" SelectedItem="{Binding RecentFile}" Command="{Binding OpenRecentFileCommand}" />
+        <MenuItem Header="Limpar" Command="{Binding ClearRecentFilesCommand}"/>
         <Separator/>
         <MenuItem Header="_Sair"/>
       </MenuItem>
@@ -34,21 +37,43 @@
         <MenuItem Header="Produtos" Command="{Binding OpenMenuCommand}" CommandParameter="Produtos"/>
         <MenuItem Header="Impostos" Command="{Binding OpenMenuCommand}" CommandParameter="Impostos"/>
       </MenuItem>
+      <MenuItem Header="Documentos">
+        <MenuItem Header="Documentos Faturação" Command="{Binding OpenMenuCommand}" CommandParameter="Documentos Faturação"/>
+      </MenuItem>
       <MenuItem Header="_Relatórios">
         <MenuItem Header="ToDo" />
       </MenuItem>
     </Menu>
 
     <!-- pages list -->
-    <StackPanel Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" IsVisible="{Binding ShowMenu}" Margin="20,10">
-      <Expander Header="Cabeçalho">
+    <!--<TabControl Classes="sidebar" Grid.Column="0" Grid.Row="1" IsVisible="{Binding ShowMenu}">
+      <TabItem Header="Cabeçalho">
         <ListBox Items="{Binding MenuHeader}" SelectedItem="{Binding SelectedMenu}"/>
-      </Expander>
-      <Expander Header="Tabelas">
+      </TabItem>
+      <TabItem Header="Tabelas">
         <ListBox Items="{Binding MenuTables}" SelectedItem="{Binding SelectedMenu}"/>
-      </Expander>
+      </TabItem>
+      <TabItem Header="Documentos">
+        <ListBox Items="{Binding MenuInvoices}" SelectedItem="{Binding SelectedMenu}"/>
+      </TabItem>
+    </TabControl>-->
+
+    <StackPanel Grid.Column="0" Grid.Row="1" IsVisible="{Binding ShowMenu}" Background="{DynamicResource ThemeAccentBrush}">
+      <ScrollViewer Margin="20,10">
+        <StackPanel>
+          <Expander Header="Cabeçalho" IsExpanded="True" Background="#00FFFFFF">
+            <ListBox Items="{Binding MenuHeader}" SelectedItem="{Binding SelectedMenu}" Background="#00FFFFFF" BorderThickness="0"/>
+          </Expander>
+          <Expander Header="Tabelas" IsExpanded="True" Background="#00FFFFFF">
+            <ListBox Items="{Binding MenuTables}" SelectedItem="{Binding SelectedMenu}" Background="#00FFFFFF" BorderThickness="0"/>
+          </Expander>
+          <Expander Header="Documentos" IsExpanded="True" Background="#00FFFFFF">
+            <ListBox Items="{Binding MenuInvoices}" SelectedItem="{Binding SelectedMenu}" Background="#00FFFFFF" BorderThickness="0"/>
+          </Expander>
+        </StackPanel>
+      </ScrollViewer>
     </StackPanel>
-    
+
     <!-- current view -->
     <rxui:RoutedViewHost Grid.Row="1" Grid.Column="1" Router="{Binding Router}">
       <rxui:RoutedViewHost.DefaultContent>
@@ -57,8 +82,10 @@
     </rxui:RoutedViewHost>
 
     <!-- footer -->
-    <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Background="{DynamicResource ThemeAccentBrush4}">
-      <CheckBox x:Name="themeSelector" IsChecked="True" Content="Tema escuro" VerticalAlignment="Center" Margin="10,5,10,0"/>
+    <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" Background="{DynamicResource ThemeAccentBrush4}">
+      <CheckBox x:Name="themeSelector" IsChecked="True" Content="Tema escuro" VerticalAlignment="Center" Margin="10,0"/>
+      <TextBlock x:Name="version" Margin="5,0" FontSize="14" VerticalAlignment="Center"/>
+      <TextBlock x:Name="messages" Margin="5,0" FontSize="14" VerticalAlignment="Center"/>
     </StackPanel>
   </Grid>
 
