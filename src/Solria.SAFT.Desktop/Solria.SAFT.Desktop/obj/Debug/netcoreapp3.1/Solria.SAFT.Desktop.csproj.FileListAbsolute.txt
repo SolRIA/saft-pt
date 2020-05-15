@@ -79,7 +79,6 @@ C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.D
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.pdb
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.genruntimeconfig.cache
-C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csprojAssemblyReference.cache
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\NPOI.OOXML.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\NPOI.OpenXml4Net.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\NPOI.OpenXmlFormats.dll
@@ -110,4 +109,7 @@ C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.D
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\win-x64\native\e_sqlite3.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\e_sqlite3.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Microsoft.Extensions.PlatformAbstractions.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Avalonia.Xaml.Interactions.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Avalonia.Xaml.Interactivity.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csproj.CoreCompileInputs.cache
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csprojAssemblyReference.cache

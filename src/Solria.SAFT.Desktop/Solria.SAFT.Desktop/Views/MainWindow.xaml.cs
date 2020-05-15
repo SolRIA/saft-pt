@@ -3,9 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Threading;
+using ReactiveUI;
 using Solria.SAFT.Desktop.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Solria.SAFT.Desktop.Views
@@ -70,14 +72,27 @@ namespace Solria.SAFT.Desktop.Views
             window.Show();
         }
 
+        private readonly List<Window> dialogs = new List<Window>();
         public async Task ShowChildDialogAsync(Window window)
         {
+            dialogs.Add(window);
             await window.ShowDialog(this);
         }
 
         public async Task ShowChildDialogAsync<T>(Window window)
         {
+            dialogs.Add(window);
             await window.ShowDialog<T>(this);
+        }
+
+        public void CloseDialog()
+        {
+            if (dialogs.Count > 0)
+            {
+                var last = dialogs.Last();
+                last.Close();
+                dialogs.Remove(last);
+            }
         }
 
         public async Task<string[]> OpenFileDialog(string title, string directory = "", string initialFileName = "", bool allowMultiple = false, List<FileDialogFilter> filters = null)

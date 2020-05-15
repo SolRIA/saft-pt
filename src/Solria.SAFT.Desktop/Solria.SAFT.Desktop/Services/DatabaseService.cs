@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.PlatformAbstractions;
+using Solria.SAFT.Desktop.Models;
 using Solria.SAFT.Desktop.Models.DatabaseModels;
 using Solria.SAFT.Desktop.SQL;
 using System;
@@ -144,7 +145,7 @@ namespace Solria.SAFT.Desktop.Services
             if (existing_file <= 0)
                 connection.Execute("INSERT INTO RecentFiles (FileName) VALUES (@file);", new { file });
             else
-                connection.Execute("UPDATE RecentFiles SET LastUsed = CURRENT_TIMESTAMP WHERE Id=@existing_file);", new { existing_file });
+                connection.Execute("UPDATE RecentFiles SET LastUsed = CURRENT_TIMESTAMP WHERE Id=@existing_file;", new { existing_file });
         }
 
         public IEnumerable<string> GetRecentFiles()
@@ -157,6 +158,32 @@ namespace Solria.SAFT.Desktop.Services
         {
             using var connection = InitConnection();
             connection.Execute("DELETE FROM RecentFiles;");
+        }
+
+        public IEnumerable<PemFile> GetPemFiles()
+        {
+            using var connection = InitConnection();
+            return connection.Query<PemFile>("SELECT * FROM PemFiles ORDER BY Name;");
+        }
+        public void UpdatePemFiles(IEnumerable<PemFile> pemFiles)
+        {
+            if (pemFiles == null || pemFiles.Count() == 0)
+                return;
+
+            using var connection = InitConnection();
+            var update = pemFiles.Where(p => p.Id > 0).ToArray();
+            var insert = pemFiles.Where(p => p.Id == 0).ToArray();
+
+            if (update.Length > 0)
+                connection.Execute(
+                    "UPDATE PemFiles SET Name=@Name,PemText=@PemText,RsaSettings=@RsaSettings " +
+                    "WHERE Id=@Id;", 
+                    update);
+
+            if (insert.Length > 0)
+                connection.Execute(
+                    "INSERT INTO PemFiles (Name,PemText,RsaSettings) VALUES (@Name,@PemText,@RsaSettings);", 
+                    insert);
         }
 
         public T GetPreferences<T>(string key, T defaultValue)

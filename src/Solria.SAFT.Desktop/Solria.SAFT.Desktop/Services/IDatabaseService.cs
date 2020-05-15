@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Solria.SAFT.Desktop.Models;
+using System;
 using System.Collections.Generic;
 
 namespace Solria.SAFT.Desktop.Services
@@ -13,6 +14,8 @@ namespace Solria.SAFT.Desktop.Services
         void AddRecentFile(string file);
         IEnumerable<string> GetRecentFiles();
         void ClearRecentFiles();
+        IEnumerable<PemFile> GetPemFiles();
+        void UpdatePemFiles(IEnumerable<PemFile> pemFiles);
         T GetPreferences<T>(string key, T defaultValue);
         void UpdatePreferences(string key, object value);
         T GetJsonPreferences<T>(string key, T defaultValue);

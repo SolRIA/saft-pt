@@ -16,34 +16,47 @@
 
   <Grid RowDefinitions="Auto,*,30" ColumnDefinitions="Auto,*">
 
-    <Menu Grid.Row="0" Grid.ColumnSpan="2" Background="{DynamicResource ThemeAccentBrush4}" FontSize="16">
-      <MenuItem Header="_Ficheiro">
-        <MenuItem Header="_Abrir SAFT" Command="{Binding OpenSaftCommand}"/>
-        <MenuItem Header="_Abrir Transporte" Command="{Binding OpenTransportCommand}"/>
-        <MenuItem Header="_Abrir Stocks" Command="{Binding OpenStocksCommand}"/>
-        <Separator/>
-        <MenuItem Header="Recentes" Items="{Binding RecentFiles}" SelectedItem="{Binding RecentFile}" Command="{Binding OpenRecentFileCommand}" />
-        <MenuItem Header="Limpar" Command="{Binding ClearRecentFilesCommand}"/>
-        <Separator/>
-        <MenuItem Header="_Sair"/>
-      </MenuItem>
-      <MenuItem Header="_Cabeçalho">
-        <MenuItem Header="Erros" Command="{Binding OpenMenuCommand}" CommandParameter="Erros"/>
-        <MenuItem Header="Cabeçalho" Command="{Binding OpenMenuCommand}" CommandParameter="Cabeçalho"/>
-      </MenuItem>
-      <MenuItem Header="_Tabelas">
-        <MenuItem Header="Clientes" Command="{Binding OpenMenuCommand}" CommandParameter="Clientes"/>
-        <MenuItem Header="Fornecedores" Command="{Binding OpenMenuCommand}" CommandParameter="Fornecedores"/>
-        <MenuItem Header="Produtos" Command="{Binding OpenMenuCommand}" CommandParameter="Produtos"/>
-        <MenuItem Header="Impostos" Command="{Binding OpenMenuCommand}" CommandParameter="Impostos"/>
-      </MenuItem>
-      <MenuItem Header="Documentos">
-        <MenuItem Header="Documentos Faturação" Command="{Binding OpenMenuCommand}" CommandParameter="Documentos Faturação"/>
-      </MenuItem>
-      <MenuItem Header="_Relatórios">
-        <MenuItem Header="ToDo" />
-      </MenuItem>
-    </Menu>
+    <StackPanel Grid.ColumnSpan="2" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Stretch" Background="{DynamicResource ThemeAccentBrush4}">
+      <Menu Items="{Binding RecentFiles}" FontSize="16">
+        <Menu.Styles>
+          <Style Selector="MenuItem">
+            <Setter Property="Header" Value="{Binding Header}"/>
+            <Setter Property="Items" Value="{Binding Items}"/>
+            <Setter Property="Command" Value="{Binding Command}"/>
+            <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+          </Style>
+        </Menu.Styles>
+      </Menu>
+
+      <Menu FontSize="16">
+        <MenuItem Header="_Ficheiro">
+          <MenuItem Header="Abrir _SAFT" Command="{Binding OpenSaftCommand}"/>
+          <MenuItem Header="Abrir _Transporte" Command="{Binding OpenTransportCommand}"/>
+          <MenuItem Header="Abrir _Stocks" Command="{Binding OpenStocksCommand}"/>
+          <Separator/>
+          <MenuItem Header="_Sair"/>
+        </MenuItem>
+        <MenuItem Header="_Cabeçalho">
+          <MenuItem Header="Erros" Command="{Binding OpenMenuCommand}" CommandParameter="Erros"/>
+          <MenuItem Header="Cabeçalho" Command="{Binding OpenMenuCommand}" CommandParameter="Cabeçalho"/>
+        </MenuItem>
+        <MenuItem Header="_Tabelas">
+          <MenuItem Header="Clientes" Command="{Binding OpenMenuCommand}" CommandParameter="Clientes"/>
+          <MenuItem Header="Fornecedores" Command="{Binding OpenMenuCommand}" CommandParameter="Fornecedores"/>
+          <MenuItem Header="Produtos" Command="{Binding OpenMenuCommand}" CommandParameter="Produtos"/>
+          <MenuItem Header="Impostos" Command="{Binding OpenMenuCommand}" CommandParameter="Impostos"/>
+        </MenuItem>
+        <MenuItem Header="Documentos">
+          <MenuItem Header="Documentos Faturação" Command="{Binding OpenMenuCommand}" CommandParameter="Documentos Faturação"/>
+        </MenuItem>
+        <MenuItem Header="_Relatórios">
+          <MenuItem Header="ToDo" />
+        </MenuItem>
+        <MenuItem Header="_Ferramentas">
+          <MenuItem Header="Ler .pem" Command="{Binding OpenPemDialogCommand}"/>
+        </MenuItem>
+      </Menu>
+    </StackPanel>
 
     <!-- pages list -->
     <!--<TabControl Classes="sidebar" Grid.Column="0" Grid.Row="1" IsVisible="{Binding ShowMenu}">

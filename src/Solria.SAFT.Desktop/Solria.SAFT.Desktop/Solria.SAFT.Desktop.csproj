@@ -14,6 +14,8 @@
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Remove="Views\CustomersPageView.xaml" />
+    <AvaloniaResource Remove="Views\DialogConvertPemKey.xaml" />
+    <AvaloniaResource Remove="Views\DialogResume.xaml" />
     <AvaloniaResource Remove="Views\ErrorPageView.xaml" />
     <AvaloniaResource Remove="Views\HeaderPageView.xaml" />
     <AvaloniaResource Remove="Views\InvoicesPageView.xaml" />
@@ -28,6 +30,8 @@
     <None Remove="Assets\Sidebar.xaml" />
     <None Remove="Controls\ProgressRing.xaml" />
     <None Remove="Views\CustomersPageView.xaml" />
+    <None Remove="Views\DialogConvertPemKey.xaml" />
+    <None Remove="Views\DialogResume.xaml" />
     <None Remove="Views\ErrorPageView.xaml" />
     <None Remove="Views\HeaderPageView.xaml" />
     <None Remove="Views\InvoicesPageView.xaml" />
@@ -41,6 +45,7 @@
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.9.10" />
     <PackageReference Include="Avalonia.Desktop" Version="0.9.10" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.10" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.9.9" />
     <PackageReference Include="Dapper" Version="2.0.35" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.3" />
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
@@ -60,6 +65,12 @@
     <Page Include="Controls\ProgressRing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <EmbeddedResource Include="Views\DialogConvertPemKey.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\DialogResume.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\InvoicesPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>

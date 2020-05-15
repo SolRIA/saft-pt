@@ -65,7 +65,7 @@
       </StackPanel>
     </StackPanel>
 
-    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto" Grid.Row="0" Grid.Column="2">
+    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto,Auto" Grid.Row="0" Grid.Column="2">
       <TextBox Grid.Column="0" Margin="0,0,5,0" Text="{Binding Filter, Mode=TwoWay}"
                Watermark="Filtro por: Nº ou Cliente" >
         <TextBox.KeyBindings>
@@ -88,9 +88,14 @@
         <DrawingPresenter Drawing="{DynamicResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
       </Button>
 
-      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="5" VerticalAlignment="Center"
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar documentos para Excel" Grid.Column="5" VerticalAlignment="Center"
               Command="{Binding DoPrintCommand}">
         <DrawingPresenter Drawing="{DynamicResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
+      </Button>
+
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar impostos para Excel" Grid.Column="6" VerticalAlignment="Center"
+             Command="{Binding DoPrintTaxesCommand}">
+        <DrawingPresenter Drawing="{DynamicResource Material.Percent}" HorizontalAlignment="Center"/>
       </Button>
     </Grid>
 

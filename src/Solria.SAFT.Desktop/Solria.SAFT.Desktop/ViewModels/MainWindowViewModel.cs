@@ -1,8 +1,13 @@
-﻿using DynamicData.Binding;
+﻿using DynamicData;
+using DynamicData.Binding;
+using NPOI.SS.Formula.Functions;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Services;
+using Solria.SAFT.Desktop.Views;
 using Splat;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -39,9 +44,10 @@ namespace Solria.SAFT.Desktop.ViewModels
             OpenTransportCommand = ReactiveCommand.Create(OnOpenTransport, canOpen);
             OpenStocksCommand = ReactiveCommand.Create(OnOpenStocks, canOpen);
 
+            OpenRecentFileCommand = ReactiveCommand.CreateFromTask<string>(OnOpenRecentSaftFile);
             OpenMenuCommand = ReactiveCommand.Create<string>(OnOpenMenu);
-            OpenRecentFileCommand = ReactiveCommand.CreateFromTask<string>(OnOpenRecentFile);
             ClearRecentFilesCommand = ReactiveCommand.Create(OnClearRecentFiles);
+            OpenPemDialogCommand = ReactiveCommand.CreateFromTask(OnOpenPemDialog);
 
             MenuHeader = new string[]
             {
@@ -59,11 +65,9 @@ namespace Solria.SAFT.Desktop.ViewModels
             {
                 "Documentos Faturação"
             };
-            
+
             this.WhenValueChanged(x => x.SelectedMenu)
                 .InvokeCommand(OpenMenuCommand);
-            this.WhenValueChanged(x => x.RecentFile)
-                .InvokeCommand(OpenRecentFileCommand);
 
             dialogManager.AddMessage("A iniciar base de dados");
             Task.Run(() =>
@@ -71,7 +75,24 @@ namespace Solria.SAFT.Desktop.ViewModels
                 databaseService.InitDatabase();
                 dialogManager.AddMessage("");
 
-                RecentFiles = databaseService.GetRecentFiles();
+                var recentFiles = databaseService.GetRecentFiles();
+
+                var recentMenu = new List<MenuItemViewModel>(
+                    recentFiles.Select(r => new MenuItemViewModel { Header = r, Command = OpenRecentFileCommand, CommandParameter = r }))
+                {
+                    new MenuItemViewModel { Header = "Limpar", Command = ClearRecentFilesCommand }
+                };
+
+                RecentFiles = new ObservableCollection<MenuItemViewModel>();
+                var recentFilesMenu = new MenuItemViewModel[]
+                {
+                    new MenuItemViewModel
+                    {
+                        Header = "_Recentes",
+                        Items = recentMenu
+                    },
+                };
+                RecentFiles.AddRange(recentFilesMenu);
 
                 DatabaseReady = true;
             });
@@ -121,27 +142,21 @@ namespace Solria.SAFT.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref selectedMenu, value);
         }
 
-        private IEnumerable<string> recentFiles;
-        public IEnumerable<string> RecentFiles
+        private ObservableCollection<MenuItemViewModel> recentFiles;
+        public ObservableCollection<MenuItemViewModel> RecentFiles
         {
             get => recentFiles;
             set => this.RaiseAndSetIfChanged(ref recentFiles, value);
-        }
-
-        private string recentFile;
-        public string RecentFile
-        {
-            get => recentFile;
-            set => this.RaiseAndSetIfChanged(ref recentFile, value);
         }
 
         public ReactiveCommand<Unit, Unit> OpenSaftCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenTransportCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenStocksCommand { get; }
 
-        public ReactiveCommand<string, Unit> OpenRecentFileCommand { get; }
         public ReactiveCommand<string, Unit> OpenMenuCommand { get; }
+        public ReactiveCommand<string, Unit> OpenRecentFileCommand { get; }
         public ReactiveCommand<Unit, Unit> ClearRecentFilesCommand { get; }
+        public ReactiveCommand<Unit, Unit> OpenPemDialogCommand { get; }
 
         private async Task OnOpenSaft()
         {
@@ -162,7 +177,14 @@ namespace Solria.SAFT.Desktop.ViewModels
                 await saftValidator.OpenSaftFileV4(saft_file);
 
                 //show error page
-                GoTo(new ErrorPageViewModel(this));
+                //GoTo(new ErrorPageViewModel(this));
+
+                var view = new DialogResume();
+                var vm = new DialogResumeViewModel(this);
+                vm.Init();
+                view.DataContext = vm;
+
+                await dialogManager.ShowChildDialogAsync(view);
 
                 ShowMenu = true;
             }
@@ -175,18 +197,6 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             //GoTo(new BillingDocumentsPageViewModel(HostScreen));
         }
-        private async Task OnOpenRecentFile(string saft_file)
-        {
-            if (string.IsNullOrWhiteSpace(saft_file) == false)
-            {
-                await saftValidator.OpenSaftFileV4(saft_file);
-
-                //show error page
-                GoTo(new ErrorPageViewModel(this));
-
-                ShowMenu = true;
-            }
-        }
         private void OnOpenMenu(string menu)
         {
             if (string.IsNullOrWhiteSpace(menu))
@@ -196,7 +206,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                 GoTo(new ErrorPageViewModel(this));
             else if (menu.Equals("Cabeçalho", System.StringComparison.OrdinalIgnoreCase))
                 GoTo(new HeaderPageViewModel(this));
-            else if(menu.Equals("Clientes", System.StringComparison.OrdinalIgnoreCase))
+            else if (menu.Equals("Clientes", System.StringComparison.OrdinalIgnoreCase))
                 GoTo(new CustomersPageViewModel(this));
             else if (menu.Equals("Fornecedores", System.StringComparison.OrdinalIgnoreCase))
                 GoTo(new SuppliersPageViewModel(this));
@@ -204,7 +214,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                 GoTo(new ProductsPageViewModel(this));
             else if (menu.Equals("Impostos", System.StringComparison.OrdinalIgnoreCase))
                 GoTo(new TaxesPageViewModel(this));
-            else if(menu.Equals("Documentos Faturação", System.StringComparison.OrdinalIgnoreCase))
+            else if (menu.Equals("Documentos Faturação", System.StringComparison.OrdinalIgnoreCase))
                 GoTo(new InvoicesPageViewModel(this));
         }
         private void GoTo(ViewModelBase vm)
@@ -212,10 +222,45 @@ namespace Solria.SAFT.Desktop.ViewModels
             Router.NavigateAndReset.Execute(vm);
         }
 
+        private async Task OnOpenRecentSaftFile(string saft_file)
+        {
+            if (File.Exists(saft_file) == true)
+            {
+                await saftValidator.OpenSaftFileV4(saft_file);
+
+                //show resume
+                var view = new DialogResume();
+                var vm = new DialogResumeViewModel(this);
+                vm.Init();
+                view.DataContext = vm;
+
+                await dialogManager.ShowChildDialogAsync(view);
+
+                ShowMenu = true;
+            }
+        }
         private void OnClearRecentFiles()
         {
             RecentFiles = null;
             databaseService.ClearRecentFiles();
         }
+        private async Task OnOpenPemDialog()
+        {
+            var view = new DialogConvertPemKey();
+            var vm = new DialogConvertPemKeyViewModel();
+            vm.Init();
+            view.DataContext = vm;
+
+            await dialogManager.ShowChildDialogAsync(view);
+        }
+    }
+
+
+    public class MenuItemViewModel
+    {
+        public string Header { get; set; }
+        public System.Windows.Input.ICommand Command { get; set; }
+        public object CommandParameter { get; set; }
+        public IList<MenuItemViewModel> Items { get; set; }
     }
 }

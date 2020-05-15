@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "h3HcO3XcP40fTTSu3zyPgnaQibfO0frA/H53ovOkQRpSDB8z3s94DM/ddzCEcH0q2Va0fHeUXc5KeQ71J+nJWA==",
+  "dgSpecHash": "+Y3CwFYxqK/TOXtw4hFQ03eNjxhoavtPT8Ey0ZnuMDRw59/tLoBPCWh1UMTP5HKd410QyKX4xdR7oL8uPeNfmg==",
   "success": true,
   "projectFilePath": "C:\\Users\\frede\\Source\\Repos\\SolRIA\\saft-pt\\src\\Solria.SAFT.Desktop\\Solria.SAFT.Desktop\\Solria.SAFT.Desktop.csproj",
   "expectedPackageFiles": [
@@ -16,6 +16,9 @@
     "C:\\Users\\frede\\.nuget\\packages\\avalonia.skia.linux.natives\\1.68.0.2\\avalonia.skia.linux.natives.1.68.0.2.nupkg.sha512",
     "C:\\Users\\frede\\.nuget\\packages\\avalonia.win32\\0.9.10\\avalonia.win32.0.9.10.nupkg.sha512",
     "C:\\Users\\frede\\.nuget\\packages\\avalonia.x11\\0.9.10\\avalonia.x11.0.9.10.nupkg.sha512",
+    "C:\\Users\\frede\\.nuget\\packages\\avalonia.xaml.behaviors\\0.9.9\\avalonia.xaml.behaviors.0.9.9.nupkg.sha512",
+    "C:\\Users\\frede\\.nuget\\packages\\avalonia.xaml.interactions\\0.9.9\\avalonia.xaml.interactions.0.9.9.nupkg.sha512",
+    "C:\\Users\\frede\\.nuget\\packages\\avalonia.xaml.interactivity\\0.9.9\\avalonia.xaml.interactivity.0.9.9.nupkg.sha512",
     "C:\\Users\\frede\\.nuget\\packages\\dapper\\2.0.35\\dapper.2.0.35.nupkg.sha512",
     "C:\\Users\\frede\\.nuget\\packages\\dynamicdata\\6.13.9\\dynamicdata.6.13.9.nupkg.sha512",
     "C:\\Users\\frede\\.nuget\\packages\\jetbrains.annotations\\10.3.0\\jetbrains.annotations.10.3.0.nupkg.sha512",

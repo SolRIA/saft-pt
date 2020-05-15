@@ -27,6 +27,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             dialogManager = Locator.Current.GetService<IDialogManager>();
 
             DoPrintCommand = ReactiveCommand.CreateFromTask(OnDoPrint);
+            DoPrintTaxesCommand = ReactiveCommand.CreateFromTask(OnDoPrintTaxes);
             SearchCommand = ReactiveCommand.Create<string>(OnSearch);
             SearchClearCommand = ReactiveCommand.Create(OnSearchClear);
             SearchDetailsCommand = ReactiveCommand.Create<string>(OnSearchDetails);
@@ -433,7 +434,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                 };
 
                 CollectionView.GroupDescriptions.Add(new DataGridPathGroupDescription("InvoiceType"));
-                
+
                 this.WhenAnyValue(x => x.Filter)
                     .Throttle(TimeSpan.FromSeconds(1))
                     .ObserveOn(RxApp.MainThreadScheduler)
@@ -549,6 +550,7 @@ namespace Solria.SAFT.Desktop.ViewModels
         public string TotalDebit { get => totalDebit; set => this.RaiseAndSetIfChanged(ref totalDebit, value); }
 
         public ReactiveCommand<Unit, Unit> DoPrintCommand { get; }
+        public ReactiveCommand<Unit, Unit> DoPrintTaxesCommand { get; }
         public ReactiveCommand<string, Unit> SearchCommand { get; }
         public ReactiveCommand<Unit, Unit> SearchClearCommand { get; }
         public ReactiveCommand<string, Unit> SearchDetailsCommand { get; }
@@ -593,11 +595,12 @@ namespace Solria.SAFT.Desktop.ViewModels
                         row.CreateCell(0).SetCellValue(c.ATCUD);
                         row.CreateCell(1).SetCellValue(c.InvoiceType);
                         row.CreateCell(2).SetCellValue(c.InvoiceNo);
-                        row.CreateCell(3).SetCellValue(c.InvoiceDate);
-                        row.CreateCell(4).SetCellValue(c.CustomerID);
-                        row.CreateCell(5).SetCellValue(Convert.ToDouble(c.DocumentTotals.NetTotal));
-                        row.CreateCell(6).SetCellValue(Convert.ToDouble(c.DocumentTotals.TaxPayable));
-                        row.CreateCell(7).SetCellValue(Convert.ToDouble(c.DocumentTotals.GrossTotal));
+                        row.CreateCell(3).SetCellValue(c.DocumentStatus.InvoiceStatus);
+                        row.CreateCell(4).SetCellValue(c.InvoiceDate);
+                        row.CreateCell(5).SetCellValue(c.CustomerID);
+                        row.CreateCell(6).SetCellValue(Convert.ToDouble(c.DocumentTotals.NetTotal));
+                        row.CreateCell(7).SetCellValue(Convert.ToDouble(c.DocumentTotals.TaxPayable));
+                        row.CreateCell(8).SetCellValue(Convert.ToDouble(c.DocumentTotals.GrossTotal));
 
                         rowIndex += 2;
 
@@ -639,6 +642,66 @@ namespace Solria.SAFT.Desktop.ViewModels
                     {
                         sheet.AutoSizeColumn(i);
                     }
+
+                    using FileStream fs = new FileStream(file, FileMode.Create);
+                    workbook.Write(fs);
+                    fs.Close();
+                }
+            }
+        }
+        private async Task OnDoPrintTaxes()
+        {
+            if (CollectionView != null && CollectionView.SourceCollection != null && CollectionView.TotalItemCount > 0 && CollectionView.SourceCollection is IEnumerable<SourceDocumentsSalesInvoicesInvoice> invoices)
+            {
+                var file = await dialogManager.SaveFileDialog(
+                    "Guardar Documentos Faturação",
+                    directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    initialFileName: "Documentos Faturação - Impostos.xlsx",
+                    ".xlsx");
+
+                if (string.IsNullOrWhiteSpace(file) == false)
+                {
+                    // Create a new workbook and a sheet named "User Accounts"
+                    var workbook = new XSSFWorkbook();
+                    var sheet = workbook.CreateSheet("Impostos");
+
+                    // Create the style object
+                    var detailSubtotalCellStyle = workbook.CreateCellStyle();
+                    // Define a thin border for the top and bottom of the cell
+                    detailSubtotalCellStyle.BorderTop = BorderStyle.Thin;
+                    detailSubtotalCellStyle.BorderBottom = BorderStyle.Thin;
+
+                    var taxes_selling_group = invoices
+                        .SelectMany(i => i.Line)
+                        .Where(c => c.CreditAmount > 0)
+                        .GroupBy(l => new { l.InvoiceNo, l.Tax.TaxPercentage })
+                        .Select(g => new { g.Key.InvoiceNo, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.Quantity * l.UnitPrice) })
+                        .OrderBy(g => g.InvoiceNo)
+                        .ThenBy(g => g.Tax);
+
+                    var rowIndex = 1;
+                    foreach (var tax in taxes_selling_group)
+                    {
+                        //create a new row
+                        var row = sheet.CreateRow(rowIndex);
+
+                        row.CreateCell(0).SetCellValue(tax.InvoiceNo);
+                        row.CreateCell(1).SetCellValue(Convert.ToDouble(tax.Tax));
+                        row.CreateCell(2).SetCellValue(Convert.ToDouble(tax.NetTotal));
+                        row.CreateCell(3).SetCellValue(Convert.ToDouble(
+                            Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax.GetValueOrDefault(0) * 0.01m, 2, MidpointRounding.AwayFromZero)));
+
+                        rowIndex++;
+                    }
+
+                    var total_row = sheet.CreateRow(rowIndex);
+                    total_row.CreateCell(3).SetCellFormula($"SOMA(D2:D{rowIndex})");
+
+                    for (int i = 0; i <= 2; i++)
+                    {
+                        sheet.AutoSizeColumn(i);
+                    }
+
 
                     using FileStream fs = new FileStream(file, FileMode.Create);
                     workbook.Write(fs);
@@ -707,11 +770,12 @@ namespace Solria.SAFT.Desktop.ViewModels
                 row.CreateCell(0).SetCellValue(c.ATCUD);
                 row.CreateCell(1).SetCellValue(c.InvoiceType);
                 row.CreateCell(2).SetCellValue(c.InvoiceNo);
-                row.CreateCell(3).SetCellValue(c.InvoiceDate);
-                row.CreateCell(4).SetCellValue(c.CustomerID);
-                row.CreateCell(5).SetCellValue(Convert.ToDouble(c.DocumentTotals.NetTotal));
-                row.CreateCell(6).SetCellValue(Convert.ToDouble(c.DocumentTotals.TaxPayable));
-                row.CreateCell(7).SetCellValue(Convert.ToDouble(c.DocumentTotals.GrossTotal));
+                row.CreateCell(3).SetCellValue(c.DocumentStatus.InvoiceStatus);
+                row.CreateCell(4).SetCellValue(c.InvoiceDate);
+                row.CreateCell(5).SetCellValue(c.CustomerID);
+                row.CreateCell(6).SetCellValue(Convert.ToDouble(c.DocumentTotals.NetTotal));
+                row.CreateCell(7).SetCellValue(Convert.ToDouble(c.DocumentTotals.TaxPayable));
+                row.CreateCell(8).SetCellValue(Convert.ToDouble(c.DocumentTotals.GrossTotal));
 
                 rowIndex += 2;
 

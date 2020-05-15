@@ -34,28 +34,21 @@
     <TextBlock Grid.Row="1" Margin="5" Text="{Binding NumErros}"/>
 
 
-    <DataGrid Grid.Row="2" IsReadOnly="True" FontSize="16"
+    <DataGrid x:Name="datagrid" Grid.Row="2" IsReadOnly="True" FontSize="16"
               Items="{Binding CollectionView}"
-              SelectedItem="{Binding SelectedError}">
+              SelectedItem="{Binding SelectedError, Mode=TwoWay}">
       <DataGrid.Columns>
-        <!--<sf:GridTextColumn HeaderText="Campo">
-          <sf:GridTextColumn.CellTemplate>
-            <DataTemplate>
-              <TextBlock>
-                <Hyperlink Command="{Binding DataContext.DoOpenViewCommand, RelativeSource={RelativeSource AncestorType=Page}}"
-                           Style="{StaticResource ErrorLink}">
-                  <TextBlock Name="Field" Text="{Binding Field}" />
-                </Hyperlink>
-              </TextBlock>
-            </DataTemplate>
-          </sf:GridTextColumn.CellTemplate>
-        </sf:GridTextColumn>-->
-
         <DataGridTextColumn Header="Campo" Binding="{Binding Field}" />
         <DataGridTextColumn Header="Valor" Binding="{Binding Value}" />
         <DataGridTextColumn Header="Descrição" Binding="{Binding Description}"/>
       </DataGrid.Columns>
-    </DataGrid>
 
+      <!--<i:Interaction.Behaviors>
+        <core:EventTriggerBehavior EventName="DoubleTapped">
+          <core:InvokeCommandAction Command="{Binding OpenErrorCommand}" />
+        </core:EventTriggerBehavior>
+      </i:Interaction.Behaviors>-->
+    </DataGrid>
+  
   </Grid>
 </UserControl>

@@ -24,6 +24,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             saftValidator = Locator.Current.GetService<ISaftValidator>();
             dialogManager = Locator.Current.GetService<IDialogManager>();
 
+            OpenErrorCommand = ReactiveCommand.Create(OnOpenError);
             DoPrintCommand = ReactiveCommand.CreateFromTask(OnDoPrint);
             SearchCommand = ReactiveCommand.Create<string>(OnSearch);
             SearchClearCommand = ReactiveCommand.Create(OnSearchClear);
@@ -85,10 +86,15 @@ namespace Solria.SAFT.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref selectedError, value);
         }
 
+        public ReactiveCommand<Unit, Unit> OpenErrorCommand { get; }
         public ReactiveCommand<Unit, Unit> DoPrintCommand { get; }
         public ReactiveCommand<string, Unit> SearchCommand { get; }
         public ReactiveCommand<Unit, Unit> SearchClearCommand { get; }
 
+        private void OnOpenError()
+        {
+
+        }
         private async Task OnDoPrint()
         {
             if (CollectionView != null && CollectionView.SourceCollection != null && CollectionView.TotalItemCount > 0 && CollectionView.SourceCollection is IEnumerable<Error> errors)
@@ -111,7 +117,6 @@ namespace Solria.SAFT.Desktop.ViewModels
                 }
             }
         }
-
         private void OnSearch(string _)
         {
             CollectionView.Refresh();

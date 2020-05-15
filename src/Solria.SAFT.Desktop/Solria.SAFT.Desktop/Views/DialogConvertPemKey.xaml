@@ -1,0 +1,49 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Solria.SAFT.Desktop.Views.DialogConvertPemKey"
+        Title="{Binding Title}" ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+  <Grid ColumnDefinitions="200,*">
+
+    <ListBox Items="{Binding PemFiles}" SelectedItem="{Binding PemFile, Mode=TwoWay}"
+             Grid.Column="0" Background="{DynamicResource ThemeAccentBrush}">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <Border Background="White" CornerRadius="4" Padding="4" Margin="2">
+            <TextBlock Text="{Binding Name}" Foreground="Black"/>
+          </Border>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    
+    <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+      <Grid ColumnDefinitions="*,50" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Margin="3" VerticalAlignment="Stretch" TextWrapping="Wrap"
+                   Text="Esta ferramenta permite converter o conteúdo de um ficheiro no formato Pem para o equivalente RSACryptoServiceProvider. O RSACryptoServiceProvider poderá ser utilizado directamente no .NET para gerar as assinaturas dos documentos de facturação."/>
+
+        <TextBlock Text="Conversor de chaves Pem" FontSize="14" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" />
+
+        <TextBox Text="{Binding PemFileName}" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Padding="3" IsReadOnly="True" Margin="5"
+                 ToolTip.Tip="Abrir o ficheiro pem com a chave privada ou pública"/>
+
+        <Button Command="{Binding OpenPemFileCommand}" Content="..." Background="Transparent" Grid.Column="1" Grid.Row="2" Width="40" HorizontalAlignment="Right" Padding="3" Margin="8" BorderBrush="{x:Null}"
+                ToolTip.Tip="Abrir o ficheiro pem com a chave privada ou pública"/>
+
+        <TextBlock Text="Nome:" FontSize="12" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" />
+        <TextBox Text="{Binding PemName, Mode=TwoWay}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Margin="5"/>
+
+        <TextBlock Text="Ficheiro Pem:" FontSize="12" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" />
+        <TextBox Text="{Binding PemText}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" IsReadOnly="True" Margin="5"/>
+        
+        <TextBlock Text="RSACryptoServiceProvider:" FontSize="12" Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="2" />
+        <TextBox Text="{Binding RsaSettings}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" IsReadOnly="True" Margin="5"/>
+
+      </Grid>
+
+    </ScrollViewer>
+
+  </Grid>
+</Window>

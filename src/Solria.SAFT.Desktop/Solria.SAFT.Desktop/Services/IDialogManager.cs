@@ -11,6 +11,7 @@ namespace Solria.SAFT.Desktop.Services
         void ShowChildDialog(Window window);
         Task ShowChildDialogAsync(Window window);
         Task ShowChildDialogAsync<T>(Window window);
+        void CloseDialog();
         Task<string[]> OpenFileDialog(string title, string directory = "", string initialFileName = "", bool allowMultiple = false, List<FileDialogFilter> filters = null);
         Task<string> OpenFolderDialog(string title, string directory = "");
         Task<string> SaveFileDialog(string title, string directory = "", string initialFileName = "", string defaultExtension = "", List<FileDialogFilter> filters = null);
