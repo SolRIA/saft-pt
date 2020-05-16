@@ -522,10 +522,10 @@ namespace Solria.SAFT.Desktop.Models.Saft
     }
     public class SourceDocumentsPaymentsPaymentLine
     {
+        public string PaymentRefNo { get; set; }
         public string LineNumber { get; set; }
         public SourceDocumentsPaymentsPaymentLineSourceDocumentID[] SourceDocumentID { get; set; }
         public decimal SettlementAmount { get; set; }
-        public bool SettlementAmountSpecified { get; set; }
         public decimal? CreditAmount { get; set; }
         public decimal? DebitAmount { get; set; }
         public PaymentTax Tax { get; set; }

@@ -64,7 +64,8 @@ namespace Solria.SAFT.Desktop.ViewModels
             };
             MenuInvoices = new string[]
             {
-                "Documentos Faturação"
+                "Documentos Faturação",
+                "Pagamentos"
             };
 
             this.WhenValueChanged(x => x.SelectedMenu)
@@ -223,6 +224,8 @@ namespace Solria.SAFT.Desktop.ViewModels
                 GoTo(new TaxesPageViewModel(this));
             else if (menu.Equals("Documentos Faturação", System.StringComparison.OrdinalIgnoreCase))
                 GoTo(new InvoicesPageViewModel(this));
+            else if (menu.Equals("Pagamentos", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new PaymentsPageViewModel(this));
         }
         private void GoTo(ViewModelBase vm)
         {

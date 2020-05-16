@@ -22,6 +22,7 @@
     <AvaloniaResource Remove="Views\HeaderPageView.xaml" />
     <AvaloniaResource Remove="Views\InvoicesPageView.xaml" />
     <AvaloniaResource Remove="Views\MainMenuPageView.xaml" />
+    <AvaloniaResource Remove="Views\PaymentsPageView.xaml" />
     <AvaloniaResource Remove="Views\ProductsPageView.xaml" />
     <AvaloniaResource Remove="Views\SuppliersPageView.xaml" />
     <AvaloniaResource Remove="Views\TaxesPageView.xaml" />
@@ -40,6 +41,7 @@
     <None Remove="Views\HeaderPageView.xaml" />
     <None Remove="Views\InvoicesPageView.xaml" />
     <None Remove="Views\MainMenuPageView.xaml" />
+    <None Remove="Views\PaymentsPageView.xaml" />
     <None Remove="Views\ProductsPageView.xaml" />
     <None Remove="Views\SuppliersPageView.xaml" />
     <None Remove="Views\TaxesPageView.xaml" />
@@ -69,6 +71,9 @@
     <Page Include="Controls\ProgressRing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <EmbeddedResource Include="Views\PaymentsPageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\DialogMessage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
