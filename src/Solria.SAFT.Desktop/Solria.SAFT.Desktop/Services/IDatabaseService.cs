@@ -15,6 +15,7 @@ namespace Solria.SAFT.Desktop.Services
         IEnumerable<string> GetRecentFiles();
         void ClearRecentFiles();
         IEnumerable<PemFile> GetPemFiles();
+        void DeletePemFile(int id);
         void UpdatePemFiles(IEnumerable<PemFile> pemFiles);
         T GetPreferences<T>(string key, T defaultValue);
         void UpdatePreferences(string key, object value);

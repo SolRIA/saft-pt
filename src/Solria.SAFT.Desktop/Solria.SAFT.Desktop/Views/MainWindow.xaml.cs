@@ -1,9 +1,10 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Threading;
-using ReactiveUI;
+using NPOI.HSSF.EventUserModel.DummyRecord;
 using Solria.SAFT.Desktop.Services;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace Solria.SAFT.Desktop.Views
         private readonly StyleInclude _lightTheme;
         private readonly StyleInclude _darkTheme;
         readonly TextBlock txtMessage;
+        private WindowNotificationManager notificationManager;
 
         public MainWindow()
         {
@@ -24,6 +26,12 @@ namespace Solria.SAFT.Desktop.Views
 #if DEBUG
             this.AttachDevTools();
 #endif
+
+            notificationManager = new WindowNotificationManager(this)
+            {
+                Position = NotificationPosition.TopRight,
+                MaxItems = 3
+            };
 
             var _themeSelector = this.Find<CheckBox>("themeSelector");
             _themeSelector.Checked += (sender, e) =>
@@ -53,6 +61,11 @@ namespace Solria.SAFT.Desktop.Views
             AvaloniaXamlLoader.Load(this);
         }
 
+        public void CloseApp()
+        {
+            Close();
+        }
+
         public void UpdateVersionInfo(string version)
         {
             var txtVersion = this.Find<TextBlock>("version");
@@ -64,6 +77,24 @@ namespace Solria.SAFT.Desktop.Views
             {
                 txtMessage.Text = message;
             });
+        }
+
+        public void ShowNotification(string title, string message, NotificationType type = NotificationType.Information, TimeSpan? expiration = null, Action onClick = null, Action onClose = null)
+        {
+            //if (dialogs.Count > 0)
+            //{
+            //    var last_dialog = dialogs.Last();
+
+            //    var notificationManager = new WindowNotificationManager(last_dialog)
+            //    {
+            //        Position = NotificationPosition.TopRight,
+            //        MaxItems = 3
+            //    };
+
+            //    notificationManager.Show(new Notification(title, message, type, expiration, onClick, onClose));
+            //}
+            //else
+                notificationManager.Show(new Notification(title, message, type, expiration, onClick, onClose));
         }
 
         public void ShowChildDialog(Window window)

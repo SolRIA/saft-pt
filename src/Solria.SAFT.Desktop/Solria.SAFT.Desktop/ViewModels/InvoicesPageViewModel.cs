@@ -5,6 +5,7 @@ using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
 using Solria.SAFT.Desktop.Models.Saft;
 using Solria.SAFT.Desktop.Services;
+using Solria.SAFT.Desktop.Views;
 using Splat;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             ShowCustomerCommand = ReactiveCommand.Create(OnShowCustomer);
             ShowInvoiceDetailsCommand = ReactiveCommand.Create(OnShowInvoiceDetails);
             DoOpenExcelCommand = ReactiveCommand.CreateFromTask(OnDoOpenExcel);
-            TestHashCommand = ReactiveCommand.Create(OnTestHash);
+            TestHashCommand = ReactiveCommand.CreateFromTask(OnTestHash);
         }
 
         protected override void HandleActivation()
@@ -820,9 +821,39 @@ namespace Solria.SAFT.Desktop.ViewModels
                 fs.Close();
             }
         }
-        private void OnTestHash()
+        private async Task OnTestHash()
         {
+            if (CollectionView != null && CollectionView.SourceCollection != null && CollectionView.TotalItemCount > 0 && CollectionView.SourceCollection is IEnumerable<SourceDocumentsSalesInvoicesInvoice> invoices)
+            {
+                //parse the InvoiceNo property to get the current invoice number
+                string[] invoiceNo = CurrentInvoice.InvoiceNo.Split('/');
+                if (invoiceNo != null && invoiceNo.Length == 2)
+                {
+                    int.TryParse(invoiceNo[1], out int num);
+                    num -= 1;
 
+                    if (num > 0)
+                    {
+                        //found a valid number, try to find the previous document
+                        var previousDocument = invoices
+                            .Where(i => i.InvoiceNo.IndexOf(string.Format("{0}/{1}", invoiceNo[0], num), StringComparison.OrdinalIgnoreCase) == 0)
+                            .FirstOrDefault();
+
+                        //encontramos um documento, vamos obter a hash
+                        if (previousDocument != null)
+                        {
+                            var view = new DialogHashTest();
+                            var vm = new DialogHashTestViewModel();
+                            vm.Init();
+                            vm.InitFromInvoice(CurrentInvoice, previousDocument.Hash);
+
+                            view.DataContext = vm;
+
+                            await dialogManager.ShowChildDialogAsync(view);
+                        }
+                    }
+                }
+            }
         }
 
         private int Operation(SourceDocumentsSalesInvoicesInvoice i, SourceDocumentsSalesInvoicesInvoiceLine l)

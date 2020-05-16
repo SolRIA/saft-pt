@@ -1,6 +1,5 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
-using NPOI.SS.Formula.Functions;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Services;
 using Solria.SAFT.Desktop.Views;
@@ -40,6 +39,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
             var canClearFiles = this.WhenAnyValue(x => x.RecentFiles, recentFiles => recentFiles != null && recentFiles.Count() > 0);
 
+            ExitCommand = ReactiveCommand.Create(OnExit);
             OpenSaftCommand = ReactiveCommand.CreateFromTask(OnOpenSaft, canOpen);
             OpenTransportCommand = ReactiveCommand.Create(OnOpenTransport, canOpen);
             OpenStocksCommand = ReactiveCommand.Create(OnOpenStocks, canOpen);
@@ -48,6 +48,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             OpenMenuCommand = ReactiveCommand.Create<string>(OnOpenMenu);
             ClearRecentFilesCommand = ReactiveCommand.Create(OnClearRecentFiles);
             OpenPemDialogCommand = ReactiveCommand.CreateFromTask(OnOpenPemDialog);
+            OpenHashDialogCommand = ReactiveCommand.CreateFromTask(OnOpenHashDialog);
 
             MenuHeader = new string[]
             {
@@ -149,6 +150,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref recentFiles, value);
         }
 
+        public ReactiveCommand<Unit, Unit> ExitCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenSaftCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenTransportCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenStocksCommand { get; }
@@ -157,7 +159,12 @@ namespace Solria.SAFT.Desktop.ViewModels
         public ReactiveCommand<string, Unit> OpenRecentFileCommand { get; }
         public ReactiveCommand<Unit, Unit> ClearRecentFilesCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenPemDialogCommand { get; }
+        public ReactiveCommand<Unit, Unit> OpenHashDialogCommand { get; }
 
+        private void OnExit()
+        {
+            dialogManager.CloseApp();
+        }
         private async Task OnOpenSaft()
         {
             var filters = new List<Avalonia.Controls.FileDialogFilter>
@@ -248,6 +255,15 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             var view = new DialogConvertPemKey();
             var vm = new DialogConvertPemKeyViewModel();
+            vm.Init();
+            view.DataContext = vm;
+
+            await dialogManager.ShowChildDialogAsync(view);
+        }
+        private async Task OnOpenHashDialog()
+        {
+            var view = new DialogHashTest();
+            var vm = new DialogHashTestViewModel();
             vm.Init();
             view.DataContext = vm;
 

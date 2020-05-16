@@ -10,7 +10,7 @@ namespace Solria.SAFT.Desktop.SQL
         /// <summary>
         /// The current app version for the database
         /// </summary>
-        public static int Version = 2;
+        public static int Version = 1;
 
         public static UpdateScript[] GetUpdateScripts(int version)
         {

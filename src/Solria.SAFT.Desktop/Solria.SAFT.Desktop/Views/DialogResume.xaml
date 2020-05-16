@@ -4,8 +4,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Solria.SAFT.Desktop.Views.DialogResume"
-        Title="{Binding Title}" ShowInTaskbar="False" CanResize="False" WindowStartupLocation="CenterOwner">
-  <Grid Margin="10" RowDefinitions="Auto,*,Auto">
+        Title="{Binding Title}" ShowInTaskbar="False" CanResize="False" WindowStartupLocation="CenterOwner"
+        Classes="dialog">
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Grid.Styles>
+      <Style Selector="TextBlock">
+        <Setter Property="FontSize" Value="16"/>
+      </Style>
+      <Style Selector="TextBox">
+        <Setter Property="FontSize" Value="16"/>
+      </Style>
+      <Style Selector="Button">
+        <Setter Property="FontSize" Value="16"/>
+      </Style>
+    </Grid.Styles>
 
     <!-- Name -->
     <TabControl Grid.Row="0" Margin="10">
@@ -15,9 +27,9 @@
           <TextBlock Text="Designação" Grid.Row="2" />
           <TextBlock Text="NIF" Grid.Row="3" />
 
-          <TextBlock Text="{Binding Header.CompanyName}" Grid.Row="1"/>
-          <TextBlock Text="{Binding Header.BusinessName}" Grid.Row="2"/>
-          <TextBlock Text="{Binding Header.TaxRegistrationNumber}" Grid.Row="3"/>
+          <TextBlock Text="{Binding Header.CompanyName}" Grid.Row="1" Grid.Column="1" Margin="5,0"/>
+          <TextBlock Text="{Binding Header.BusinessName}" Grid.Row="2" Grid.Column="1" Margin="5,0"/>
+          <TextBlock Text="{Binding Header.TaxRegistrationNumber}" Grid.Row="3" Grid.Column="1" Margin="5,0"/>
         </Grid>
       </TabItem>
     </TabControl>
@@ -25,18 +37,18 @@
     <TabControl Grid.Row="1" Margin="10">
       <TabItem Header="Validações">
         <Grid ColumnDefinitions="*,100" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
-          
+
           <TextBlock Text="Total erros:" Grid.Column="0" Grid.Row="0"/>
           <TextBlock Text="{Binding TotalErrors}" Grid.Column="1" HorizontalAlignment="Right" Grid.Row="0"/>
 
           <TextBlock Text="Erros cabeçalho:" Grid.Column="0" Grid.Row="1"/>
           <Button Content="{Binding HeaderErrors}" Command="{Binding OpenHeaderCommand}"
                   Grid.Column="1" Grid.Row="1"/>
-          
+
           <TextBlock Text="Erros Clientes:" Grid.Column="0" Grid.Row="2"/>
           <Button Content="{Binding CustomersErrors}" Command="{Binding OpenCustomersCommand}"
                   Grid.Column="1" Grid.Row="2"/>
-          
+
           <TextBlock Text="Assinaturas validadas:" Grid.Column="0" Grid.Row="3"/>
           <TextBlock HorizontalAlignment="Right" Grid.Column="1" Grid.Row="3" Text="{Binding SaftHashValidationNumber}"/>
 
@@ -47,9 +59,13 @@
       </TabItem>
     </TabControl>
 
-    <StackPanel Grid.Row="2" HorizontalAlignment="Right">
-      <Button Content="Ok" Margin="10" Width="100"
+    <Grid Grid.Row="2" HorizontalAlignment="Stretch"
+          Background="{DynamicResource ThemeAccentBrush}"
+          ColumnDefinitions="*,Auto,Auto">
+      <Button Content="Doc. faturação" Margin="5,5,0,5" Width="120" Grid.Column="1"
+              Command="{Binding OpenInvoicesCommand}" />
+      <Button Content="Ok" Margin="5" Width="120" Grid.Column="2"
               Command="{Binding CloseDialogCommand}" />
-    </StackPanel>
+    </Grid>
   </Grid>
 </Window>

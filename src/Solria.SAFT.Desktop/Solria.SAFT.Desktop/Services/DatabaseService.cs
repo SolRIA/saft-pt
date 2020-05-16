@@ -165,6 +165,11 @@ namespace Solria.SAFT.Desktop.Services
             using var connection = InitConnection();
             return connection.Query<PemFile>("SELECT * FROM PemFiles ORDER BY Name;");
         }
+        public void DeletePemFile(int id)
+        {
+            using var connection = InitConnection();
+            connection.Execute("DELETE FROM PemFiles WHERE Id=@id;", new { id });
+        }
         public void UpdatePemFiles(IEnumerable<PemFile> pemFiles)
         {
             if (pemFiles == null || pemFiles.Count() == 0)
@@ -176,13 +181,13 @@ namespace Solria.SAFT.Desktop.Services
 
             if (update.Length > 0)
                 connection.Execute(
-                    "UPDATE PemFiles SET Name=@Name,PemText=@PemText,RsaSettings=@RsaSettings " +
+                    "UPDATE PemFiles SET Name=@Name,PemText=@PemText,RsaSettings=@RsaSettings,PrivateKey=@PrivateKey " +
                     "WHERE Id=@Id;", 
                     update);
 
             if (insert.Length > 0)
                 connection.Execute(
-                    "INSERT INTO PemFiles (Name,PemText,RsaSettings) VALUES (@Name,@PemText,@RsaSettings);", 
+                    "INSERT INTO PemFiles (Name,PemText,RsaSettings,PrivateKey) VALUES (@Name,@PemText,@RsaSettings,@PrivateKey);", 
                     insert);
         }
 

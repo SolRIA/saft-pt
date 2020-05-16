@@ -15,6 +15,7 @@
   <ItemGroup>
     <AvaloniaResource Remove="Views\CustomersPageView.xaml" />
     <AvaloniaResource Remove="Views\DialogConvertPemKey.xaml" />
+    <AvaloniaResource Remove="Views\DialogHashTest.xaml" />
     <AvaloniaResource Remove="Views\DialogResume.xaml" />
     <AvaloniaResource Remove="Views\ErrorPageView.xaml" />
     <AvaloniaResource Remove="Views\HeaderPageView.xaml" />
@@ -31,6 +32,7 @@
     <None Remove="Controls\ProgressRing.xaml" />
     <None Remove="Views\CustomersPageView.xaml" />
     <None Remove="Views\DialogConvertPemKey.xaml" />
+    <None Remove="Views\DialogHashTest.xaml" />
     <None Remove="Views\DialogResume.xaml" />
     <None Remove="Views\ErrorPageView.xaml" />
     <None Remove="Views\HeaderPageView.xaml" />
@@ -65,6 +67,9 @@
     <Page Include="Controls\ProgressRing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <EmbeddedResource Include="Views\DialogHashTest.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\DialogConvertPemKey.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>

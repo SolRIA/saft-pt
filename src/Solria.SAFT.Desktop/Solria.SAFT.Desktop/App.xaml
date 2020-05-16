@@ -26,6 +26,11 @@
     <!-- common values -->
     <StyleInclude Source="avares://Solria.SAFT.Desktop/Assets/CommonValues.xaml" />
 
+    <!-- window dialog -->
+    <Style Selector="Window.dialog">
+      <Setter Property="Background" Value="#FF3C3C3C" />
+    </Style>
+
     <!-- textblock -->
     <Style Selector="TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />

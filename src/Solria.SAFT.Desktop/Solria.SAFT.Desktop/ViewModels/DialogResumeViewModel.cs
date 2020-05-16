@@ -23,6 +23,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 			OpenHeaderCommand = ReactiveCommand.Create(OnOpenHeader);
 			OpenCustomersCommand = ReactiveCommand.Create(OnOpenCustomers);
 			CloseDialogCommand = ReactiveCommand.Create(OnCloseDialog);
+			OpenInvoicesCommand = ReactiveCommand.Create(OnOpenInvoices);
 		}
 
 		public void Init()
@@ -56,6 +57,8 @@ namespace Solria.SAFT.Desktop.ViewModels
 			SaftHashValidationNumber = saftValidator.SaftHashValidationNumber;
 			SaftHashValidationErrorNumber = saftValidator.SaftHashValidationErrorNumber;
 		}
+
+		public string Title { get; set; } = "Resumo";
 
 		private Header header;
 		public Header Header
@@ -115,6 +118,13 @@ namespace Solria.SAFT.Desktop.ViewModels
 		public ReactiveCommand<Unit, Unit> CloseDialogCommand { get; }
 		private void OnCloseDialog()
 		{
+			dialogManager.CloseDialog();
+		}
+
+		public ReactiveCommand<Unit, Unit> OpenInvoicesCommand { get; }
+		private void OnOpenInvoices()
+		{
+			router.Router.NavigateAndReset.Execute(new InvoicesPageViewModel(router));
 			dialogManager.CloseDialog();
 		}
 	}

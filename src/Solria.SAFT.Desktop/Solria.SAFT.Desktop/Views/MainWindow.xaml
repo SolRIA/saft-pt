@@ -30,30 +30,83 @@
 
       <Menu FontSize="16">
         <MenuItem Header="_Ficheiro">
-          <MenuItem Header="Abrir _SAFT" Command="{Binding OpenSaftCommand}"/>
-          <MenuItem Header="Abrir _Transporte" Command="{Binding OpenTransportCommand}"/>
-          <MenuItem Header="Abrir _Stocks" Command="{Binding OpenStocksCommand}"/>
+          <MenuItem Header="Abrir _SAFT" Command="{Binding OpenSaftCommand}">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.FileCode}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="Abrir _Transporte" Command="{Binding OpenTransportCommand}">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.Truck}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="Abrir _Stocks" Command="{Binding OpenStocksCommand}">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.BarcodeScan}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
           <Separator/>
-          <MenuItem Header="_Sair"/>
+          <MenuItem Header="_Sair" Command="{Binding ExitCommand}">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.Logout}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
         </MenuItem>
         <MenuItem Header="_Cabeçalho">
-          <MenuItem Header="Erros" Command="{Binding OpenMenuCommand}" CommandParameter="Erros"/>
-          <MenuItem Header="Cabeçalho" Command="{Binding OpenMenuCommand}" CommandParameter="Cabeçalho"/>
+          <MenuItem Header="Erros" Command="{Binding OpenMenuCommand}" CommandParameter="Erros">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.AlertOutline}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="Cabeçalho" Command="{Binding OpenMenuCommand}" CommandParameter="Cabeçalho">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.Storefront}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
         </MenuItem>
         <MenuItem Header="_Tabelas">
-          <MenuItem Header="Clientes" Command="{Binding OpenMenuCommand}" CommandParameter="Clientes"/>
-          <MenuItem Header="Fornecedores" Command="{Binding OpenMenuCommand}" CommandParameter="Fornecedores"/>
-          <MenuItem Header="Produtos" Command="{Binding OpenMenuCommand}" CommandParameter="Produtos"/>
-          <MenuItem Header="Impostos" Command="{Binding OpenMenuCommand}" CommandParameter="Impostos"/>
+          <MenuItem Header="Clientes" Command="{Binding OpenMenuCommand}" CommandParameter="Clientes">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.BadgeAccountOutline}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="Fornecedores" Command="{Binding OpenMenuCommand}" CommandParameter="Fornecedores">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.AccountTie}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="Produtos" Command="{Binding OpenMenuCommand}" CommandParameter="Produtos">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.BarcodeScan}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="Impostos" Command="{Binding OpenMenuCommand}" CommandParameter="Impostos">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.Percent}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
         </MenuItem>
         <MenuItem Header="Documentos">
-          <MenuItem Header="Documentos Faturação" Command="{Binding OpenMenuCommand}" CommandParameter="Documentos Faturação"/>
+          <MenuItem Header="Documentos Faturação" Command="{Binding OpenMenuCommand}" CommandParameter="Documentos Faturação">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.FileDocumentOutline}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
         </MenuItem>
         <MenuItem Header="_Relatórios">
           <MenuItem Header="ToDo" />
         </MenuItem>
         <MenuItem Header="_Ferramentas">
-          <MenuItem Header="Ler .pem" Command="{Binding OpenPemDialogCommand}"/>
+          <MenuItem Header="Ler .pem" Command="{Binding OpenPemDialogCommand}">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.ShieldLock}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="Testar Hash" Command="{Binding OpenHashDialogCommand}">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.FileKeyOutline}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
         </MenuItem>
       </Menu>
     </StackPanel>

@@ -3,6 +3,7 @@ using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
 using Solria.SAFT.Desktop.Services;
 using Splat;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -24,7 +25,8 @@ namespace Solria.SAFT.Desktop.ViewModels
             databaseService = Locator.Current.GetService<IDatabaseService>();
 
             OpenPemFileCommand = ReactiveCommand.CreateFromTask(OnOpenPemFile);
-            CloseDialogCommand = ReactiveCommand.Create(OnCloseDialog);
+            SaveCloseCommand = ReactiveCommand.Create(OnSaveClose);
+            DeleteKeyCommand = ReactiveCommand.Create(OnDeleteKey, CanDeleteKey());
         }
 
         public void Init()
@@ -40,6 +42,8 @@ namespace Solria.SAFT.Desktop.ViewModels
             }
         }
 
+        public string Title { get; set; } = "Ficheiros Pem";
+
         private ObservableCollection<PemFile> pemFiles;
         public ObservableCollection<PemFile> PemFiles
         {
@@ -50,14 +54,7 @@ namespace Solria.SAFT.Desktop.ViewModels
         public PemFile PemFile
         {
             get => pemFile;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref pemFile, value);
-
-                PemName = pemFile?.Name;
-                PemText = pemFile?.PemText;
-                RsaSettings = pemFile?.RsaSettings;
-            }
+            set => this.RaiseAndSetIfChanged(ref pemFile, value);
         }
 
         string pemFileName;
@@ -65,27 +62,6 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             get => pemFileName;
             set => this.RaiseAndSetIfChanged(ref pemFileName, value);
-        }
-
-        string pemName;
-        public string PemName
-        {
-            get => pemName;
-            set => this.RaiseAndSetIfChanged(ref pemName, value);
-        }
-
-        string pemText;
-        public string PemText
-        {
-            get => pemText;
-            set => this.RaiseAndSetIfChanged(ref pemText, value);
-        }
-
-        string rsaSettings;
-        public string RsaSettings
-        {
-            get => rsaSettings;
-            set => this.RaiseAndSetIfChanged(ref rsaSettings, value);
         }
 
         public ReactiveCommand<Unit, Unit> OpenPemFileCommand { get; }
@@ -105,35 +81,51 @@ namespace Solria.SAFT.Desktop.ViewModels
             if (files != null && files.Length == 1)
             {
                 PemFileName = files.First();
+                PemFile = new PemFile();
+                PemFiles.Add(PemFile);
 
                 ConvertPemFile();
-
-                PemFiles.Add(new PemFile { PemText = PemText, RsaSettings = RsaSettings });
             }
         }
 
-        public ReactiveCommand<Unit, Unit> CloseDialogCommand { get; }
-        private void OnCloseDialog()
+        public ReactiveCommand<Unit, Unit> SaveCloseCommand { get; }
+        private void OnSaveClose()
         {
             databaseService.UpdatePemFiles(PemFiles);
             dialogManager.CloseDialog();
+        }
+
+        public ReactiveCommand<Unit, Unit> DeleteKeyCommand { get; }
+        private IObservable<bool> CanDeleteKey()
+        {
+            return this.WhenAnyValue(x => x.PemFile, 
+                (pemFile) => pemFile != null && pemFile.Id > 0);
+        }
+        private void OnDeleteKey()
+        {
+            //TODO: show user confirmation
+            //dialogManager.ShowNotification("Apagar chave", "Quer apagar a chave " + PemFile.Name, NotificationType.Information, TimeSpan.Zero, onClick: () =>
+            //{
+                databaseService.DeletePemFile(PemFile.Id);
+            //});
         }
 
         private void ConvertPemFile()
         {
             if (File.Exists(PemFileName))
             {
-                PemText = File.ReadAllText(PemFileName);
+                PemFile.PemText = File.ReadAllText(PemFileName);
 
                 RSAKeys rsa = new RSAKeys();
-                rsa.DecodePEMKey(PemText);
+                rsa.DecodePEMKey(PemFile.PemText);
 
-                string key = string.IsNullOrEmpty(rsa.PublicKey) ? rsa.PrivateKey : rsa.PublicKey;
+                string key = string.IsNullOrWhiteSpace(rsa.PublicKey) ? rsa.PrivateKey : rsa.PublicKey;
 
                 //use XDocument to format the xml
                 XDocument xmlDoc = XDocument.Parse(key);
 
-                RsaSettings = xmlDoc.ToString();
+                PemFile.RsaSettings = xmlDoc.ToString();
+                PemFile.PrivateKey = string.IsNullOrWhiteSpace(rsa.PrivateKey) == false;
             }
         }
     }

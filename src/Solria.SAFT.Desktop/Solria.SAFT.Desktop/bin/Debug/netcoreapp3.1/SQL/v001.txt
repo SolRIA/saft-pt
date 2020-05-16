@@ -1,6 +1,7 @@
 ﻿CREATE TABLE IF NOT EXISTS `PemFiles` (
 	`Id`			INTEGER PRIMARY KEY AUTOINCREMENT,
 	`Name`			VARCHAR,
+	`PrivateKey`	BIT,
 	`PemText`		VARCHAR,
 	`RsaSettings`	VARCHAR
 );
