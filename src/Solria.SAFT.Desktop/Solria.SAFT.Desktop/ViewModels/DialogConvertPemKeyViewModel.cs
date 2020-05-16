@@ -2,6 +2,7 @@
 using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
 using Solria.SAFT.Desktop.Services;
+using Solria.SAFT.Desktop.Views;
 using Splat;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
             OpenPemFileCommand = ReactiveCommand.CreateFromTask(OnOpenPemFile);
             SaveCloseCommand = ReactiveCommand.Create(OnSaveClose);
-            DeleteKeyCommand = ReactiveCommand.Create(OnDeleteKey, CanDeleteKey());
+            DeleteKeyCommand = ReactiveCommand.CreateFromTask(OnDeleteKey, CanDeleteKey());
         }
 
         public void Init()
@@ -98,16 +99,15 @@ namespace Solria.SAFT.Desktop.ViewModels
         public ReactiveCommand<Unit, Unit> DeleteKeyCommand { get; }
         private IObservable<bool> CanDeleteKey()
         {
-            return this.WhenAnyValue(x => x.PemFile, 
+            return this.WhenAnyValue(x => x.PemFile,
                 (pemFile) => pemFile != null && pemFile.Id > 0);
         }
-        private void OnDeleteKey()
+        private async Task OnDeleteKey()
         {
-            //TODO: show user confirmation
-            //dialogManager.ShowNotification("Apagar chave", "Quer apagar a chave " + PemFile.Name, NotificationType.Information, TimeSpan.Zero, onClick: () =>
-            //{
+            var result = await DialogMessage.Show("Apagar", "Quer apagar o registo atual?", MessageDialogType.None);
+
+            if (result)
                 databaseService.DeletePemFile(PemFile.Id);
-            //});
         }
 
         private void ConvertPemFile()

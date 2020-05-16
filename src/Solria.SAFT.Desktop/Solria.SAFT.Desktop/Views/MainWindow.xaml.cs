@@ -99,31 +99,41 @@ namespace Solria.SAFT.Desktop.Views
 
         public void ShowChildDialog(Window window)
         {
-            window.Owner = this;
+            window.Owner = GetTopWindow();
             window.Show();
         }
 
         private readonly List<Window> dialogs = new List<Window>();
         public async Task ShowChildDialogAsync(Window window)
         {
+            var top_window = GetTopWindow();
             dialogs.Add(window);
-            await window.ShowDialog(this);
+            await window.ShowDialog(top_window);
         }
 
-        public async Task ShowChildDialogAsync<T>(Window window)
+        public async Task<T> ShowChildDialogAsync<T>(Window window)
         {
+            var top_window = GetTopWindow();
             dialogs.Add(window);
-            await window.ShowDialog<T>(this);
+            return await window.ShowDialog<T>(top_window);
         }
 
-        public void CloseDialog()
+        public void CloseDialog(bool result = false)
         {
             if (dialogs.Count > 0)
             {
                 var last = dialogs.Last();
-                last.Close();
+                last.Close(result);
                 dialogs.Remove(last);
             }
+        }
+        private Window GetTopWindow()
+        {
+            Window parent = this;
+            if (dialogs.Count > 0)
+                parent = dialogs.Last();
+
+            return parent;
         }
 
         public async Task<string[]> OpenFileDialog(string title, string directory = "", string initialFileName = "", bool allowMultiple = false, List<FileDialogFilter> filters = null)

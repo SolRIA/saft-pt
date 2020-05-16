@@ -9,7 +9,7 @@
   <Grid ColumnDefinitions="200,*" RowDefinitions="*,Auto">
 
     <ListBox Items="{Binding PemFiles}" SelectedItem="{Binding PemFile, Mode=TwoWay}"
-             BorderThickness="0">
+             BorderThickness="0" Background="Transparent">
       <ListBox.ItemTemplate>
         <DataTemplate>
           <Border Background="White" CornerRadius="2" Padding="4" Margin="2">
