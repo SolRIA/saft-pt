@@ -3048,7 +3048,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 		public Error ValidateSupplierTaxID(bool appendError = false)
 		{
 			Error erro = null;
-			if (!Validations.Validations.CheckTaxRegistrationNumber(SupplierTaxID))
+			if (BillingAddress?.Country == "PT" && !Validations.Validations.CheckTaxRegistrationNumber(SupplierTaxID))
 			{
 				erro = new Error { Description = "Número de identificação fiscal inválido", Field = "SupplierTaxID", TypeofError = GetType(), Value = SupplierTaxID, UID = Pk };
 				//if (appendError)

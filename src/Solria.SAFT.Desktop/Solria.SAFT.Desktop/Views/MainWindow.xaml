@@ -97,6 +97,16 @@
               <DrawingPresenter Drawing="{DynamicResource Material.FileDocumentOutline}" HorizontalAlignment="Center" />
             </MenuItem.Icon>
           </MenuItem>
+          <MenuItem Header="Documentos Conferência" Command="{Binding OpenMenuCommand}" CommandParameter="Documentos Conferência">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.FileDocumentOutline}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Header="Documentos Movimentação" Command="{Binding OpenMenuCommand}" CommandParameter="Documentos Movimentação">
+            <MenuItem.Icon>
+              <DrawingPresenter Drawing="{DynamicResource Material.FileDocumentOutline}" HorizontalAlignment="Center" />
+            </MenuItem.Icon>
+          </MenuItem>
         </MenuItem>
         <MenuItem Header="_Relatórios">
           <MenuItem Header="ToDo" />
@@ -116,32 +126,30 @@
       </Menu>
     </StackPanel>
 
-    <!-- pages list -->
-    <!--<TabControl Classes="sidebar" Grid.Column="0" Grid.Row="1" IsVisible="{Binding ShowMenu}">
-      <TabItem Header="Cabeçalho">
-        <ListBox Items="{Binding MenuHeader}" SelectedItem="{Binding SelectedMenu}"/>
-      </TabItem>
-      <TabItem Header="Tabelas">
-        <ListBox Items="{Binding MenuTables}" SelectedItem="{Binding SelectedMenu}"/>
-      </TabItem>
-      <TabItem Header="Documentos">
-        <ListBox Items="{Binding MenuInvoices}" SelectedItem="{Binding SelectedMenu}"/>
-      </TabItem>
-    </TabControl>-->
-
     <StackPanel Grid.Column="0" Grid.Row="1" IsVisible="{Binding ShowMenu}" Background="{DynamicResource ThemeAccentBrush}">
-      <ScrollViewer Margin="20,10">
+      <!-- saft -->
+      <ScrollViewer Margin="20,10" IsVisible="{Binding IsSaft}">
         <StackPanel>
           <Expander Header="Cabeçalho" IsExpanded="True" Background="#00FFFFFF">
-            <ListBox Items="{Binding MenuHeader}" SelectedItem="{Binding SelectedMenu}" Background="#00FFFFFF" BorderThickness="0"/>
+            <ListBox Items="{Binding MenuHeader}" SelectedItem="{Binding SelectedSaftMenu}" Background="#00FFFFFF" BorderThickness="0"/>
           </Expander>
           <Expander Header="Tabelas" IsExpanded="True" Background="#00FFFFFF">
-            <ListBox Items="{Binding MenuTables}" SelectedItem="{Binding SelectedMenu}" Background="#00FFFFFF" BorderThickness="0"/>
+            <ListBox Items="{Binding MenuTables}" SelectedItem="{Binding SelectedSaftMenu}" Background="#00FFFFFF" BorderThickness="0"/>
           </Expander>
           <Expander Header="Documentos" IsExpanded="True" Background="#00FFFFFF">
-            <ListBox Items="{Binding MenuInvoices}" SelectedItem="{Binding SelectedMenu}" Background="#00FFFFFF" BorderThickness="0"/>
+            <ListBox Items="{Binding MenuInvoices}" SelectedItem="{Binding SelectedSaftMenu}" Background="#00FFFFFF" BorderThickness="0"/>
           </Expander>
         </StackPanel>
+      </ScrollViewer>
+
+      <!-- stocks -->
+      <ScrollViewer Margin="20,10" IsVisible="{Binding IsStock}">
+        <ListBox Items="{Binding MenuStock}" SelectedItem="{Binding SelectedStocksMenu}" Background="#00FFFFFF" BorderThickness="0" />
+      </ScrollViewer>
+
+      <!-- transport -->
+      <ScrollViewer Margin="20,10" IsVisible="{Binding IsTransport}">
+        <ListBox Items="{Binding MenuTransport}" SelectedItem="{Binding SelectedTransportMenu}" Background="#00FFFFFF" BorderThickness="0" />
       </ScrollViewer>
     </StackPanel>
 

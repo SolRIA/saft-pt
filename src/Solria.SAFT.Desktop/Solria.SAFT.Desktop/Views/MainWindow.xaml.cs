@@ -3,22 +3,25 @@ using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Styling;
+using Avalonia.ReactiveUI;
 using Avalonia.Threading;
-using NPOI.HSSF.EventUserModel.DummyRecord;
+using ReactiveUI;
 using Solria.SAFT.Desktop.Services;
+using Solria.SAFT.Desktop.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 
 namespace Solria.SAFT.Desktop.Views
 {
-    public class MainWindow : Window, IDialogManager
+    public class MainWindow : ReactiveWindow<MainWindowViewModel>, IDialogManager
     {
         private readonly StyleInclude _lightTheme;
         private readonly StyleInclude _darkTheme;
         readonly TextBlock txtMessage;
-        private WindowNotificationManager notificationManager;
+        private readonly WindowNotificationManager notificationManager;
 
         public MainWindow()
         {
@@ -54,6 +57,12 @@ namespace Solria.SAFT.Desktop.Views
             Styles.Add(_darkTheme);
 
             txtMessage = this.Find<TextBlock>("messages");
+
+            this.WhenActivated(disposables =>
+            {
+                Disposable.Create(() => { })
+                .DisposeWith(disposables);
+            });
         }
 
         private void InitializeComponent()

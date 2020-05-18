@@ -13,38 +13,46 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaResource Remove="Views\CustomersPageView.xaml" />
     <AvaloniaResource Remove="Views\DialogConvertPemKey.xaml" />
     <AvaloniaResource Remove="Views\DialogHashTest.xaml" />
     <AvaloniaResource Remove="Views\DialogMessage.xaml" />
-    <AvaloniaResource Remove="Views\DialogResume.xaml" />
-    <AvaloniaResource Remove="Views\ErrorPageView.xaml" />
-    <AvaloniaResource Remove="Views\HeaderPageView.xaml" />
-    <AvaloniaResource Remove="Views\InvoicesPageView.xaml" />
     <AvaloniaResource Remove="Views\MainMenuPageView.xaml" />
-    <AvaloniaResource Remove="Views\PaymentsPageView.xaml" />
-    <AvaloniaResource Remove="Views\ProductsPageView.xaml" />
+    <AvaloniaResource Remove="Views\SaftCustomersPageView.xaml" />
+    <AvaloniaResource Remove="Views\SaftDialogResume.xaml" />
+    <AvaloniaResource Remove="Views\SaftErrorPageView.xaml" />
+    <AvaloniaResource Remove="Views\SaftHeaderPageView.xaml" />
+    <AvaloniaResource Remove="Views\SaftInvoicesPageView.xaml" />
+    <AvaloniaResource Remove="Views\SaftMovementOfGoodsPageView.xaml" />
+    <AvaloniaResource Remove="Views\SaftPaymentsPageView.xaml" />
+    <AvaloniaResource Remove="Views\SaftProductsPageView.xaml" />
+    <AvaloniaResource Remove="Views\StocksHeaderPageView.xaml" />
+    <AvaloniaResource Remove="Views\StocksProductsPageView.xaml" />
     <AvaloniaResource Remove="Views\SuppliersPageView.xaml" />
     <AvaloniaResource Remove="Views\TaxesPageView.xaml" />
+    <AvaloniaResource Remove="Views\WorkingDocumentsPageView.xaml" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\CommonValues.xaml" />
     <None Remove="Assets\Icons.xaml" />
     <None Remove="Assets\Sidebar.xaml" />
     <None Remove="Controls\ProgressRing.xaml" />
-    <None Remove="Views\CustomersPageView.xaml" />
     <None Remove="Views\DialogConvertPemKey.xaml" />
     <None Remove="Views\DialogHashTest.xaml" />
     <None Remove="Views\DialogMessage.xaml" />
-    <None Remove="Views\DialogResume.xaml" />
-    <None Remove="Views\ErrorPageView.xaml" />
-    <None Remove="Views\HeaderPageView.xaml" />
-    <None Remove="Views\InvoicesPageView.xaml" />
     <None Remove="Views\MainMenuPageView.xaml" />
-    <None Remove="Views\PaymentsPageView.xaml" />
-    <None Remove="Views\ProductsPageView.xaml" />
+    <None Remove="Views\SaftCustomersPageView.xaml" />
+    <None Remove="Views\SaftDialogResume.xaml" />
+    <None Remove="Views\SaftErrorPageView.xaml" />
+    <None Remove="Views\SaftHeaderPageView.xaml" />
+    <None Remove="Views\SaftInvoicesPageView.xaml" />
+    <None Remove="Views\SaftMovementOfGoodsPageView.xaml" />
+    <None Remove="Views\SaftPaymentsPageView.xaml" />
+    <None Remove="Views\SaftProductsPageView.xaml" />
+    <None Remove="Views\StocksHeaderPageView.xaml" />
+    <None Remove="Views\StocksProductsPageView.xaml" />
     <None Remove="Views\SuppliersPageView.xaml" />
     <None Remove="Views\TaxesPageView.xaml" />
+    <None Remove="Views\WorkingDocumentsPageView.xaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.9.10" />
@@ -71,7 +79,19 @@
     <Page Include="Controls\ProgressRing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <EmbeddedResource Include="Views\PaymentsPageView.xaml">
+    <EmbeddedResource Include="Views\StocksHeaderPageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\StocksProductsPageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\SaftMovementOfGoodsPageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WorkingDocumentsPageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\SaftPaymentsPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\DialogMessage.xaml">
@@ -83,10 +103,10 @@
     <EmbeddedResource Include="Views\DialogConvertPemKey.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\DialogResume.xaml">
+    <EmbeddedResource Include="Views\SaftDialogResume.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\InvoicesPageView.xaml">
+    <EmbeddedResource Include="Views\SaftInvoicesPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\SuppliersPageView.xaml">
@@ -95,16 +115,16 @@
     <EmbeddedResource Include="Views\TaxesPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\ProductsPageView.xaml">
+    <EmbeddedResource Include="Views\SaftProductsPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\CustomersPageView.xaml">
+    <EmbeddedResource Include="Views\SaftCustomersPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\HeaderPageView.xaml">
+    <EmbeddedResource Include="Views\SaftHeaderPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\ErrorPageView.xaml">
+    <EmbeddedResource Include="Views\SaftErrorPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\MainMenuPageView.xaml">
@@ -112,11 +132,41 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\SaftProductsPageView.xaml.cs">
+      <DependentUpon>SaftProductsPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SaftPaymentsPageView.xaml.cs">
+      <DependentUpon>SaftPaymentsPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SaftMovementOfGoodsPageView.xaml.cs">
+      <DependentUpon>SaftMovementOfGoodsPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SaftInvoicesPageView.xaml.cs">
+      <DependentUpon>SaftInvoicesPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SaftHeaderPageView.xaml.cs">
+      <DependentUpon>SaftHeaderPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SaftDialogResume.xaml.cs">
+      <DependentUpon>SaftDialogResume.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SaftCustomersPageView.xaml.cs">
+      <DependentUpon>SaftCustomersPageView.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\ErrorPageView - Copy.xaml.cs">
       <DependentUpon>ErrorPageView.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\ErrorPageView.xaml.cs">
-      <DependentUpon>ErrorPageView.xaml</DependentUpon>
+    <Compile Update="Views\SaftErrorPageView.xaml.cs">
+      <DependentUpon>SaftErrorPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\StocksHeaderPageView.xaml.cs">
+      <DependentUpon>StocksHeaderPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\WorkingDocumentsPageView - Copy.xaml.cs">
+      <DependentUpon>WorkingDocumentsPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\WorkingDocumentsPageView.xaml.cs">
+      <DependentUpon>WorkingDocumentsPageView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

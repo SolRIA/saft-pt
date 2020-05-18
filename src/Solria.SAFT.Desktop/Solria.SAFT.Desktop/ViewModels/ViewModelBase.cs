@@ -18,14 +18,14 @@ namespace Solria.SAFT.Desktop.ViewModels
             Activator = new ViewModelActivator();
             this.WhenActivated(disposables =>
             {
-                HandleActivation();
+                HandleActivation(disposables);
 
                 Disposable.Create(() => HandleDeactivation())
                 .DisposeWith(disposables);
             });
         }
 
-        protected virtual void HandleActivation()
+        protected virtual void HandleActivation(CompositeDisposable disposables)
         {
 
         }

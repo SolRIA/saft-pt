@@ -53,6 +53,9 @@ namespace Solria.SAFT.Desktop.Services
         /// </summary>
         public async Task OpenSaftFileV4(string filename)
         {
+            if (File.Exists(filename) == false)
+                return;
+
             SaftFileName = filename;
             MensagensErro.Clear();
 
@@ -149,6 +152,9 @@ namespace Solria.SAFT.Desktop.Services
 
         public async Task OpenSaftFileV3(string filename)
         {
+            if (File.Exists(filename) == false)
+                return;
+
             SaftFileName = filename;
             MensagensErro.Clear();
 
@@ -245,11 +251,51 @@ namespace Solria.SAFT.Desktop.Services
 
         public async Task OpenStockFile(string filename)
         {
+            if (File.Exists(filename) == false)
+                return;
+
             StockFileName = filename;
 
             MensagensErro.Clear();
 
-            StockFile = await xmlSerializer.Deserialize<Models.StocksV2.StockFile>(StockFileName);
+            if (filename.EndsWith("xml"))
+                StockFile = await xmlSerializer.Deserialize<Models.StocksV2.StockFile>(StockFileName);
+            if (filename.EndsWith("csv"))
+            {
+                string[] lines = File.ReadAllLines(filename, CodePagesEncodingProvider.Instance.GetEncoding(1252));
+                if (lines != null && lines.Length > 1)
+                {
+                    var stocks = new List<Models.StocksV2.Stock>();
+                    for (int i = 1; i < lines.Length; i++)
+                    {
+                        var columns = lines[i].Split(';', StringSplitOptions.RemoveEmptyEntries);
+                        if (columns == null || columns.Length != 6)
+                            continue;
+
+                        Enum.TryParse(columns[0], out Models.StocksV2.ProductCategory productCategory);
+                        decimal.TryParse(columns[4], out decimal quantity);
+
+                        stocks.Add(new Models.StocksV2.Stock
+                        {
+                            ProductCategory = productCategory,
+                            ProductCode = columns[1],
+                            ProductDescription = columns[2],
+                            ProductNumberCode = columns[3],
+                            ClosingStockQuantity = quantity,
+                            UnitOfMeasure = columns[5]
+                        });
+                    }
+                    StockFile = new Models.StocksV2.StockFile
+                    {
+                        StockHeader = new Models.StocksV2.StockHeader
+                        {
+                            FileVersion = "csv",
+                            TaxRegistrationNumber = "Sem Informação"
+                        },
+                        Stock = stocks.ToArray()
+                    };
+                }
+            }
         }
 
         private void SolRiaValidateSaftHash(Models.SaftV4.AuditFile auditFile)
@@ -484,7 +530,7 @@ namespace Solria.SAFT.Desktop.Services
             if (SaftFileV3 != null)
                 ValidateSaftHash(SaftFileV3);
         }
-        
+
         /// <summary>
         /// Validate the hashes in the file for the working documents
         /// </summary>
@@ -495,7 +541,7 @@ namespace Solria.SAFT.Desktop.Services
             if (SaftFileV3 != null)
                 ValidateSaftHashWD(SaftFileV3);
         }
-        
+
         /// <summary>
         /// Validate the hashes in the file for the movement of goods
         /// </summary>
@@ -536,7 +582,7 @@ namespace Solria.SAFT.Desktop.Services
             if (SaftFileV3 != null)
                 GenerateHash(SaftFileV3);
         }
-        
+
         /// <summary>
         /// Generate the hash with the provided private key for the working documents
         /// </summary>
@@ -547,7 +593,7 @@ namespace Solria.SAFT.Desktop.Services
             if (SaftFileV3 != null)
                 GenerateHashWD(SaftFileV3);
         }
-        
+
         /// <summary>
         /// Generate the hash with the provided private key for the movement of goods
         /// </summary>
@@ -1621,16 +1667,19 @@ namespace Solria.SAFT.Desktop.Services
                 quantity += movement.Line.Sum(l => l.Quantity);
 
                 //verificar os totais do documento
-                decimal netTotal = movement.Line.Sum(l => l.Item);
-                decimal grossTotal = movement.Line.Sum(l => l.Item * (1 + (l.Tax != null ? l.Tax.TaxPercentage : 0) * 0.01m));
-                decimal taxPayable = movement.Line.Sum(l => l.Item * (l.Tax != null ? l.Tax.TaxPercentage : 0) * 0.01m);
+                if (movement.DocumentTotals.GrossTotal > 0)
+                {
+                    decimal netTotal = movement.Line.Sum(l => l.Item);
+                    decimal grossTotal = movement.Line.Sum(l => l.Item * (1 + (l.Tax != null ? l.Tax.TaxPercentage : 0) * 0.01m));
+                    decimal taxPayable = movement.Line.Sum(l => l.Item * (l.Tax != null ? l.Tax.TaxPercentage : 0) * 0.01m);
 
-                if (Math.Abs(netTotal - movement.DocumentTotals.NetTotal) > 0.01m)
-                    MensagensErro.Add(new Error { Value = movement.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(Models.SaftV4.SourceDocumentsMovementOfGoods), Description = string.Format("Total de incidência incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.NetTotal, netTotal) });
-                if (Math.Abs(grossTotal - movement.DocumentTotals.GrossTotal) > 0.01m)
-                    MensagensErro.Add(new Error { Value = movement.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(Models.SaftV4.SourceDocumentsMovementOfGoods), Description = string.Format("Total incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.GrossTotal, grossTotal) });
-                if (Math.Abs(taxPayable - movement.DocumentTotals.TaxPayable) > 0.01m)
-                    MensagensErro.Add(new Error { Value = movement.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(Models.SaftV4.SourceDocumentsMovementOfGoods), Description = string.Format("Total de imposto incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.TaxPayable, taxPayable) });
+                    if (Math.Abs(netTotal - movement.DocumentTotals.NetTotal) > 0.01m)
+                        MensagensErro.Add(new Error { Value = movement.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(Models.SaftV4.SourceDocumentsMovementOfGoods), Description = string.Format("Total de incidência incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.NetTotal, netTotal) });
+                    if (Math.Abs(grossTotal - movement.DocumentTotals.GrossTotal) > 0.01m)
+                        MensagensErro.Add(new Error { Value = movement.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(Models.SaftV4.SourceDocumentsMovementOfGoods), Description = string.Format("Total incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.GrossTotal, grossTotal) });
+                    if (Math.Abs(taxPayable - movement.DocumentTotals.TaxPayable) > 0.01m)
+                        MensagensErro.Add(new Error { Value = movement.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(Models.SaftV4.SourceDocumentsMovementOfGoods), Description = string.Format("Total de imposto incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.TaxPayable, taxPayable) });
+                }
 
                 //verificar as linhas
                 foreach (var line in movement.Line)
@@ -1669,16 +1718,19 @@ namespace Solria.SAFT.Desktop.Services
                 quantity += movement.Line.Sum(l => l.Quantity);
 
                 //verificar os totais do documento
-                decimal netTotal = movement.Line.Sum(l => l.Item);
-                decimal grossTotal = movement.Line.Sum(l => l.Item * (1 + (l.Tax != null ? l.Tax.TaxPercentage : 0) * 0.01m));
-                decimal taxPayable = movement.Line.Sum(l => l.Item * (l.Tax != null ? l.Tax.TaxPercentage : 0) * 0.01m);
+                if (movement.DocumentTotals.GrossTotal > 0)
+                {
+                    decimal netTotal = movement.Line.Sum(l => l.Item);
+                    decimal grossTotal = movement.Line.Sum(l => l.Item * (1 + (l.Tax != null ? l.Tax.TaxPercentage : 0) * 0.01m));
+                    decimal taxPayable = movement.Line.Sum(l => l.Item * (l.Tax != null ? l.Tax.TaxPercentage : 0) * 0.01m);
 
-                if (Math.Abs(netTotal - movement.DocumentTotals.NetTotal) > 0.01m)
-                    MensagensErro.Add(new Error { Value = movement.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(Models.SaftV3.SourceDocumentsMovementOfGoods), Description = string.Format("Total de incidência incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.NetTotal, netTotal) });
-                if (Math.Abs(grossTotal - movement.DocumentTotals.GrossTotal) > 0.01m)
-                    MensagensErro.Add(new Error { Value = movement.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(Models.SaftV3.SourceDocumentsMovementOfGoods), Description = string.Format("Total incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.GrossTotal, grossTotal) });
-                if (Math.Abs(taxPayable - movement.DocumentTotals.TaxPayable) > 0.01m)
-                    MensagensErro.Add(new Error { Value = movement.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(Models.SaftV3.SourceDocumentsMovementOfGoods), Description = string.Format("Total de imposto incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.TaxPayable, taxPayable) });
+                    if (Math.Abs(netTotal - movement.DocumentTotals.NetTotal) > 0.01m)
+                        MensagensErro.Add(new Error { Value = movement.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(Models.SaftV3.SourceDocumentsMovementOfGoods), Description = string.Format("Total de incidência incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.NetTotal, netTotal) });
+                    if (Math.Abs(grossTotal - movement.DocumentTotals.GrossTotal) > 0.01m)
+                        MensagensErro.Add(new Error { Value = movement.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(Models.SaftV3.SourceDocumentsMovementOfGoods), Description = string.Format("Total incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.GrossTotal, grossTotal) });
+                    if (Math.Abs(taxPayable - movement.DocumentTotals.TaxPayable) > 0.01m)
+                        MensagensErro.Add(new Error { Value = movement.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(Models.SaftV3.SourceDocumentsMovementOfGoods), Description = string.Format("Total de imposto incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.TaxPayable, taxPayable) });
+                }
 
                 //verificar as linhas
                 foreach (var line in movement.Line)

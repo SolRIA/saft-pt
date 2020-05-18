@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Solria.SAFT.Desktop.ViewModels
         private readonly ISaftValidator saftValidator;
         private readonly IDialogManager dialogManager;
 
-        public TaxesPageViewModel(IScreen screen) : base(screen, MenuIds.TAXES_PAGE)
+        public TaxesPageViewModel(IScreen screen) : base(screen, MenuIds.SAFT_TAXES_PAGE)
         {
             saftValidator = Locator.Current.GetService<ISaftValidator>();
             dialogManager = Locator.Current.GetService<IDialogManager>();
@@ -29,7 +30,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             SearchClearCommand = ReactiveCommand.Create(OnSearchClear);
         }
 
-        protected override void HandleActivation()
+        protected override void HandleActivation(CompositeDisposable disposables)
         {
             IsLoading = true;
 
@@ -110,7 +111,8 @@ namespace Solria.SAFT.Desktop.ViewModels
                 this.WhenAnyValue(x => x.Filter)
                     .Throttle(TimeSpan.FromSeconds(1))
                     .ObserveOn(RxApp.MainThreadScheduler)
-                    .InvokeCommand(SearchCommand);
+                    .InvokeCommand(SearchCommand)
+                    .DisposeWith(disposables);
 
                 IsLoading = false;
             }, TaskScheduler.FromCurrentSynchronizationContext());

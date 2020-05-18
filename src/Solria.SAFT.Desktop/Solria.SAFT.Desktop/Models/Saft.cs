@@ -397,6 +397,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
     }
     public class SourceDocumentsMovementOfGoodsStockMovementLine
     {
+        public string DocumentNumber { get; set; }
         public string LineNumber { get; set; }
         public OrderReferences[] OrderReferences { get; set; }
         public string ProductCode { get; set; }
@@ -412,7 +413,6 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string TaxExemptionReason { get; set; }
         public string TaxExemptionCode { get; set; }
         public decimal SettlementAmount { get; set; }
-        public bool SettlementAmountSpecified { get; set; }
         public CustomsInformation CustomsInformation { get; set; }
     }
     public class SourceDocumentsMovementOfGoodsStockMovementDocumentTotals
@@ -457,6 +457,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
     }
     public class SourceDocumentsWorkingDocumentsWorkDocumentLine
     {
+        public string DocumentNumber { get; set; }
         public string LineNumber { get; set; }
         public OrderReferences[] OrderReferences { get; set; }
         public string ProductCode { get; set; }
@@ -465,7 +466,6 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string UnitOfMeasure { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal TaxBase { get; set; }
-        public bool TaxBaseSpecified { get; set; }
         public DateTime TaxPointDate { get; set; }
         public References[] References { get; set; }
         public string Description { get; set; }
@@ -476,7 +476,6 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string TaxExemptionReason { get; set; }
         public string TaxExemptionCode { get; set; }
         public decimal SettlementAmount { get; set; }
-        public bool SettlementAmountSpecified { get; set; }
         public CustomsInformation CustomsInformation { get; set; }
     }
     public class SourceDocumentsWorkingDocumentsWorkDocumentDocumentTotals

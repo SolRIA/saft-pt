@@ -9,25 +9,28 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace Solria.SAFT.Desktop.ViewModels
 {
-    public class MainWindowViewModel : ReactiveObject, IScreen
+    public class MainWindowViewModel : ReactiveObject, IScreen, IActivatableViewModel
     {
         readonly IDialogManager dialogManager;
         readonly ISaftValidator saftValidator;
         readonly IDatabaseService databaseService;
 
         public RoutingState Router { get; }
+        public ViewModelActivator Activator { get; }
 
         public MainWindowViewModel()
         {
             DatabaseReady = false;
 
             Router = new RoutingState();
-
+            Activator = new ViewModelActivator();
+            
             ShowMenu = false;
 
             dialogManager = Locator.Current.GetService<IDialogManager>();
@@ -42,10 +45,12 @@ namespace Solria.SAFT.Desktop.ViewModels
             ExitCommand = ReactiveCommand.Create(OnExit);
             OpenSaftCommand = ReactiveCommand.CreateFromTask(OnOpenSaft, canOpen);
             OpenTransportCommand = ReactiveCommand.Create(OnOpenTransport, canOpen);
-            OpenStocksCommand = ReactiveCommand.Create(OnOpenStocks, canOpen);
+            OpenStocksCommand = ReactiveCommand.CreateFromTask(OnOpenStocks, canOpen);
 
             OpenRecentFileCommand = ReactiveCommand.CreateFromTask<string>(OnOpenRecentSaftFile);
-            OpenMenuCommand = ReactiveCommand.Create<string>(OnOpenMenu);
+            OpenMenuSaftCommand = ReactiveCommand.Create<string>(OnOpenMenuSaft);
+            OpenMenuStocksCommand = ReactiveCommand.Create<string>(OnOpenMenuStocks);
+            OpenMenuTransportCommand = ReactiveCommand.Create<string>(OnOpenMenuTransport);
             ClearRecentFilesCommand = ReactiveCommand.Create(OnClearRecentFiles);
             OpenPemDialogCommand = ReactiveCommand.CreateFromTask(OnOpenPemDialog);
             OpenHashDialogCommand = ReactiveCommand.CreateFromTask(OnOpenHashDialog);
@@ -65,11 +70,26 @@ namespace Solria.SAFT.Desktop.ViewModels
             MenuInvoices = new string[]
             {
                 "Documentos Faturação",
-                "Pagamentos"
+                "Pagamentos",
+                "Documentos Conferência",
+                "Documentos Movimentação"
+            };
+            MenuStock = new string[]
+            {
+                "Cabeçalho",
+                "Produtos",
             };
 
-            this.WhenValueChanged(x => x.SelectedMenu)
-                .InvokeCommand(OpenMenuCommand);
+            this.WhenActivated(disposables =>
+            {
+                this.WhenValueChanged(x => x.SelectedSaftMenu)
+                 .InvokeCommand(OpenMenuSaftCommand)
+                 .DisposeWith(disposables);
+
+                this.WhenValueChanged(x => x.SelectedStocksMenu)
+                 .InvokeCommand(OpenMenuStocksCommand)
+                 .DisposeWith(disposables);
+            });
 
             dialogManager.AddMessage("A iniciar base de dados");
             Task.Run(() =>
@@ -92,7 +112,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                     {
                         Header = "_Recentes",
                         Items = recentMenu
-                    },
+                    }
                 };
                 RecentFiles.AddRange(recentFilesMenu);
 
@@ -116,6 +136,27 @@ namespace Solria.SAFT.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref showMenu, value);
         }
 
+        private bool isSaft;
+        public bool IsSaft
+        {
+            get => isSaft;
+            set => this.RaiseAndSetIfChanged(ref isSaft, value);
+        }
+
+        private bool isStock;
+        public bool IsStock
+        {
+            get => isStock;
+            set => this.RaiseAndSetIfChanged(ref isStock, value);
+        }
+
+        private bool isTransport;
+        public bool IsTransport
+        {
+            get => isTransport;
+            set => this.RaiseAndSetIfChanged(ref isTransport, value);
+        }
+
         private string[] menuHeader;
         public string[] MenuHeader
         {
@@ -137,11 +178,39 @@ namespace Solria.SAFT.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref menuInvoices, value);
         }
 
-        private string selectedMenu;
-        public string SelectedMenu
+        private string[] menuStock;
+        public string[] MenuStock
         {
-            get => selectedMenu;
-            set => this.RaiseAndSetIfChanged(ref selectedMenu, value);
+            get => menuStock;
+            set => this.RaiseAndSetIfChanged(ref menuStock, value);
+        }
+
+        private string[] menuTransport;
+        public string[] MenuTransport
+        {
+            get => menuTransport;
+            set => this.RaiseAndSetIfChanged(ref menuTransport, value);
+        }
+
+        private string selectedSaftMenu;
+        public string SelectedSaftMenu
+        {
+            get => selectedSaftMenu;
+            set => this.RaiseAndSetIfChanged(ref selectedSaftMenu, value);
+        }
+
+        private string selectedStocksMenu;
+        public string SelectedStocksMenu
+        {
+            get => selectedStocksMenu;
+            set => this.RaiseAndSetIfChanged(ref selectedStocksMenu, value);
+        }
+
+        private string selectedTransportMenu;
+        public string SelectedTransportMenu
+        {
+            get => selectedTransportMenu;
+            set => this.RaiseAndSetIfChanged(ref selectedTransportMenu, value);
         }
 
         private ObservableCollection<MenuItemViewModel> recentFiles;
@@ -156,7 +225,9 @@ namespace Solria.SAFT.Desktop.ViewModels
         public ReactiveCommand<Unit, Unit> OpenTransportCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenStocksCommand { get; }
 
-        public ReactiveCommand<string, Unit> OpenMenuCommand { get; }
+        public ReactiveCommand<string, Unit> OpenMenuSaftCommand { get; }
+        public ReactiveCommand<string, Unit> OpenMenuStocksCommand { get; }
+        public ReactiveCommand<string, Unit> OpenMenuTransportCommand { get; }
         public ReactiveCommand<string, Unit> OpenRecentFileCommand { get; }
         public ReactiveCommand<Unit, Unit> ClearRecentFilesCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenPemDialogCommand { get; }
@@ -184,48 +255,85 @@ namespace Solria.SAFT.Desktop.ViewModels
                 databaseService.AddRecentFile(saft_file);
                 await saftValidator.OpenSaftFileV4(saft_file);
 
-                //show error page
-                //GoTo(new ErrorPageViewModel(this));
-
-                var view = new DialogResume();
-                var vm = new DialogResumeViewModel(this);
+                var view = new SaftDialogResume();
+                var vm = new SaftDialogResumeViewModel(this);
                 vm.Init();
                 view.DataContext = vm;
 
                 await dialogManager.ShowChildDialogAsync(view);
 
                 ShowMenu = true;
+                IsSaft = true;
             }
         }
         private void OnOpenTransport()
         {
-            //GoTo(new BillingDocumentsPageViewModel(HostScreen));
+            
         }
-        private void OnOpenStocks()
+        private async Task OnOpenStocks()
         {
-            //GoTo(new BillingDocumentsPageViewModel(HostScreen));
+            var filters = new List<Avalonia.Controls.FileDialogFilter>
+            {
+                new Avalonia.Controls.FileDialogFilter
+                {
+                    Extensions = new List<string> { "xml", "csv" },
+                    Name = "SAFT-PT"
+                }
+            };
+            var results = await dialogManager.OpenFileDialog("Ficheiro Existências", filters: filters);
+
+            if (results != null && results.Length > 0)
+            {
+                var saft_file = results.First();
+                
+                await saftValidator.OpenStockFile(saft_file);
+
+                GoTo(new StocksHeaderPageViewModel(this));
+
+                ShowMenu = true;
+                IsStock = true;
+            }
         }
-        private void OnOpenMenu(string menu)
+        private void OnOpenMenuSaft(string menu)
+        {
+            if (string.IsNullOrWhiteSpace(menu))
+                return;
+            
+            if (menu.Equals("Erros", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new SaftErrorPageViewModel(this));
+            else if (menu.Equals("Cabeçalho", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new SaftHeaderPageViewModel(this));
+            else if (menu.Equals("Clientes", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new SaftCustomersPageViewModel(this));
+            else if (menu.Equals("Fornecedores", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new SuppliersPageViewModel(this));
+            else if (menu.Equals("Produtos", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new SaftProductsPageViewModel(this));
+            else if (menu.Equals("Impostos", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new TaxesPageViewModel(this));
+            else if (menu.Equals("Documentos Faturação", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new SaftInvoicesPageViewModel(this));
+            else if (menu.Equals("Pagamentos", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new SaftPaymentsPageViewModel(this));
+            else if (menu.Equals("Documentos Conferência", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new WorkingDocumentsPageViewModel(this));
+            else if (menu.Equals("Documentos Movimentação", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new SaftMovementOfGoodsPageViewModel(this));
+        }
+        private void OnOpenMenuStocks(string menu)
         {
             if (string.IsNullOrWhiteSpace(menu))
                 return;
 
-            if (menu.Equals("Erros", System.StringComparison.OrdinalIgnoreCase))
-                GoTo(new ErrorPageViewModel(this));
-            else if (menu.Equals("Cabeçalho", System.StringComparison.OrdinalIgnoreCase))
-                GoTo(new HeaderPageViewModel(this));
-            else if (menu.Equals("Clientes", System.StringComparison.OrdinalIgnoreCase))
-                GoTo(new CustomersPageViewModel(this));
-            else if (menu.Equals("Fornecedores", System.StringComparison.OrdinalIgnoreCase))
-                GoTo(new SuppliersPageViewModel(this));
+            if (menu.Equals("Cabeçalho", System.StringComparison.OrdinalIgnoreCase))
+                GoTo(new StocksHeaderPageViewModel(this));
             else if (menu.Equals("Produtos", System.StringComparison.OrdinalIgnoreCase))
-                GoTo(new ProductsPageViewModel(this));
-            else if (menu.Equals("Impostos", System.StringComparison.OrdinalIgnoreCase))
-                GoTo(new TaxesPageViewModel(this));
-            else if (menu.Equals("Documentos Faturação", System.StringComparison.OrdinalIgnoreCase))
-                GoTo(new InvoicesPageViewModel(this));
-            else if (menu.Equals("Pagamentos", System.StringComparison.OrdinalIgnoreCase))
-                GoTo(new PaymentsPageViewModel(this));
+                GoTo(new StocksProductsPageViewModel(this));
+        }
+        private void OnOpenMenuTransport(string menu)
+        {
+            if (string.IsNullOrWhiteSpace(menu))
+                return;
         }
         private void GoTo(ViewModelBase vm)
         {
@@ -239,8 +347,8 @@ namespace Solria.SAFT.Desktop.ViewModels
                 await saftValidator.OpenSaftFileV4(saft_file);
 
                 //show resume
-                var view = new DialogResume();
-                var vm = new DialogResumeViewModel(this);
+                var view = new SaftDialogResume();
+                var vm = new SaftDialogResumeViewModel(this);
                 vm.Init();
                 view.DataContext = vm;
 

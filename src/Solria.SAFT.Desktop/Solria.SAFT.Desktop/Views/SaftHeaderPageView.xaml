@@ -1,0 +1,131 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Solria.SAFT.Desktop.Views.SaftHeaderPageView">
+  <Grid>
+    <Grid.Styles>
+      <Style Selector="TextBlock">
+        <Setter Property="Grid.Column" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="3"/>
+        <Setter Property="FontSize" Value="16"/>
+      </Style>
+      <Style Selector="TextBox">
+        <Setter Property="Grid.Column" Value="1"/>
+        <Setter Property="Margin" Value="3"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="FontSize" Value="20"/>
+      </Style>
+    </Grid.Styles>
+    
+    <TabControl>
+      <TabItem Header="Empresa">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+            <TextBlock Text="Designação comercial:" Grid.Row="0" />
+            <TextBox Grid.Row="0" Text="{Binding Header.BusinessName}" ToolTip.Tip="{Binding Header.Tooltip.BusinessName}"/>
+              
+            <TextBlock Text="Registo comercial:" Grid.Row="1" />
+            <TextBox Grid.Row="1" Text="{Binding Header.CompanyID}" ToolTip.Tip="{Binding Header.Tooltip.CompanyID}"/>
+
+            <TextBlock Text="Nome:" Grid.Row="2" />
+            <TextBox Grid.Row="2" Text="{Binding Header.CompanyName}" ToolTip.Tip="{Binding Header.Tooltip.CompanyName}"/>
+
+            <TextBlock Text="Email:" Grid.Row="3" />
+            <TextBox Grid.Row="3" Text="{Binding Header.Email}" ToolTip.Tip="{Binding Header.Tooltip.Email}"/>
+
+            <TextBlock Text="Fax:" Grid.Row="4" />
+            <TextBox Grid.Row="4" Text="{Binding Header.Fax}" ToolTip.Tip="{Binding Header.Tooltip.Fax}"/>
+
+            <TextBlock Text="Sistema contabilístico:" Grid.Row="5" />
+            <TextBox Grid.Row="5" Text="{Binding Header.TaxAccountingBasis}" ToolTip.Tip="{Binding Header.Tooltip.TaxAccountingBasis}"/>
+
+            <TextBlock Text="Identificação:" Grid.Row="6" />
+            <TextBox Grid.Row="6" Text="{Binding Header.TaxEntity}" ToolTip.Tip="{Binding Header.Tooltip.TaxEntity}"/>
+
+            <TextBlock Text="NIF:" Grid.Row="7" />
+            <TextBox Grid.Row="7" Text="{Binding Header.TaxRegistrationNumber}" ToolTip.Tip="{Binding Header.Tooltip.TaxRegistrationNumber}"/>
+
+            <TextBlock Text="Telefone:" Grid.Row="8" />
+            <TextBox Grid.Row="8" Text="{Binding Header.Telephone}" ToolTip.Tip="{Binding Header.Tooltip.Telephone}"/>
+
+            <TextBlock Text="Website:" Grid.Row="9" />
+            <TextBox Grid.Row="9" Text="{Binding Header.Website}" ToolTip.Tip="{Binding Header.Tooltip.Website}"/>
+
+            <TextBlock Text="Morada detalhada:" Grid.Row="10" />
+            <TextBox Grid.Row="10" Text="{Binding Header.CompanyAddress.AddressDetail}" ToolTip.Tip="{Binding Header.Tooltip.AddressDetail}"/>
+
+            <TextBlock Text="Nº polícia:" Grid.Row="11" />
+            <TextBox Grid.Row="11" Text="{Binding Header.CompanyAddress.BuildingNumber}" ToolTip.Tip="{Binding Header.Tooltip.BuildingNumber}"/>
+
+            <TextBlock Text="Localidade:" Grid.Row="12" />
+            <TextBox Grid.Row="12" Text="{Binding Header.CompanyAddress.City}" ToolTip.Tip="{Binding Header.Tooltip.City}"/>
+
+            <TextBlock Text="País:" Grid.Row="13" />
+            <TextBox Grid.Row="13" Text="{Binding Header.CompanyAddress.Country}" ToolTip.Tip="{Binding Header.Tooltip.Country}"/>
+
+            <TextBlock Text="Código postal:" Grid.Row="14" />
+            <TextBox Grid.Row="14" Text="{Binding Header.CompanyAddress.PostalCode}" ToolTip.Tip="{Binding Header.Tooltip.PostalCode}"/>
+
+            <TextBlock Text="Distrito:" Grid.Row="15" />
+            <TextBox Grid.Row="15" Text="{Binding Header.CompanyAddress.Region}" ToolTip.Tip="{Binding Header.Tooltip.Region}"/>
+
+            <TextBlock Text="Nome rua:" Grid.Row="16" />
+            <TextBox Grid.Row="16" Text="{Binding Header.CompanyAddress.StreetName}" ToolTip.Tip="{Binding Header.Tooltip.StreetName}"/>
+          </Grid>
+        </ScrollViewer>
+      </TabItem>
+
+      <TabItem Header="Ficheiro SAFT">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+            
+            <TextBlock Text="Versão:" Grid.Row="0" />
+            <TextBox Grid.Row="0" Text="{Binding Header.AuditFileVersion}" ToolTip.Tip="{Binding Header.Tooltip.AuditFileVersion}"/>
+
+            <TextBlock Text="Código moeda:" Grid.Row="1" />
+            <TextBox Grid.Row="1" Text="{Binding Header.CurrencyCode}" ToolTip.Tip="{Binding Header.Tooltip.CurrencyCode}"/>
+
+            <TextBlock Text="Data criação:" Grid.Row="2" />
+            <TextBox Grid.Row="2" Text="{Binding Header.DateCreated}" ToolTip.Tip="{Binding Header.Tooltip.DateCreated}"/>
+
+            <TextBlock Text="Data início:" Grid.Row="3" />
+            <TextBox Grid.Row="3" Text="{Binding Header.StartDate}" ToolTip.Tip="{Binding Header.Tooltip.StartDate}"/>
+
+            <TextBlock Text="Data fim:" Grid.Row="4" />
+            <TextBox Grid.Row="4" Text="{Binding Header.EndDate}" ToolTip.Tip="{Binding Header.Tooltip.EndDate}"/>
+            
+            <TextBlock Text="Ano fiscal:" Grid.Row="5" />
+            <TextBox Grid.Row="5" Text="{Binding Header.FiscalYear}" ToolTip.Tip="{Binding Header.Tooltip.FiscalYear}"/>
+
+            <TextBlock Text="Comentário:" Grid.Row="6" />
+            <TextBox Grid.Row="6" Text="{Binding Header.HeaderComment}" ToolTip.Tip="{Binding Header.Tooltip.HeaderComment}"/>
+          </Grid>
+        </ScrollViewer>
+      </TabItem>
+
+      <TabItem Header="Software">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+            
+            <TextBlock Text="NIF entidade produtora do software:" Grid.Row="0" />
+            <TextBox Grid.Row="0" Text="{Binding Header.ProductCompanyTaxID}" ToolTip.Tip="{Binding Header.Tooltip.ProductCompanyTaxID}"/>
+
+            <TextBlock Text="Nome aplicação:" Grid.Row="1" />
+            <TextBox Grid.Row="1" Text="{Binding Header.ProductID}" ToolTip.Tip="{Binding Header.Tooltip.ProductID}"/>
+
+            <TextBlock Text="Versão aplicação:" Grid.Row="2" />
+            <TextBox Grid.Row="2" Text="{Binding Header.ProductVersion}" ToolTip.Tip="{Binding Header.Tooltip.ProductVersion}"/>
+
+            <TextBlock Text="Nº certificado software:" Grid.Row="3" />
+            <TextBox Grid.Row="3" Text="{Binding Header.SoftwareCertificateNumber}" ToolTip.Tip="{Binding Header.Tooltip.SoftwareCertificateNumber}"/>
+          </Grid>
+        </ScrollViewer>
+      </TabItem>
+    </TabControl>
+  </Grid>
+</UserControl>
