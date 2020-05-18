@@ -10,6 +10,8 @@ namespace Solria.SAFT.Desktop.Services
     {
         void CloseApp();
         void UpdateVersionInfo(string version);
+        void SetTitle(string title);
+        void SetFileName(string file);
         void AddMessage(string message);
         void ShowNotification(string title, string message, NotificationType type = NotificationType.Information, TimeSpan? expiration = null, Action onClick = null, Action onClose = null);
         void ShowChildDialog(Window window);

@@ -166,6 +166,33 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string Email { get; set; }
         public string Website { get; set; }
         public string SelfBillingIndicator { get; set; }
+
+        public string TooltipCustomerID { get; set; }
+        public string TooltipAccountID { get; set; }
+        public string TooltipCustomerTaxID { get; set; }
+        public string TooltipCompanyName { get; set; }
+        public string TooltipContact { get; set; }
+        public string TooltipBillingAddress { get; set; }
+        public string TooltipBillingAddressBuildingNumber { get; set; }
+        public string TooltipBillingAddressStreetName { get; set; }
+        public string TooltipBillingAddressAddressDetail { get; set; }
+        public string TooltipBillingAddressCity { get; set; }
+        public string TooltipBillingAddressPostalCode { get; set; }
+        public string TooltipBillingAddressRegion { get; set; }
+        public string TooltipBillingAddressCountry { get; set; }
+        public string TooltipShipToAddress { get; set; }
+        public string TooltipShipToAddressBuildingNumber { get; set; }
+        public string TooltipShipToAddressStreetName { get; set; }
+        public string TooltipShipToAddressAddressDetail { get; set; }
+        public string TooltipShipToAddressCity { get; set; }
+        public string TooltipShipToAddressPostalCode { get; set; }
+        public string TooltipShipToAddressRegion { get; set; }
+        public string TooltipShipToAddressCountry { get; set; }
+        public string TooltipTelephone { get; set; }
+        public string TooltipFax { get; set; }
+        public string TooltipEmail { get; set; }
+        public string TooltipWebsite { get; set; }
+        public string TooltipSelfBillingIndicator { get; set; }
     }
     public class AddressStructure
     {
@@ -191,6 +218,33 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string Email { get; set; }
         public string Website { get; set; }
         public string SelfBillingIndicator { get; set; }
+
+        public string TooltipSupplierID { get; set; }
+        public string TooltipAccountID { get; set; }
+        public string TooltipSupplierTaxID { get; set; }
+        public string TooltipCompanyName { get; set; }
+        public string TooltipContact { get; set; }
+        public string TooltipBillingAddress { get; set; }
+        public string TooltipBillingAddressBuildingNumber { get; set; }
+        public string TooltipBillingAddressStreetName { get; set; }
+        public string TooltipBillingAddressAddressDetail { get; set; }
+        public string TooltipBillingAddressCity { get; set; }
+        public string TooltipBillingAddressPostalCode { get; set; }
+        public string TooltipBillingAddressRegion { get; set; }
+        public string TooltipBillingAddressCountry { get; set; }
+        public string TooltipShipFromAddress { get; set; }
+        public string TooltipShipFromAddressBuildingNumber { get; set; }
+        public string TooltipShipFromAddressStreetName { get; set; }
+        public string TooltipShipFromAddressAddressDetail { get; set; }
+        public string TooltipShipFromAddressCity { get; set; }
+        public string TooltipShipFromAddressPostalCode { get; set; }
+        public string TooltipShipFromAddressRegion { get; set; }
+        public string TooltipShipFromAddressCountry { get; set; }
+        public string TooltipTelephone { get; set; }
+        public string TooltipFax { get; set; }
+        public string TooltipEmail { get; set; }
+        public string TooltipWebsite { get; set; }
+        public string TooltipSelfBillingIndicator { get; set; }
     }
     public class Product
     {
@@ -204,6 +258,13 @@ namespace Solria.SAFT.Desktop.Models.Saft
         //calculated fileds
         public string Prices { get; set; }
         public string Taxes { get; set; }
+
+        //Tooltip
+        public string TooltipProductType { get; set; }
+        public string TooltipProductCode { get; set; }
+        public string TooltipProductGroup { get; set; }
+        public string TooltipProductDescription { get; set; }
+        public string TooltipProductNumberCode { get; set; }
 
     }
     public class TaxTableEntry

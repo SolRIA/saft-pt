@@ -39,11 +39,35 @@
     <DataGrid Grid.Row="2" IsReadOnly="True" FontSize="16" 
               Items="{Binding CollectionView}" >
       <DataGrid.Columns>
-        <DataGridTextColumn Header="Código" Binding="{Binding ProductCode}" />
-        <DataGridTextColumn Header="Grupo" Binding="{Binding ProductGroup}" />
-        <DataGridTextColumn Header="Código barras" Binding="{Binding ProductNumberCode}" />
-        <DataGridTextColumn Header="Descrição" Binding="{Binding ProductDescription}" Width="*"/>
-        <DataGridTemplateColumn Header="Preços">
+        <DataGridTemplateColumn Header="Código" SortMemberPath="ProductCode">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding ProductCode}" Classes="datagrid" FontSize="16" ToolTip.Tip="{Binding TooltipProductCode}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Grupo" SortMemberPath="ProductGroup">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding ProductGroup}" Classes="datagrid" FontSize="16" ToolTip.Tip="{Binding TooltipProductGroup}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Código barras" SortMemberPath="ProductNumberCode">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding ProductNumberCode}" Classes="datagrid" FontSize="16" ToolTip.Tip="{Binding TooltipProductNumberCode}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Descrição" SortMemberPath="ProductDescription" Width="*">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding ProductDescription}" Classes="datagrid" FontSize="16" ToolTip.Tip="{Binding TooltipProductDescription}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Preços" SortMemberPath="Prices">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
               <TextBlock Text="{Binding Prices}" Classes="number" FontSize="16"/>

@@ -7,6 +7,7 @@ using Splat;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -56,6 +57,16 @@ namespace Solria.SAFT.Desktop.ViewModels
                                 Region = c.BillingAddress?.Region,
                                 StreetName = c.BillingAddress?.StreetName
                             },
+                            ShipToAddress = c.ShipToAddress?.Select(s => new AddressStructure
+                            {
+                                AddressDetail = c.BillingAddress?.AddressDetail,
+                                BuildingNumber = c.BillingAddress?.BuildingNumber,
+                                City = c.BillingAddress?.City,
+                                Country = c.BillingAddress?.Country,
+                                PostalCode = c.BillingAddress?.PostalCode,
+                                Region = c.BillingAddress?.Region,
+                                StreetName = c.BillingAddress?.StreetName
+                            }).ToArray(),
                             CompanyName = c.CompanyName,
                             Contact = c.Contact,
                             CustomerID = c.CustomerID,
@@ -64,7 +75,33 @@ namespace Solria.SAFT.Desktop.ViewModels
                             Fax = c.Fax,
                             SelfBillingIndicator = c.SelfBillingIndicator,
                             Telephone = c.Telephone,
-                            Website = c.Website
+                            Website = c.Website,
+                            TooltipAccountID = c.TooltipAccountID,
+                            TooltipBillingAddress = c.TooltipBillingAddress,
+                            TooltipBillingAddressAddressDetail = c.TooltipBillingAddressAddressDetail,
+                            TooltipBillingAddressBuildingNumber = c.TooltipBillingAddressBuildingNumber,
+                            TooltipBillingAddressCity = c.TooltipBillingAddressCity,
+                            TooltipBillingAddressCountry = c.TooltipBillingAddressCountry,
+                            TooltipBillingAddressPostalCode = c.TooltipBillingAddressPostalCode,
+                            TooltipBillingAddressRegion = c.TooltipBillingAddressRegion,
+                            TooltipBillingAddressStreetName = c.TooltipBillingAddressStreetName,
+                            TooltipCompanyName = c.TooltipCompanyName,
+                            TooltipContact = c.TooltipContact,
+                            TooltipCustomerID = c.TooltipCustomerID,
+                            TooltipCustomerTaxID = c.TooltipCustomerTaxID,
+                            TooltipEmail = c.TooltipEmail,
+                            TooltipFax = c.TooltipFax,
+                            TooltipSelfBillingIndicator = c.TooltipSelfBillingIndicator,
+                            TooltipShipToAddress = c.TooltipShipToAddress,
+                            TooltipShipToAddressAddressDetail = c.TooltipShipToAddressAddressDetail,
+                            TooltipShipToAddressBuildingNumber = c.TooltipShipToAddressBuildingNumber,
+                            TooltipShipToAddressCity = c.TooltipShipToAddressCity,
+                            TooltipShipToAddressCountry = c.TooltipShipToAddressCountry,
+                            TooltipShipToAddressPostalCode = c.TooltipShipToAddressPostalCode,
+                            TooltipShipToAddressRegion = c.TooltipShipToAddressRegion,
+                            TooltipShipToAddressStreetName = c.TooltipShipToAddressStreetName,
+                            TooltipTelephone = c.TooltipTelephone,
+                            TooltipWebsite = c.TooltipWebsite
                         });
                     }
                 }
@@ -87,6 +124,16 @@ namespace Solria.SAFT.Desktop.ViewModels
                                 Region = c.BillingAddress?.Region,
                                 StreetName = c.BillingAddress?.StreetName
                             },
+                            ShipToAddress = c.ShipToAddress?.Select(s => new AddressStructure
+                            {
+                                AddressDetail = c.BillingAddress?.AddressDetail,
+                                BuildingNumber = c.BillingAddress?.BuildingNumber,
+                                City = c.BillingAddress?.City,
+                                Country = c.BillingAddress?.Country,
+                                PostalCode = c.BillingAddress?.PostalCode,
+                                Region = c.BillingAddress?.Region,
+                                StreetName = c.BillingAddress?.StreetName
+                            }).ToArray(),
                             CompanyName = c.CompanyName,
                             Contact = c.Contact,
                             CustomerID = c.CustomerID,
@@ -95,7 +142,33 @@ namespace Solria.SAFT.Desktop.ViewModels
                             Fax = c.Fax,
                             SelfBillingIndicator = c.SelfBillingIndicator,
                             Telephone = c.Telephone,
-                            Website = c.Website
+                            Website = c.Website,
+                            TooltipAccountID = c.TooltipAccountID,
+                            TooltipBillingAddress = c.TooltipBillingAddress,
+                            TooltipBillingAddressAddressDetail = c.TooltipBillingAddressAddressDetail,
+                            TooltipBillingAddressBuildingNumber = c.TooltipBillingAddressBuildingNumber,
+                            TooltipBillingAddressCity = c.TooltipBillingAddressCity,
+                            TooltipBillingAddressCountry = c.TooltipBillingAddressCountry,
+                            TooltipBillingAddressPostalCode = c.TooltipBillingAddressPostalCode,
+                            TooltipBillingAddressRegion = c.TooltipBillingAddressRegion,
+                            TooltipBillingAddressStreetName = c.TooltipBillingAddressStreetName,
+                            TooltipCompanyName = c.TooltipCompanyName,
+                            TooltipContact = c.TooltipContact,
+                            TooltipCustomerID = c.TooltipCustomerID,
+                            TooltipCustomerTaxID = c.TooltipCustomerTaxID,
+                            TooltipEmail = c.TooltipEmail,
+                            TooltipFax = c.TooltipFax,
+                            TooltipSelfBillingIndicator = c.TooltipSelfBillingIndicator,
+                            TooltipShipToAddress = c.TooltipShipToAddress,
+                            TooltipShipToAddressAddressDetail = c.TooltipShipToAddressAddressDetail,
+                            TooltipShipToAddressBuildingNumber = c.TooltipShipToAddressBuildingNumber,
+                            TooltipShipToAddressCity = c.TooltipShipToAddressCity,
+                            TooltipShipToAddressCountry = c.TooltipShipToAddressCountry,
+                            TooltipShipToAddressPostalCode = c.TooltipShipToAddressPostalCode,
+                            TooltipShipToAddressRegion = c.TooltipShipToAddressRegion,
+                            TooltipShipToAddressStreetName = c.TooltipShipToAddressStreetName,
+                            TooltipTelephone = c.TooltipTelephone,
+                            TooltipWebsite = c.TooltipWebsite
                         });
                     }
                 }

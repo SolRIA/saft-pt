@@ -35,18 +35,73 @@
     <controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
                            Grid.Row="1" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>
 
-    <DataGrid Grid.Row="2" IsReadOnly="True" FontSize="16"
+    <DataGrid Grid.Row="2" IsReadOnly="True" 
               Items="{Binding CollectionView}">
       <DataGrid.Columns>
-        <DataGridTextColumn Header="Código" Binding="{Binding CustomerID}" />
-        <DataGridTextColumn Header="NIF" Binding="{Binding CustomerTaxID}" />
-        <DataGridTextColumn Header="Nome" Binding="{Binding CompanyName}"/>
-        <DataGridTextColumn Header="Contacto" Binding="{Binding Contact}" />
-        <DataGridTextColumn Header="Telefone" Binding="{Binding Telephone}" />
-        <DataGridTextColumn Header="Fax" Binding="{Binding Fax}" />
-        <DataGridTextColumn Header="Email" Binding="{Binding Email}" />
-        <DataGridTextColumn Header="Website" Binding="{Binding Website}"/>
-        <DataGridTextColumn Header="Autofacturação" Binding="{Binding SelfBillingIndicator}"/>
+        <DataGridTemplateColumn Header="Código" SortMemberPath="CustomerID">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding CustomerID}" ToolTip.Tip="{Binding TooltipCustomerID}" Classes="datagrid"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="NIF" SortMemberPath="CustomerTaxID">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding CustomerTaxID}" ToolTip.Tip="{Binding TooltipCustomerTaxID}" Classes="datagrid"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Nome" SortMemberPath="CompanyName">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding CompanyName}" ToolTip.Tip="{Binding TooltipCompanyName}" Classes="datagrid"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Contacto" SortMemberPath="Contact">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Contact}" ToolTip.Tip="{Binding TooltipContact}" Classes="datagrid"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Telefone" SortMemberPath="Telephone">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Telephone}" ToolTip.Tip="{Binding TooltipTelephone}" Classes="datagrid"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Fax" SortMemberPath="Fax">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Fax}" ToolTip.Tip="{Binding TooltipFax}" Classes="datagrid"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Email" SortMemberPath="Email">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Email}" ToolTip.Tip="{Binding TooltipEmail}" Classes="datagrid"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Website" SortMemberPath="Website">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Website}" ToolTip.Tip="{Binding TooltipWebsite}" Classes="datagrid"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Autofacturação" SortMemberPath="SelfBillingIndicator">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding SelfBillingIndicator}" ToolTip.Tip="{Binding TooltipSelfBillingIndicator}" Classes="datagrid"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        
       </DataGrid.Columns>
     </DataGrid>
   </Grid>

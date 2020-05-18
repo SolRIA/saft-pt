@@ -38,8 +38,21 @@
         <DataGridTextColumn Header="Código" Binding="{Binding ProductCode}"/>
         <DataGridTextColumn Header="Código EAN" Binding="{Binding ProductNumberCode}" />
         <DataGridTextColumn Header="Descrição" Binding="{Binding ProductDescription}" />
-        <DataGridTextColumn Header="Quantidade" Binding="{Binding ClosingStockQuantity}" />
+        <DataGridTemplateColumn Header="Quantidade" SortMemberPath="ClosingStockQuantity">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding ClosingStockQuantity}" Classes="number" FontSize="16"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
         <DataGridTextColumn Header="Unidade" Binding="{Binding UnitOfMeasure}" />
+        <DataGridTemplateColumn Header="Valor" SortMemberPath="ClosingStockValue">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding ClosingStockValue}" Classes="number" FontSize="16"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
       </DataGrid.Columns>
     </DataGrid>
 

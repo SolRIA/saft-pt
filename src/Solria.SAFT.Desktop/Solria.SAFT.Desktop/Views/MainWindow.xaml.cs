@@ -80,6 +80,16 @@ namespace Solria.SAFT.Desktop.Views
             var txtVersion = this.Find<TextBlock>("version");
             txtVersion.Text = version;
         }
+        public void SetTitle(string title)
+        {
+            if (string.IsNullOrWhiteSpace(title) == false)
+                Title = "SolRIA SAFT - Validador | " + title;
+        }
+        public void SetFileName(string file)
+        {
+            var txtFile = this.Find<TextBlock>("filename");
+            txtFile.Text = file;
+        }
         public void AddMessage(string message)
         {
             Dispatcher.UIThread.Post(() =>
@@ -103,7 +113,7 @@ namespace Solria.SAFT.Desktop.Views
             //    notificationManager.Show(new Notification(title, message, type, expiration, onClick, onClose));
             //}
             //else
-                notificationManager.Show(new Notification(title, message, type, expiration, onClick, onClose));
+            notificationManager.Show(new Notification(title, message, type, expiration, onClick, onClose));
         }
 
         public void ShowChildDialog(Window window)

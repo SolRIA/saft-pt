@@ -25,9 +25,9 @@
     <AvaloniaResource Remove="Views\SaftMovementOfGoodsPageView.xaml" />
     <AvaloniaResource Remove="Views\SaftPaymentsPageView.xaml" />
     <AvaloniaResource Remove="Views\SaftProductsPageView.xaml" />
+    <AvaloniaResource Remove="Views\SaftSuppliersPageView.xaml" />
     <AvaloniaResource Remove="Views\StocksHeaderPageView.xaml" />
     <AvaloniaResource Remove="Views\StocksProductsPageView.xaml" />
-    <AvaloniaResource Remove="Views\SuppliersPageView.xaml" />
     <AvaloniaResource Remove="Views\TaxesPageView.xaml" />
     <AvaloniaResource Remove="Views\WorkingDocumentsPageView.xaml" />
   </ItemGroup>
@@ -48,9 +48,9 @@
     <None Remove="Views\SaftMovementOfGoodsPageView.xaml" />
     <None Remove="Views\SaftPaymentsPageView.xaml" />
     <None Remove="Views\SaftProductsPageView.xaml" />
+    <None Remove="Views\SaftSuppliersPageView.xaml" />
     <None Remove="Views\StocksHeaderPageView.xaml" />
     <None Remove="Views\StocksProductsPageView.xaml" />
-    <None Remove="Views\SuppliersPageView.xaml" />
     <None Remove="Views\TaxesPageView.xaml" />
     <None Remove="Views\WorkingDocumentsPageView.xaml" />
   </ItemGroup>
@@ -109,7 +109,7 @@
     <EmbeddedResource Include="Views\SaftInvoicesPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\SuppliersPageView.xaml">
+    <EmbeddedResource Include="Views\SaftSuppliersPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\TaxesPageView.xaml">
@@ -161,6 +161,9 @@
     </Compile>
     <Compile Update="Views\StocksHeaderPageView.xaml.cs">
       <DependentUpon>StocksHeaderPageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SaftSuppliersPageView.xaml.cs">
+      <DependentUpon>SaftSuppliersPageView.xaml</DependentUpon>
     </Compile>
     <Compile Update="Views\WorkingDocumentsPageView - Copy.xaml.cs">
       <DependentUpon>WorkingDocumentsPageView.xaml</DependentUpon>

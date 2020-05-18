@@ -82,7 +82,12 @@ namespace Solria.SAFT.Desktop.ViewModels
                                 UNNumber = c.CustomsDetails?.UNNumber
                             },
                             Prices = c.Prices,
-                            Taxes = c.Taxes
+                            Taxes = c.Taxes,
+                            TooltipProductCode = c.TooltipProductCode,
+                            TooltipProductDescription = c.TooltipProductDescription,
+                            TooltipProductGroup = c.TooltipProductGroup,
+                            TooltipProductNumberCode = c.TooltipProductNumberCode,
+                            TooltipProductType = c.TooltipProductType
                         });
                     }
                 }
@@ -125,7 +130,12 @@ namespace Solria.SAFT.Desktop.ViewModels
                             ProductNumberCode = c.ProductNumberCode,
                             ProductType = c.ProductType.ToString(),
                             Prices = c.Prices,
-                            Taxes = c.Taxes
+                            Taxes = c.Taxes,
+                            TooltipProductCode = c.TooltipProductCode,
+                            TooltipProductDescription = c.TooltipProductDescription,
+                            TooltipProductGroup = c.TooltipProductGroup,
+                            TooltipProductNumberCode = c.TooltipProductNumberCode,
+                            TooltipProductType = c.TooltipProductType
                         });
                     }
                 }

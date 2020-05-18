@@ -50,6 +50,11 @@
       <Setter Property="Margin" Value="2,0"/>
     </Style>
 
+    <Style Selector="TextBlock.datagrid">
+      <Setter Property="FontSize" Value="16"/>
+      <Setter Property="Margin" Value="5,2"/>
+    </Style>
+
     <!-- button -->
     <Style Selector="Button.btnCleanStyle">
       <Setter Property="Background" Value="Transparent"/>

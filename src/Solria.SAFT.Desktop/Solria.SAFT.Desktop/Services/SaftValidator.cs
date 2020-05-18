@@ -269,7 +269,7 @@ namespace Solria.SAFT.Desktop.Services
                     for (int i = 1; i < lines.Length; i++)
                     {
                         var columns = lines[i].Split(';', StringSplitOptions.RemoveEmptyEntries);
-                        if (columns == null || columns.Length != 6)
+                        if (columns == null || columns.Length < 6)
                             continue;
 
                         Enum.TryParse(columns[0], out Models.StocksV2.ProductCategory productCategory);

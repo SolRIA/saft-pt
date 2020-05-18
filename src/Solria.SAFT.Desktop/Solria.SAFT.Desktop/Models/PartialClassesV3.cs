@@ -2479,300 +2479,241 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 		#endregion Validation
 	}
 
-	public partial class Product : BaseData, IDataErrorInfo
+	public partial class Product : BaseData
 	{
 		public string Prices { get; set; }
 		public string Taxes { get; set; }
 
-		//ProductToolTipService tooltip;
-		//public ProductToolTipService Tooltip
-		//{
-		//	get
-		//	{
-		//		if (tooltip == null)
-		//			tooltip = new ProductToolTipService();
-		//		return tooltip;
-		//	}
-		//	set { tooltip = value; }
-		//}
-
-		public string Error
+		public Product()
 		{
-			get { return string.Empty; }
+			TooltipProductType = string.Format("2.4.1 * Texto 1{0}Indicador de produto ou serviço.{0}Deve ser preenchido com:{0}«P» - Produtos;{0}«S» - Serviços;{0}«O» - Outros (Exemplo: portes debitados);{0}«I» - Impostos, taxas e encargos parafiscais exceto IVA e IS que deverão ser refletidos na tabela de impostos (TaxTable).", Environment.NewLine);
+			TooltipProductCode = string.Format("2.4.2 * Texto 30{0}Identificador do produto ou serviço.{0}Código único do produto na lista de produtos.", Environment.NewLine);
+			TooltipProductGroup = string.Format("2.4.3 Texto 50{0}Família do produto ou serviço.", Environment.NewLine);
+			TooltipProductDescription = string.Format("2.4.4 * Texto 200{0}Descrição do produto ou serviço.", Environment.NewLine);
+			TooltipProductNumberCode = string.Format("2.4.5 * Texto 50{0}Código do produto.{0}Deve ser utilizado o código EAN (código de barras) do produto.{0}Quando este não existir, preencher com o identificador do produto ou serviço (ProductCode).", Environment.NewLine);
 		}
+		public string TooltipProductType { get; set; }
+		public string TooltipProductCode { get; set; }
+		public string TooltipProductGroup { get; set; }
+		public string TooltipProductDescription { get; set; }
+		public string TooltipProductNumberCode { get; set; }
 
-		public string this[string columnName]
-		{
-			get
-			{
-				Error erro = null;
-				if (columnName == "ProductCode")
-				{
-					erro = ValidateProductCode(appendError: true);
-				}
-				else if (columnName == "ProductGroup")
-				{
-					erro = ValidateProductGroup(appendError: true);
-				}
-				else if (columnName == "ProductDescription")
-				{
-					erro = ValidateProductDescription(appendError: true);
-				}
-				else if (columnName == "ProductNumberCode")
-				{
-					erro = ValidateProductNumberCode(appendError: true);
-				}
-
-				return erro == null ? "" : erro.Description;
-			}
-		}
-
-		#region Validation
-
-		public Error ValidateProductCode(bool appendError = false)
+		public Error ValidateProductCode()
 		{
 			Error erro = null;
 			if (string.IsNullOrEmpty(ProductCode) || ProductCode.Length > 30)
 			{
 				erro = new Error { Description = "Código do produto inválido", Field = "ProductCode", TypeofError = GetType(), Value = ProductCode, UID = Pk };
-				//if (appendError)
-				//	Tooltip.ProductCode = Tooltip.ProductCode.FormatTooltipWithError(erro.Description);
+				TooltipProductCode += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateProductGroup(bool appendError = false)
+		public Error ValidateProductGroup()
 		{
 			Error erro = null;
 			if (!string.IsNullOrEmpty(ProductGroup) && ProductCode.Length > 50)
 			{
 				erro = new Error { Description = "Família do produto ou serviço inválida", Field = "ProductGroup", TypeofError = GetType(), Value = ProductGroup, UID = Pk };
-				//if (appendError)
-				//	Tooltip.ProductGroup = Tooltip.ProductGroup.FormatTooltipWithError(erro.Description);
+				TooltipProductGroup += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateProductDescription(bool appendError = false)
+		public Error ValidateProductDescription()
 		{
 			Error erro = null;
 			if (string.IsNullOrEmpty(ProductDescription) || ProductDescription.Length > 200)
 			{
 				erro = new Error { Description = "Descrição do produto ou serviço inválida", Field = "ProductDescription", TypeofError = GetType(), Value = ProductDescription, UID = Pk };
-				//if (appendError)
-				//	Tooltip.ProductDescription = Tooltip.ProductDescription.FormatTooltipWithError(erro.Description);
+				TooltipProductDescription += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateProductNumberCode(bool appendError = false)
+		public Error ValidateProductNumberCode()
 		{
 			Error erro = null;
 			if (string.IsNullOrEmpty(ProductNumberCode) || ProductNumberCode.Length > 50)
 			{
 				erro = new Error { Description = "Família do produto ou serviço inválida", Field = "ProductNumberCode", TypeofError = GetType(), Value = ProductNumberCode, UID = Pk };
-				//if (appendError)
-				//	Tooltip.ProductNumberCode = Tooltip.ProductNumberCode.FormatTooltipWithError(erro.Description);
+				TooltipProductNumberCode += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-
-		#endregion Validation
 	}
 
-	public partial class Customer : BaseData, IDataErrorInfo
+	public partial class Customer : BaseData
 	{
-		//CustomerToolTipService tooltip;
-		//public CustomerToolTipService Tooltip
-		//{
-		//	get
-		//	{
-		//		if (tooltip == null)
-		//			tooltip = new CustomerToolTipService();
-		//		return tooltip;
-		//	}
-		//	set { tooltip = value; }
-		//}
-
-		public string Error
+		public Customer()
 		{
-			get { return string.Empty; }
+			TooltipCustomerID = string.Format("2.2.1 * Texto 30{0}Identificador único do cliente.{0}Na lista de clientes não pode existir mais do que um registo com o mesmo CustomerID.{0}Para o caso de consumidores finais, deve ser criado um cliente genérico com a designação «Consumidor final».", Environment.NewLine);
+			TooltipAccountID = string.Format("2.2.2 * Texto 30{0}Código da conta.{0}Deve ser indicada a respetiva conta-corrente do cliente no plano de contas da contabilidade, caso esteja definida.{0}Caso contrário deverá ser preenchido com a designação «Desconhecido».", Environment.NewLine);
+			TooltipCustomerTaxID = string.Format(" 2.2.3 * Texto 20{0}Número de identificação fiscal do cliente.{0}Deve ser indicado sem o prefixo do país.{0}O cliente genérico, correspondente ao designado «Consumidor final», deverá ser identificado com o NIF «999999990».", Environment.NewLine);
+			TooltipCompanyName = string.Format("2.2.4 * Texto 100{0}Nome da empresa.{0}O cliente genérico deverá ser identificado com a designação «Consumidor final».{0}No caso do setor bancário, para as atividades não sujeitas a IVA, deverá ser preenchido com a designação «Desconhecido».", Environment.NewLine);
+			TooltipContact = string.Format("2.2.5 Texto 50{0}Nome do contacto na empresa.", Environment.NewLine);
+			TooltipBillingAddress = string.Format("2.2.6 * N/A{0}Morada de faturação.{0}Corresponde à morada da sede ou do estabelecimento estável em território nacional.", Environment.NewLine);
+			TooltipBillingAddressBuildingNumber = string.Format("2.2.6.1 * Texto 10{0}Número de polícia.", Environment.NewLine);
+			TooltipBillingAddressStreetName = string.Format("2.2.6.2 Texto 90{0}Nome da rua.", Environment.NewLine);
+			TooltipBillingAddressAddressDetail = string.Format("2.2.6.3 * Texto 100{0}Morada detalhada.{0}Deve incluir o nome da rua, número de polícia e andar, se aplicável.{0}Deverá ser preenchido com a designação «Desconhecido», nas seguintes situações:{0}• Sistemas não integrados, se a informação não for conhecida;{0}• Operações realizadas com «Consumidor final»;{0}• No caso do setor bancário, para as atividades não sujeitas a IVA.", Environment.NewLine);
+			TooltipBillingAddressCity = string.Format("2.2.6.4 * Texto 50{0}Deverá ser preenchido com a designação «Desconhecido», nas seguintes situações:{0}• Sistemas não integrados, se a informação não for conhecida;", Environment.NewLine);
+			TooltipBillingAddressPostalCode = string.Format("2.2.6.5 * Texto 20{0}Código postal.{0}Deverá ser preenchido com a designação «Desconhecido» nas seguintes situações:{0}• Sistemas não integrados, se a informação não for conhecida;{0}• Operações realizadas com «Consumidor final»; e{0}• No caso do setor bancário, para as atividades não sujeitas a IVA.", Environment.NewLine);
+			TooltipBillingAddressRegion = string.Format("2.2.6.6 Texto 50{0}Distrito.", Environment.NewLine);
+			TooltipBillingAddressCountry = string.Format("2.2.6.7 * Texto 12{0}País.{0}Sendo conhecido, deve ser preenchido de acordo com a norma ISO 3166-1-alpha-2.{0}Deverá ser preenchido com a designação «Desconhecido», nas seguintes situações:{0}• Sistemas não integrados, se a informação não for conhecida;{0}• Operações realizadas com «Consumidor final;{0}• No caso do setor bancário, para as atividades não sujeitas a IVA.", Environment.NewLine);
+			TooltipShipToAddress = string.Format("2.2.7 Morada de expedição.", Environment.NewLine);
+			TooltipShipToAddressBuildingNumber = string.Format("2.2.7.1 Texto 10{0}Número de polícia.", Environment.NewLine);
+			TooltipShipToAddressStreetName = string.Format("2.2.7.2 Texto 90{0}Nome da rua.", Environment.NewLine);
+			TooltipShipToAddressAddressDetail = string.Format("2.2.7.3 * Texto 100{0}Morada detalhada.{0}Deve incluir o nome da rua, número de polícia e andar, se aplicável.{0}Deverá ser preenchido com a designação «Desconhecido», nas seguintes situações:{0}• Sistemas não integrados, se a informação não for conhecida;{0}• Operações realizadas com «Consumidor final»; e{0}• No caso do setor bancário, para as atividades não sujeitas a IVA.", Environment.NewLine);
+			TooltipShipToAddressCity = string.Format("2.2.7.4 * Texto 50{0}Localidade.{0}Deverá ser preenchido com a designação «Desconhecido», nas seguintes situações:{0}• Sistemas não integrados, se a informação não for conhecida;{0}• Operações realizadas com «Consumidor final»; e{0}• No caso do setor bancário, para as atividades não sujeitas a IVA.", Environment.NewLine);
+			TooltipShipToAddressPostalCode = string.Format("2.2.7.5 * Texto 20{0}Código postal.{0}Deverá ser preenchido com a designação «Desconhecido», nas seguintes situações:{0}• Sistemas não integrados, se a informação não for conhecida;{0}• Operações realizadas com «Consumidor final»; e{0}• No caso do setor bancário, para as atividades não sujeitas a IVA.", Environment.NewLine);
+			TooltipShipToAddressRegion = string.Format("2.2.7.6 Texto 50{0}Distrito.", Environment.NewLine);
+			TooltipShipToAddressCountry = string.Format("2.2.7.7 * Texto 12{0}País.{0}Deve ser preenchido de acordo com a norma ISO 3166-1-alpha-2.{0}Deverá ser preenchido com a designação «Desconhecido», nas seguintes situações:{0}• Sistemas não integrados, se a informação não for conhecida;{0}• Operações realizadas com «Consumidor final»; e{0}• No caso do setor bancário, para as atividades não sujeitas a IVA.", Environment.NewLine);
+			TooltipTelephone = string.Format("2.2.8 Texto 20{0}Telefone.", Environment.NewLine);
+			TooltipFax = string.Format("2.2.9 Texto 20{0}Fax.", Environment.NewLine);
+			TooltipEmail = string.Format("2.2.10 Texto 60{0}Endereço de correio eletrónico da empresa.", Environment.NewLine);
+			TooltipWebsite = string.Format("2.2.11 Texto 60{0}Endereço do sítio web da empresa.", Environment.NewLine);
+			TooltipSelfBillingIndicator = string.Format("2.2.12 * Inteiro 1{0}Indicador de autofaturação.{0}Indicador da existência de acordo de autofaturação entre o cliente e o fornecedor.{0}Deve ser preenchido com «1» se houver acordo e com «0» (zero) no caso contrário.", Environment.NewLine);
 		}
 
-		public string this[string columnName]
-		{
-			get
-			{
-				Error erro = null;
-				if (columnName == "CustomerID")
-				{
-					erro = ValidateCustomerID(appendError: true);
-				}
-				else if (columnName == "AccountID")
-				{
-					erro = ValidateAccountID(appendError: true);
-				}
-				else if (columnName == "CustomerTaxID")
-				{
-					erro = ValidateCustomerTaxID(appendError: true);
-				}
-				else if (columnName == "CompanyName")
-				{
-					erro = ValidateCompanyName(appendError: true);
-				}
-				else if (columnName == "Contact")
-				{
-					erro = ValidateContact(appendError: true);
-				}
-				else if (columnName == "Telephone")
-				{
-					erro = ValidateTelephone(appendError: true);
-				}
-				else if (columnName == "Fax")
-				{
-					erro = ValidateFax(appendError: true);
-				}
-				else if (columnName == "Email")
-				{
-					erro = ValidateEmail(appendError: true);
-				}
-				else if (columnName == "Website")
-				{
-					erro = ValidateWebsite(appendError: true);
-				}
-				else if (columnName == "SelfBillingIndicator")
-				{
-					erro = ValidateSelfBillingIndicator(appendError: true);
-				}
+		public string TooltipCustomerID { get; set; }
+		public string TooltipAccountID { get; set; }
+		public string TooltipCustomerTaxID { get; set; }
+		public string TooltipCompanyName { get; set; }
+		public string TooltipContact { get; set; }
+		public string TooltipBillingAddress { get; set; }
+		public string TooltipBillingAddressBuildingNumber { get; set; }
+		public string TooltipBillingAddressStreetName { get; set; }
+		public string TooltipBillingAddressAddressDetail { get; set; }
+		public string TooltipBillingAddressCity { get; set; }
+		public string TooltipBillingAddressPostalCode { get; set; }
+		public string TooltipBillingAddressRegion { get; set; }
+		public string TooltipBillingAddressCountry { get; set; }
+		public string TooltipShipToAddress { get; set; }
+		public string TooltipShipToAddressBuildingNumber { get; set; }
+		public string TooltipShipToAddressStreetName { get; set; }
+		public string TooltipShipToAddressAddressDetail { get; set; }
+		public string TooltipShipToAddressCity { get; set; }
+		public string TooltipShipToAddressPostalCode { get; set; }
+		public string TooltipShipToAddressRegion { get; set; }
+		public string TooltipShipToAddressCountry { get; set; }
+		public string TooltipTelephone { get; set; }
+		public string TooltipFax { get; set; }
+		public string TooltipEmail { get; set; }
+		public string TooltipWebsite { get; set; }
+		public string TooltipSelfBillingIndicator { get; set; }
 
-				return erro == null ? "" : erro.Description;
-			}
-		}
-
-		#region Validation
-
-		public Error ValidateCustomerID(bool appendError = false)
+		public Error ValidateCustomerID()
 		{
 			Error erro = null;
 			if (string.IsNullOrEmpty(CustomerID) || CustomerID.Length > 30)
 			{
 				erro = new Error { Description = "Identificador único do cliente inválido", Field = "CustomerID", TypeofError = GetType(), Value = CustomerID, UID = Pk };
-				//if (appendError)
-				//	Tooltip.CustomerID = Tooltip.CustomerID.FormatTooltipWithError(erro.Description);
+				TooltipCustomerID += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateAccountID(bool appendError = false)
+		public Error ValidateAccountID()
 		{
 			Error erro = null;
 			if (string.IsNullOrEmpty(AccountID) || AccountID.Length > 30)
 			{
 				erro = new Error { Description = "Código da conta inválido", Field = "AccountID", TypeofError = GetType(), Value = AccountID, UID = Pk };
-				//if (appendError)
-				//	Tooltip.AccountID = Tooltip.AccountID.FormatTooltipWithError(erro.Description);
+				TooltipAccountID += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateCustomerTaxID(bool appendError = false)
+		public Error ValidateCustomerTaxID()
 		{
 			Error erro = null;
 			if (BillingAddress?.Country == "PT" && !Validations.Validations.CheckTaxRegistrationNumber(CustomerTaxID))
 			{
 				erro = new Error { Description = "Número de identificação fiscal inválido", Field = "CustomerTaxID", TypeofError = GetType(), Value = CustomerTaxID, UID = Pk };
-				//if (appendError)
-				//	Tooltip.CustomerTaxID = Tooltip.CustomerTaxID.FormatTooltipWithError(erro.Description);
+				TooltipCustomerTaxID += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateCompanyName(bool appendError = false)
+		public Error ValidateCompanyName()
 		{
 			Error erro = null;
 			if (string.IsNullOrEmpty(CompanyName) || CompanyName.Length > 100)
 			{
 				erro = new Error { Description = "Nome da empresa inválido", Field = "CompanyName", TypeofError = GetType(), Value = CompanyName, UID = Pk };
-				//if (appendError)
-				//	Tooltip.CompanyName = Tooltip.CompanyName.FormatTooltipWithError(erro.Description);
+				TooltipCompanyName += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateContact(bool appendError = false)
+		public Error ValidateContact()
 		{
 			Error erro = null;
 			if (!string.IsNullOrEmpty(Contact) && Contact.Length > 50)
 			{
 				erro = new Error { Description = "Nome do contacto na empresa inválido.", Field = "Contact", TypeofError = GetType(), Value = Contact, UID = Pk };
-				//if (appendError)
-				//	Tooltip.Contact = Tooltip.Contact.FormatTooltipWithError(erro.Description);
+				TooltipContact += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateTelephone(bool appendError = false)
+		public Error ValidateTelephone()
 		{
 			Error erro = null;
 			if (!string.IsNullOrEmpty(Telephone) && Telephone.Length > 20)
 			{
 				erro = new Error { Description = "Telefone inválido", Field = "Telephone", TypeofError = GetType(), Value = Telephone, UID = Pk };
-				//if (appendError)
-				//	Tooltip.Telephone = Tooltip.Telephone.FormatTooltipWithError(erro.Description);
+				TooltipTelephone += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateFax(bool appendError = false)
+		public Error ValidateFax()
 		{
 			Error erro = null;
 			if (!string.IsNullOrEmpty(Fax) && Fax.Length > 20)
 			{
 				erro = new Error { Description = "Fax inválido", Field = "Fax", TypeofError = GetType(), Value = Fax, UID = Pk };
-				//if (appendError)
-				//	Tooltip.Fax = Tooltip.Fax.FormatTooltipWithError(erro.Description);
+				TooltipFax += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateEmail(bool appendError = false)
+		public Error ValidateEmail()
 		{
 			Error erro = null;
 			if (!string.IsNullOrEmpty(Email) && Email.Length > 60)
 			{
 				erro = new Error { Description = "Email inválido", Field = "Email", TypeofError = GetType(), Value = Email, UID = Pk };
-				//if (appendError)
-				//	Tooltip.Email = Tooltip.Email.FormatTooltipWithError(erro.Description);
+				TooltipEmail += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateWebsite(bool appendError = false)
+		public Error ValidateWebsite()
 		{
 			Error erro = null;
 			if (!string.IsNullOrEmpty(Website) && Website.Length > 60)
 			{
 				erro = new Error { Description = "Website inválido", Field = "Website", TypeofError = GetType(), Value = Website, UID = Pk };
-				//if (appendError)
-				//	Tooltip.Website = Tooltip.Website.FormatTooltipWithError(erro.Description);
+				TooltipWebsite += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateSelfBillingIndicator(bool appendError = false)
+		public Error ValidateSelfBillingIndicator()
 		{
 			Error erro = null;
 
 			int selfBillingIndicator = -1;
 			if (!string.IsNullOrEmpty(SelfBillingIndicator))
-				Int32.TryParse(SelfBillingIndicator, out selfBillingIndicator);
+				int.TryParse(SelfBillingIndicator, out selfBillingIndicator);
 
 			if (string.IsNullOrEmpty(SelfBillingIndicator) || selfBillingIndicator == -1)
 			{
 				erro = new Error { Description = "Nº de conta inválido", Field = "SelfBillingIndicator", TypeofError = GetType(), Value = SelfBillingIndicator, UID = Pk };
-				//if (appendError)
-				//	Tooltip.SelfBillingIndicator = Tooltip.SelfBillingIndicator.FormatTooltipWithError(erro.Description);
+				TooltipSelfBillingIndicator += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
@@ -2832,7 +2773,6 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 
 			return listErro.ToArray();
 		}
-		#endregion Validation
 	}
 
 	public partial class TaxTableEntry : BaseData, IDataErrorInfo
@@ -2950,186 +2890,164 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 		#endregion
 	}
 
-	public partial class Supplier : BaseData, IDataErrorInfo
+	public partial class Supplier : BaseData
 	{
-		//SupplierToolTipService tooltip;
-		//public SupplierToolTipService Tooltip
-		//{
-		//	get
-		//	{
-		//		if (tooltip == null)
-		//			tooltip = new SupplierToolTipService();
-		//		return tooltip;
-		//	}
-		//	set { tooltip = value; }
-		//}
-
-		public string Error
+		public Supplier()
 		{
-			get { return string.Empty; }
+			TooltipSupplierID = string.Format("2.3.1 * Texto 30{0}Identificador único do fornecedor.{0}Na lista de fornecedores não pode existir mais do que um registo com o mesmo SupplierID.", Environment.NewLine);
+			TooltipAccountID = string.Format("2.3.2 * Texto 30{0}Código da conta.{0}Deve ser indicada a respetiva conta -corrente do fornecedor no plano de contas da contabilidade, caso esteja definida.{0}Caso contrário deverá ser preenchido com a designação «Desconhecido».", Environment.NewLine);
+			TooltipSupplierTaxID = string.Format("2.3.3 * Texto 20{0}Número de identificação fiscal do fornecedor.{0}Deve ser indicado sem o prefixo do país.", Environment.NewLine);
+			TooltipCompanyName = string.Format("2.3.4 * Texto 100{0}Nome da empresa.", Environment.NewLine);
+			TooltipContact = string.Format("2.3.5 Texto 50{0}Nome do contacto na empresa (Contact).", Environment.NewLine);
+			TooltipBillingAddress = string.Format("2.3.6 * Morada de faturação.{0}Corresponde à morada da sede ou do estabelecimento estável em território nacional.", Environment.NewLine);
+			TooltipBillingAddressBuildingNumber = string.Format("2.3.6.1 Texto 10{0}Número de polícia.", Environment.NewLine);
+			TooltipBillingAddressStreetName = string.Format("2.3.6.2 Texto 90{0}Nome da rua.", Environment.NewLine);
+			TooltipBillingAddressAddressDetail = string.Format("2.3.6.3 * Texto 100{0}Morada detalhada.{0}Deve incluir o nome da rua, número de polícia e andar, se aplicável.{0}", Environment.NewLine);
+			TooltipBillingAddressCity = string.Format("2.3.6.4 * Texto 50{0}Localidade.", Environment.NewLine);
+			TooltipBillingAddressPostalCode = string.Format("2.3.6.5 * Texto 20{0}Código postal.", Environment.NewLine);
+			TooltipBillingAddressRegion = string.Format("2.3.6.6 Texto 50{0}Distrito.", Environment.NewLine);
+			TooltipBillingAddressCountry = string.Format("2.3.6.7 * Texto 2{0}País.{0}Deve ser preenchido de acordo com a norma ISO 3166-1-alpha-2.", Environment.NewLine);
+			TooltipShipFromAddress = string.Format("2.3.7 Morada da expedição.", Environment.NewLine);
+			TooltipShipFromAddressBuildingNumber = string.Format("2.3.7.1 Texto 10{0}Número de polícia.", Environment.NewLine);
+			TooltipShipFromAddressStreetName = string.Format("2.3.7.2 Texto 90{0}Nome da rua.", Environment.NewLine);
+			TooltipShipFromAddressAddressDetail = string.Format("2.3.7.3 * Texto 100{0}Morada detalhada.{0}Deve incluir o nome da rua, número de polícia e andar, se aplicável.", Environment.NewLine);
+			TooltipShipFromAddressCity = string.Format("2.3.7.4 * Texto 50{0}Localidade.", Environment.NewLine);
+			TooltipShipFromAddressPostalCode = string.Format("2.3.7.5 * Texto 20{0}Código postal.", Environment.NewLine);
+			TooltipShipFromAddressRegion = string.Format("2.3.7.6 Texto 50{0}Distrito.", Environment.NewLine);
+			TooltipShipFromAddressCountry = string.Format("2.3.7.7 * Texto 2{0}País.{0}Deve ser preenchido de acordo com a norma ISO 3166-1-alpha-2.", Environment.NewLine);
+			TooltipTelephone = string.Format("2.3.8 Texto 20{0}Telefone.", Environment.NewLine);
+			TooltipFax = string.Format("2.3.9 Texto 20{0}Fax.", Environment.NewLine);
+			TooltipEmail = string.Format("2.3.10 Texto 60{0}Endereço de correio eletrónico da empresa.", Environment.NewLine);
+			TooltipWebsite = string.Format("2.3.11 Texto 60{0}Endereço do sítio web da empresa.", Environment.NewLine);
+			TooltipSelfBillingIndicator = string.Format("2.3.12 * Inteiro 1{0}Indicador de autofaturação.{0}Indicador da existência de acordo de autofaturação entre o cliente e o fornecedor.{0}Deve ser preenchido com «1» se houver acordo e com «0» (zero) no caso contrário.", Environment.NewLine);
 		}
+		public string TooltipSupplierID { get; set; }
+		public string TooltipAccountID { get; set; }
+		public string TooltipSupplierTaxID { get; set; }
+		public string TooltipCompanyName { get; set; }
+		public string TooltipContact { get; set; }
+		public string TooltipBillingAddress { get; set; }
+		public string TooltipBillingAddressBuildingNumber { get; set; }
+		public string TooltipBillingAddressStreetName { get; set; }
+		public string TooltipBillingAddressAddressDetail { get; set; }
+		public string TooltipBillingAddressCity { get; set; }
+		public string TooltipBillingAddressPostalCode { get; set; }
+		public string TooltipBillingAddressRegion { get; set; }
+		public string TooltipBillingAddressCountry { get; set; }
+		public string TooltipShipFromAddress { get; set; }
+		public string TooltipShipFromAddressBuildingNumber { get; set; }
+		public string TooltipShipFromAddressStreetName { get; set; }
+		public string TooltipShipFromAddressAddressDetail { get; set; }
+		public string TooltipShipFromAddressCity { get; set; }
+		public string TooltipShipFromAddressPostalCode { get; set; }
+		public string TooltipShipFromAddressRegion { get; set; }
+		public string TooltipShipFromAddressCountry { get; set; }
+		public string TooltipTelephone { get; set; }
+		public string TooltipFax { get; set; }
+		public string TooltipEmail { get; set; }
+		public string TooltipWebsite { get; set; }
+		public string TooltipSelfBillingIndicator { get; set; }
 
-		public string this[string columnName]
-		{
-			get
-			{
-				Error erro = null;
-				if (columnName == "CustomerID")
-				{
-					erro = ValidateCustomerID(appendError: true);
-				}
-				else if (columnName == "AccountID")
-				{
-					erro = ValidateAccountID(appendError: true);
-				}
-				else if (columnName == "SupplierTaxID")
-				{
-					erro = ValidateSupplierTaxID(appendError: true);
-				}
-				else if (columnName == "CompanyName")
-				{
-					erro = ValidateCompanyName(appendError: true);
-				}
-				else if (columnName == "Contact")
-				{
-					erro = ValidateContact(appendError: true);
-				}
-				else if (columnName == "Telephone")
-				{
-					erro = ValidateTelephone(appendError: true);
-				}
-				else if (columnName == "Fax")
-				{
-					erro = ValidateFax(appendError: true);
-				}
-				else if (columnName == "Email")
-				{
-					erro = ValidateEmail(appendError: true);
-				}
-				else if (columnName == "Website")
-				{
-					erro = ValidateWebsite(appendError: true);
-				}
-				else if (columnName == "SelfBillingIndicator")
-				{
-					erro = ValidateSelfBillingIndicator(appendError: true);
-				}
-
-				return erro == null ? "" : erro.Description;
-			}
-		}
-
-		#region Validation
-
-		public Error ValidateCustomerID(bool appendError = false)
+		public Error ValidateCustomerID()
 		{
 			Error erro = null;
 			if (string.IsNullOrEmpty(SupplierID) || SupplierID.Length > 30)
 			{
 				erro = new Error { Description = "Identificador único do fornecedor inválido", Field = "SupplierID", TypeofError = GetType(), Value = SupplierID, UID = Pk };
-				//if (appendError)
-				//	Tooltip.SupplierID = Tooltip.SupplierID.FormatTooltipWithError(erro.Description);
+				TooltipSupplierID += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateAccountID(bool appendError = false)
+		public Error ValidateAccountID()
 		{
 			Error erro = null;
 			if (string.IsNullOrEmpty(AccountID) || AccountID.Length > 30)
 			{
 				erro = new Error { Description = "Código da conta inválido", Field = "AccountID", TypeofError = GetType(), Value = AccountID, UID = Pk };
-				//if (appendError)
-				//	Tooltip.AccountID = Tooltip.AccountID.FormatTooltipWithError(erro.Description);
+				TooltipAccountID += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateSupplierTaxID(bool appendError = false)
+		public Error ValidateSupplierTaxID()
 		{
 			Error erro = null;
 			if (BillingAddress?.Country == "PT" && !Validations.Validations.CheckTaxRegistrationNumber(SupplierTaxID))
 			{
 				erro = new Error { Description = "Número de identificação fiscal inválido", Field = "SupplierTaxID", TypeofError = GetType(), Value = SupplierTaxID, UID = Pk };
-				//if (appendError)
-				//	Tooltip.SupplierTaxID = Tooltip.SupplierTaxID.FormatTooltipWithError(erro.Description);
+				TooltipSupplierTaxID += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateCompanyName(bool appendError = false)
+		public Error ValidateCompanyName()
 		{
 			Error erro = null;
 			if (string.IsNullOrEmpty(CompanyName) || CompanyName.Length > 100)
 			{
 				erro = new Error { Description = "Nome da empresa inválido", Field = "CompanyName", TypeofError = GetType(), Value = CompanyName, UID = Pk };
-				//if (appendError)
-				//	Tooltip.CompanyName = Tooltip.CompanyName.FormatTooltipWithError(erro.Description);
+				TooltipCompanyName += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateContact(bool appendError = false)
+		public Error ValidateContact()
 		{
 			Error erro = null;
 			if (!string.IsNullOrEmpty(Contact) && Contact.Length > 50)
 			{
 				erro = new Error { Description = "Nome do contacto na empresa inválido.", Field = "Contact", TypeofError = GetType(), Value = Contact, UID = Pk };
-				//if (appendError)
-				//	Tooltip.Contact = Tooltip.Contact.FormatTooltipWithError(erro.Description);
+				TooltipContact += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateTelephone(bool appendError = false)
+		public Error ValidateTelephone()
 		{
 			Error erro = null;
 			if (!string.IsNullOrEmpty(Telephone) && Telephone.Length > 20)
 			{
 				erro = new Error { Description = "Telefone inválido", Field = "Telephone", TypeofError = GetType(), Value = Telephone, UID = Pk };
-				//if (appendError)
-				//	Tooltip.Telephone = Tooltip.Telephone.FormatTooltipWithError(erro.Description);
+				TooltipTelephone += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateFax(bool appendError = false)
+		public Error ValidateFax()
 		{
 			Error erro = null;
 			if (!string.IsNullOrEmpty(Fax) && Fax.Length > 20)
 			{
 				erro = new Error { Description = "Fax inválido", Field = "Fax", TypeofError = GetType(), Value = Fax, UID = Pk };
-				//if (appendError)
-				//	Tooltip.Fax = Tooltip.Fax.FormatTooltipWithError(erro.Description);
+				TooltipFax += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateEmail(bool appendError = false)
+		public Error ValidateEmail()
 		{
 			Error erro = null;
 			if (!string.IsNullOrEmpty(Email) && Email.Length > 60)
 			{
 				erro = new Error { Description = "Email inválido", Field = "Email", TypeofError = GetType(), Value = Email, UID = Pk };
-				//	if (appendError)
-				//		Tooltip.Email = Tooltip.Email.FormatTooltipWithError(erro.Description);
+				TooltipEmail += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateWebsite(bool appendError = false)
+		public Error ValidateWebsite()
 		{
 			Error erro = null;
 			if (!string.IsNullOrEmpty(Website) && Website.Length > 60)
 			{
 				erro = new Error { Description = "Website inválido", Field = "Website", TypeofError = GetType(), Value = Website, UID = Pk };
-				//if (appendError)
-				//	Tooltip.Website = Tooltip.Website.FormatTooltipWithError(erro.Description);
+				TooltipWebsite += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
 		}
-		public Error ValidateSelfBillingIndicator(bool appendError = false)
+		public Error ValidateSelfBillingIndicator()
 		{
 			Error erro = null;
 
@@ -3140,8 +3058,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 			if (string.IsNullOrEmpty(SelfBillingIndicator) || selfBillingIndicator == -1)
 			{
 				erro = new Error { Description = "Nº de conta inválido", Field = "SelfBillingIndicator", TypeofError = GetType(), Value = SelfBillingIndicator, UID = Pk };
-				//if (appendError)
-				//	Tooltip.SelfBillingIndicator = Tooltip.SelfBillingIndicator.FormatTooltipWithError(erro.Description);
+				TooltipSelfBillingIndicator += Environment.NewLine + erro.Description;
 			}
 
 			return erro;
@@ -3201,7 +3118,6 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 
 			return listErro.ToArray();
 		}
-		#endregion Validation
 	}
 
 	public partial class GeneralLedger : BaseData, IDataErrorInfo

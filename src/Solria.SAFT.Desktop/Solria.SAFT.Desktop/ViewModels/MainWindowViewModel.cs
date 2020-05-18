@@ -255,6 +255,9 @@ namespace Solria.SAFT.Desktop.ViewModels
                 databaseService.AddRecentFile(saft_file);
                 await saftValidator.OpenSaftFileV4(saft_file);
 
+                dialogManager.SetFileName(saft_file);
+                dialogManager.SetTitle(saftValidator.SaftFileV4?.Header?.CompanyName);
+
                 var view = new SaftDialogResume();
                 var vm = new SaftDialogResumeViewModel(this);
                 vm.Init();
@@ -288,6 +291,9 @@ namespace Solria.SAFT.Desktop.ViewModels
                 
                 await saftValidator.OpenStockFile(saft_file);
 
+                dialogManager.SetFileName(saft_file);
+                dialogManager.SetTitle(saftValidator.StockFile?.StockHeader?.TaxRegistrationNumber);
+
                 GoTo(new StocksHeaderPageViewModel(this));
 
                 ShowMenu = true;
@@ -306,7 +312,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             else if (menu.Equals("Clientes", System.StringComparison.OrdinalIgnoreCase))
                 GoTo(new SaftCustomersPageViewModel(this));
             else if (menu.Equals("Fornecedores", System.StringComparison.OrdinalIgnoreCase))
-                GoTo(new SuppliersPageViewModel(this));
+                GoTo(new SaftSuppliersPageViewModel(this));
             else if (menu.Equals("Produtos", System.StringComparison.OrdinalIgnoreCase))
                 GoTo(new SaftProductsPageViewModel(this));
             else if (menu.Equals("Impostos", System.StringComparison.OrdinalIgnoreCase))
@@ -346,6 +352,9 @@ namespace Solria.SAFT.Desktop.ViewModels
             {
                 await saftValidator.OpenSaftFileV4(saft_file);
 
+                dialogManager.SetFileName(saft_file);
+                dialogManager.SetTitle(saftValidator.SaftFileV4?.Header?.CompanyName);
+
                 //show resume
                 var view = new SaftDialogResume();
                 var vm = new SaftDialogResumeViewModel(this);
@@ -355,6 +364,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                 await dialogManager.ShowChildDialogAsync(view);
 
                 ShowMenu = true;
+                IsSaft = true;
             }
         }
         private void OnClearRecentFiles()
