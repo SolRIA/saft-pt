@@ -1,93 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Solria.SAFT.Desktop.Models.SaftV4
 {
-    public partial class SourceDocumentsPaymentsPayment : BaseData, IDataErrorInfo
+    public partial class SourceDocumentsPaymentsPayment : BaseData
     {
-        //SourceDocumentsPaymentsPaymentToolTipService tooltip;
-        //public SourceDocumentsPaymentsPaymentToolTipService Tooltip
-        //{
-        //    get
-        //    {
-        //        if (tooltip == null)
-        //            tooltip = new SourceDocumentsPaymentsPaymentToolTipService();
-        //        return tooltip;
-        //    }
-        //    set { tooltip = value; }
-        //}
-
-        public string Error
-        {
-            get
-            {
-                StringBuilder error = new StringBuilder();
-
-                // iterate over all of the properties
-                // of this object - aggregating any validation errors
-                PropertyDescriptorCollection props = TypeDescriptor.GetProperties(this);
-                foreach (PropertyDescriptor prop in props)
-                {
-                    String propertyError = this[prop.Name];
-                    if (propertyError != string.Empty)
-                        error.Append((error.Length != 0 ? ", " : "") + propertyError);
-                }
-
-                return error.Length == 0 ? null : error.ToString();
-            }
-        }
-
-        public string this[string columnName]
-        {
-            get
-            {
-                Error erro = null;
-                if (columnName == "PaymentRefNo")
-                {
-                    erro = ValidatePaymentRefNo(appendError: true);
-                }
-                else if (columnName == "SourceID")
-                {
-                    erro = ValidateSourceID(appendError: true);
-                }
-                else if (columnName == "Period")
-                {
-                    erro = ValidatePeriod(appendError: true);
-                }
-                else if (columnName == "TransactionDate")
-                {
-                    erro = ValidateTransactionDate(appendError: true);
-                }
-                else if (columnName == "SystemID")
-                {
-                    erro = ValidateSystemID(appendError: true);
-                }
-                else if (columnName == "SystemEntryDate")
-                {
-                    erro = ValidateSystemEntryDate(appendError: true);
-                }
-                else if (columnName == "TransactionID")
-                {
-                    erro = ValidateTransactionID(appendError: true);
-                }
-                else if (columnName == "CustomerID")
-                {
-                    erro = ValidateCustomerID(appendError: true);
-                }
-                else if (columnName == "Description")
-                {
-                    erro = ValidateDescription(appendError: true);
-                }
-
-                return erro?.Description;
-            }
-        }
-
-        #region Validation
-        public Error ValidatePaymentRefNo(bool appendError = false)
+        public Error ValidatePaymentRefNo()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(PaymentRefNo) || PaymentRefNo.Length > 60)
@@ -104,14 +23,13 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidatePeriod(bool appendError = false)
+        public Error ValidatePeriod()
         {
             Error erro = null;
 
             if (string.IsNullOrEmpty(Period) == false)
             {
-                int periodo = -1;
-                Int32.TryParse(Period, out periodo);
+                int.TryParse(Period, out int periodo);
 
                 if (periodo < 1 || periodo > 12)
                 {
@@ -123,7 +41,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateTransactionID(bool appendError = false)
+        public Error ValidateTransactionID()
         {
             Error erro = null;
 
@@ -136,7 +54,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateTransactionDate(bool appendError = false)
+        public Error ValidateTransactionDate()
         {
             Error erro = null;
 
@@ -149,7 +67,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateDescription(bool appendError = false)
+        public Error ValidateDescription()
         {
             Error erro = null;
 
@@ -162,7 +80,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidatePaymentStatusDate(bool appendError = false)
+        public Error ValidatePaymentStatusDate()
         {
             Error erro = null;
 
@@ -175,7 +93,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateReason(bool appendError = false)
+        public Error ValidateReason()
         {
             Error erro = null;
 
@@ -188,7 +106,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateDocumentStatusSourceID(bool appendError = false)
+        public Error ValidateDocumentStatusSourceID()
         {
             Error erro = null;
 
@@ -201,7 +119,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateSystemID(bool appendError = false)
+        public Error ValidateSystemID()
         {
             Error erro = null;
 
@@ -214,7 +132,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateSourceID(bool appendError = false)
+        public Error ValidateSourceID()
         {
             Error erro = null;
 
@@ -227,7 +145,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateSystemEntryDate(bool appendError = false)
+        public Error ValidateSystemEntryDate()
         {
             Error erro = null;
 
@@ -240,7 +158,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateCustomerID(bool appendError = false)
+        public Error ValidateCustomerID()
         {
             Error erro = null;
 
@@ -254,7 +172,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             return erro;
         }
 
-        public Error[] ValidatePaymentMethod(bool appendError = false)
+        public Error[] ValidatePaymentMethod()
         {
             List<Error> listErro = new List<Error>();
 
@@ -281,62 +199,16 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return listErro.ToArray();
         }
-        #endregion
     }
 
-    public partial class SourceDocumentsPaymentsPaymentLine : BaseData, IDataErrorInfo
+    public partial class SourceDocumentsPaymentsPaymentLine : BaseData
     {
         /// <summary>
         /// Link to the Payment
         /// </summary>
         public string DocNo { get; set; }
 
-        //SourceDocumentsPaymentsPaymentLineToolTipService tooltip;
-        //public SourceDocumentsPaymentsPaymentLineToolTipService Tooltip
-        //{
-        //    get
-        //    {
-        //        if (tooltip == null)
-        //            tooltip = new SourceDocumentsPaymentsPaymentLineToolTipService();
-        //        return tooltip;
-        //    }
-        //    set { tooltip = value; }
-        //}
-
-        public string Error
-        {
-            get { return string.Empty; }
-        }
-
-        [System.Runtime.CompilerServices.IndexerName("Items")]
-        public string this[string columnName]
-        {
-            get
-            {
-                Error erro = null;
-                if (columnName == "LineNumber")
-                {
-                    erro = ValidateLineNumber(appendError: true);
-                }
-                else if (columnName == "SettlementAmount")
-                {
-                    erro = ValidateSettlementAmount(appendError: true);
-                }
-                else if (columnName == "TaxExemptionReason")
-                {
-                    erro = ValidateTaxExemptionReason(appendError: true);
-                }
-                else if (columnName == "Item")
-                {
-                    erro = ValidateItem(appendError: true);
-                }
-
-                return erro?.Description;
-            }
-        }
-
-        #region
-        public Error ValidateLineNumber(bool appendError = false, string SupPk = "", string paymentNo = "")
+        public Error ValidateLineNumber(string SupPk = "", string paymentNo = "")
         {
             Error erro = null;
             int num = -1;
@@ -354,7 +226,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateSettlementAmount(bool appendError = false, string SupPk = "", string paymentNo = "")
+        public Error ValidateSettlementAmount(string SupPk = "", string paymentNo = "")
         {
             Error erro = null;
             if (SettlementAmount < 0)
@@ -368,7 +240,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateItem(bool appendError = false, string SupPk = "", string paymentNo = "")
+        public Error ValidateItem(string SupPk = "", string paymentNo = "")
         {
             Error erro = null;
             if (Item < 0)
@@ -388,7 +260,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateTaxExemptionReason(bool appendError = false, string SupPk = "", string paymentNo = "")
+        public Error ValidateTaxExemptionReason(string SupPk = "", string paymentNo = "")
         {
             Error erro = null;
             if ((Tax != null && Tax.Item == 0 && string.IsNullOrEmpty(TaxExemptionReason)) || (string.IsNullOrEmpty(TaxExemptionReason) == false && TaxExemptionReason.Length > 60))
@@ -446,93 +318,13 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return listErro.ToArray();
         }
-        #endregion
     }
 
-    public partial class SourceDocumentsMovementOfGoodsStockMovement : BaseData, IDataErrorInfo
+    public partial class SourceDocumentsMovementOfGoodsStockMovement : BaseData
     {
         public string HashTest { get; set; }
 
-        //MovementOfGoodsToolTipService tooltip;
-        //public MovementOfGoodsToolTipService Tooltip
-        //{
-        //    get
-        //    {
-        //        if (tooltip == null)
-        //            tooltip = new MovementOfGoodsToolTipService();
-        //        return tooltip;
-        //    }
-        //    set { tooltip = value; }
-        //}
-
-        public string Error
-        {
-            get
-            {
-                StringBuilder error = new StringBuilder();
-
-                // iterate over all of the properties
-                // of this object - aggregating any validation errors
-                PropertyDescriptorCollection props = TypeDescriptor.GetProperties(this);
-                foreach (PropertyDescriptor prop in props)
-                {
-                    String propertyError = this[prop.Name];
-                    if (propertyError != string.Empty)
-                        error.Append((error.Length != 0 ? ", " : "") + propertyError);
-                }
-
-                return error.Length == 0 ? null : error.ToString();
-            }
-        }
-
-        [System.Runtime.CompilerServices.IndexerName("Items")]
-        public string this[string columnName]
-        {
-            get
-            {
-                Error erro = null;
-                if (columnName == "DocumentNumber")
-                {
-                    erro = ValidateDocumentNumber(appendError: true);
-                }
-                else if (columnName == "Hash")
-                {
-                    erro = ValidateHash(appendError: true);
-                }
-                else if (columnName == "HashControl")
-                {
-                    erro = ValidateHashControl(appendError: true);
-                }
-                else if (columnName == "Period")
-                {
-                    erro = ValidatePeriod(appendError: true);
-                }
-                else if (columnName == "MovementDate")
-                {
-                    erro = ValidateMovementDate(appendError: true);
-                }
-                else if (columnName == "SystemEntryDate")
-                {
-                    erro = ValidateSystemEntryDate(appendError: true);
-                }
-                else if (columnName == "TransactionID")
-                {
-                    erro = ValidateTransactionID(appendError: true);
-                }
-                else if (columnName == "MovementEndTime")
-                {
-                    erro = ValidateMovementEndTime(appendError: true);
-                }
-                else if (columnName == "MovementStartTime")
-                {
-                    erro = ValidateMovementStartTime(appendError: true);
-                }
-                return erro?.Description;
-            }
-        }
-
-        #region Validation
-        public Error ValidateDocumentNumber(bool appendError = false)
+        public Error ValidateDocumentNumber()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(DocumentNumber) || DocumentNumber.Length > 60)
@@ -549,7 +341,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateHash(bool appendError = false)
+        public Error ValidateHash()
         {
             Error erro = null;
 
@@ -562,7 +354,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateHashControl(bool appendError = false)
+        public Error ValidateHashControl()
         {
             Error erro = null;
 
@@ -575,14 +367,13 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidatePeriod(bool appendError = false)
+        public Error ValidatePeriod()
         {
             Error erro = null;
 
             if (string.IsNullOrEmpty(Period) == false)
             {
-                int periodo = -1;
-                Int32.TryParse(Period, out periodo);
+                int.TryParse(Period, out int periodo);
 
                 if (periodo < 1 || periodo > 12)
                 {
@@ -594,7 +385,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateMovementDate(bool appendError = false)
+        public Error ValidateMovementDate()
         {
             Error erro = null;
 
@@ -607,7 +398,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateSystemEntryDate(bool appendError = false)
+        public Error ValidateSystemEntryDate()
         {
             Error erro = null;
 
@@ -620,7 +411,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateTransactionID(bool appendError = false)
+        public Error ValidateTransactionID()
         {
             Error erro = null;
 
@@ -633,7 +424,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateMovementEndTime(bool appendError = false)
+        public Error ValidateMovementEndTime()
         {
             Error erro = null;
 
@@ -646,7 +437,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateMovementStartTime(bool appendError = false)
+        public Error ValidateMovementStartTime()
         {
             Error erro = null;
 
@@ -766,83 +557,16 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return listError.ToArray();
         }
-        #endregion
     }
 
-    public partial class SourceDocumentsMovementOfGoodsStockMovementLine : BaseData, IDataErrorInfo
+    public partial class SourceDocumentsMovementOfGoodsStockMovementLine : BaseData
     {
         /// <summary>
         /// Link to the doc
         /// </summary>
         public string DocNo { get; set; }
 
-        //MovementOfGoodsLineToolTipService tooltip;
-        //public MovementOfGoodsLineToolTipService Tooltip
-        //{
-        //    get
-        //    {
-        //        if (tooltip == null)
-        //            tooltip = new MovementOfGoodsLineToolTipService();
-        //        return tooltip;
-        //    }
-        //    set { tooltip = value; }
-        //}
-
-        public string Error
-        {
-            get
-            {
-                StringBuilder error = new StringBuilder();
-
-                // iterate over all of the properties
-                // of this object - aggregating any validation errors
-                PropertyDescriptorCollection props = TypeDescriptor.GetProperties(this);
-                foreach (PropertyDescriptor prop in props)
-                {
-                    String propertyError = this[prop.Name];
-                    if (propertyError != string.Empty)
-                        error.Append((error.Length != 0 ? ", " : "") + propertyError);
-                }
-
-                return error.Length == 0 ? null : error.ToString();
-            }
-        }
-
-        [System.Runtime.CompilerServices.IndexerName("Items")]
-        public string this[string columnName]
-        {
-            get
-            {
-                Error erro = null;
-                if (columnName == "LineNumber")
-                {
-                    erro = ValidateLineNumber(appendError: true);
-                }
-                else if (columnName == "ProductCode")
-                {
-                    erro = ValidateProductCode(appendError: true);
-                }
-                else if (columnName == "ProductDescription")
-                {
-                    erro = ValidateProductDescription(appendError: true);
-                }
-                else if (columnName == "Quantity")
-                {
-                    erro = ValidateQuantity(appendError: true);
-                }
-                else if (columnName == "UnitOfMeasure")
-                {
-                    erro = ValidateUnitOfMeasure(appendError: true);
-                }
-                else if (columnName == "UnitPrice")
-                {
-                    erro = ValidateUnitPrice(appendError: true);
-                }
-                return erro?.Description;
-            }
-        }
-
-        public Error ValidateLineNumber(bool appendError = false, string SupPk = "", string movement = "")
+        public Error ValidateLineNumber(string SupPk = "", string movement = "")
         {
             Error erro = null;
             int num = -1;
@@ -860,7 +584,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateProductCode(bool appendError = false, string SupPk = "", string movement = "")
+        public Error ValidateProductCode(string SupPk = "", string movement = "")
         {
             Error erro = null;
             if (string.IsNullOrEmpty(ProductCode) || ProductCode.Length > 30)
@@ -874,7 +598,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateProductDescription(bool appendError = false, string SupPk = "", string movement = "")
+        public Error ValidateProductDescription(string SupPk = "", string movement = "")
         {
             Error erro = null;
             if (string.IsNullOrEmpty(ProductDescription) || ProductDescription.Length > 200)
@@ -888,7 +612,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateQuantity(bool appendError = false, string SupPk = "", string movement = "")
+        public Error ValidateQuantity(string SupPk = "", string movement = "")
         {
             Error erro = null;
             if (Quantity <= 0)
@@ -902,7 +626,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateUnitOfMeasure(bool appendError = false, string SupPk = "", string movement = "")
+        public Error ValidateUnitOfMeasure(string SupPk = "", string movement = "")
         {
             Error erro = null;
             if (string.IsNullOrEmpty(UnitOfMeasure) || UnitOfMeasure.Length > 20)
@@ -916,7 +640,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateUnitPrice(bool appendError = false, string SupPk = "", string movement = "")
+        public Error ValidateUnitPrice(string SupPk = "", string movement = "")
         {
             Error erro = null;
             if (UnitPrice == 0)
@@ -969,78 +693,11 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
         }
     }
 
-    public partial class SourceDocumentsWorkingDocumentsWorkDocument : BaseData, IDataErrorInfo
+    public partial class SourceDocumentsWorkingDocumentsWorkDocument : BaseData
     {
         public string HashTest { get; set; }
 
-        //WorkingDocumentsToolTipService tooltip;
-        //public WorkingDocumentsToolTipService Tooltip
-        //{
-        //    get
-        //    {
-        //        if (tooltip == null)
-        //            tooltip = new WorkingDocumentsToolTipService();
-        //        return tooltip;
-        //    }
-        //    set { tooltip = value; }
-        //}
-
-        public string Error
-        {
-            get
-            {
-                StringBuilder error = new StringBuilder();
-
-                // iterate over all of the properties
-                // of this object - aggregating any validation errors
-                PropertyDescriptorCollection props = TypeDescriptor.GetProperties(this);
-                foreach (PropertyDescriptor prop in props)
-                {
-                    String propertyError = this[prop.Name];
-                    if (propertyError != string.Empty)
-                        error.Append((error.Length != 0 ? ", " : "") + propertyError);
-                }
-
-                return error.Length == 0 ? null : error.ToString();
-            }
-        }
-
-        [System.Runtime.CompilerServices.IndexerName("Items")]
-        public string this[string columnName]
-        {
-            get
-            {
-                Error erro = null;
-                if (columnName == "DocumentNumber")
-                {
-                    erro = ValidateDocumentNumber(appendError: true);
-                }
-                else if (columnName == "Hash")
-                {
-                    erro = ValidateHash(appendError: true);
-                }
-                else if (columnName == "HashControl")
-                {
-                    erro = ValidateHashControl(appendError: true);
-                }
-                else if (columnName == "Period")
-                {
-                    erro = ValidatePeriod(appendError: true);
-                }
-                else if (columnName == "WorkDate")
-                {
-                    erro = ValidateWorkDate(appendError: true);
-                }
-                else if (columnName == "SystemEntryDate")
-                {
-                    erro = ValidateSystemEntryDate(appendError: true);
-                }
-                return erro?.Description;
-            }
-        }
-
-        #region Validation
-        public Error ValidateDocumentNumber(bool appendError = false)
+        public Error ValidateDocumentNumber()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(DocumentNumber) || DocumentNumber.Length > 60)
@@ -1057,7 +714,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateHash(bool appendError = false)
+        public Error ValidateHash()
         {
             Error erro = null;
 
@@ -1070,7 +727,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateHashControl(bool appendError = false)
+        public Error ValidateHashControl()
         {
             Error erro = null;
 
@@ -1083,14 +740,13 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidatePeriod(bool appendError = false)
+        public Error ValidatePeriod()
         {
             Error erro = null;
 
             if (string.IsNullOrEmpty(Period) == false)
             {
-                int periodo = -1;
-                Int32.TryParse(Period, out periodo);
+                int.TryParse(Period, out int periodo);
 
                 if (periodo < 1 || periodo > 12)
                 {
@@ -1102,7 +758,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateWorkDate(bool appendError = false)
+        public Error ValidateWorkDate()
         {
             Error erro = null;
 
@@ -1115,7 +771,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return erro;
         }
-        public Error ValidateSystemEntryDate(bool appendError = false)
+        public Error ValidateSystemEntryDate()
         {
             Error erro = null;
 
@@ -1177,83 +833,16 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return listError.ToArray();
         }
-        #endregion
     }
 
-    public partial class SourceDocumentsWorkingDocumentsWorkDocumentLine : BaseData, IDataErrorInfo
+    public partial class SourceDocumentsWorkingDocumentsWorkDocumentLine : BaseData
     {
         /// <summary>
         /// Link to the doc
         /// </summary>
         public string DocNo { get; set; }
 
-        //WorkingDocumentsLineToolTipService tooltip;
-        //public WorkingDocumentsLineToolTipService Tooltip
-        //{
-        //    get
-        //    {
-        //        if (tooltip == null)
-        //            tooltip = new WorkingDocumentsLineToolTipService();
-        //        return tooltip;
-        //    }
-        //    set { tooltip = value; }
-        //}
-
-        public string Error
-        {
-            get
-            {
-                StringBuilder error = new StringBuilder();
-
-                // iterate over all of the properties
-                // of this object - aggregating any validation errors
-                PropertyDescriptorCollection props = TypeDescriptor.GetProperties(this);
-                foreach (PropertyDescriptor prop in props)
-                {
-                    String propertyError = this[prop.Name];
-                    if (propertyError != string.Empty)
-                        error.Append((error.Length != 0 ? ", " : "") + propertyError);
-                }
-
-                return error.Length == 0 ? null : error.ToString();
-            }
-        }
-
-        [System.Runtime.CompilerServices.IndexerName("Items")]
-        public string this[string columnName]
-        {
-            get
-            {
-                Error erro = null;
-                if (columnName == "LineNumber")
-                {
-                    erro = ValidateLineNumber(appendError: true);
-                }
-                else if (columnName == "ProductCode")
-                {
-                    erro = ValidateProductCode(appendError: true);
-                }
-                else if (columnName == "Quantity")
-                {
-                    erro = ValidateQuantity(appendError: true);
-                }
-                else if (columnName == "UnitOfMeasure")
-                {
-                    erro = ValidateUnitOfMeasure(appendError: true);
-                }
-                else if (columnName == "UnitPrice")
-                {
-                    erro = ValidateUnitPrice(appendError: true);
-                }
-                else if (columnName == "TaxPointDate")
-                {
-                    erro = ValidateTaxPointDate(appendError: true);
-                }
-                return erro == null ? erro.Description : "";
-            }
-        }
-
-        public Error ValidateLineNumber(bool appendError = false, string SupPk = "", string workingDocument = "")
+        public Error ValidateLineNumber(string SupPk = "", string workingDocument = "")
         {
             Error erro = null;
             int num = -1;
@@ -1271,7 +860,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateProductCode(bool appendError = false, string SupPk = "", string workingDocument = "")
+        public Error ValidateProductCode(string SupPk = "", string workingDocument = "")
         {
             Error erro = null;
             if (string.IsNullOrEmpty(ProductCode) || ProductCode.Length > 30)
@@ -1285,7 +874,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateProductDescription(bool appendError = false, string SupPk = "", string workingDocument = "")
+        public Error ValidateProductDescription(string SupPk = "", string workingDocument = "")
         {
             Error erro = null;
             if (string.IsNullOrEmpty(ProductDescription) || ProductDescription.Length > 200)
@@ -1299,7 +888,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateQuantity(bool appendError = false, string SupPk = "", string workingDocument = "")
+        public Error ValidateQuantity(string SupPk = "", string workingDocument = "")
         {
             Error erro = null;
             if (Quantity <= 0)
@@ -1313,7 +902,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateUnitOfMeasure(bool appendError = false, string SupPk = "", string workingDocument = "")
+        public Error ValidateUnitOfMeasure(string SupPk = "", string workingDocument = "")
         {
             Error erro = null;
             if (string.IsNullOrEmpty(UnitOfMeasure) || UnitOfMeasure.Length > 20)
@@ -1327,7 +916,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateUnitPrice(bool appendError = false, string SupPk = "", string workingDocument = "")
+        public Error ValidateUnitPrice(string SupPk = "", string workingDocument = "")
         {
             Error erro = null;
             if (UnitPrice == 0)
@@ -1341,7 +930,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             }
             return erro;
         }
-        public Error ValidateTaxPointDate(bool appendError = false, string SupPk = "", string workingDocument = "")
+        public Error ValidateTaxPointDate(string SupPk = "", string workingDocument = "")
         {
             Error erro = null;
             if (TaxPointDate > DateTime.Now)
@@ -1396,246 +985,311 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
         }
     }
 
-    public partial class SourceDocumentsSalesInvoicesInvoice : BaseData, IDataErrorInfo
+    public partial class SourceDocumentsSalesInvoicesInvoice : BaseData
     {
         public string HashTest { get; set; }
 
-        //SourceDocumentsToolTipService tooltip;
-        //public SourceDocumentsToolTipService Tooltip
-        //{
-        //    get
-        //    {
-        //        if (tooltip == null)
-        //            tooltip = new SourceDocumentsToolTipService();
-        //        return tooltip;
-        //    }
-        //    set { tooltip = value; }
-        //}
-
-        public string Error
+        public SourceDocumentsSalesInvoicesInvoice()
         {
-            get
-            {
-                StringBuilder error = new StringBuilder();
-
-                // iterate over all of the properties
-                // of this object - aggregating any validation errors
-                PropertyDescriptorCollection props = TypeDescriptor.GetProperties(this);
-                foreach (PropertyDescriptor prop in props)
-                {
-                    String propertyError = this[prop.Name];
-                    if (propertyError != string.Empty)
-                        error.Append((error.Length != 0 ? ", " : "") + propertyError);
-                }
-
-                return error.Length == 0 ? null : error.ToString();
-            }
+            TooltipInvoiceNo = string.Format("4.1.4.1 * Texto 60{0}Identificação única do documento de venda.{0}Esta identificação é composta sequencialmente pelos seguintes elementos:{0}o código interno do documento atribuído pela aplicação, um espaço, o identificador da série do documento, uma barra (/) e o número sequencial desse documento dentro dessa série.{0}Não podem existir registos com a mesma identificação.{0}Não podem ser utilizados o mesmo código interno de documento em tipos de documentos (InvoiceType) diferentes.", Environment.NewLine);
+            TooltipDocumentStatus = string.Format("4.1.4.2 * Situação do documento.", Environment.NewLine);
+            TooltipInvoiceStatus = string.Format("4.1.4.2.1 * Texto 1{0}Estado atual do documento.{0}Deve ser preenchido com:{0}«N» - Normal;{0}«S» - Autofaturação;{0}«A» - Documento anulado;{0}«R» - Documento de resumo doutros documentos criados noutras aplicações e gerado nesta aplicação;{0}«F» - Documento faturado:{0}• Quando o documento é do tipo talão de venda ou talão de devolução e existe na tabela o correspondente do tipo fatura ou nota de crédito para dados até 2012-12-31;{0}• Quando o documento é do tipo fatura simplificada e existe na tabela o correspondente do tipo fatura - para dados após 2013-01-01.", Environment.NewLine);
+            TooltipInvoiceStatusDate = string.Format("4.1.4.2.2 * Data e hora{0}Data e hora do estado atual do documento.{0}Data da última gravação do estado do documento ao segundo.{0}Tipo data e hora: «AAAA-MM-DDThh:mm:ss».", Environment.NewLine);
+            TooltipReason = string.Format("4.1.4.2.3 Texto 50{0}Motivo da alteração de estado.{0}Deve ser indicada a razão que levou à alteração de estado do documento.", Environment.NewLine);
+            TooltipResponsableUserSourceID = string.Format("4.1.4.2.4 * Texto 30{0}Código do utilizador.{0}Utilizador responsável pelo estado atual do documento.", Environment.NewLine);
+            TooltipSourceBilling = string.Format("4.1.4.2.5 * Texto 1{0}Deve ser preenchido com: «P» - Documento produzido na aplicação;{0}«I» - Documento integrado e produzido noutra aplicação;{0}«M» - Documento proveniente de recuperação ou de emissão manual.", Environment.NewLine);
+            TooltipHash = string.Format("4.1.4.3 * Texto 172{0}Chave do documento.{0}Assinatura nos termos da Portaria n.º 363/2010, de 23 de junho.{0}O campo deve ser preenchido com «0» (zero), caso não haja obrigatoriedade de certificação.", Environment.NewLine);
+            TooltipHashControl = string.Format("4.1.4.4 Texto 40{0}Chave de controlo.{0}Versão da chave privada utilizada na criação da assinatura do campo 4.1.4.3.", Environment.NewLine);
+            TooltipPeriod = string.Format("4.1.4.5 Inteiro{0}Período contabilístico.{0}Deve ser indicado o mês do período de tributação de «1» a «12», contando desde a data do seu início.", Environment.NewLine);
+            TooltipInvoiceDate = string.Format("4.1.4.6 * Data{0}Data do documento de venda.{0}Data de emissão do documento de venda.", Environment.NewLine);
+            TooltipInvoiceType = string.Format("4.1.4.7 * Texto 2{0}Tipo de documento.{0}Deve ser preenchido com:{0}«FT» - Fatura, emitida nos termos do artigo 36.º do Código do IVA;{0}«FS» - Fatura simplificada, emitida nos termos do artigo 40.º do Código do IVA;{0}«FR» - Fatura-recibo;{0}«ND» - Nota de débito;{0}«NC» - Nota de crédito;{0}«VD» - Venda a dinheiro e fatura/recibo (a);{0}«TV» - Talão de venda (a);{0}«TD» - Talão de devolução (a);{0}«AA» - Alienação de ativos;{0}«DA» - Devolução de ativos.{0}Para o setor Segurador, ainda pode ser preenchido com:{0}«RP» - Prémio ou recibo de prémio;{0}«RE» - Estorno ou recibo de estorno;{0}«CS» - Imputação a cosseguradoras; «LD» - Imputação a cosseguradora líder;{0}«RA» - Resseguro aceite.{0}(a) Para os dados até 2012-12-31.", Environment.NewLine);
+            TooltipSelfBillingIndicator = string.Format("4.1.4.8.1 * Inteiro{0}Indicador de autofaturação.{0}Deverá ser preenchido com «1» se respeitar a autofaturação e com «0» (zero) no caso contrário.", Environment.NewLine);
+            TooltipCashVATSchemeIndicator = string.Format("4.1.4.8.2 * Inteiro{0}Indicador de faturação emitida em nome e por conta de terceiros.{0}Deve ser preenchido com «1» se respeitar a faturação emitida em nome e por conta de terceiros e com «0» (zero) no caso contrário.", Environment.NewLine);
+            TooltipThirdPartiesBillingIndicator = string.Format("4.1.4.8.3 * Inteiro{0}Indicador de autofaturação.{0}Deverá ser preenchido com «1» se respeitar a autofaturação e com «0» (zero) no caso contrário.", Environment.NewLine);
+            TooltipGeneratedDocumentUserSourceID = string.Format("4.1.4.9 * Texto 30{0}Código do utilizador.{0}Utilizador que gerou o documento.", Environment.NewLine);
+            TooltipSystemEntryDate = string.Format("4.1.4.10 * Data e hora{0}Data de gravação do documento.{0}Data da gravação do registo ao segundo, no momento da assinatura.{0}Tipo data e hora: «AAAA-MM-DDThh:mm:ss».", Environment.NewLine);
+            TooltipTransactionID = string.Format("4.1.4.11 ** Texto 70{0}Identificador da transação (TransactionID).{0}O preenchimento é obrigatório, no caso de se tratar de um sistema integrado em que o campo 1.4 - Sistema contabilístico (TaxAccountingBasis) = «I».{0}Chave única da tabela de movimentos contabilísticos (GeneralLedgerEntries) da transação onde foi lançado este documento, respeitando a regra aí definida para o campo chave única do movimento contabilístico (TransactionID).", Environment.NewLine);
+            TooltipCustomerID = string.Format("4.1.4.12 * Texto 30{0}Identificador do cliente.{0}Chave única da tabela de clientes (Customer) respeitando a regra aí definida para o campo identificador único do cliente (CustomerID).", Environment.NewLine);
+            TooltipShipTo = string.Format("4.1.4.13 Envio para.{0}Informação do local e data de entrega onde os artigos vendidos são colocados à disposição do cliente.", Environment.NewLine);
+            TooltipShipToDeliveryID = string.Format("4.1.4.13.1 Texto 30{0}Identificador da entrega.", Environment.NewLine);
+            TooltipShipToDeliveryDate = string.Format("4.1.4.13.2 Data{0}Data da entrega.", Environment.NewLine);
+            TooltipShipToWarehouseID = string.Format("4.1.4.13.3 Texto 50{0}Identificador do armazém de destino.", Environment.NewLine);
+            TooltipShipToLocationID = string.Format("4.1.4.13.4 Texto 30{0}Localização dos bens no armazém de destino.", Environment.NewLine);
+            TooltipShipToAddress = string.Format("4.1.4.13.5 Morada.", Environment.NewLine);
+            TooltipShipToBuildingNumber = string.Format("4.1.4.13.5.1 Texto 10{0}Número de polícia.", Environment.NewLine);
+            TooltipShipToStreetName = string.Format("4.1.4.13.5.2 Texto 90{0}Nome da rua.", Environment.NewLine);
+            TooltipShipToAddressDetail = string.Format("4.1.4.13.5.3 * Texto 100{0}Morada detalhada.{0}Deve incluir o nome da rua, número de polícia e andar, se aplicável.", Environment.NewLine);
+            TooltipShipToCity = string.Format("4.1.4.13.5.4 * Texto 50{0}Localidade.", Environment.NewLine);
+            TooltipShipToPostalCode = string.Format("4.1.4.13.5.5 * Texto 20{0}Código postal.", Environment.NewLine);
+            TooltipShipToRegion = string.Format("4.1.4.13.5.6 Texto 50{0}Distrito.", Environment.NewLine);
+            TooltipShipToCountry = string.Format("4.1.4.13.5.7 * Texto 2{0}País.{0}Deve ser preenchido de acordo com a norma ISO 3166-1-alpha-2.", Environment.NewLine);
+            TooltipShipFrom = string.Format("4.1.4.14 Envio de.{0}Informação do local e data de carga onde se inicia a expedição dos artigos vendidos para o cliente.", Environment.NewLine);
+            TooltipShipFromDeliveryID = string.Format("4.1.4.14.1 Texto 30{0}Identificador da entrega", Environment.NewLine);
+            TooltipShipFromDeliveryDate = string.Format("4.1.4.14.2 Data{0}Data de receção.", Environment.NewLine);
+            TooltipShipFromWarehouseID = string.Format("4.1.4.14.3 Texto 50{0}Identificador do armazém de partida.", Environment.NewLine);
+            TooltipShipFromLocationID = string.Format("4.1.4.14.4 Texto 30{0}Localização dos bens no armazém de partida.", Environment.NewLine);
+            TooltipShipFromAddress = string.Format("4.1.4.14.5 Morada.", Environment.NewLine);
+            TooltipShipFromBuildingNumber = string.Format("4.1.4.14.5.1 Texto 10{0}Número de polícia.", Environment.NewLine);
+            TooltipShipFromStreetName = string.Format("4.1.4.14.5.2 Texto 90{0}Nome da rua.", Environment.NewLine);
+            TooltipShipFromAddressDetail = string.Format("4.1.4.14.5.3 * Texto 100{0}Morada detalhada.{0}Deve incluir o nome da rua, número de polícia e andar, se aplicável.", Environment.NewLine);
+            TooltipShipFromCity = string.Format("4.1.4.14.5.4 * Texto 50{0}Localidade.", Environment.NewLine);
+            TooltipShipFromPostalCode = string.Format("4.1.4.14.5.5 * Texto 20{0}Código postal.", Environment.NewLine);
+            TooltipShipFromRegion = string.Format("4.1.4.14.5.6 Texto 50{0}Distrito.", Environment.NewLine);
+            TooltipShipFromCountry = string.Format("4.1.4.14.5.7 * Texto 2{0}País.{0}Deve ser preenchido de acordo com a norma ISO 3166-1-alpha-2.", Environment.NewLine);
+            TooltipMovementEndTime = string.Format("4.1.4.15 Data e hora{0}Data e hora de fim de transporte.{0}Tipo de data e hora: «AAAA-MM-DDThh:mm:ss» em que o «ss» pode ser «00», na ausência de informação concreta.", Environment.NewLine);
+            TooltipMovementStartTime = string.Format("4.1.4.16 Data e hora{0}Data e hora para o início de transporte.{0}Tipo de data e hora: «AAAA-MM-DDThh:mm:ss» em que o «ss» pode ser «00», na ausência de informação concreta.", Environment.NewLine);
+            TooltipATDocCodeID = string.Format("4.1.4.17 Texto 200{0}Código de identificação do documento.{0}Código de identificação atribuído pela AT ao documento, nos termos do Decreto-Lei n.º 198/2012, de 24 de agosto.", Environment.NewLine);
+            TooltipReferences = string.Format("4.1.4.18.9 Referências.{0}Referências a outros documentos.", Environment.NewLine);
+            TooltipCreditNote = string.Format("4.1.4.18.9.1 Nota de crédito.{0}Referências da nota de crédito, caso seja aplicável.", Environment.NewLine);
+            TooltipReference = string.Format("4.1.4.18.9.1 Texto 60{0}Referência.{0}Referência à fatura ou fatura simplificada, através de identificação única da mesma, nos sistemas em que exista.{0}Deve ser utilizada a estrutura de numeração do campo de origem.", Environment.NewLine);
+            TooltipLineReason = string.Format("4.1.4.18.9.1 Texto 50{0}Motivo.{0}Deve ser preenchido com o motivo do crédito.", Environment.NewLine);
+            TooltipDescription = string.Format("4.1.4.18.10 * Texto 60{0}Descrição.{0}Descrição da linha do documento.", Environment.NewLine);
+            TooltipDebitAmount = string.Format("4.1.4.18.11 ** Monetário{0}Valor a débito.{0}Valor da linha dos documentos a lançar a débito na conta de vendas.{0}Este valor é sem imposto e deduzido dos descontos de linha e cabeçalho.", Environment.NewLine);
+            TooltipCreditAmount = string.Format("4.1.4.18.12 ** Monetário{0}Valor a crédito.{0}Valor da linha dos documentos a lançar a crédito à conta de vendas.{0}Este valor é sem imposto e deduzido dos descontos de linha e cabeçalho.", Environment.NewLine);
+            TooltipTax = string.Format("4.1.4.18.13 Taxa de imposto.", Environment.NewLine);
+            TooltipTaxType = string.Format("4.1.4.18.13 * Texto 3{0}Identificador do regime de imposto.{0}Neste campo deve ser indicado o tipo de imposto.{0}Deve preenchido com: «IVA» - Imposto sobre o valor acrescentado; «IS» - Imposto do selo.", Environment.NewLine);
+            TooltipTaxCountryRegion = string.Format("4.1.4.18.13 * Texto 5{0}País ou região do imposto.{0}Deve ser preenchido de acordo com a norma ISO 3166-1-alpha-2.{0}No caso das Regiões Autónomas da Madeira e Açores deve ser preenchido com: «PT-AC» - Espaço fiscal da Região Autónoma dos Açores; «PT-MA» - Espaço fiscal da Região Autónoma da Madeira.", Environment.NewLine);
+            TooltipTaxCode = string.Format("4.1.4.18.13 * Texto 10{0}Código da taxa.{0}Código da taxa na tabela de impostos.{0}Tem que ser preenchido quando os campos percentagem da taxa de imposto (TaxPercentage) ou montante do imposto (TaxAmount) são diferentes de zero.{0}No caso do código do tipo de imposto (TaxType) = IVA, deve ser preenchido com: «RED» - Taxa reduzida; «INT» - Taxa intermédia; «NOR» - Taxa normal; «ISE» - Isenta; «OUT» - Outros, aplicável para os regimes especiais de IVA.{0}No caso do código do tipo de imposto (TaxType) = «IS», deve ser preenchido com o código da verba respetiva.", Environment.NewLine);
+            TooltipTaxPercentage = string.Format("4.1.4.18.13 ** Decimal{0}Percentagem da taxa de imposto.{0}O preenchimento é obrigatório, no caso de se tratar de uma percentagem de imposto.{0}A percentagem da taxa é correspondente ao imposto aplicável ao campo 4.1.4.18.11 - Valor a débito (DebitAmount) ou ao campo 4.1.418.12 - Valor a crédito (CreditAmount).", Environment.NewLine);
+            TooltipTaxAmount = string.Format("4.1.4.18.13 ** Monetário{0}Montante do imposto.{0}O preenchimento é obrigatório, no caso de se tratar de uma verba fixa de imposto do selo.", Environment.NewLine);
+            TooltipTaxExemptionReason = string.Format("4.1.4.18.14 ** Texto 60{0}Motivo da isenção de imposto.{0}O preenchimento é obrigatório, quando os campos percentagem da taxa de imposto (TaxPercentage) ou montante do imposto (TaxAmount) são iguais a zero.{0}Deve ser referido o preceito legal aplicável.{0}Este campo deve ser igualmente preenchido nos casos de não sujeição aos impostos referidos na tabela 2.5 - Tabela de impostos (TaxTable).", Environment.NewLine);
+            TooltipLineSettlementAmount = string.Format("4.1.4.18.15 Monetário{0}Montante do desconto da linha.{0}Deve refletir todos os descontos concedidos (globais e de linha) que afetam o valor do campo 4.1.4.19.3 - GrossTotal.", Environment.NewLine);
+            TooltipDocumentTotals = string.Format("4.1.4.19 * Totais do documento.", Environment.NewLine);
+            TooltipTaxPayable = string.Format("4.1.4.19.1 * Monetário{0}Valor do imposto a pagar.", Environment.NewLine);
+            TooltipNetTotal = string.Format("4.1.4.19.2 * Monetário{0}Total do documento sem impostos.{0}Este campo não deve incluir as parcelas referentes aos impostos constantes da tabela de impostos (TaxTable).", Environment.NewLine);
+            TooltipGrossTotal = string.Format("4.1.4.19.3 * Monetário{0}Total do documento com impostos.{0}Este campo não deve refletir eventuais retenções na fonte constantes no campo 4.1.4.20 - Retenção na fonte (WithholdingTax).", Environment.NewLine);
+            TooltipCurrency = string.Format("4.1.4.19.4.1 * Texto 3{0}Código de moeda.{0}No caso de moeda estrangeira deve ser preenchido de acordo com a norma ISO 4217.", Environment.NewLine);
+            TooltipCurrencyAmount = string.Format("4.1.4.19.4.2 * Monetário{0}Valor total em moeda estrangeira.{0}Valor do campo 4.1.4.19.3 - Total do documento com impostos (GrossTotal) na moeda original do documento.", Environment.NewLine);
+            TooltipExchangeRate = string.Format("4.1.4.19.4.3 Decimal{0}Taxa de câmbio.{0}Deve ser indicada a taxa de câmbio utilizada na conversão para EUR.", Environment.NewLine);
+            TooltipSettlement = string.Format("4.1.4.19.5 Acordos.{0}Acordos ou formas de pagamento.", Environment.NewLine);
+            TooltipSettlementDiscount = string.Format("4.1.4.19.5.1 Texto 30{0}Acordos de descontos futuros.{0}Deve ser preenchido com os acordos de descontos a aplicar no futuro sobre o valor presente.", Environment.NewLine);
+            TooltipSettlementAmount = string.Format("4.1.4.19.5.2 Monetário{0}Montante do desconto.{0}Representa o valor do desconto futuro sem afetar o valor presente do documento indicado no campo 4.1.4.19.3 - Total do documento com impostos (GrossTotal).", Environment.NewLine);
+            TooltipSettlementDate = string.Format("4.1.4.19.5.3 Data{0}Data acordada para o desconto.{0}A informação a constar é a data acordada para o pagamento com desconto.", Environment.NewLine);
+            TooltipPaymentTerms = string.Format("4.1.4.19.5.4 Texto 100{0}Acordos de pagamento.{0}A informação a constar são os acordos estabelecidos, a data limite de pagamento ou os prazos relativos a regimes especiais de exigibilidade de IVA.", Environment.NewLine);
+            TooltipPaymentMechanism = string.Format("4.1.4.19.5.5 Texto 2{0}Forma prevista de pagamento.{0}Deve ser preenchido com:{0}«CC» - Cartão crédito;{0}«CD» - Cartão débito{0}«CH» - Cheque;{0}«CS» - Compensação de saldos em conta corrente;{0}«LC» - Letra comercial;{0}«MB» - Multibanco;{0}«NU» - Numerário;{0}«PR» - Permuta;{0}«TB» - Transferência bancária;{0}«TR» - Ticket restaurante.", Environment.NewLine);
+            TooltipWithholdingTax = string.Format("4.1.4.20 Retenção na fonte.", Environment.NewLine);
+            TooltipWithholdingTaxType = string.Format("4.1.4.20.1 Texto 3{0}Código do tipo de imposto retido.{0}Neste campo deve ser indicado o tipo de imposto retido, preenchendo-o com:{0}«IRS» - Imposto sobre o rendimento de pessoas singulares;{0}«IRC» - Imposto sobre o rendimento de pessoas coletivas;{0}«IS» - Imposto do selo.", Environment.NewLine);
+            TooltipWithholdingTaxDescription = string.Format("4.1.4.20.2 Texto 60{0}Motivo da retenção na fonte.{0}Deve ser indicado o normativo legal aplicável.{0}No caso do código do tipo de imposto (TaxType) = IS, deve ser preenchido com o código da verba respetiva.", Environment.NewLine);
+            TooltipWithholdingTaxAmount = string.Format("4.1.4.20.3 * Monetário{0}Montante da retenção na fonte.{0}Deve ser indicado o montante retido de imposto.", Environment.NewLine);
         }
 
-        public string this[string columnName]
-        {
-            get
-            {
-                Error erro = null;
-                if (columnName == "InvoiceNo")
-                {
-                    erro = ValidateInvoiceNo(appendError: true);
-                }
-                else if (columnName == "Hash")
-                {
-                    erro = ValidateHash(appendError: true);
-                }
-                else if (columnName == "HashControl")
-                {
-                    erro = ValidateHashControl(appendError: true);
-                }
-                else if (columnName == "Period")
-                {
-                    erro = ValidatePeriod(appendError: true);
-                }
-                else if (columnName == "InvoiceDate")
-                {
-                    erro = ValidateInvoiceDate(appendError: true);
-                }
-                else if (columnName == "SystemEntryDate")
-                {
-                    erro = ValidateSystemEntryDate(appendError: true);
-                }
-                else if (columnName == "TransactionID")
-                {
-                    erro = ValidateTransactionID(appendError: true);
-                }
-                else if (columnName == "CustomerID")
-                {
-                    erro = ValidateCustomerID(appendError: true);
-                }
-                else if (columnName == "SourceID")
-                {
-                    erro = ValidateSourceID(appendError: true);
-                }
-                else if (columnName == "MovementEndTime")
-                {
-                    erro = ValidateMovementEndTime(appendError: true);
-                }
-                else if (columnName == "MovementStartTime")
-                {
-                    erro = ValidateMovementStartTime(appendError: true);
-                }
+        public string TooltipInvoiceNo { get; set; }
+        public string TooltipDocumentStatus { get; set; }
+        public string TooltipInvoiceStatus { get; set; }
+        public string TooltipInvoiceStatusDate { get; set; }
+        public string TooltipReason { get; set; }
+        public string TooltipResponsableUserSourceID { get; set; }
+        public string TooltipSourceBilling { get; set; }
+        public string TooltipHash { get; set; }
+        public string TooltipHashControl { get; set; }
+        public string TooltipPeriod { get; set; }
+        public string TooltipInvoiceDate { get; set; }
+        public string TooltipInvoiceType { get; set; }
+        public string TooltipSelfBillingIndicator { get; set; }
+        public string TooltipCashVATSchemeIndicator { get; set; }
+        public string TooltipThirdPartiesBillingIndicator { get; set; }
+        public string TooltipGeneratedDocumentUserSourceID { get; set; }
+        public string TooltipSystemEntryDate { get; set; }
+        public string TooltipTransactionID { get; set; }
+        public string TooltipCustomerID { get; set; }
+        public string TooltipShipTo { get; set; }
+        public string TooltipShipToDeliveryID { get; set; }
+        public string TooltipShipToDeliveryDate { get; set; }
+        public string TooltipShipToWarehouseID { get; set; }
+        public string TooltipShipToLocationID { get; set; }
+        public string TooltipShipToAddress { get; set; }
+        public string TooltipShipToBuildingNumber { get; set; }
+        public string TooltipShipToStreetName { get; set; }
+        public string TooltipShipToAddressDetail { get; set; }
+        public string TooltipShipToCity { get; set; }
+        public string TooltipShipToPostalCode { get; set; }
+        public string TooltipShipToRegion { get; set; }
+        public string TooltipShipToCountry { get; set; }
+        public string TooltipShipFrom { get; set; }
+        public string TooltipShipFromDeliveryID { get; set; }
+        public string TooltipShipFromDeliveryDate { get; set; }
+        public string TooltipShipFromWarehouseID { get; set; }
+        public string TooltipShipFromLocationID { get; set; }
+        public string TooltipShipFromAddress { get; set; }
+        public string TooltipShipFromBuildingNumber { get; set; }
+        public string TooltipShipFromStreetName { get; set; }
+        public string TooltipShipFromAddressDetail { get; set; }
+        public string TooltipShipFromCity { get; set; }
+        public string TooltipShipFromPostalCode { get; set; }
+        public string TooltipShipFromRegion { get; set; }
+        public string TooltipShipFromCountry { get; set; }
+        public string TooltipMovementEndTime { get; set; }
+        public string TooltipMovementStartTime { get; set; }
+        public string TooltipATDocCodeID { get; set; }
+        public string TooltipReferences { get; set; }
+        public string TooltipCreditNote { get; set; }
+        public string TooltipReference { get; set; }
+        public string TooltipLineReason { get; set; }
+        public string TooltipDescription { get; set; }
+        public string TooltipDebitAmount { get; set; }
+        public string TooltipCreditAmount { get; set; }
+        public string TooltipTax { get; set; }
+        public string TooltipTaxType { get; set; }
+        public string TooltipTaxCountryRegion { get; set; }
+        public string TooltipTaxCode { get; set; }
+        public string TooltipTaxPercentage { get; set; }
+        public string TooltipTaxAmount { get; set; }
+        public string TooltipTaxExemptionReason { get; set; }
+        public string TooltipLineSettlementAmount { get; set; }
+        public string TooltipDocumentTotals { get; set; }
+        public string TooltipTaxPayable { get; set; }
+        public string TooltipNetTotal { get; set; }
+        public string TooltipGrossTotal { get; set; }
+        public string TooltipCurrency { get; set; }
+        public string TooltipCurrencyAmount { get; set; }
+        public string TooltipExchangeRate { get; set; }
+        public string TooltipSettlement { get; set; }
+        public string TooltipSettlementDiscount { get; set; }
+        public string TooltipSettlementAmount { get; set; }
+        public string TooltipSettlementDate { get; set; }
+        public string TooltipPaymentTerms { get; set; }
+        public string TooltipPaymentMechanism { get; set; }
+        public string TooltipWithholdingTax { get; set; }
+        public string TooltipWithholdingTaxType { get; set; }
+        public string TooltipWithholdingTaxDescription { get; set; }
+        public string TooltipWithholdingTaxAmount { get; set; }
 
-                return erro?.Description;
-            }
-        }
-
-        #region Validation
-        public Error ValidateInvoiceNo(bool appendError = false)
+        public Error ValidateInvoiceNo()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(InvoiceNo) || InvoiceNo.Length > 60)
             {
                 erro = new Error { Description = "Identificação única com tamanho incorrecto.", Field = "InvoiceNo", TypeofError = GetType(), Value = InvoiceNo, UID = Pk };
-                //if (appendError)
-                //    Tooltip.InvoiceNo = Tooltip.InvoiceNo.FormatTooltipWithError(erro.Description);
+                TooltipInvoiceNo += Environment.NewLine + erro.Description;
             }
             else if (!Regex.IsMatch(InvoiceNo, "([a-zA-Z0-9./_-])+ ([a-zA-Z0-9]*/[0-9]+)"))
             {
                 erro = new Error { Description = "Identificação única com caracteres não permitidos.", Field = "InvoiceNo", TypeofError = GetType(), Value = InvoiceNo, UID = Pk };
-                //if (appendError)
-                //    Tooltip.InvoiceNo = Tooltip.InvoiceNo.FormatTooltipWithError(erro.Description);
+                TooltipInvoiceNo += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateHash(bool appendError = false)
+        public Error ValidateHash()
         {
             Error erro = null;
 
             if (string.IsNullOrEmpty(Hash) || Hash.Length != 172)
             {
                 erro = new Error { Description = string.Format("Assinatura do documento {0} de tamanho incorrecto.", InvoiceNo), Field = "Hash", TypeofError = GetType(), Value = Hash, UID = Pk };
-                //if (appendError)
-                //    Tooltip.Hash = Tooltip.Hash.FormatTooltipWithError(erro.Description);
+                TooltipHash += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateHashControl(bool appendError = false)
+        public Error ValidateHashControl()
         {
             Error erro = null;
 
             if (string.IsNullOrEmpty(HashControl) || HashControl.Length > 40)
             {
                 erro = new Error { Description = string.Format("Versão da chave privada utilizada na assinatura do documento {0} incorrecta.", InvoiceNo), Field = "HashControl", TypeofError = GetType(), Value = HashControl, UID = Pk };
-                //if (appendError)
-                //    Tooltip.HashControl = Tooltip.HashControl.FormatTooltipWithError(erro.Description);
+                TooltipHashControl += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidatePeriod(bool appendError = false)
+        public Error ValidatePeriod()
         {
             Error erro = null;
 
             if (string.IsNullOrEmpty(Period) == false)
             {
-                int periodo = -1;
-                Int32.TryParse(Period, out periodo);
+                int.TryParse(Period, out int periodo);
 
                 if (periodo < 1 || periodo > 12)
                 {
                     erro = new Error { Description = string.Format("Mês do período de tributação do documento {0} incorrecto.", InvoiceNo), Field = "Period", TypeofError = GetType(), Value = Period, UID = Pk };
-                    //if (appendError)
-                    //    Tooltip.Period = Tooltip.Period.FormatTooltipWithError(erro.Description);
+                    TooltipPeriod += Environment.NewLine + erro.Description;
                 }
             }
 
             return erro;
         }
-        public Error ValidateInvoiceDate(bool appendError = false)
+        public Error ValidateInvoiceDate()
         {
             Error erro = null;
 
             if (InvoiceDate > DateTime.Now)
             {
                 erro = new Error { Description = string.Format("Data de emissão do documento {0} incorrecta.", InvoiceNo), Field = "InvoiceDate", TypeofError = GetType(), Value = InvoiceDate.ToString(), UID = Pk };
-                //if (appendError)
-                //    Tooltip.InvoiceDate = Tooltip.InvoiceDate.FormatTooltipWithError(erro.Description);
+                TooltipInvoiceDate += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateSystemEntryDate(bool appendError = false)
+        public Error ValidateSystemEntryDate()
         {
             Error erro = null;
 
             if (SystemEntryDate > DateTime.Now)
             {
                 erro = new Error { Description = string.Format("Data da gravação do documento {0} incorrecta.", InvoiceNo), Field = "SystemEntryDate", TypeofError = GetType(), Value = SystemEntryDate.ToString(), UID = Pk };
-                //if (appendError)
-                //    Tooltip.SystemEntryDate = Tooltip.SystemEntryDate.FormatTooltipWithError(erro.Description);
+                TooltipSystemEntryDate += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateTransactionID(bool appendError = false)
+        public Error ValidateTransactionID()
         {
             Error erro = null;
 
             if (!string.IsNullOrEmpty(TransactionID) && TransactionID.Length > 70)
             {
                 erro = new Error { Description = string.Format("Identificador da transacção do documento {0} incorrecto.", InvoiceNo), Field = "TransactionID", TypeofError = GetType(), Value = TransactionID, UID = Pk };
-                //if (appendError)
-                //    Tooltip.TransactionID = Tooltip.TransactionID.FormatTooltipWithError(erro.Description);
+                TooltipTransactionID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateCustomerID(bool appendError = false)
+        public Error ValidateCustomerID()
         {
             Error erro = null;
 
             if (string.IsNullOrEmpty(CustomerID) || CustomerID.Length > 30)
             {
                 erro = new Error { Description = string.Format("Chave única da tabela de clientes no documento {0} incorrecta.", InvoiceNo), Field = "CustomerID", TypeofError = GetType(), Value = CustomerID, UID = Pk };
-                //if (appendError)
-                //    Tooltip.CustomerID = Tooltip.CustomerID.FormatTooltipWithError(erro.Description);
+                TooltipCustomerID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateSourceID(bool appendError = false)
+        public Error ValidateSourceID()
         {
             Error erro = null;
 
             if (string.IsNullOrEmpty(SourceID) || SourceID.Length > 30)
             {
                 erro = new Error { Description = string.Format("Utilizador que gerou o documento {0} incorrecto.", InvoiceNo), Field = "CustomerID", TypeofError = GetType(), Value = CustomerID, UID = Pk };
-                //if (appendError)
-                //    Tooltip.GeneratedDocumentUserSourceID = Tooltip.GeneratedDocumentUserSourceID.FormatTooltipWithError(erro.Description);
+                TooltipGeneratedDocumentUserSourceID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateMovementEndTime(bool appendError = false)
+        public Error ValidateMovementEndTime()
         {
             Error erro = null;
 
             if (MovementEndTimeSpecified && MovementEndTime > DateTime.Now)
             {
                 erro = new Error { Description = string.Format("Data e hora de fim de transporte do documento {0} incorrecta.", InvoiceNo), Field = "MovementEndTime", TypeofError = GetType(), Value = MovementEndTime.ToString(), UID = Pk };
-                //if (appendError)
-                //    Tooltip.MovementEndTime = Tooltip.MovementEndTime.FormatTooltipWithError(erro.Description);
+                TooltipMovementEndTime += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateMovementStartTime(bool appendError = false)
+        public Error ValidateMovementStartTime()
         {
             Error erro = null;
 
             if (MovementStartTimeSpecified && MovementStartTime > DateTime.Now)
             {
                 erro = new Error { Description = string.Format("Data e hora de início de transporte do documento {0} incorrecta.", InvoiceNo), Field = "MovementStartTime", TypeofError = GetType(), Value = MovementStartTime.ToString(), UID = Pk };
-                //if (appendError)
-                //    Tooltip.MovementStartTime = Tooltip.MovementStartTime.FormatTooltipWithError(erro.Description);
+                TooltipMovementStartTime += Environment.NewLine + erro.Description;
             }
 
             return erro;
@@ -1666,8 +1320,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             if (SpecialRegimes != null)
             {
-                int auto = -1;
-                Int32.TryParse(SpecialRegimes.SelfBillingIndicator, out auto);
+                int.TryParse(SpecialRegimes.SelfBillingIndicator, out int auto);
                 if (string.IsNullOrEmpty(SpecialRegimes.SelfBillingIndicator) || (auto != 0 && auto != 1))
                     listError.Add(new Error { Description = string.Format("Indicador de autofaturação do documento {0} incorrecto.", InvoiceNo), Field = "SelfBillingIndicator", TypeofError = GetType(), Value = SpecialRegimes.SelfBillingIndicator, UID = Pk });
 
@@ -1781,79 +1434,44 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return listError.ToArray();
         }
-        #endregion
     }
 
-    public partial class SourceDocumentsSalesInvoicesInvoiceLine : BaseData, IDataErrorInfo
+    public partial class SourceDocumentsSalesInvoicesInvoiceLine : BaseData
     {
         /// <summary>
         /// Link to the invoice
         /// </summary>
         public string InvoiceNo { get; set; }
 
-        //SourceDocumentsSalesInvoicesInvoiceLineToolTipService tooltip;
-        //public SourceDocumentsSalesInvoicesInvoiceLineToolTipService Tooltip
-        //{
-        //	get
-        //	{
-        //		if (tooltip == null)
-        //			tooltip = new SourceDocumentsSalesInvoicesInvoiceLineToolTipService();
-        //		return tooltip;
-        //	}
-        //	set { tooltip = value; }
-        //}
-
-        public string Error
+        public SourceDocumentsSalesInvoicesInvoiceLine()
         {
-            get { return string.Empty; }
+            TooltipLineNumber = string.Format("4.1.4.18.1 * Inteiro{0}Número de linha.{0}As linhas devem ser exportadas pela mesma ordem em que se encontram no documento original.", Environment.NewLine);
+            TooltipOrderReferences = string.Format("4.1.4.18.2 Referência ao documento de origem.", Environment.NewLine);
+            TooltipOriginatingON = string.Format("4.1.4.18.2.1 Texto 255{0}Número do documento de origem.{0}Deve ser indicado o tipo, a série e o número do documento que despoletou a emissão.{0}Se o documento estiver contido no SAF-T(PT) deve ser utilizada a estrutura de numeração do campo de origem.{0}Caso sejam referenciados vários documentos, estes deverão ser separados por «;».", Environment.NewLine);
+            TooltipOrderDate = string.Format("4.1.4.18.2.2 Data{0}Data do documento de origem.", Environment.NewLine);
+            TooltipProductCode = string.Format("4.1.4.18.3 * Texto 30{0}Identificador do produto ou serviço.{0}Chave do registo na tabela de produtos/serviços.", Environment.NewLine);
+            TooltipProductDescription = string.Format("4.1.4.18.4 * Texto 200{0}Descrição do produto ou serviço.{0}Descrição da linha da fatura, ligada à tabela de produtos/serviços.", Environment.NewLine);
+            TooltipQuantity = string.Format("4.1.4.18.5 * Decimal{0}Quantidade.", Environment.NewLine);
+            TooltipUnitOfMeasure = string.Format("4.1.4.18.6 * Texto 20{0}Unidade de medida.", Environment.NewLine);
+            TooltipUnitPrice = string.Format("4.1.4.18.7 * Monetário{0}Preço unitário.{0}Preço unitário sem imposto e deduzido dos descontos de linha e cabeçalho.", Environment.NewLine);
+            TooltipTaxPointDate = string.Format("4.1.4.18.8 * Data{0}Data de envio da mercadoria ou prestação do serviço.{0}Data de envio da mercadoria ou da prestação de serviço Deve ser preenchido com a data da guia de remessa asso- ciada, se existir.", Environment.NewLine);
         }
 
-        [System.Runtime.CompilerServices.IndexerName("Items")]
-        public string this[string columnName]
-        {
-            get
-            {
-                Error erro = null;
-                if (columnName == "LineNumber")
-                {
-                    erro = ValidateLineNumber(appendError: true);
-                }
-                else if (columnName == "ProductCode")
-                {
-                    erro = ValidateProductCode(appendError: true);
-                }
-                else if (columnName == "ProductDescription")
-                {
-                    erro = ValidateProductDescription(appendError: true);
-                }
-                else if (columnName == "Quantity")
-                {
-                    erro = ValidateQuantity(appendError: true);
-                }
-                else if (columnName == "UnitOfMeasure")
-                {
-                    erro = ValidateUnitOfMeasure(appendError: true);
-                }
-                else if (columnName == "UnitPrice")
-                {
-                    erro = ValidateUnitPrice(appendError: true);
-                }
-                else if (columnName == "TaxPointDate")
-                {
-                    erro = ValidateTaxPointDate(appendError: true);
-                }
+        public string TooltipLineNumber { get; set; }
+        public string TooltipOrderReferences { get; set; }
+        public string TooltipOriginatingON { get; set; }
+        public string TooltipOrderDate { get; set; }
+        public string TooltipProductCode { get; set; }
+        public string TooltipProductDescription { get; set; }
+        public string TooltipQuantity { get; set; }
+        public string TooltipUnitOfMeasure { get; set; }
+        public string TooltipUnitPrice { get; set; }
+        public string TooltipTaxPointDate { get; set; }
 
-                return erro?.Description;
-            }
-        }
-
-        #region
-        public Error ValidateLineNumber(bool appendError = false, string SupPk = "", string invoiceNo = "")
+        public Error ValidateLineNumber(string SupPk = "", string invoiceNo = "")
         {
             Error erro = null;
-            int num = -1;
-            if (!string.IsNullOrEmpty(LineNumber))
-                Int32.TryParse(LineNumber, out num);
+            int.TryParse(LineNumber, out int num);
 
             if (string.IsNullOrEmpty(LineNumber) || num == -1)
             {
@@ -1861,12 +1479,11 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
                     invoiceNo = string.Format(", documento {0}", invoiceNo);
 
                 erro = new Error { Description = string.Format("Número de linha incorrecto {0}.", invoiceNo), Field = "LineNumber", TypeofError = GetType(), Value = LineNumber, UID = Pk, SupUID = SupPk };
-                //if (appendError)
-                //	Tooltip.LineNumber = Tooltip.LineNumber.FormatTooltipWithError(erro.Description);
+                TooltipLineNumber += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateProductCode(bool appendError = false, string SupPk = "", string invoiceNo = "")
+        public Error ValidateProductCode(string SupPk = "", string invoiceNo = "")
         {
             Error erro = null;
             if (string.IsNullOrEmpty(ProductCode) || ProductCode.Length > 30)
@@ -1875,12 +1492,11 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
                     invoiceNo = string.Format(" documento {0}", invoiceNo);
 
                 erro = new Error { Description = string.Format("Identificador do produto ou serviço incorrecto, {0} linha {1}.", invoiceNo, LineNumber), Field = "ProductCode", TypeofError = GetType(), Value = ProductCode, UID = Pk, SupUID = SupPk };
-                //if (appendError)
-                //	Tooltip.ProductCode = Tooltip.ProductCode.FormatTooltipWithError(erro.Description);
+                TooltipProductCode += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateProductDescription(bool appendError = false, string SupPk = "", string invoiceNo = "")
+        public Error ValidateProductDescription(string SupPk = "", string invoiceNo = "")
         {
             Error erro = null;
             if (string.IsNullOrEmpty(ProductDescription) || ProductDescription.Length > 200)
@@ -1889,12 +1505,11 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
                     invoiceNo = string.Format(" documento {0}", invoiceNo);
 
                 erro = new Error { Description = string.Format("Descrição do produto ou serviço incorrecta, {0} linha {1}.", invoiceNo, LineNumber), Field = "ProductDescription", TypeofError = GetType(), Value = ProductDescription, UID = Pk, SupUID = SupPk };
-                //if (appendError)
-                //	Tooltip.ProductDescription = Tooltip.ProductDescription.FormatTooltipWithError(erro.Description);
+                TooltipProductDescription += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateQuantity(bool appendError = false, string SupPk = "", string invoiceNo = "")
+        public Error ValidateQuantity(string SupPk = "", string invoiceNo = "")
         {
             Error erro = null;
             if (Quantity <= 0)
@@ -1903,12 +1518,11 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
                     invoiceNo = string.Format(" documento {0}", invoiceNo);
 
                 erro = new Error { Description = string.Format("Quantidade incorrecta, {0} linha {1}.", invoiceNo, LineNumber), Field = "Quantity", TypeofError = GetType(), Value = Quantity.ToString(), UID = Pk, SupUID = SupPk };
-                //if (appendError)
-                //	Tooltip.Quantity = Tooltip.Quantity.FormatTooltipWithError(erro.Description);
+                TooltipQuantity += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateUnitOfMeasure(bool appendError = false, string SupPk = "", string invoiceNo = "")
+        public Error ValidateUnitOfMeasure(string SupPk = "", string invoiceNo = "")
         {
             Error erro = null;
             if (string.IsNullOrEmpty(UnitOfMeasure) || UnitOfMeasure.Length > 20)
@@ -1917,12 +1531,11 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
                     invoiceNo = string.Format(" documento {0}", invoiceNo);
 
                 erro = new Error { Description = string.Format("Unidade de medida incorrecta, {0} linha {1}.", invoiceNo, LineNumber), Field = "UnitOfMeasure", TypeofError = GetType(), Value = UnitOfMeasure, UID = Pk, SupUID = SupPk };
-                //if (appendError)
-                //	Tooltip.UnitOfMeasure = Tooltip.UnitOfMeasure.FormatTooltipWithError(erro.Description);
+                TooltipUnitOfMeasure += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateUnitPrice(bool appendError = false, string SupPk = "", string invoiceNo = "")
+        public Error ValidateUnitPrice(string SupPk = "", string invoiceNo = "")
         {
             Error erro = null;
             if (UnitPrice == 0)
@@ -1931,12 +1544,11 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
                     invoiceNo = string.Format(" documento {0}", invoiceNo);
 
                 erro = new Error { Description = string.Format("Preço unitário incorrecto, {0} linha {1}.", invoiceNo, LineNumber), Field = "UnitPrice", TypeofError = GetType(), Value = UnitPrice.ToString(), UID = Pk, SupUID = SupPk };
-                //if (appendError)
-                //	Tooltip.UnitPrice = Tooltip.UnitPrice.FormatTooltipWithError(erro.Description);
+                TooltipUnitPrice += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateTaxPointDate(bool appendError = false, string SupPk = "", string invoiceNo = "")
+        public Error ValidateTaxPointDate(string SupPk = "", string invoiceNo = "")
         {
             Error erro = null;
             if (TaxPointDate > DateTime.Now)
@@ -1945,8 +1557,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
                     invoiceNo = string.Format(" documento {0}", invoiceNo);
 
                 erro = new Error { Description = string.Format("Data de envio da mercadoria ou prestação do serviço incorrecta, {0} linha {1}.", invoiceNo, LineNumber), Field = "TaxPointDate", TypeofError = GetType(), Value = TaxPointDate.ToString(), UID = Pk, SupUID = SupPk };
-                //if (appendError)
-                //	Tooltip.TaxPointDate = Tooltip.TaxPointDate.FormatTooltipWithError(erro.Description);
+                TooltipTaxPointDate += Environment.NewLine + erro.Description;
             }
             return erro;
         }
@@ -2006,178 +1617,95 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
             return listError.ToArray();
         }
-        #endregion
     }
 
-    public partial class Header : BaseData, IDataErrorInfo
+    public partial class Header : BaseData
     {
-        HeaderToolTipService tooltip;
-        public HeaderToolTipService Tooltip
+        public Header()
         {
-            get
-            {
-                if (tooltip == null)
-                    tooltip = new HeaderToolTipService();
-                return tooltip;
-            }
-            set { tooltip = value; }
+            TooltipAuditFileVersion = string.Format("1.1 * Texto 10{0}Ficheiro de auditoria informática.{0}A versão a utilizar do esquema XML será a que se encontra disponível no endereço http://www.portaldasfinancas.gov.pt.", Environment.NewLine);
+            TooltipCompanyID = string.Format("1.2 * Texto 50{0}Identificação do registo comercial da empresa.{0}Obtém-se pela concatenação da conservatória do registo comercial com o número do registo comercial, separados pelo carácter espaço.{0}Nos casos em que não existe o registo comercial, deve ser indicado o NIF.", Environment.NewLine);
+            TooltipTaxRegistrationNumber = string.Format("1.3 * Inteiro 9{0}Número de identificação fiscal da empresa.{0}Preencher com o NIF português sem espaços e sem qualquer prefixo do país.", Environment.NewLine);
+            TooltipTaxAccountingBasis = string.Format("1.4 * Texto 1{0}Sistema contabilístico.{0}Deve ser preenchido com:{0}C - Contabilidade;{0}F - Faturação incluindo os documentos de transporte e os de conferência;{0}I - Dados integrados de contabilidade e faturação, incluindo os documentos de transporte e os de conferência;{0}S - Autofaturação;{0}E - Faturação emitida por terceiros, incluindo documentos de transporte e os de conferência;{0}P - Dados parciais de faturação, incluindo os documentos de transporte e os de conferência.", Environment.NewLine);
+            TooltipCompanyName = string.Format("1.5 * Texto 100{0}Nome da empresa.{0}Denominação social da empresa ou nome do sujeito passivo.", Environment.NewLine);
+            TooltipBusinessName = string.Format("1.6 Texto 60{0}Designação Comercial.{0}Designação comercial do sujeito passivo.", Environment.NewLine);
+            TooltipCompanyAddress = string.Format("1.7 *{0}Endereço da empresa.", Environment.NewLine);
+            TooltipBuildingNumber = string.Format("1.7.1 Texto 10{0}Número de polícia.", Environment.NewLine);
+            TooltipStreetName = string.Format("1.7.2 Texto 90{0}Nome da rua.", Environment.NewLine);
+            TooltipAddressDetail = string.Format("1.7.3 * Texto 100{0}Morada detalhada.{0}Deve incluir o nome da rua, número de polícia e andar, se aplicável.", Environment.NewLine);
+            TooltipCity = string.Format("1.7.4 * Texto 50{0}Localidade.", Environment.NewLine);
+            TooltipPostalCode = string.Format("1.7.5 * Texto 8{0}Código postal.", Environment.NewLine);
+            TooltipRegion = string.Format("1.7.6 Texto 50{0}Distrito.", Environment.NewLine);
+            TooltipCountry = string.Format("1.7.7 * Texto 2{0}País.{0}Preencher com «PT».", Environment.NewLine);
+            TooltipFiscalYear = string.Format("1.8 * Inteiro 4{0}Ano fiscal.{0}Utilizar as regras do Código do IRC, no caso de períodos contabilísticos não coincidentes com o ano civil.{0}(Exemplo: período de tributação de 1-10-2012 a 30-9-2013 corresponde a FiscalYear = 2012).", Environment.NewLine);
+            TooltipStartDate = string.Format("1.9 * Data{0}Data do início do período do ficheiro.", Environment.NewLine);
+            TooltipEndDate = string.Format("1.10 * Data{0}Data do fim do período do ficheiro.", Environment.NewLine);
+            TooltipCurrencyCode = string.Format("1.11 * Texto 3{0}Código de moeda.{0}Preencher com «EUR».", Environment.NewLine);
+            TooltipDateCreated = string.Format("1.12 * Data{0}Data da criação.{0}Data de criação do ficheiro XML do SAF-T (PT).", Environment.NewLine);
+            TooltipTaxEntity = string.Format("1.13 * Texto 20{0}Identificação do estabelecimento.{0}No caso do ficheiro de faturação, deverá ser especificado a que estabelecimento diz respeito o ficheiro produzido, se aplicável.{0}Caso contrário, deverá ser preenchido com a especificação «Global».{0}No caso do ficheiro de contabilidade ou integrado, este campo deverá ser preenchido com a especificação «Sede».", Environment.NewLine);
+            TooltipProductCompanyTaxID = string.Format("1.14 * Texto 20{0}Identificação fiscal da entidade produtora do software.{0}Preencher com o NIF da entidade produtora do software.", Environment.NewLine);
+            TooltipSoftwareCertificateNumber = string.Format("1.15 * Texto 20{0}Número do certificado atribuído ao software.{0}Número do certificado atribuído à entidade produtora do software, de acordo com a Portaria n.º 363/2010, de 23 de junho.{0}Se não aplicável, deverá ser preenchido com «0» (zero).", Environment.NewLine);
+            TooltipProductID = string.Format("1.16 * Texto 255{0}Nome da aplicação que gera o SAF-T (PT).{0}Deve ser indicado o nome comercial do software e o da empresa produtora no formato «Nome da aplicação/Nome da empresa produtora do software».", Environment.NewLine);
+            TooltipProductVersion = string.Format("1.17 * Texto 30{0}Versão da aplicação.{0}Deve ser indicada a versão da aplicação.", Environment.NewLine);
+            TooltipHeaderComment = string.Format("1.18 Texto 255{0}Comentários adicionais.", Environment.NewLine);
+            TooltipTelephone = string.Format("1.19 Texto 20{0}Telefone.", Environment.NewLine);
+            TooltipFax = string.Format("1.20 Texto 20{0}Fax.", Environment.NewLine);
+            TooltipEmail = string.Format("1.21 Texto 60{0}Endereço de correio eletrónico da empresa.", Environment.NewLine);
+            TooltipWebsite = string.Format("1.22 Texto 60{0}Endereço do sítio Web da empresa.", Environment.NewLine);
         }
 
-        public string Error
-        {
-            get { return null; }
-        }
+        public string TooltipAuditFileVersion { get; set; }
+        public string TooltipCompanyID { get; set; }
+        public string TooltipTaxRegistrationNumber { get; set; }
+        public string TooltipTaxAccountingBasis { get; set; }
+        public string TooltipCompanyName { get; set; }
+        public string TooltipBusinessName { get; set; }
+        public string TooltipCompanyAddress { get; set; }
+        public string TooltipBuildingNumber { get; set; }
+        public string TooltipStreetName { get; set; }
+        public string TooltipAddressDetail { get; set; }
+        public string TooltipCity { get; set; }
+        public string TooltipPostalCode { get; set; }
+        public string TooltipRegion { get; set; }
+        public string TooltipCountry { get; set; }
+        public string TooltipFiscalYear { get; set; }
+        public string TooltipStartDate { get; set; }
+        public string TooltipEndDate { get; set; }
+        public string TooltipCurrencyCode { get; set; }
+        public string TooltipDateCreated { get; set; }
+        public string TooltipTaxEntity { get; set; }
+        public string TooltipProductCompanyTaxID { get; set; }
+        public string TooltipSoftwareCertificateNumber { get; set; }
+        public string TooltipProductID { get; set; }
+        public string TooltipProductVersion { get; set; }
+        public string TooltipHeaderComment { get; set; }
+        public string TooltipTelephone { get; set; }
+        public string TooltipFax { get; set; }
+        public string TooltipEmail { get; set; }
+        public string TooltipWebsite { get; set; }
 
-        public string this[string columnName]
-        {
-            get
-            {
-                Error erro = null;
-                if (columnName == "TaxRegistrationNumber")
-                {
-                    erro = ValidateTaxRegistrationNumber(appendError: true);
-                }
-                else if (columnName == "AuditFileVersion")
-                {
-                    erro = ValidateAuditFileVersion(appendError: true);
-                }
-                else if (columnName == "BusinessName")
-                {
-                    erro = ValidateBusinessName(appendError: true);
-                }
-                else if (columnName == "AddressDetail")
-                {
-                    erro = ValidateAddressDetail(appendError: true);
-                }
-                else if (columnName == "BuildingNumber")
-                {
-                    erro = ValidateBuildingNumber(appendError: true);
-                }
-                else if (columnName == "City")
-                {
-                    erro = ValidateCity(appendError: true);
-                }
-                else if (columnName == "Country")
-                {
-                    erro = ValidateCountry(appendError: true);
-                }
-                else if (columnName == "PostalCode")
-                {
-                    erro = ValidatePostalCode(appendError: true);
-                }
-                else if (columnName == "Region")
-                {
-                    erro = ValidateRegion(appendError: true);
-                }
-                else if (columnName == "StreetName")
-                {
-                    erro = ValidateStreetName(appendError: true);
-                }
-                else if (columnName == "CompanyID")
-                {
-                    erro = ValidateCompanyID(appendError: true);
-                }
-                else if (columnName == "CompanyName")
-                {
-                    erro = ValidateCompanyName(appendError: true);
-                }
-                else if (columnName == "CurrencyCode")
-                {
-                    erro = ValidateCurrencyCode(appendError: true);
-                }
-                else if (columnName == "DateCreated")
-                {
-                    erro = ValidateDateCreated(appendError: true);
-                }
-                else if (columnName == "Email")
-                {
-                    erro = ValidateEmail(appendError: true);
-                }
-                else if (columnName == "EndDate")
-                {
-                    erro = ValidateEndDate(appendError: true);
-                }
-                else if (columnName == "Fax")
-                {
-                    erro = ValidateFax(appendError: true);
-                }
-                else if (columnName == "FiscalYear")
-                {
-                    erro = ValidateFiscalYear(appendError: true);
-                }
-                else if (columnName == "HeaderComment")
-                {
-                    erro = ValidateHeaderComment(appendError: true);
-                }
-                else if (columnName == "ProductCompanyTaxID")
-                {
-                    erro = ValidateProductCompanyTaxID(appendError: true);
-                }
-                else if (columnName == "ProductID")
-                {
-                    erro = ValidateProductID(appendError: true);
-                }
-                else if (columnName == "ProductVersion")
-                {
-                    erro = ValidateProductVersion(appendError: true);
-                }
-                else if (columnName == "SoftwareCertificateNumber")
-                {
-                    erro = ValidateSoftwareCertificateNumber(appendError: true);
-                }
-                else if (columnName == "StartDate")
-                {
-                    erro = ValidateStartDate(appendError: true);
-                }
-                else if (columnName == "TaxAccountingBasis")
-                {
-                    erro = ValidateTaxAccountingBasis(appendError: true);
-                }
-                else if (columnName == "TaxEntity")
-                {
-                    erro = ValidateTaxEntity(appendError: true);
-                }
-                else if (columnName == "Telephone")
-                {
-                    erro = ValidateTelephone(appendError: true);
-                }
-                else if (columnName == "Website")
-                {
-                    erro = ValidateWebsite(appendError: true);
-                }
-
-                if (erro != null)
-                    return erro.Description;
-                else
-                    return null;
-            }
-        }
-
-        #region Validation
-        public Error ValidateTaxRegistrationNumber(bool appendError = false)
+        public Error ValidateTaxRegistrationNumber()
         {
             Error erro = null;
             if (!Validations.Validations.CheckTaxRegistrationNumber(TaxRegistrationNumber))
             {
                 erro = new Error { Description = "NIF inválido", Field = "TaxRegistrationNumber", TypeofError = GetType(), Value = TaxRegistrationNumber, UID = Pk };
-                //if (appendError)
-                //	Tooltip.TaxRegistrationNumber = Tooltip.TaxRegistrationNumber.FormatTooltipWithError(erro.Description);
+                TooltipTaxRegistrationNumber += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateAuditFileVersion(bool appendError = false)
+        public Error ValidateAuditFileVersion()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(AuditFileVersion) || AuditFileVersion.Length > 10)
             {
                 erro = new Error { Description = "Versão do ficheiro SAF-T PT incorrecta.", Field = "AuditFileVersion", TypeofError = GetType(), Value = AuditFileVersion, UID = Pk };
-                //if (appendError)
-                //	Tooltip.AuditFileVersion = Tooltip.AuditFileVersion.FormatTooltipWithError(erro.Description);
+                TooltipAuditFileVersion += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateBusinessName(bool appendError = false)
+        public Error ValidateBusinessName()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(BusinessName) == false)
@@ -2185,46 +1713,42 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
                 if (BusinessName.Length > 60)
                 {
                     erro = new Error { Description = "Designação comercial incorrecta.", Field = "BusinessName", TypeofError = GetType(), Value = BusinessName, UID = Pk };
-                    //if (appendError)
-                    //	Tooltip.BusinessName = Tooltip.BusinessName.FormatTooltipWithError(erro.Description);
+                    TooltipBusinessName += Environment.NewLine + erro.Description;
                 }
             }
             return erro;
         }
-        public Error ValidateAddressDetail(bool appendError = false)
+        public Error ValidateAddressDetail()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(CompanyAddress.AddressDetail) || CompanyAddress.AddressDetail.Length > 100)
             {
                 erro = new Error { Description = "Morada detalhada incorrecta.", Field = "AddressDetail", TypeofError = GetType(), Value = CompanyAddress.AddressDetail, UID = Pk };
-                //if (appendError)
-                //	Tooltip.AddressDetail = Tooltip.AddressDetail.FormatTooltipWithError(erro.Description);
+                TooltipAddressDetail += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateBuildingNumber(bool appendError = false)
+        public Error ValidateBuildingNumber()
         {
             Error erro = null;
             if (!string.IsNullOrEmpty(CompanyAddress.BuildingNumber) && CompanyAddress.BuildingNumber.Length > 10)
             {
                 erro = new Error { Description = "Número polícia incorrecto.", Field = "BuildingNumber", TypeofError = GetType(), Value = CompanyAddress.BuildingNumber, UID = Pk };
-                //if (appendError)
-                //	Tooltip.BuildingNumber = Tooltip.BuildingNumber.FormatTooltipWithError(erro.Description);
+                TooltipBuildingNumber += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateCity(bool appendError = false)
+        public Error ValidateCity()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(CompanyAddress.City) || CompanyAddress.City.Length > 50)
             {
                 erro = new Error { Description = "Localidade incorrecta.", Field = "City", TypeofError = GetType(), Value = CompanyAddress.City, UID = Pk };
-                //if (appendError)
-                //	Tooltip.City = Tooltip.City.FormatTooltipWithError(erro.Description);
+                TooltipCity += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateCountry(bool appendError = false)
+        public Error ValidateCountry()
         {
             string country = null;
             if (CompanyAddress != null || CompanyAddress.Country != null)
@@ -2234,45 +1758,41 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
             if (string.IsNullOrEmpty(country) || country != "PT")
             {
                 erro = new Error { Description = "Localidade incorrecta.", Field = "Country", TypeofError = GetType(), Value = country, UID = Pk };
-                //if (appendError)
-                //	Tooltip.Country = Tooltip.Country.FormatTooltipWithError(erro.Description);
+                TooltipCountry += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidatePostalCode(bool appendError = false)
+        public Error ValidatePostalCode()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(CompanyAddress.PostalCode) || CompanyAddress.PostalCode.Length > 50)
             {
                 erro = new Error { Description = "Código postal incorrecto.", Field = "PostalCode", TypeofError = GetType(), Value = CompanyAddress.PostalCode, UID = Pk };
-                //if (appendError)
-                //	Tooltip.PostalCode = Tooltip.PostalCode.FormatTooltipWithError(erro.Description);
+                TooltipPostalCode += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateRegion(bool appendError = false)
+        public Error ValidateRegion()
         {
             Error erro = null;
             if (!string.IsNullOrEmpty(CompanyAddress.Region) && CompanyAddress.Region.Length > 50)
             {
                 erro = new Error { Description = "Distrito incorrecto.", Field = "Region", TypeofError = GetType(), Value = CompanyAddress.Region, UID = Pk };
-                //if (appendError)
-                //	Tooltip.Region = Tooltip.Region.FormatTooltipWithError(erro.Description);
+                TooltipRegion += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateStreetName(bool appendError = false)
+        public Error ValidateStreetName()
         {
             Error erro = null;
             if (!string.IsNullOrEmpty(CompanyAddress.StreetName) && CompanyAddress.StreetName.Length > 90)
             {
                 erro = new Error { Description = "Nome da rua incorrecto.", Field = "StreetName", TypeofError = GetType(), Value = CompanyAddress.StreetName, UID = Pk };
-                //if (appendError)
-                //	Tooltip.StreetName = Tooltip.StreetName.FormatTooltipWithError(erro.Description);
+                TooltipStreetName += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateCompanyID(bool appendError = false)
+        public Error ValidateCompanyID()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(CompanyID) || CompanyID.Length > 50 || !Regex.IsMatch(CompanyID, "([0-9])+|([a-zA-Z0-9-/]+ [0-9]+)"))
@@ -2280,203 +1800,173 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
                 if (!Validations.Validations.CheckTaxRegistrationNumber(CompanyID))
                 {
                     erro = new Error { Description = "Registo comercial incorrecto.", Field = "CompanyID", TypeofError = GetType(), Value = CompanyID, UID = Pk };
-                    //if (appendError)
-                    //	Tooltip.CompanyID = Tooltip.CompanyID.FormatTooltipWithError(erro.Description);
+                    TooltipCompanyID += Environment.NewLine + erro.Description;
                 }
             }
             return erro;
         }
-        public Error ValidateCompanyName(bool appendError = false)
+        public Error ValidateCompanyName()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(CompanyName) || CompanyName.Length > 100)
             {
                 erro = new Error { Description = "Nome empresa incorrecto.", Field = "CompanyName", TypeofError = GetType(), Value = CompanyName, UID = Pk };
-                //if (appendError)
-                //	Tooltip.CompanyName = Tooltip.CompanyName.FormatTooltipWithError(erro.Description);
+                TooltipCompanyName += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateCurrencyCode(bool appendError = false)
+        public Error ValidateCurrencyCode()
         {
             Error erro = null;
             if (CurrencyCode == null || CurrencyCode.ToString() != "EUR")
             {
                 erro = new Error { Description = "Código moeda incorrecto.", Field = "CurrencyCode", TypeofError = GetType(), Value = string.Format("{0}", CurrencyCode ?? "null"), UID = Pk };
-                //if (appendError)
-                //	Tooltip.CurrencyCode = Tooltip.CurrencyCode.FormatTooltipWithError(erro.Description);
+                TooltipCurrencyCode += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateDateCreated(bool appendError = false)
+        public Error ValidateDateCreated()
         {
             Error erro = null;
             if (DateCreated > DateTime.Now)
             {
                 erro = new Error { Description = "Data de criação do ficheiro incorrecta.", Field = "DateCreated", TypeofError = GetType(), Value = DateCreated.ToString(), UID = Pk };
-                //if (appendError)
-                //	Tooltip.DateCreated = Tooltip.DateCreated.FormatTooltipWithError(erro.Description);
+                TooltipDateCreated += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateEmail(bool appendError = false)
+        public Error ValidateEmail()
         {
             Error erro = null;
             if (!string.IsNullOrEmpty(Email) && (Email.Length > 60 || !Regex.IsMatch(Email, @"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b", RegexOptions.IgnoreCase)))
             {
                 erro = new Error { Description = "Email incorrecto.", Field = "Email", TypeofError = GetType(), Value = Email, UID = Pk };
-                //if (appendError)
-                //	Tooltip.Email = Tooltip.Email.FormatTooltipWithError(erro.Description);
+                TooltipEmail += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateEndDate(bool appendError = false)
+        public Error ValidateEndDate()
         {
             Error erro = null;
             if (EndDate == DateTime.MinValue)
             {
                 erro = new Error { Description = "Data do fim do periodo incorrecta.", Field = "EndDate", TypeofError = GetType(), Value = EndDate.ToString(), UID = Pk };
-                //if (appendError)
-                //	Tooltip.EndDate = Tooltip.EndDate.FormatTooltipWithError(erro.Description);
+                TooltipEndDate += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateFax(bool appendError = false)
+        public Error ValidateFax()
         {
             Error erro = null;
             if (!string.IsNullOrEmpty(Fax) && Fax.Length > 20)
             {
                 erro = new Error { Description = "Fax incorrecto.", Field = "Fax", TypeofError = GetType(), Value = Fax, UID = Pk };
-                //if (appendError)
-                //	Tooltip.Fax = Tooltip.Fax.FormatTooltipWithError(erro.Description);
+                TooltipFax += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateFiscalYear(bool appendError = false)
+        public Error ValidateFiscalYear()
         {
             Error erro = null;
-            int ano = -1;
-            Int32.TryParse(FiscalYear, out ano);
+            int.TryParse(FiscalYear, out int ano);
             if (string.IsNullOrEmpty(FiscalYear) || FiscalYear.Length > 4 || ano == -1)
             {
                 erro = new Error { Description = "Ano fiscal incorrecto.", Field = "FiscalYear", TypeofError = GetType(), Value = FiscalYear, UID = Pk };
-                //if (appendError)
-                //	Tooltip.FiscalYear = Tooltip.FiscalYear.FormatTooltipWithError(erro.Description);
+                TooltipFiscalYear += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateHeaderComment(bool appendError = false)
+        public Error ValidateHeaderComment()
         {
             Error erro = null;
             if (!string.IsNullOrEmpty(HeaderComment) && HeaderComment.Length > 255)
             {
                 erro = new Error { Description = "Comentário demasiado longo.", Field = "HeaderComment", TypeofError = GetType(), Value = HeaderComment, UID = Pk };
-                //if (appendError)
-                //	Tooltip.HeaderComment = Tooltip.HeaderComment.FormatTooltipWithError(erro.Description);
+                TooltipHeaderComment += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateProductCompanyTaxID(bool appendError = false)
+        public Error ValidateProductCompanyTaxID()
         {
             Error erro = null;
             if (!Validations.Validations.CheckTaxRegistrationNumber(ProductCompanyTaxID))
             {
                 erro = new Error { Description = "NIF da empresa produtora de saftware inválido.", Field = "ProductCompanyTaxID", TypeofError = GetType(), Value = ProductCompanyTaxID, UID = Pk };
-                //if (appendError)
-                //	Tooltip.ProductCompanyTaxID = Tooltip.ProductCompanyTaxID.FormatTooltipWithError(erro.Description);
+                TooltipProductCompanyTaxID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateProductID(bool appendError = false)
+        public Error ValidateProductID()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(ProductID) || ProductID.Length > 255 || !ProductID.Contains('/'))
             {
                 erro = new Error { Description = "Nome da aplicação incorrecto.", Field = "ProductID", TypeofError = GetType(), Value = ProductID, UID = Pk };
-                //if (appendError)
-                //	Tooltip.ProductID = Tooltip.ProductID.FormatTooltipWithError(erro.Description);
+                TooltipProductID += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateProductVersion(bool appendError = false)
+        public Error ValidateProductVersion()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(ProductVersion) || ProductVersion.Length > 30)
             {
                 erro = new Error { Description = "Versão da aplicação incorrecta.", Field = "ProductVersion", TypeofError = GetType(), Value = ProductVersion, UID = Pk };
-                //if (appendError)
-                //	Tooltip.ProductVersion = Tooltip.ProductVersion.FormatTooltipWithError(erro.Description);
+                TooltipProductVersion += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateSoftwareCertificateNumber(bool appendError = false)
+        public Error ValidateSoftwareCertificateNumber()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(SoftwareCertificateNumber) || SoftwareCertificateNumber.Length > 20)
             {
                 erro = new Error { Description = "Número de certificação incorrecto.", Field = "SoftwareCertificateNumber", TypeofError = GetType(), Value = SoftwareCertificateNumber, UID = Pk };
-                //if (appendError)
-                //	Tooltip.SoftwareCertificateNumber = Tooltip.SoftwareCertificateNumber.FormatTooltipWithError(erro.Description);
+                TooltipSoftwareCertificateNumber += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateStartDate(bool appendError = false)
-        {
-            Error erro = null;
-            //if (StartDate < Workspace.Instance.Config.MinDate)
-            //{
-            //	erro = new Error { Description = "Data do início do periodo incorrecta.", Field = "StartDate", TypeofError = GetType(), Value = StartDate.ToString(), UID = Pk };
-            //	if (appendError)
-            //		Tooltip.StartDate = Tooltip.StartDate.FormatTooltipWithError(erro.Description);
-            //}
-            return erro;
-        }
-        public Error ValidateTaxAccountingBasis(bool appendError = false)
+        public Error ValidateTaxAccountingBasis()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(TaxAccountingBasis.ToString()) || TaxAccountingBasis.ToString().Length > 1)
             {
                 erro = new Error { Description = "Sistema contabilístico incorrecto.", Field = "TaxAccountingBasis", TypeofError = GetType(), Value = TaxAccountingBasis.ToString(), UID = Pk };
-                //if (appendError)
-                //	Tooltip.TaxAccountingBasis = Tooltip.TaxAccountingBasis.FormatTooltipWithError(erro.Description);
+                TooltipTaxAccountingBasis += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateTaxEntity(bool appendError = false)
+        public Error ValidateTaxEntity()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(TaxEntity) || TaxEntity.Length > 20)
             {
                 erro = new Error { Description = "Identificação do estabelecimento incorrecta.", Field = "TaxEntity", TypeofError = GetType(), Value = TaxEntity, UID = Pk };
-                //if (appendError)
-                //	Tooltip.TaxEntity = Tooltip.TaxEntity.FormatTooltipWithError(erro.Description);
+                TooltipTaxEntity += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateTelephone(bool appendError = false)
+        public Error ValidateTelephone()
         {
             Error erro = null;
             if (!string.IsNullOrEmpty(Telephone) && Telephone.Length > 20)
             {
                 erro = new Error { Description = "Identificação do estabelecimento incorrecta.", Field = "Telephone", TypeofError = GetType(), Value = Telephone, UID = Pk };
-                //if (appendError)
-                //	Tooltip.Telephone = Tooltip.Telephone.FormatTooltipWithError(erro.Description);
+                TooltipTelephone += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateWebsite(bool appendError = false)
+        public Error ValidateWebsite()
         {
             Error erro = null;
             if (!string.IsNullOrEmpty(Website) && Website.Length > 60)
             {
                 erro = new Error { Description = "Website incorrecto.", Field = "Website", TypeofError = GetType(), Value = Website, UID = Pk };
-                //if (appendError)
-                //	Tooltip.Website = Tooltip.Website.FormatTooltipWithError(erro.Description);
+                TooltipWebsite += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        #endregion Validation
     }
 
     public partial class Product : BaseData
@@ -2775,83 +2265,63 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
         }
     }
 
-    public partial class TaxTableEntry : BaseData, IDataErrorInfo
+    public partial class TaxTableEntry : BaseData
     {
-        //TaxToolTipService tooltip;
-        //public TaxToolTipService Tooltip
-        //{
-        //	get
-        //	{
-        //		if (tooltip == null)
-        //			tooltip = new TaxToolTipService();
-        //		return tooltip;
-        //	}
-        //	set { tooltip = value; }
-        //}
-
-        public string Error
+        public TaxTableEntry()
         {
-            get { return string.Empty; }
+            TooltipTaxTableEntry = string.Format("2.5.1 * Registo na tabela de impostos.", Environment.NewLine);
+            TooltipTaxType = string.Format("2.5.1.1 * Texto 3{0}Código do tipo de imposto.{0}Neste campo deve ser indicado o tipo de imposto.{0}Deve ser preenchido com:{0}«IVA» - Imposto sobre o valor acrescentado;{0}«IS» - Imposto do selo.", Environment.NewLine);
+            TooltipTaxCountryRegion = string.Format("2.5.1.2 * Texto 5{0}País ou região do imposto.{0}Deve ser preenchido de acordo com a norma ISO 3166-1-alpha 2.{0}No caso das Regiões Autónomas da Madeira e Açores deve ser preenchido com: «PT-AC» - Espaço fiscal da Região Autónoma dos Açores; e «PT-MA» - Espaço fiscal da Região Autónoma da Madeira.", Environment.NewLine);
+            TooltipTaxCode = string.Format("2.5.1.3 * Texto 10{0}Código do imposto.{0}No caso do código do tipo de imposto (TaxType) = IVA, deve ser preenchido com:{0}«RED» - Taxa reduzida;{0}«INT» - Taxa intermédia;{0}«NOR» - Taxa normal;{0}«ISE» - Isenta;{0}«OUT» - Outros, aplicável para os regimes especiais de IVA.{0}No caso do código do tipo de imposto (TaxType) = IS, deve ser preenchido com o código da verba respetiva.", Environment.NewLine);
+            TooltipDescription = string.Format("2.5.1.4 * Texto 255{0}Descrição do imposto.{0}No caso do imposto do selo deve ser preenchido com a descrição da verba respetiva.", Environment.NewLine);
+            TooltipTaxExpirationDate = string.Format("2.5.1.5 Data{0}Data de fim de vigência.{0}Última data legal de aplicação da taxa de imposto, no caso de alteração da mesma, na vigência do período de tributação.", Environment.NewLine);
+            TooltipTaxPercentage = string.Format("2.5.1.6 ** Decimal{0}Percentagem da taxa do imposto.{0}O preenchimento é obrigatório, no caso de se tratar de uma percentagem do imposto.", Environment.NewLine);
+            TooltipTaxAmount = string.Format("2.5.1.7 ** Monetário{0}Montante do imposto.{0}O preenchimento é obrigatório, no caso de se tratar de uma verba fixa de imposto do selo.", Environment.NewLine);
         }
 
-        [System.Runtime.CompilerServices.IndexerName("Items")]
-        public string this[string columnName]
-        {
-            get
-            {
-                Error erro = null;
-                if (columnName == "TaxCountryRegion")
-                {
-                    erro = ValidateTaxCountryRegion(appendError: true);
-                }
-                else if (columnName == "TaxCode")
-                {
-                    erro = ValidateTaxCode(appendError: true);
-                }
+        public string TooltipTaxTableEntry { get; set; }
+        public string TooltipTaxType { get; set; }
+        public string TooltipTaxCountryRegion { get; set; }
+        public string TooltipTaxCode { get; set; }
+        public string TooltipDescription { get; set; }
+        public string TooltipTaxExpirationDate { get; set; }
+        public string TooltipTaxPercentage { get; set; }
+        public string TooltipTaxAmount { get; set; }
 
-                return erro == null ? "" : erro.Description;
-            }
-        }
-
-        #region Validations
-
-        public Error ValidateTaxCountryRegion(bool appendError = false)
+        public Error ValidateTaxCountryRegion()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(TaxCountryRegion) || TaxCountryRegion.Length > 5)
             {
                 erro = new Error { Description = "País ou região do imposto inválido", Field = "TaxCountryRegion", TypeofError = GetType(), Value = TaxCountryRegion, UID = Pk };
-                //if (appendError)
-                //	Tooltip.TaxCountryRegion = Tooltip.TaxCountryRegion.FormatTooltipWithError(erro.Description);
+                TooltipTaxCountryRegion += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateTaxCode(bool appendError = false)
+        public Error ValidateTaxCode()
         {
             Error erro = null;
             if (string.IsNullOrEmpty(TaxCode) || TaxCode.Length > 10)
             {
                 erro = new Error { Description = "Código do imposto inválido", Field = "TaxCode", TypeofError = GetType(), Value = TaxCode, UID = Pk };
-                //if (appendError)
-                //	Tooltip.TaxCode = Tooltip.TaxCode.FormatTooltipWithError(erro.Description);
+                TooltipTaxCode += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        //public Error ValidateDescription(bool appendError = false)
-        //{
-        //    Error erro = null;
-        //    if (string.IsNullOrEmpty(Description) || Description.Length > 255)
-        //    {
-        //        erro = new Error { Description = "Identificador único do cliente inválido", Field = "Description", TypeofError = GetType(), ID = Description, UID = Pk };
-        //        if (appendError)
-        //            Tooltip.Description = Tooltip.Description.FormatTooltipWithError(erro.Description);
-        //    }
+        public Error ValidateDescription()
+        {
+            Error erro = null;
+            if (string.IsNullOrEmpty(Description) || Description.Length > 255)
+            {
+                erro = new Error { Description = "Identificador único do cliente inválido", Field = "Description", TypeofError = GetType(), Value = Description, UID = Pk };
+                TooltipDescription += Environment.NewLine + erro.Description;
+            }
 
-        //    return erro;
-        //}
-        //public Error ValidateTaxExpirationDate(bool appendError = false)
+            return erro;
+        }
+        //public Error ValidateTaxExpirationDate()
         //{
         //    Error erro = null;
         //    if (string.IsNullOrEmpty(TaxExpirationDate) || TaxExpirationDate.Length > 30)
@@ -2863,7 +2333,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
         //    return erro;
         //}
-        //public Error ValidateTaxPercentage(bool appendError = false)
+        //public Error ValidateTaxPercentage()
         //{
         //    Error erro = null;
         //    if (string.IsNullOrEmpty(TaxPercentage) || TaxPercentage.Length > 30)
@@ -2875,7 +2345,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
         //    return erro;
         //}
-        //public Error ValidateTaxAmount(bool appendError = false)
+        //public Error ValidateTaxAmount()
         //{
         //    Error erro = null;
         //    if (string.IsNullOrEmpty(TaxAmount) || TaxAmount.Length > 30)
@@ -2887,7 +2357,6 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
 
         //    return erro;
         //}
-        #endregion
     }
 
     public partial class Supplier : BaseData
@@ -3120,58 +2589,22 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
         }
     }
 
-    public partial class GeneralLedger : BaseData, IDataErrorInfo
+    public partial class GeneralLedger : BaseData
     {
 
-        public string Error
-        {
-            get { return string.Empty; }
-        }
-
-        public string this[string columnName]
-        {
-            get { return string.Empty; }
-        }
     }
 
-    public partial class GeneralLedgerEntriesJournal : BaseData, IDataErrorInfo
+    public partial class GeneralLedgerEntriesJournal : BaseData
     {
-        public string Error
-        {
-            get { return string.Empty; }
-        }
 
-        public string this[string columnName]
-        {
-            get { return string.Empty; }
-        }
     }
 
-    public partial class GeneralLedgerEntriesJournalTransaction : BaseData, IDataErrorInfo
+    public partial class GeneralLedgerEntriesJournalTransaction : BaseData
     {
-        public string Error
-        {
-            get { return string.Empty; }
-        }
-
-        [System.Runtime.CompilerServices.IndexerName("Items")]
-        public string this[string columnName]
-        {
-            get { return string.Empty; }
-        }
     }
 
-    public partial class GeneralLedgerEntriesJournalTransactionLine : BaseData, IDataErrorInfo
+    public partial class GeneralLedgerEntriesJournalTransactionLine : BaseData
     {
-        public string Error
-        {
-            get { return string.Empty; }
-        }
 
-        [System.Runtime.CompilerServices.IndexerName("Items")]
-        public string this[string columnName]
-        {
-            get { return string.Empty; }
-        }
     }
 }

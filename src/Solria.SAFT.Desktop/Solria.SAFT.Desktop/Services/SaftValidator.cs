@@ -1253,7 +1253,6 @@ namespace Solria.SAFT.Desktop.Services
             MensagensErro.Add(header.ValidateProductID());
             MensagensErro.Add(header.ValidateProductVersion());
             MensagensErro.Add(header.ValidateSoftwareCertificateNumber());
-            MensagensErro.Add(header.ValidateStartDate());
             MensagensErro.Add(header.ValidateTaxAccountingBasis());
             MensagensErro.Add(header.ValidateTaxEntity());
             MensagensErro.Add(header.ValidateTelephone());
@@ -1284,7 +1283,6 @@ namespace Solria.SAFT.Desktop.Services
             MensagensErro.Add(header.ValidateProductID());
             MensagensErro.Add(header.ValidateProductVersion());
             MensagensErro.Add(header.ValidateSoftwareCertificateNumber());
-            MensagensErro.Add(header.ValidateStartDate());
             MensagensErro.Add(header.ValidateTaxAccountingBasis());
             MensagensErro.Add(header.ValidateTaxEntity());
             MensagensErro.Add(header.ValidateTelephone());

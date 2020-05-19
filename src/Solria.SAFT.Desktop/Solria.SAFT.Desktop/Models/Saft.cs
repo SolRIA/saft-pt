@@ -32,6 +32,36 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string Fax { get; set; }
         public string Email { get; set; }
         public string Website { get; set; }
+
+        public string TooltipAuditFileVersion { get; set; }
+        public string TooltipCompanyID { get; set; }
+        public string TooltipTaxRegistrationNumber { get; set; }
+        public string TooltipTaxAccountingBasis { get; set; }
+        public string TooltipCompanyName { get; set; }
+        public string TooltipBusinessName { get; set; }
+        public string TooltipCompanyAddress { get; set; }
+        public string TooltipBuildingNumber { get; set; }
+        public string TooltipStreetName { get; set; }
+        public string TooltipAddressDetail { get; set; }
+        public string TooltipCity { get; set; }
+        public string TooltipPostalCode { get; set; }
+        public string TooltipRegion { get; set; }
+        public string TooltipCountry { get; set; }
+        public string TooltipFiscalYear { get; set; }
+        public string TooltipStartDate { get; set; }
+        public string TooltipEndDate { get; set; }
+        public string TooltipCurrencyCode { get; set; }
+        public string TooltipDateCreated { get; set; }
+        public string TooltipTaxEntity { get; set; }
+        public string TooltipProductCompanyTaxID { get; set; }
+        public string TooltipSoftwareCertificateNumber { get; set; }
+        public string TooltipProductID { get; set; }
+        public string TooltipProductVersion { get; set; }
+        public string TooltipHeaderComment { get; set; }
+        public string TooltipTelephone { get; set; }
+        public string TooltipFax { get; set; }
+        public string TooltipEmail { get; set; }
+        public string TooltipWebsite { get; set; }
     }
     public class AddressStructurePT
     {
@@ -269,6 +299,15 @@ namespace Solria.SAFT.Desktop.Models.Saft
     }
     public class TaxTableEntry
     {
+        public string TooltipTaxTableEntry { get; set; }
+        public string TooltipTaxType { get; set; }
+        public string TooltipTaxCountryRegion { get; set; }
+        public string TooltipTaxCode { get; set; }
+        public string TooltipDescription { get; set; }
+        public string TooltipTaxExpirationDate { get; set; }
+        public string TooltipTaxPercentage { get; set; }
+        public string TooltipTaxAmount { get; set; }
+
         public string TaxType { get; set; }
         public string TaxCountryRegion { get; set; }
         public string TaxCode { get; set; }
@@ -343,6 +382,87 @@ namespace Solria.SAFT.Desktop.Models.Saft
     }
     public class SourceDocumentsSalesInvoicesInvoice
     {
+        public string TooltipInvoiceNo { get; set; }
+        public string TooltipDocumentStatus { get; set; }
+        public string TooltipInvoiceStatus { get; set; }
+        public string TooltipInvoiceStatusDate { get; set; }
+        public string TooltipReason { get; set; }
+        public string TooltipResponsableUserSourceID { get; set; }
+        public string TooltipSourceBilling { get; set; }
+        public string TooltipHash { get; set; }
+        public string TooltipHashControl { get; set; }
+        public string TooltipPeriod { get; set; }
+        public string TooltipInvoiceDate { get; set; }
+        public string TooltipInvoiceType { get; set; }
+        public string TooltipSelfBillingIndicator { get; set; }
+        public string TooltipCashVATSchemeIndicator { get; set; }
+        public string TooltipThirdPartiesBillingIndicator { get; set; }
+        public string TooltipGeneratedDocumentUserSourceID { get; set; }
+        public string TooltipSystemEntryDate { get; set; }
+        public string TooltipTransactionID { get; set; }
+        public string TooltipCustomerID { get; set; }
+        public string TooltipShipTo { get; set; }
+        public string TooltipShipToDeliveryID { get; set; }
+        public string TooltipShipToDeliveryDate { get; set; }
+        public string TooltipShipToWarehouseID { get; set; }
+        public string TooltipShipToLocationID { get; set; }
+        public string TooltipShipToAddress { get; set; }
+        public string TooltipShipToBuildingNumber { get; set; }
+        public string TooltipShipToStreetName { get; set; }
+        public string TooltipShipToAddressDetail { get; set; }
+        public string TooltipShipToCity { get; set; }
+        public string TooltipShipToPostalCode { get; set; }
+        public string TooltipShipToRegion { get; set; }
+        public string TooltipShipToCountry { get; set; }
+        public string TooltipShipFrom { get; set; }
+        public string TooltipShipFromDeliveryID { get; set; }
+        public string TooltipShipFromDeliveryDate { get; set; }
+        public string TooltipShipFromWarehouseID { get; set; }
+        public string TooltipShipFromLocationID { get; set; }
+        public string TooltipShipFromAddress { get; set; }
+        public string TooltipShipFromBuildingNumber { get; set; }
+        public string TooltipShipFromStreetName { get; set; }
+        public string TooltipShipFromAddressDetail { get; set; }
+        public string TooltipShipFromCity { get; set; }
+        public string TooltipShipFromPostalCode { get; set; }
+        public string TooltipShipFromRegion { get; set; }
+        public string TooltipShipFromCountry { get; set; }
+        public string TooltipMovementEndTime { get; set; }
+        public string TooltipMovementStartTime { get; set; }
+        public string TooltipATDocCodeID { get; set; }
+        public string TooltipReferences { get; set; }
+        public string TooltipCreditNote { get; set; }
+        public string TooltipReference { get; set; }
+        public string TooltipLineReason { get; set; }
+        public string TooltipDescription { get; set; }
+        public string TooltipDebitAmount { get; set; }
+        public string TooltipCreditAmount { get; set; }
+        public string TooltipTax { get; set; }
+        public string TooltipTaxType { get; set; }
+        public string TooltipTaxCountryRegion { get; set; }
+        public string TooltipTaxCode { get; set; }
+        public string TooltipTaxPercentage { get; set; }
+        public string TooltipTaxAmount { get; set; }
+        public string TooltipTaxExemptionReason { get; set; }
+        public string TooltipLineSettlementAmount { get; set; }
+        public string TooltipDocumentTotals { get; set; }
+        public string TooltipTaxPayable { get; set; }
+        public string TooltipNetTotal { get; set; }
+        public string TooltipGrossTotal { get; set; }
+        public string TooltipCurrency { get; set; }
+        public string TooltipCurrencyAmount { get; set; }
+        public string TooltipExchangeRate { get; set; }
+        public string TooltipSettlement { get; set; }
+        public string TooltipSettlementDiscount { get; set; }
+        public string TooltipSettlementAmount { get; set; }
+        public string TooltipSettlementDate { get; set; }
+        public string TooltipPaymentTerms { get; set; }
+        public string TooltipPaymentMechanism { get; set; }
+        public string TooltipWithholdingTax { get; set; }
+        public string TooltipWithholdingTaxType { get; set; }
+        public string TooltipWithholdingTaxDescription { get; set; }
+        public string TooltipWithholdingTaxAmount { get; set; }
+
         public string InvoiceNo { get; set; }
         public string ATCUD { get; set; }
         public SourceDocumentsSalesInvoicesInvoiceDocumentStatus DocumentStatus { get; set; }
@@ -407,6 +527,17 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string TaxExemptionCode { get; set; }
         public decimal SettlementAmount { get; set; }
         public CustomsInformation CustomsInformation { get; set; }
+
+        public string TooltipLineNumber { get; set; }
+        public string TooltipOrderReferences { get; set; }
+        public string TooltipOriginatingON { get; set; }
+        public string TooltipOrderDate { get; set; }
+        public string TooltipProductCode { get; set; }
+        public string TooltipProductDescription { get; set; }
+        public string TooltipQuantity { get; set; }
+        public string TooltipUnitOfMeasure { get; set; }
+        public string TooltipUnitPrice { get; set; }
+        public string TooltipTaxPointDate { get; set; }
     }
     public class SourceDocumentsSalesInvoicesInvoiceDocumentTotals
     {
