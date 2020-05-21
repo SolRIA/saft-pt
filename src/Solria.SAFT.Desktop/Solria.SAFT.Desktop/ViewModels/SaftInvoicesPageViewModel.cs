@@ -1,4 +1,5 @@
 ﻿using Avalonia.Collections;
+using FastReport;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using ReactiveUI;
@@ -22,11 +23,13 @@ namespace Solria.SAFT.Desktop.ViewModels
     {
         private readonly ISaftValidator saftValidator;
         private readonly IDialogManager dialogManager;
+        private readonly IReportService reportService;
 
         public SaftInvoicesPageViewModel(IScreen screen) : base(screen, MenuIds.SAFT_INVOICES_PAGE)
         {
             saftValidator = Locator.Current.GetService<ISaftValidator>();
             dialogManager = Locator.Current.GetService<IDialogManager>();
+            reportService = Locator.Current.GetService<IReportService>();
 
             DoPrintCommand = ReactiveCommand.CreateFromTask(OnDoPrint);
             DoPrintTaxesCommand = ReactiveCommand.CreateFromTask(OnDoPrintTaxes);
@@ -914,7 +917,44 @@ namespace Solria.SAFT.Desktop.ViewModels
         }
         private void OnShowInvoiceDetails()
         {
+            // create report instance
+            Report report = new Report();
 
+            // load the existing report
+            report.Load(@"C:\Users\frede\Desktop\FR reports\reports\BillingDocument_A4.frx");
+
+            // register the array
+            report.RegisterData(new object[] {
+                new
+                {
+                    DocNo = CurrentInvoice.InvoiceNo,
+                    CurrentInvoice.ATCUD,
+                    Status = CurrentInvoice.DocumentStatus.InvoiceStatus,
+                    StatusDate = CurrentInvoice.DocumentStatus.InvoiceStatusDate,
+                    CurrentInvoice.DocumentStatus.Reason,
+                    CurrentInvoice.Hash,
+                    CurrentInvoice.HashControl,
+                    CurrentInvoice.Period,
+                    Date = CurrentInvoice.InvoiceDate,
+                    Type = CurrentInvoice.InvoiceType,
+                    CurrentInvoice.EACCode,
+                    CurrentInvoice.CustomerID,
+                    CustomerTaxID = "999999990",
+                    CustomerName = "Consumidor final",
+                    CurrentInvoice.DocumentTotals.GrossTotal,
+                    CurrentInvoice.DocumentTotals.NetTotal,
+                    CurrentInvoice.DocumentTotals.TaxPayable
+                }
+            }, "Document");
+
+            // prepare the report
+            report.Prepare();
+
+            //save prepared report
+            string preparedReport = Path.Combine(Path.GetTempPath(), "Prepared_Report.fpx");
+            report.SavePrepared(preparedReport);
+
+            reportService.View(preparedReport);
         }
         private async Task OnDoOpenExcel()
         {

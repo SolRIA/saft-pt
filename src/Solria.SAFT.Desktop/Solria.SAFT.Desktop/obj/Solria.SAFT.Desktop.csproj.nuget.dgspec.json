@@ -67,6 +67,14 @@
               "target": "Package",
               "version": "[2.0.35, )"
             },
+            "FastReport.OpenSource": {
+              "target": "Package",
+              "version": "[2020.3.0, )"
+            },
+            "FastReport.OpenSource.Export.PdfSimple": {
+              "target": "Package",
+              "version": "[2020.3.0, )"
+            },
             "Microsoft.Data.Sqlite": {
               "target": "Package",
               "version": "[3.1.4, )"
@@ -94,12 +102,18 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[3.1.2, 3.1.2]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.202\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.300\\RuntimeIdentifierGraph.json"
         }
       }
     }

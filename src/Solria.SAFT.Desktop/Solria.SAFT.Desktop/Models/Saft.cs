@@ -382,6 +382,28 @@ namespace Solria.SAFT.Desktop.Models.Saft
     }
     public class SourceDocumentsSalesInvoicesInvoice
     {
+        public string InvoiceNo { get; set; }
+        public string ATCUD { get; set; }
+        public SourceDocumentsSalesInvoicesInvoiceDocumentStatus DocumentStatus { get; set; }
+        public string Hash { get; set; }
+        public string HashControl { get; set; }
+        public string Period { get; set; }
+        public DateTime InvoiceDate { get; set; }
+        public string InvoiceType { get; set; }
+        public SpecialRegimes SpecialRegimes { get; set; }
+        public string SourceID { get; set; }
+        public string EACCode { get; set; }
+        public DateTime SystemEntryDate { get; set; }
+        public string TransactionID { get; set; }
+        public string CustomerID { get; set; }
+        public ShippingPointStructure ShipTo { get; set; }
+        public ShippingPointStructure ShipFrom { get; set; }
+        public DateTime? MovementEndTime { get; set; }
+        public DateTime? MovementStartTime { get; set; }
+        public SourceDocumentsSalesInvoicesInvoiceLine[] Line { get; set; }
+        public SourceDocumentsSalesInvoicesInvoiceDocumentTotals DocumentTotals { get; set; }
+        public WithholdingTax[] WithholdingTax { get; set; }
+
         public string TooltipInvoiceNo { get; set; }
         public string TooltipDocumentStatus { get; set; }
         public string TooltipInvoiceStatus { get; set; }
@@ -462,28 +484,6 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string TooltipWithholdingTaxType { get; set; }
         public string TooltipWithholdingTaxDescription { get; set; }
         public string TooltipWithholdingTaxAmount { get; set; }
-
-        public string InvoiceNo { get; set; }
-        public string ATCUD { get; set; }
-        public SourceDocumentsSalesInvoicesInvoiceDocumentStatus DocumentStatus { get; set; }
-        public string Hash { get; set; }
-        public string HashControl { get; set; }
-        public string Period { get; set; }
-        public DateTime InvoiceDate { get; set; }
-        public string InvoiceType { get; set; }
-        public SpecialRegimes SpecialRegimes { get; set; }
-        public string SourceID { get; set; }
-        public string EACCode { get; set; }
-        public DateTime SystemEntryDate { get; set; }
-        public string TransactionID { get; set; }
-        public string CustomerID { get; set; }
-        public ShippingPointStructure ShipTo { get; set; }
-        public ShippingPointStructure ShipFrom { get; set; }
-        public DateTime? MovementEndTime { get; set; }
-        public DateTime? MovementStartTime { get; set; }
-        public SourceDocumentsSalesInvoicesInvoiceLine[] Line { get; set; }
-        public SourceDocumentsSalesInvoicesInvoiceDocumentTotals DocumentTotals { get; set; }
-        public WithholdingTax[] WithholdingTax { get; set; }
     }
     public class SourceDocumentsSalesInvoicesInvoiceDocumentStatus
     {
