@@ -119,3 +119,11 @@ C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.D
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.1\System.Security.Cryptography.Pkcs.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\FastReport.OpenSource.Export.PdfSimple.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csproj.CoreCompileInputs.cache
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Schemas\SAFTPT1.01_01.xsd
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Schemas\SAFTPT1.02_01.xsd
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Schemas\SAFTPT1.03_01.xsd
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Schemas\SAFTPT1.04_01.xsd
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\System.Windows.Extensions.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp3.0\FastReport.Compat.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\FastReport.Compat.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll

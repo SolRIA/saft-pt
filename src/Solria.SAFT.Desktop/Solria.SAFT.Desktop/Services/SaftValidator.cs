@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 
@@ -20,6 +21,7 @@ namespace Solria.SAFT.Desktop.Services
         public SaftValidator(IXmlSerializer xmlSerializer)
         {
             this.xmlSerializer = xmlSerializer;
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
 
         public string SaftFileName { get; set; }
@@ -115,6 +117,7 @@ namespace Solria.SAFT.Desktop.Services
 
                 //Do validations on fields
                 ValidateHeader(SaftFileV4.Header);
+                ValidaEstruturaXSD(SaftFileVersion.V10401);
                 if (SaftFileV4.MasterFiles != null)
                 {
                     ValidateCustomers(SaftFileV4.MasterFiles.Customer);
@@ -214,6 +217,7 @@ namespace Solria.SAFT.Desktop.Services
 
                 //Do validations on fields
                 ValidateHeader(SaftFileV3.Header);
+                ValidaEstruturaXSD(SaftFileVersion.V10301);
                 if (SaftFileV3.MasterFiles != null)
                 {
                     ValidateCustomers(SaftFileV3.MasterFiles.Customer);
@@ -1207,25 +1211,38 @@ namespace Solria.SAFT.Desktop.Services
         {
             try
             {
-                XmlSchemaSet schemas = new XmlSchemaSet();
-                //if (fileversion == SaftFileVersion.V10301)
-                //	schemas.Add(null, XmlReader.Create(new StringReader(Properties.Resources.SAFTPT1_03_01)));
-                //else if (fileversion == SaftFileVersion.V10201)
-                //	schemas.Add(null, XmlReader.Create(new StringReader(Properties.Resources.SAFTPT1_02_01)));
-                //else if (fileversion == SaftFileVersion.V10101)
-                //	schemas.Add(null, XmlReader.Create(new StringReader(Properties.Resources.SAFTPT_1_01)));
+                string schema_filename = string.Empty;
+                if (fileversion == SaftFileVersion.V10401)
+                    schema_filename = Path.Combine(Environment.CurrentDirectory, "Schemas", "SAFTPT1.04_01.xsd");
+                else if (fileversion == SaftFileVersion.V10301)
+                    schema_filename = Path.Combine(Environment.CurrentDirectory, "Schemas", "SAFTPT1.03_01.xsd");
+                else if (fileversion == SaftFileVersion.V10201)
+                    schema_filename = Path.Combine(Environment.CurrentDirectory, "Schemas", "SAFTPT1.02_01.xsd");
+                else if (fileversion == SaftFileVersion.V10101)
+                    schema_filename = Path.Combine(Environment.CurrentDirectory, "Schemas", "SAFTPT1.01_01.xsd");
 
-                XDocument doc = XDocument.Load(SaftFileName);
-                doc.Validate(schemas, (o, e) =>
-                {
-                    MensagensErro.Add(new Error { Description = e.Message, TypeofError = typeof(SchemaResults) });
-                });
+                XmlReaderSettings settings = new XmlReaderSettings();
+                settings.Schemas.Add(null, schema_filename);
+                settings.ValidationType = ValidationType.Schema;
+
+                ValidationEventHandler eventHandler = new ValidationEventHandler(ValidationEventHandler);
+
+                XmlReader reader = XmlReader.Create(SaftFileName, settings);
+                XmlDocument document = new XmlDocument();
+                document.Load(reader);
+                // the following call to Validate succeeds.
+                document.Validate(eventHandler);
             }
             catch (Exception error)
             {
                 // XML Validation failed
                 MensagensErro.Add(new Error { Description = string.Format("Mensagem de erro: {0}", error.Message), TypeofError = typeof(SchemaResults) });
             }
+        }
+
+        void ValidationEventHandler(object sender, ValidationEventArgs e)
+        {
+            MensagensErro.Add(new Error { Description = e.Message, TypeofError = typeof(SchemaResults) });
         }
 
         void ValidateHeader(Models.SaftV4.Header header)

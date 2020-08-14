@@ -45,19 +45,19 @@
           "dependencies": {
             "Avalonia": {
               "target": "Package",
-              "version": "[0.9.10, )"
+              "version": "[0.9.12, )"
             },
             "Avalonia.Controls.DataGrid": {
               "target": "Package",
-              "version": "[0.9.10, )"
+              "version": "[0.9.12, )"
             },
             "Avalonia.Desktop": {
               "target": "Package",
-              "version": "[0.9.10, )"
+              "version": "[0.9.12, )"
             },
             "Avalonia.ReactiveUI": {
               "target": "Package",
-              "version": "[0.9.10, )"
+              "version": "[0.9.12, )"
             },
             "Avalonia.Xaml.Behaviors": {
               "target": "Package",
@@ -69,15 +69,15 @@
             },
             "FastReport.OpenSource": {
               "target": "Package",
-              "version": "[2020.3.0, )"
+              "version": "[2020.3.17, )"
             },
             "FastReport.OpenSource.Export.PdfSimple": {
               "target": "Package",
-              "version": "[2020.3.0, )"
+              "version": "[2020.3.17, )"
             },
             "Microsoft.Data.Sqlite": {
               "target": "Package",
-              "version": "[3.1.4, )"
+              "version": "[3.1.7, )"
             },
             "Microsoft.Extensions.PlatformAbstractions": {
               "target": "Package",
@@ -102,18 +102,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[3.1.2, 3.1.2]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.300\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
         }
       }
     }

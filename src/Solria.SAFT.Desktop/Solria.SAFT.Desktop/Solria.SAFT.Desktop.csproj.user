@@ -13,5 +13,17 @@
     <None Update="Models\Stock_1_2.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Update="Schemas\SAFTPT1.01_01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Schemas\SAFTPT1.02_01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Schemas\SAFTPT1.03_01.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Schemas\SAFTPT1.04_01.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,45 +1,45 @@
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Animation.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Base.dll
-C:\Users\frede\.nuget\packages\avalonia.controls.datagrid\0.9.10\lib\netstandard2.0\Avalonia.Controls.DataGrid.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Controls.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.DesignerSupport.dll
-C:\Users\frede\.nuget\packages\avalonia.desktop\0.9.10\lib\netstandard2.0\Avalonia.Desktop.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.DesktopRuntime.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Diagnostics.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Dialogs.dll
-C:\Users\frede\.nuget\packages\avalonia.direct2d1\0.9.10\lib\netstandard2.0\Avalonia.Direct2D1.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.dll
-C:\Users\frede\.nuget\packages\avalonia.freedesktop\0.9.10\lib\netstandard2.0\Avalonia.FreeDesktop.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Input.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Interactivity.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Layout.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Logging.Serilog.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Markup.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Markup.Xaml.dll
-C:\Users\frede\.nuget\packages\avalonia.native\0.9.10\lib\netstandard2.0\Avalonia.Native.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.OpenGL.dll
-C:\Users\frede\.nuget\packages\avalonia.reactiveui\0.9.10\lib\netstandard2.0\Avalonia.ReactiveUI.dll
-C:\Users\frede\.nuget\packages\avalonia.remote.protocol\0.9.10\lib\netstandard2.0\Avalonia.Remote.Protocol.dll
-C:\Users\frede\.nuget\packages\avalonia.skia\0.9.10\lib\netstandard2.0\Avalonia.Skia.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Styling.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Themes.Default.dll
-C:\Users\frede\.nuget\packages\avalonia\0.9.10\lib\netcoreapp2.0\Avalonia.Visuals.dll
-C:\Users\frede\.nuget\packages\avalonia.win32\0.9.10\lib\netstandard2.0\Avalonia.Win32.dll
-C:\Users\frede\.nuget\packages\avalonia.x11\0.9.10\lib\netstandard2.0\Avalonia.X11.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Animation.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Base.dll
+C:\Users\frede\.nuget\packages\avalonia.controls.datagrid\0.9.12\lib\netstandard2.0\Avalonia.Controls.DataGrid.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Controls.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.DesignerSupport.dll
+C:\Users\frede\.nuget\packages\avalonia.desktop\0.9.12\lib\netstandard2.0\Avalonia.Desktop.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.DesktopRuntime.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Diagnostics.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Dialogs.dll
+C:\Users\frede\.nuget\packages\avalonia.direct2d1\0.9.12\lib\netstandard2.0\Avalonia.Direct2D1.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.dll
+C:\Users\frede\.nuget\packages\avalonia.freedesktop\0.9.12\lib\netstandard2.0\Avalonia.FreeDesktop.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Input.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Interactivity.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Layout.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Logging.Serilog.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Markup.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Markup.Xaml.dll
+C:\Users\frede\.nuget\packages\avalonia.native\0.9.12\lib\netstandard2.0\Avalonia.Native.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.OpenGL.dll
+C:\Users\frede\.nuget\packages\avalonia.reactiveui\0.9.12\lib\netstandard2.0\Avalonia.ReactiveUI.dll
+C:\Users\frede\.nuget\packages\avalonia.remote.protocol\0.9.12\lib\netstandard2.0\Avalonia.Remote.Protocol.dll
+C:\Users\frede\.nuget\packages\avalonia.skia\0.9.12\lib\netstandard2.0\Avalonia.Skia.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Styling.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Themes.Default.dll
+C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Visuals.dll
+C:\Users\frede\.nuget\packages\avalonia.win32\0.9.12\lib\netstandard2.0\Avalonia.Win32.dll
+C:\Users\frede\.nuget\packages\avalonia.x11\0.9.12\lib\netstandard2.0\Avalonia.X11.dll
 C:\Users\frede\.nuget\packages\avalonia.xaml.interactions\0.9.9\lib\netstandard2.1\Avalonia.Xaml.Interactions.dll
 C:\Users\frede\.nuget\packages\avalonia.xaml.interactivity\0.9.9\lib\netstandard2.1\Avalonia.Xaml.Interactivity.dll
 C:\Users\frede\.nuget\packages\portable.bouncycastle\1.8.6\lib\netstandard2.0\BouncyCastle.Crypto.dll
 C:\Users\frede\.nuget\packages\dapper\2.0.35\lib\netstandard2.0\Dapper.dll
 C:\Users\frede\.nuget\packages\dynamicdata\6.13.9\lib\netstandard2.0\DynamicData.dll
-C:\Users\frede\.nuget\packages\fastreport.opensource\2020.3.0\lib\netstandard2.0\FastReport.dll
-C:\Users\frede\.nuget\packages\fastreport.opensource.export.pdfsimple\2020.3.0\lib\netstandard2.0\FastReport.OpenSource.Export.PdfSimple.dll
+C:\Users\frede\.nuget\packages\fastreport.opensource\2020.3.17\lib\netstandard2.1\FastReport.dll
+C:\Users\frede\.nuget\packages\fastreport.opensource.export.pdfsimple\2020.3.17\lib\netstandard2.0\FastReport.OpenSource.Export.PdfSimple.dll
 C:\Users\frede\.nuget\packages\sharpziplib\1.2.0\lib\netstandard2.0\ICSharpCode.SharpZipLib.dll
 C:\Users\frede\.nuget\packages\jetbrains.annotations\10.3.0\lib\netstandard1.0\JetBrains.Annotations.dll
 C:\Users\frede\.nuget\packages\microsoft.codeanalysis.csharp\2.0.0\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll
 C:\Users\frede\.nuget\packages\microsoft.codeanalysis.common\2.0.0\lib\netstandard1.3\Microsoft.CodeAnalysis.dll
 C:\Users\frede\.nuget\packages\microsoft.codeanalysis.visualbasic\2.0.0\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.CSharp.dll
-C:\Users\frede\.nuget\packages\microsoft.data.sqlite.core\3.1.4\lib\netstandard2.0\Microsoft.Data.Sqlite.dll
+C:\Users\frede\.nuget\packages\microsoft.data.sqlite.core\3.1.7\lib\netstandard2.0\Microsoft.Data.Sqlite.dll
 C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.platformabstractions\1.1.0\lib\netstandard1.3\Microsoft.Extensions.PlatformAbstractions.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.VisualBasic.Core.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.VisualBasic.dll
@@ -208,6 +208,7 @@ C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Web.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Web.HttpUtility.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Windows.dll
+C:\Users\frede\.nuget\packages\system.windows.extensions\4.6.0\ref\netcoreapp3.0\System.Windows.Extensions.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xml.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xml.Linq.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xml.ReaderWriter.dll
