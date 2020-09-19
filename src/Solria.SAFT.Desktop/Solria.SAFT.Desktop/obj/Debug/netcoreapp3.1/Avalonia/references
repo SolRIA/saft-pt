@@ -26,20 +26,20 @@ C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Themes
 C:\Users\frede\.nuget\packages\avalonia\0.9.12\lib\netcoreapp2.0\Avalonia.Visuals.dll
 C:\Users\frede\.nuget\packages\avalonia.win32\0.9.12\lib\netstandard2.0\Avalonia.Win32.dll
 C:\Users\frede\.nuget\packages\avalonia.x11\0.9.12\lib\netstandard2.0\Avalonia.X11.dll
-C:\Users\frede\.nuget\packages\avalonia.xaml.interactions\0.9.9\lib\netstandard2.1\Avalonia.Xaml.Interactions.dll
-C:\Users\frede\.nuget\packages\avalonia.xaml.interactivity\0.9.9\lib\netstandard2.1\Avalonia.Xaml.Interactivity.dll
+C:\Users\frede\.nuget\packages\avalonia.xaml.interactions\0.9.12\lib\netstandard2.1\Avalonia.Xaml.Interactions.dll
+C:\Users\frede\.nuget\packages\avalonia.xaml.interactivity\0.9.12\lib\netstandard2.1\Avalonia.Xaml.Interactivity.dll
 C:\Users\frede\.nuget\packages\portable.bouncycastle\1.8.6\lib\netstandard2.0\BouncyCastle.Crypto.dll
 C:\Users\frede\.nuget\packages\dapper\2.0.35\lib\netstandard2.0\Dapper.dll
 C:\Users\frede\.nuget\packages\dynamicdata\6.13.9\lib\netstandard2.0\DynamicData.dll
-C:\Users\frede\.nuget\packages\fastreport.opensource\2020.3.17\lib\netstandard2.1\FastReport.dll
-C:\Users\frede\.nuget\packages\fastreport.opensource.export.pdfsimple\2020.3.17\lib\netstandard2.0\FastReport.OpenSource.Export.PdfSimple.dll
+C:\Users\frede\.nuget\packages\fastreport.opensource\2020.4.0\lib\netstandard2.1\FastReport.dll
+C:\Users\frede\.nuget\packages\fastreport.opensource.export.pdfsimple\2020.4.0\lib\netstandard2.0\FastReport.OpenSource.Export.PdfSimple.dll
 C:\Users\frede\.nuget\packages\sharpziplib\1.2.0\lib\netstandard2.0\ICSharpCode.SharpZipLib.dll
 C:\Users\frede\.nuget\packages\jetbrains.annotations\10.3.0\lib\netstandard1.0\JetBrains.Annotations.dll
 C:\Users\frede\.nuget\packages\microsoft.codeanalysis.csharp\2.0.0\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll
 C:\Users\frede\.nuget\packages\microsoft.codeanalysis.common\2.0.0\lib\netstandard1.3\Microsoft.CodeAnalysis.dll
 C:\Users\frede\.nuget\packages\microsoft.codeanalysis.visualbasic\2.0.0\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.CSharp.dll
-C:\Users\frede\.nuget\packages\microsoft.data.sqlite.core\3.1.7\lib\netstandard2.0\Microsoft.Data.Sqlite.dll
+C:\Users\frede\.nuget\packages\microsoft.data.sqlite.core\3.1.8\lib\netstandard2.0\Microsoft.Data.Sqlite.dll
 C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.platformabstractions\1.1.0\lib\netstandard1.3\Microsoft.Extensions.PlatformAbstractions.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.VisualBasic.Core.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.VisualBasic.dll

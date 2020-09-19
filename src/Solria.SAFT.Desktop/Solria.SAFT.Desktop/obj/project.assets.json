@@ -235,19 +235,19 @@
           "lib/netstandard2.0/Avalonia.X11.dll": {}
         }
       },
-      "Avalonia.Xaml.Behaviors/0.9.9": {
+      "Avalonia.Xaml.Behaviors/0.9.12": {
         "type": "package",
         "dependencies": {
-          "Avalonia": "0.9.9",
-          "Avalonia.Xaml.Interactions": "0.9.9",
-          "Avalonia.Xaml.Interactivity": "0.9.9"
+          "Avalonia": "0.9.12",
+          "Avalonia.Xaml.Interactions": "0.9.12",
+          "Avalonia.Xaml.Interactivity": "0.9.12"
         }
       },
-      "Avalonia.Xaml.Interactions/0.9.9": {
+      "Avalonia.Xaml.Interactions/0.9.12": {
         "type": "package",
         "dependencies": {
-          "Avalonia": "0.9.9",
-          "Avalonia.Xaml.Interactivity": "0.9.9"
+          "Avalonia": "0.9.12",
+          "Avalonia.Xaml.Interactivity": "0.9.12"
         },
         "compile": {
           "lib/netstandard2.1/Avalonia.Xaml.Interactions.dll": {}
@@ -256,10 +256,10 @@
           "lib/netstandard2.1/Avalonia.Xaml.Interactions.dll": {}
         }
       },
-      "Avalonia.Xaml.Interactivity/0.9.9": {
+      "Avalonia.Xaml.Interactivity/0.9.12": {
         "type": "package",
         "dependencies": {
-          "Avalonia": "0.9.9"
+          "Avalonia": "0.9.12"
         },
         "compile": {
           "lib/netstandard2.1/Avalonia.Xaml.Interactivity.dll": {}
@@ -292,7 +292,7 @@
           "lib/netstandard2.0/DynamicData.dll": {}
         }
       },
-      "FastReport.Compat/2020.3.7": {
+      "FastReport.Compat/2020.3.8": {
         "type": "package",
         "dependencies": {
           "Microsoft.CodeAnalysis.CSharp": "2.0.0",
@@ -320,10 +320,10 @@
           }
         }
       },
-      "FastReport.OpenSource/2020.3.17": {
+      "FastReport.OpenSource/2020.4.0": {
         "type": "package",
         "dependencies": {
-          "FastReport.Compat": "2020.3.7",
+          "FastReport.Compat": "2020.3.8",
           "Microsoft.CodeAnalysis.CSharp": "2.0.0",
           "Microsoft.CodeAnalysis.VisualBasic": "2.0.0",
           "System.Drawing.Common": "4.6.1",
@@ -338,10 +338,10 @@
           "lib/netstandard2.1/FastReport.dll": {}
         }
       },
-      "FastReport.OpenSource.Export.PdfSimple/2020.3.17": {
+      "FastReport.OpenSource.Export.PdfSimple/2020.4.0": {
         "type": "package",
         "dependencies": {
-          "FastReport.OpenSource": "2020.3.14"
+          "FastReport.OpenSource": "2020.3.17"
         },
         "compile": {
           "lib/netstandard2.0/FastReport.OpenSource.Export.PdfSimple.dll": {}
@@ -506,10 +506,10 @@
           "lib/netstandard1.3/Microsoft.CSharp.dll": {}
         }
       },
-      "Microsoft.Data.Sqlite/3.1.7": {
+      "Microsoft.Data.Sqlite/3.1.8": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Data.Sqlite.Core": "3.1.7",
+          "Microsoft.Data.Sqlite.Core": "3.1.8",
           "SQLitePCLRaw.bundle_e_sqlite3": "2.0.2"
         },
         "compile": {
@@ -519,7 +519,7 @@
           "lib/netstandard2.0/_._": {}
         }
       },
-      "Microsoft.Data.Sqlite.Core/3.1.7": {
+      "Microsoft.Data.Sqlite.Core/3.1.8": {
         "type": "package",
         "dependencies": {
           "SQLitePCLRaw.core": "2.0.2"
@@ -3513,25 +3513,25 @@
         "lib/netstandard2.0/Avalonia.X11.xml"
       ]
     },
-    "Avalonia.Xaml.Behaviors/0.9.9": {
-      "sha512": "TrcCmh3soVN1/SgKkyq8c37lRVeXS6bgAhOrnbX2LkU2WJQTy6ZnV9+cnusvENBXxh6xl3Ldlu2CVMToifJnvQ==",
+    "Avalonia.Xaml.Behaviors/0.9.12": {
+      "sha512": "TRrkIL+Q/6be2wZx39GoB8wuvfPMqYgOuD/tvaJskdOrJjuZ/xBTvYnMfYaAw8xty7LDZE6R2OGxXTxAixgpgA==",
       "type": "package",
-      "path": "avalonia.xaml.behaviors/0.9.9",
+      "path": "avalonia.xaml.behaviors/0.9.12",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "avalonia.xaml.behaviors.0.9.9.nupkg.sha512",
+        "avalonia.xaml.behaviors.0.9.12.nupkg.sha512",
         "avalonia.xaml.behaviors.nuspec"
       ]
     },
-    "Avalonia.Xaml.Interactions/0.9.9": {
-      "sha512": "oNV0OQcVyqW32C6rdRwKzq4Sf0okcXYC9k0FW6OH+MkeJW3Rz/9plm3UryW/sXHi06RaLunumCK/i+3wXJv0MQ==",
+    "Avalonia.Xaml.Interactions/0.9.12": {
+      "sha512": "H5sjpIlB2OVBkmUYn6FjPUX4/rr+zbm7sXQQjY/cm35JbiPGk5HqHirpH/xMoxUyH7BepXk5gcVUW5sa77lWHQ==",
       "type": "package",
-      "path": "avalonia.xaml.interactions/0.9.9",
+      "path": "avalonia.xaml.interactions/0.9.12",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "avalonia.xaml.interactions.0.9.9.nupkg.sha512",
+        "avalonia.xaml.interactions.0.9.12.nupkg.sha512",
         "avalonia.xaml.interactions.nuspec",
         "lib/net461/Avalonia.Xaml.Interactions.dll",
         "lib/net461/Avalonia.Xaml.Interactions.xml",
@@ -3541,14 +3541,14 @@
         "lib/netstandard2.1/Avalonia.Xaml.Interactions.xml"
       ]
     },
-    "Avalonia.Xaml.Interactivity/0.9.9": {
-      "sha512": "sYbRsEvN4K9OUCE2L2HVAsFtBWkPkAOm2G++Gxp/yCIk0rUy3bB+Gpozmf/9kAWKWBcumXJwxB2VWMZYUGXg/Q==",
+    "Avalonia.Xaml.Interactivity/0.9.12": {
+      "sha512": "lw0Q8xOoVnRGheSI6SoakChnBdmFeRWYTkcyPA+3tTkylvNb456r2Vi+KMtfQNU5pgne+7YTNJPbTg9xi6Ya3g==",
       "type": "package",
-      "path": "avalonia.xaml.interactivity/0.9.9",
+      "path": "avalonia.xaml.interactivity/0.9.12",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "avalonia.xaml.interactivity.0.9.9.nupkg.sha512",
+        "avalonia.xaml.interactivity.0.9.12.nupkg.sha512",
         "avalonia.xaml.interactivity.nuspec",
         "lib/net461/Avalonia.Xaml.Interactivity.dll",
         "lib/net461/Avalonia.Xaml.Interactivity.xml",
@@ -3592,10 +3592,10 @@
         "lib/uap10.0.16299/DynamicData.xml"
       ]
     },
-    "FastReport.Compat/2020.3.7": {
-      "sha512": "fk+7/Ky+bDJCeFTGmbvxHdZi5BkfMU6IdWBX0ugbqZJX9mCLrrAhyghJrlbgWh2rEIMmnaN3olkAsgXl5/rtLw==",
+    "FastReport.Compat/2020.3.8": {
+      "sha512": "MzkgFPTm0EpaKfAsaQixycJ7v8A1QFqIWft2BtV8311qhsp7E7GC+Pa1nn5jynwtmwiqEcUrAPOdU/y3Rw/rRA==",
       "type": "package",
-      "path": "fastreport.compat/2020.3.7",
+      "path": "fastreport.compat/2020.3.8",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -3603,7 +3603,7 @@
         "build/FastReport.Compat.targets",
         "build/lib/netcoreapp3.0-Win/FastReport.Compat.dll",
         "build/lib/netcoreapp3.0/FastReport.Compat.dll",
-        "fastreport.compat.2020.3.7.nupkg.sha512",
+        "fastreport.compat.2020.3.8.nupkg.sha512",
         "fastreport.compat.nuspec",
         "frlogo-big.png",
         "lib/net40/FastReport.Compat.dll",
@@ -3614,28 +3614,28 @@
         "runtimes/win/lib/netcoreapp3.0/FastReport.Compat.dll"
       ]
     },
-    "FastReport.OpenSource/2020.3.17": {
-      "sha512": "5nKquvFDMGUl2dfP6MwBtRdoTPUHFNXsoRdqu7CQ2hTD7neUZg9CG/Ye+lnRFQvTRnj2pIhcMP7sK58LtHOagA==",
+    "FastReport.OpenSource/2020.4.0": {
+      "sha512": "8615fg6htV8m+LEkRtUtJHNMlQriTE+UO9fbbENMST7sxNbdNTqiH4FotdN6dFZuDpfzMLNU7ph9b0ltLhtIqA==",
       "type": "package",
-      "path": "fastreport.opensource/2020.3.17",
+      "path": "fastreport.opensource/2020.4.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "fastreport.opensource.2020.3.17.nupkg.sha512",
+        "fastreport.opensource.2020.4.0.nupkg.sha512",
         "fastreport.opensource.nuspec",
         "lib/net40/FastReport.dll",
         "lib/netstandard2.0/FastReport.dll",
         "lib/netstandard2.1/FastReport.dll"
       ]
     },
-    "FastReport.OpenSource.Export.PdfSimple/2020.3.17": {
-      "sha512": "6cNpOShilvuh3Vr30atu5fUjao7wcdeSi05vYqRxAPez9nMqvhTU0SrQ0sis5qy28NXQIfTaUHLhOf4F8OxlpA==",
+    "FastReport.OpenSource.Export.PdfSimple/2020.4.0": {
+      "sha512": "ewlMGozVcVsefw/RHhoA6p1RPT79je6KyfpkIZqHHZLnTeaPtj7S/55l9lSo7iXY371PyQ9Jpd/0KTSW9iz0cw==",
       "type": "package",
-      "path": "fastreport.opensource.export.pdfsimple/2020.3.17",
+      "path": "fastreport.opensource.export.pdfsimple/2020.4.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "fastreport.opensource.export.pdfsimple.2020.3.17.nupkg.sha512",
+        "fastreport.opensource.export.pdfsimple.2020.4.0.nupkg.sha512",
         "fastreport.opensource.export.pdfsimple.nuspec",
         "lib/net40/FastReport.OpenSource.Export.PdfSimple.dll",
         "lib/netstandard2.0/FastReport.OpenSource.Export.PdfSimple.dll"
@@ -3798,30 +3798,30 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "Microsoft.Data.Sqlite/3.1.7": {
-      "sha512": "hJyGT7w+mpEb+7oaaIQZRmuysufbYAOTmDbVFpJIXNtnNQyl0zPsKSVZ2dmEfTE3wOZxLNF0FCTkjxr/taDqPg==",
+    "Microsoft.Data.Sqlite/3.1.8": {
+      "sha512": "1n1Jhlym5Ljw5KCwc9KNe8HGIAjLJuhE9B7DRgQJ9sD+8/sHD0aNCS9XfJanaPBJl2zuBDimO67cmfm0jckzlg==",
       "type": "package",
-      "path": "microsoft.data.sqlite/3.1.7",
+      "path": "microsoft.data.sqlite/3.1.8",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "lib/netstandard2.0/_._",
-        "microsoft.data.sqlite.3.1.7.nupkg.sha512",
+        "microsoft.data.sqlite.3.1.8.nupkg.sha512",
         "microsoft.data.sqlite.nuspec"
       ]
     },
-    "Microsoft.Data.Sqlite.Core/3.1.7": {
-      "sha512": "NpX0Ni0ZYxbWXtTxVfFnHR7i/+dCX+BayFSPjH8rCEv5NZXtndKyR0Gh3xl5jpuhv4m1eZr8njq+sV2fNREPjw==",
+    "Microsoft.Data.Sqlite.Core/3.1.8": {
+      "sha512": "7zA23EkPltGmtobG/X1JviLEnylQ27zoupMfTs4Prif9WQpGdyrajLQP1Emfxq8nzimB99omKO2piM2g8IhqfA==",
       "type": "package",
-      "path": "microsoft.data.sqlite.core/3.1.7",
+      "path": "microsoft.data.sqlite.core/3.1.8",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "lib/netstandard2.0/Microsoft.Data.Sqlite.dll",
         "lib/netstandard2.0/Microsoft.Data.Sqlite.xml",
-        "microsoft.data.sqlite.core.3.1.7.nupkg.sha512",
+        "microsoft.data.sqlite.core.3.1.8.nupkg.sha512",
         "microsoft.data.sqlite.core.nuspec"
       ]
     },
@@ -9776,11 +9776,11 @@
       "Avalonia.Controls.DataGrid >= 0.9.12",
       "Avalonia.Desktop >= 0.9.12",
       "Avalonia.ReactiveUI >= 0.9.12",
-      "Avalonia.Xaml.Behaviors >= 0.9.9",
+      "Avalonia.Xaml.Behaviors >= 0.9.12",
       "Dapper >= 2.0.35",
-      "FastReport.OpenSource >= 2020.3.17",
-      "FastReport.OpenSource.Export.PdfSimple >= 2020.3.17",
-      "Microsoft.Data.Sqlite >= 3.1.7",
+      "FastReport.OpenSource >= 2020.4.0",
+      "FastReport.OpenSource.Export.PdfSimple >= 2020.4.0",
+      "Microsoft.Data.Sqlite >= 3.1.8",
       "Microsoft.Extensions.PlatformAbstractions >= 1.1.0",
       "NPOI >= 2.5.1",
       "System.Text.Encoding.CodePages >= 4.7.1"
@@ -9848,7 +9848,7 @@
           },
           "Avalonia.Xaml.Behaviors": {
             "target": "Package",
-            "version": "[0.9.9, )"
+            "version": "[0.9.12, )"
           },
           "Dapper": {
             "target": "Package",
@@ -9856,15 +9856,15 @@
           },
           "FastReport.OpenSource": {
             "target": "Package",
-            "version": "[2020.3.17, )"
+            "version": "[2020.4.0, )"
           },
           "FastReport.OpenSource.Export.PdfSimple": {
             "target": "Package",
-            "version": "[2020.3.17, )"
+            "version": "[2020.4.0, )"
           },
           "Microsoft.Data.Sqlite": {
             "target": "Package",
-            "version": "[3.1.7, )"
+            "version": "[3.1.8, )"
           },
           "Microsoft.Extensions.PlatformAbstractions": {
             "target": "Package",
@@ -9894,7 +9894,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
       }
     }
   }

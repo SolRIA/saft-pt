@@ -108,7 +108,6 @@ C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.D
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Microsoft.Extensions.PlatformAbstractions.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Avalonia.Xaml.Interactions.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Avalonia.Xaml.Interactivity.dll
-C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csprojAssemblyReference.cache
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\System.Text.Encoding.CodePages.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Text.Encoding.CodePages.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\FastReport.dll
@@ -127,3 +126,13 @@ C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.D
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp3.0\FastReport.Compat.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\FastReport.Compat.dll
 C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\obj\Debug\netcoreapp3.1\Solria.SAFT.Desktop.csprojAssemblyReference.cache
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Reports\BillingDocument_A4.frx
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Viewer\Viewer.exe
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Viewer\Common.Logging.Core.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Viewer\Common.Logging.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Viewer\FastReport.Compat.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Viewer\FastReport.DataVisualization.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Viewer\Sparrow.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Viewer\System.Buffers.dll
+C:\Users\frede\Source\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\bin\Debug\netcoreapp3.1\Viewer\System.Threading.Tasks.Extensions.dll

@@ -61,7 +61,7 @@
             },
             "Avalonia.Xaml.Behaviors": {
               "target": "Package",
-              "version": "[0.9.9, )"
+              "version": "[0.9.12, )"
             },
             "Dapper": {
               "target": "Package",
@@ -69,15 +69,15 @@
             },
             "FastReport.OpenSource": {
               "target": "Package",
-              "version": "[2020.3.17, )"
+              "version": "[2020.4.0, )"
             },
             "FastReport.OpenSource.Export.PdfSimple": {
               "target": "Package",
-              "version": "[2020.3.17, )"
+              "version": "[2020.4.0, )"
             },
             "Microsoft.Data.Sqlite": {
               "target": "Package",
-              "version": "[3.1.7, )"
+              "version": "[3.1.8, )"
             },
             "Microsoft.Extensions.PlatformAbstractions": {
               "target": "Package",
@@ -107,7 +107,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
         }
       }
     }

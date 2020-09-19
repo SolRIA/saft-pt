@@ -6,6 +6,7 @@ using Solria.SAFT.Desktop.Services;
 using Splat;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Security.Cryptography;
@@ -252,8 +253,6 @@ namespace Solria.SAFT.Desktop.ViewModels
             object hasher = SHA1.Create();
 
             using var rsaCryptokey = new RSACryptoServiceProvider(1024);
-            StringBuilder toHash = new StringBuilder();
-
             try
             {
                 rsaCryptokey.FromXmlString(PemFile.RsaSettings);
@@ -306,6 +305,8 @@ namespace Solria.SAFT.Desktop.ViewModels
 
             if (string.IsNullOrEmpty(CurrentDocumentHash) == false && DocumentHash.IndexOf(CurrentDocumentHash, StringComparison.OrdinalIgnoreCase) < 0)
                 Message = "A assinatura do documento é diferente da calculada.";
+            else
+                Message = "Ok";
         }
         private IObservable<bool> CanCreateHash()
         {
@@ -315,16 +316,15 @@ namespace Solria.SAFT.Desktop.ViewModels
 
         string FormatStringToHash()
         {
-            System.Globalization.CultureInfo en = new System.Globalization.CultureInfo("en-US");
-
-            return string.Format("{0};{1};{2} {3}/{4};{5};{6}"
-                        , DocumentDate.ToString("yyyy-MM-dd")
-                        , SystemDate.ToString("yyyy-MM-ddTHH:mm:ss")
-                        , DocumenType
-                        , BillingNumber
-                        , DocumentNumber
-                        , DocumentTotal.ToString("0.00", en)
-                        , PreviousHash);
+            return string.Format(CultureInfo.InvariantCulture,
+                "{0:yyyy-MM-dd};{1:yyyy-MM-ddTHH:mm:ss};{2} {3}/{4};{5:0.00};{6}"
+                , DocumentDate
+                , SystemDate
+                , DocumenType
+                , BillingNumber
+                , DocumentNumber
+                , DocumentTotal
+                , PreviousHash);
         }
     }
 }

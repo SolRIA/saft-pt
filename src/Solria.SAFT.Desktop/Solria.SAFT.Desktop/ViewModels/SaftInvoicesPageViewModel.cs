@@ -921,31 +921,32 @@ namespace Solria.SAFT.Desktop.ViewModels
             Report report = new Report();
 
             // load the existing report
-            report.Load(@"C:\Users\frede\Desktop\FR reports\reports\BillingDocument_A4.frx");
+            report.Load(Path.Combine(Environment.CurrentDirectory, "Reports", "BillingDocument_A4.frx"));
 
             // register the array
-            report.RegisterData(new object[] {
-                new
-                {
-                    DocNo = CurrentInvoice.InvoiceNo,
-                    CurrentInvoice.ATCUD,
-                    Status = CurrentInvoice.DocumentStatus.InvoiceStatus,
-                    StatusDate = CurrentInvoice.DocumentStatus.InvoiceStatusDate,
-                    CurrentInvoice.DocumentStatus.Reason,
-                    CurrentInvoice.Hash,
-                    CurrentInvoice.HashControl,
-                    CurrentInvoice.Period,
-                    Date = CurrentInvoice.InvoiceDate,
-                    Type = CurrentInvoice.InvoiceType,
-                    CurrentInvoice.EACCode,
-                    CurrentInvoice.CustomerID,
-                    CustomerTaxID = "999999990",
-                    CustomerName = "Consumidor final",
-                    CurrentInvoice.DocumentTotals.GrossTotal,
-                    CurrentInvoice.DocumentTotals.NetTotal,
-                    CurrentInvoice.DocumentTotals.TaxPayable
-                }
-            }, "Document");
+            var lines = CurrentInvoice.Line.Select(l => new Models.Reporting.DocumentLine
+            {
+                LineNumber = l.LineNumber,
+                ProductCode = l.ProductCode,
+                ProductDescription = l.ProductDescription,
+                Quantity = l.Quantity,
+                UnitPrice = l.UnitPrice,
+                TaxBase = l.TaxBase,
+                Description = l.Description
+            }).ToArray();
+            report.RegisterData(lines, "Lines");
+
+            var customer = saftValidator?.SaftFileV4?.MasterFiles?.Customer?.Where(c => c.CustomerID == CurrentInvoice.CustomerID).FirstOrDefault();
+            report.SetParameterValue("DocNo", CurrentInvoice.InvoiceNo);
+            report.SetParameterValue("ATCUD", CurrentInvoice.ATCUD);
+            report.SetParameterValue("Status", CurrentInvoice.DocumentStatus.InvoiceStatus);
+            report.SetParameterValue("Date", CurrentInvoice.InvoiceDate);
+            report.SetParameterValue("CustomerTaxID", customer?.CustomerTaxID);
+            report.SetParameterValue("CustomerName", customer?.CompanyName);
+            report.SetParameterValue("GrossTotal", CurrentInvoice.DocumentTotals.GrossTotal);
+            report.SetParameterValue("NetTotal", CurrentInvoice.DocumentTotals.NetTotal);
+            report.SetParameterValue("TaxPayable", CurrentInvoice.DocumentTotals.TaxPayable);
+            report.SetParameterValue("Hash", CurrentInvoice.Hash);
 
             // prepare the report
             report.Prepare();
@@ -953,6 +954,9 @@ namespace Solria.SAFT.Desktop.ViewModels
             //save prepared report
             string preparedReport = Path.Combine(Path.GetTempPath(), "Prepared_Report.fpx");
             report.SavePrepared(preparedReport);
+
+            //var pdfexport = new FastReport.Export.PdfSimple.PDFSimpleExport();
+            //report.Export(pdfexport, Path.Combine(Environment.CurrentDirectory, "pdf.pdf"));
 
             reportService.View(preparedReport);
         }

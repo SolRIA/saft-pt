@@ -8,7 +8,8 @@ namespace Solria.SAFT.Desktop.Services
     public class ReportService : IReportService
     {
         readonly string designerPath = Path.Combine(Environment.CurrentDirectory, "Designer.exe");
-        readonly string viewerPath = Path.Combine(Environment.CurrentDirectory, "Viewer.exe");
+        readonly string viewerPath = Path.Combine(Environment.CurrentDirectory, "Viewer", "Viewer.exe");
+        //readonly string viewerPath = Path.Combine(@"C:\Users\frede\Desktop\FR reports\FastReport.Community-2020.3.0", "Viewer.exe");
 
         public void Design(Report report)
         {

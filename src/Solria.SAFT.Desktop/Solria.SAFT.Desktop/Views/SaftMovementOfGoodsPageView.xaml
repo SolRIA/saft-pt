@@ -98,6 +98,13 @@
               SelectedItem="{Binding CurrentDocument, Mode=TwoWay}">
       <DataGrid.Columns>
         <DataGridTextColumn Header="Nº" Binding="{Binding DocumentNumber}" />
+        <DataGridTemplateColumn Header="ATCUD" SortMemberPath="ATCUD">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding ATCUD}" Classes="datagrid" ToolTip.Tip="{Binding ATCUD}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
         <DataGridTextColumn Header="Estado" Binding="{Binding DocumentStatus.WorkStatus}" />
         <DataGridTextColumn Header="Data" Binding="{Binding WorkDate}" />
         <DataGridTextColumn Header="Data sistema" Binding="{Binding SystemEntryDate}" />

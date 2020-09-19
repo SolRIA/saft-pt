@@ -104,6 +104,13 @@
               SelectedItem="{Binding CurrentPayment, Mode=TwoWay}">
       <DataGrid.Columns>
         <DataGridTextColumn Header="Nº" Binding="{Binding PaymentRefNo}" />
+        <DataGridTemplateColumn Header="ATCUD" SortMemberPath="ATCUD">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding ATCUD}" Classes="datagrid" ToolTip.Tip="{Binding ATCUD}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
         <DataGridTextColumn Header="Estado" Binding="{Binding DocumentStatus.PaymentStatus}" />
         <DataGridTextColumn Header="Data sistema" Binding="{Binding SystemEntryDate}" />
         <DataGridTemplateColumn Header="Total s/ IVA" SortMemberPath="DocumentTotals.NetTotal">

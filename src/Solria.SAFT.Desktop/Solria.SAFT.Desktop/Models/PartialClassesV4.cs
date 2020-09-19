@@ -1154,6 +1154,33 @@ namespace Solria.SAFT.Desktop.Models.SaftV4
         public string TooltipWithholdingTaxDescription { get; set; }
         public string TooltipWithholdingTaxAmount { get; set; }
 
+        public Error ValidateATCUD()
+        {
+            Error erro = null;
+            if (string.IsNullOrWhiteSpace(ATCUD))
+            {
+                erro = new Error { Description = "ATCUD não pode ser vazio.", Field = "ATCUD", TypeofError = GetType(), Value = ATCUD, UID = Pk };
+                TooltipInvoiceNo += Environment.NewLine + erro.Description;
+            }
+            else if (ATCUD != "0")
+            {
+                string[] parts = ATCUD.Split('-', StringSplitOptions.RemoveEmptyEntries);
+                if (parts == null || parts.Length != 2)
+                {
+                    erro = new Error { Description = "ATCUD deveria ser formado pela concatenação dos campos «CodigodeValidação-NumeroSequencial».", Field = "ATCUD", TypeofError = GetType(), Value = ATCUD, UID = Pk };
+                    TooltipInvoiceNo += Environment.NewLine + erro.Description;
+                }
+                else
+                {
+                    if (parts[0].Length < 8)
+                    {
+                        erro = new Error { Description = "CodigodeValidação do ATCUD com tamanho incorrecto.", Field = "ATCUD", TypeofError = GetType(), Value = ATCUD, UID = Pk };
+                        TooltipInvoiceNo += Environment.NewLine + erro.Description;
+                    }
+                }
+            }
+            return erro;
+        }
         public Error ValidateInvoiceNo()
         {
             Error erro = null;

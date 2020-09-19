@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Name="BillingDocument_A4" ReportInfo.Author="SolRIA" ReportInfo.Created="01/06/2020 00:28:06" ReportInfo.Modified="09/18/2020 01:16:27" ReportInfo.CreatorVersion="2020.3.0.0">
+  <Dictionary>
+    <BusinessObjectDataSource Name="Lines" DataType="Solria.SAFT.Desktop.Models.Reporting.DocumentLine[], Solria.SAFT.Desktop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" Enabled="true">
+      <Column Name="LineNumber" DataType="System.String"/>
+      <Column Name="ProductCode" DataType="System.String"/>
+      <Column Name="ProductDescription" DataType="System.String"/>
+      <Column Name="UnitOfMeasure" DataType="System.String"/>
+      <Column Name="Quantity" DataType="System.Decimal"/>
+      <Column Name="UnitPrice" DataType="System.Decimal"/>
+      <Column Name="TaxBase" DataType="System.Decimal"/>
+      <Column Name="SettlementAmount" DataType="System.Decimal"/>
+      <Column Name="Description" DataType="System.String"/>
+      <Column Name="CreditAmount" DataType="System.Decimal"/>
+      <Column Name="DebitAmount" DataType="System.Decimal"/>
+      <Column Name="TaxExemptionReason" DataType="System.String"/>
+      <Column Name="TaxExemptionCode" DataType="System.String"/>
+      <Column Name="TaxCode" DataType="System.String"/>
+    </BusinessObjectDataSource>
+    <Parameter Name="DocNo" DataType="System.String"/>
+    <Parameter Name="ATCUD" DataType="System.String"/>
+    <Parameter Name="Status" DataType="System.String"/>
+    <Parameter Name="Date" DataType="System.DateTime"/>
+    <Parameter Name="CustomerTaxID" DataType="System.String"/>
+    <Parameter Name="CustomerName" DataType="System.String"/>
+    <Parameter Name="GrossTotal" DataType="System.Decimal"/>
+    <Parameter Name="NetTotal" DataType="System.Decimal"/>
+    <Parameter Name="TaxPayable" DataType="System.Decimal"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="175.77">
+      <TextObject Name="Text1" Left="415.8" Top="18.9" Width="302.4" Height="37.8" Border.Lines="Bottom" Border.BottomLine.Width="3" Text="[DocNo]" HorzAlign="Center" Font="Segoe UI, 18pt"/>
+      <TextObject Name="Text2" Left="415.8" Top="66.15" Width="204.12" Height="18.9" Text="[ATCUD]" Font="Segoe UI, 9.75pt"/>
+      <TextObject Name="Text3" Left="623.7" Top="66.15" Width="94.5" Height="18.9" Text="[Date]" HorzAlign="Right" Font="Segoe UI, 9.75pt"/>
+      <TextObject Name="Text7" Left="378" Top="128.52" Width="340.2" Height="18.9" Text="[CustomerTaxID]" Font="Arial, 10pt"/>
+      <TextObject Name="Text8" Left="378" Top="151.2" Width="340.2" Height="18.9" Text="[CustomerName]" Font="Arial, 10pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="179.77" Width="718.2" Height="66.15">
+      <TextObject Name="Text6" Left="3.78" Top="3.78" Width="714.42" Height="56.7" Text="[Hash]" Font="Arial, 10pt"/>
+    </PageHeaderBand>
+    <DataBand Name="Data2" Top="291.72" Width="718.2" Height="79.38" DataSource="Lines" PrintIfDetailEmpty="true">
+      <TableObject Name="Table1" Width="718.2" Height="78.62">
+        <TableColumn Name="Column1" Width="45.36"/>
+        <TableColumn Name="Column2" Width="151.2"/>
+        <TableColumn Name="Column3" Width="302.4"/>
+        <TableColumn Name="Column4" Width="56.7"/>
+        <TableColumn Name="Column5" Width="94.5"/>
+        <TableColumn Name="Column6" Width="68.04"/>
+        <TableRow Name="Row1" Height="26.71">
+          <TableCell Name="Cell1" Text="[Lines.LineNumber]" Font="Arial, 10pt"/>
+          <TableCell Name="Cell2" Text="[Lines.ProductCode]" Font="Arial, 10pt"/>
+          <TableCell Name="Cell3" Text="[Lines.ProductDescription]" Font="Arial, 10pt"/>
+          <TableCell Name="Cell4" Text="[Lines.Quantity]" Font="Arial, 10pt"/>
+          <TableCell Name="Cell5" Text="[Lines.UnitPrice]" Font="Arial, 10pt"/>
+          <TableCell Name="Cell26" Text="[Lines.TaxBase]" Font="Arial, 10pt"/>
+        </TableRow>
+        <TableRow Name="Row2" Height="26.71">
+          <TableCell Name="Cell6" Text="[Lines.Description]" Font="Arial, 10pt" ColSpan="6"/>
+          <TableCell Name="Cell7" Font="Arial, 10pt"/>
+          <TableCell Name="Cell8" Font="Arial, 10pt"/>
+          <TableCell Name="Cell9" Font="Arial, 10pt"/>
+          <TableCell Name="Cell10" Font="Arial, 10pt"/>
+          <TableCell Name="Cell27" Font="Arial, 10pt"/>
+        </TableRow>
+        <TableRow Name="Row3" Height="25.2">
+          <TableCell Name="Cell28" Text="[Lines.TaxExemptionCode]" Font="Arial, 10pt" ColSpan="2"/>
+          <TableCell Name="Cell29" Font="Arial, 10pt"/>
+          <TableCell Name="Cell30" Text="[Lines.TaxExemptionReason]" Font="Arial, 10pt" ColSpan="4"/>
+          <TableCell Name="Cell31" Font="Arial, 10pt"/>
+          <TableCell Name="Cell32" Font="Arial, 10pt"/>
+          <TableCell Name="Cell33" Font="Arial, 10pt"/>
+        </TableRow>
+      </TableObject>
+      <DataHeaderBand Name="DataHeader1" Top="249.92" Width="718.2" Height="37.8">
+        <TextObject Name="Text12" Top="15.12" Width="45.36" Height="18.9" Text="Nº" Font="Arial, 10pt"/>
+        <TextObject Name="Text13" Left="45.36" Top="15.12" Width="151.2" Height="18.9" Text="Código" Font="Arial, 10pt"/>
+        <TextObject Name="Text14" Left="196.56" Top="15.12" Width="302.4" Height="18.9" Text="Descrição" Font="Arial, 10pt"/>
+        <TextObject Name="Text15" Left="498.96" Top="15.12" Width="56.7" Height="18.9" Text="Qt." Font="Arial, 10pt"/>
+        <TextObject Name="Text16" Left="555.66" Top="15.12" Width="94.5" Height="18.9" Text="Preço" Font="Arial, 10pt"/>
+        <TextObject Name="Text17" Left="650.16" Top="15.12" Width="68.04" Height="18.9" Text="IVA" Font="Arial, 10pt"/>
+      </DataHeaderBand>
+    </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="375.1" Width="718.2" Height="86.94" Border.Lines="Top, Bottom" Border.TopLine.Width="2" Border.BottomLine.Width="2">
+      <TextObject Name="Text9" Left="498.96" Top="56.7" Width="200.34" Height="18.9" Border.Lines="Top, Bottom" Text="[GrossTotal]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Right" WordWrap="false" Font="Arial, 14.25pt" Trimming="EllipsisCharacter"/>
+      <TextObject Name="Text10" Left="498.96" Top="34.02" Width="200.34" Height="18.9" Text="[NetTotal]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Right" WordWrap="false" Font="Arial, 10pt" Trimming="EllipsisCharacter"/>
+      <TextObject Name="Text11" Left="498.96" Top="11.34" Width="200.34" Height="18.9" Text="[TaxPayable]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Right" WordWrap="false" Font="Arial, 10pt" Trimming="EllipsisCharacter"/>
+    </ReportSummaryBand>
+    <PageFooterBand Name="PageFooter1" Top="466.04" Width="718.2" Height="18.9">
+      <TextObject Name="Text4" Width="378" Height="18.9" Text="Criado pelo Analisador SAFT - SolRIA | www.solria.pt" Font="Arial, 10pt"/>
+      <TextObject Name="Text5" Left="563.22" Width="154.98" Height="18.9" Text="[Page] de [TotalPages]" HorzAlign="Right" Font="Arial, 10pt"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

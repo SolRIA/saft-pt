@@ -494,11 +494,12 @@ namespace Solria.SAFT.Desktop.Services
         {
             toHash.Clear();
 
-            toHash.AppendFormat("{0};{1};{2};{3};{4}"
-                , documentDate.ToString("yyyy-MM-dd")
-                , systemEntryDate.ToString("yyyy-MM-ddTHH:mm:ss")
+            toHash.AppendFormat(CultureInfo.InvariantCulture,
+                "{0:yyyy-MM-dd};{1:yyyy-MM-ddTHH:mm:ss};{2};{3:0.00};{4}"
+                , documentDate
+                , systemEntryDate
                 , documentNo
-                , documentTotal.ToString("0.00", CultureInfo.InvariantCulture)
+                , documentTotal
                 , hashAnterior);
         }
 
@@ -1799,6 +1800,7 @@ namespace Solria.SAFT.Desktop.Services
             foreach (var invoice in invoices.Invoice)
             {
                 MensagensErro.Add(invoice.ValidateInvoiceNo());
+                MensagensErro.Add(invoice.ValidateATCUD());
                 MensagensErro.Add(invoice.ValidateHash());
                 MensagensErro.Add(invoice.ValidateHashControl());
                 MensagensErro.Add(invoice.ValidatePeriod());

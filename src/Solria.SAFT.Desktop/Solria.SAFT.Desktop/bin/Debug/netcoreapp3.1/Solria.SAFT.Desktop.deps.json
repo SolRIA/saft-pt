@@ -12,11 +12,11 @@
           "Avalonia.Controls.DataGrid": "0.9.12",
           "Avalonia.Desktop": "0.9.12",
           "Avalonia.ReactiveUI": "0.9.12",
-          "Avalonia.Xaml.Behaviors": "0.9.9",
+          "Avalonia.Xaml.Behaviors": "0.9.12",
           "Dapper": "2.0.35",
-          "FastReport.OpenSource": "2020.3.17",
-          "FastReport.OpenSource.Export.PdfSimple": "2020.3.17",
-          "Microsoft.Data.Sqlite": "3.1.7",
+          "FastReport.OpenSource": "2020.4.0",
+          "FastReport.OpenSource.Export.PdfSimple": "2020.4.0",
+          "Microsoft.Data.Sqlite": "3.1.8",
           "Microsoft.Extensions.PlatformAbstractions": "1.1.0",
           "NPOI": "2.5.1",
           "System.Text.Encoding.CodePages": "4.7.1"
@@ -270,33 +270,33 @@
           }
         }
       },
-      "Avalonia.Xaml.Behaviors/0.9.9": {
+      "Avalonia.Xaml.Behaviors/0.9.12": {
         "dependencies": {
           "Avalonia": "0.9.12",
-          "Avalonia.Xaml.Interactions": "0.9.9",
-          "Avalonia.Xaml.Interactivity": "0.9.9"
+          "Avalonia.Xaml.Interactions": "0.9.12",
+          "Avalonia.Xaml.Interactivity": "0.9.12"
         }
       },
-      "Avalonia.Xaml.Interactions/0.9.9": {
+      "Avalonia.Xaml.Interactions/0.9.12": {
         "dependencies": {
           "Avalonia": "0.9.12",
-          "Avalonia.Xaml.Interactivity": "0.9.9"
+          "Avalonia.Xaml.Interactivity": "0.9.12"
         },
         "runtime": {
           "lib/netstandard2.1/Avalonia.Xaml.Interactions.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.12.0",
+            "fileVersion": "0.9.12.0"
           }
         }
       },
-      "Avalonia.Xaml.Interactivity/0.9.9": {
+      "Avalonia.Xaml.Interactivity/0.9.12": {
         "dependencies": {
           "Avalonia": "0.9.12"
         },
         "runtime": {
           "lib/netstandard2.1/Avalonia.Xaml.Interactivity.dll": {
-            "assemblyVersion": "0.9.9.0",
-            "fileVersion": "0.9.9.0"
+            "assemblyVersion": "0.9.12.0",
+            "fileVersion": "0.9.12.0"
           }
         }
       },
@@ -322,7 +322,7 @@
           }
         }
       },
-      "FastReport.Compat/2020.3.7": {
+      "FastReport.Compat/2020.3.8": {
         "dependencies": {
           "Microsoft.CodeAnalysis.CSharp": "2.0.0",
           "Microsoft.CodeAnalysis.VisualBasic": "2.0.0",
@@ -333,20 +333,20 @@
           "runtimes/unix/lib/netcoreapp3.0/FastReport.Compat.dll": {
             "rid": "unix",
             "assetType": "runtime",
-            "assemblyVersion": "2020.3.7.0",
-            "fileVersion": "2020.3.7.0"
+            "assemblyVersion": "2020.3.8.0",
+            "fileVersion": "2020.3.8.0"
           },
           "runtimes/win/lib/netcoreapp3.0/FastReport.Compat.dll": {
             "rid": "win",
             "assetType": "runtime",
-            "assemblyVersion": "2020.3.7.0",
-            "fileVersion": "2020.3.7.0"
+            "assemblyVersion": "2020.3.8.0",
+            "fileVersion": "2020.3.8.0"
           }
         }
       },
-      "FastReport.OpenSource/2020.3.17": {
+      "FastReport.OpenSource/2020.4.0": {
         "dependencies": {
-          "FastReport.Compat": "2020.3.7",
+          "FastReport.Compat": "2020.3.8",
           "Microsoft.CodeAnalysis.CSharp": "2.0.0",
           "Microsoft.CodeAnalysis.VisualBasic": "2.0.0",
           "System.Drawing.Common": "4.6.1",
@@ -356,19 +356,19 @@
         },
         "runtime": {
           "lib/netstandard2.1/FastReport.dll": {
-            "assemblyVersion": "2020.3.17.0",
-            "fileVersion": "2020.3.17.0"
+            "assemblyVersion": "2020.4.0.0",
+            "fileVersion": "2020.4.0.0"
           }
         }
       },
-      "FastReport.OpenSource.Export.PdfSimple/2020.3.17": {
+      "FastReport.OpenSource.Export.PdfSimple/2020.4.0": {
         "dependencies": {
-          "FastReport.OpenSource": "2020.3.17"
+          "FastReport.OpenSource": "2020.4.0"
         },
         "runtime": {
           "lib/netstandard2.0/FastReport.OpenSource.Export.PdfSimple.dll": {
-            "assemblyVersion": "2020.3.17.0",
-            "fileVersion": "2020.3.17.0"
+            "assemblyVersion": "2020.4.0.0",
+            "fileVersion": "2020.4.0.0"
           }
         }
       },
@@ -522,20 +522,20 @@
           "System.Threading": "4.3.0"
         }
       },
-      "Microsoft.Data.Sqlite/3.1.7": {
+      "Microsoft.Data.Sqlite/3.1.8": {
         "dependencies": {
-          "Microsoft.Data.Sqlite.Core": "3.1.7",
+          "Microsoft.Data.Sqlite.Core": "3.1.8",
           "SQLitePCLRaw.bundle_e_sqlite3": "2.0.2"
         }
       },
-      "Microsoft.Data.Sqlite.Core/3.1.7": {
+      "Microsoft.Data.Sqlite.Core/3.1.8": {
         "dependencies": {
           "SQLitePCLRaw.core": "2.0.2"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.Data.Sqlite.dll": {
-            "assemblyVersion": "3.1.7.0",
-            "fileVersion": "3.100.720.37109"
+            "assemblyVersion": "3.1.8.0",
+            "fileVersion": "3.100.820.42012"
           }
         }
       },
@@ -2325,26 +2325,26 @@
       "path": "avalonia.x11/0.9.12",
       "hashPath": "avalonia.x11.0.9.12.nupkg.sha512"
     },
-    "Avalonia.Xaml.Behaviors/0.9.9": {
+    "Avalonia.Xaml.Behaviors/0.9.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-TrcCmh3soVN1/SgKkyq8c37lRVeXS6bgAhOrnbX2LkU2WJQTy6ZnV9+cnusvENBXxh6xl3Ldlu2CVMToifJnvQ==",
-      "path": "avalonia.xaml.behaviors/0.9.9",
-      "hashPath": "avalonia.xaml.behaviors.0.9.9.nupkg.sha512"
+      "sha512": "sha512-TRrkIL+Q/6be2wZx39GoB8wuvfPMqYgOuD/tvaJskdOrJjuZ/xBTvYnMfYaAw8xty7LDZE6R2OGxXTxAixgpgA==",
+      "path": "avalonia.xaml.behaviors/0.9.12",
+      "hashPath": "avalonia.xaml.behaviors.0.9.12.nupkg.sha512"
     },
-    "Avalonia.Xaml.Interactions/0.9.9": {
+    "Avalonia.Xaml.Interactions/0.9.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-oNV0OQcVyqW32C6rdRwKzq4Sf0okcXYC9k0FW6OH+MkeJW3Rz/9plm3UryW/sXHi06RaLunumCK/i+3wXJv0MQ==",
-      "path": "avalonia.xaml.interactions/0.9.9",
-      "hashPath": "avalonia.xaml.interactions.0.9.9.nupkg.sha512"
+      "sha512": "sha512-H5sjpIlB2OVBkmUYn6FjPUX4/rr+zbm7sXQQjY/cm35JbiPGk5HqHirpH/xMoxUyH7BepXk5gcVUW5sa77lWHQ==",
+      "path": "avalonia.xaml.interactions/0.9.12",
+      "hashPath": "avalonia.xaml.interactions.0.9.12.nupkg.sha512"
     },
-    "Avalonia.Xaml.Interactivity/0.9.9": {
+    "Avalonia.Xaml.Interactivity/0.9.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-sYbRsEvN4K9OUCE2L2HVAsFtBWkPkAOm2G++Gxp/yCIk0rUy3bB+Gpozmf/9kAWKWBcumXJwxB2VWMZYUGXg/Q==",
-      "path": "avalonia.xaml.interactivity/0.9.9",
-      "hashPath": "avalonia.xaml.interactivity.0.9.9.nupkg.sha512"
+      "sha512": "sha512-lw0Q8xOoVnRGheSI6SoakChnBdmFeRWYTkcyPA+3tTkylvNb456r2Vi+KMtfQNU5pgne+7YTNJPbTg9xi6Ya3g==",
+      "path": "avalonia.xaml.interactivity/0.9.12",
+      "hashPath": "avalonia.xaml.interactivity.0.9.12.nupkg.sha512"
     },
     "Dapper/2.0.35": {
       "type": "package",
@@ -2360,26 +2360,26 @@
       "path": "dynamicdata/6.13.9",
       "hashPath": "dynamicdata.6.13.9.nupkg.sha512"
     },
-    "FastReport.Compat/2020.3.7": {
+    "FastReport.Compat/2020.3.8": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-fk+7/Ky+bDJCeFTGmbvxHdZi5BkfMU6IdWBX0ugbqZJX9mCLrrAhyghJrlbgWh2rEIMmnaN3olkAsgXl5/rtLw==",
-      "path": "fastreport.compat/2020.3.7",
-      "hashPath": "fastreport.compat.2020.3.7.nupkg.sha512"
+      "sha512": "sha512-MzkgFPTm0EpaKfAsaQixycJ7v8A1QFqIWft2BtV8311qhsp7E7GC+Pa1nn5jynwtmwiqEcUrAPOdU/y3Rw/rRA==",
+      "path": "fastreport.compat/2020.3.8",
+      "hashPath": "fastreport.compat.2020.3.8.nupkg.sha512"
     },
-    "FastReport.OpenSource/2020.3.17": {
+    "FastReport.OpenSource/2020.4.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-5nKquvFDMGUl2dfP6MwBtRdoTPUHFNXsoRdqu7CQ2hTD7neUZg9CG/Ye+lnRFQvTRnj2pIhcMP7sK58LtHOagA==",
-      "path": "fastreport.opensource/2020.3.17",
-      "hashPath": "fastreport.opensource.2020.3.17.nupkg.sha512"
+      "sha512": "sha512-8615fg6htV8m+LEkRtUtJHNMlQriTE+UO9fbbENMST7sxNbdNTqiH4FotdN6dFZuDpfzMLNU7ph9b0ltLhtIqA==",
+      "path": "fastreport.opensource/2020.4.0",
+      "hashPath": "fastreport.opensource.2020.4.0.nupkg.sha512"
     },
-    "FastReport.OpenSource.Export.PdfSimple/2020.3.17": {
+    "FastReport.OpenSource.Export.PdfSimple/2020.4.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-6cNpOShilvuh3Vr30atu5fUjao7wcdeSi05vYqRxAPez9nMqvhTU0SrQ0sis5qy28NXQIfTaUHLhOf4F8OxlpA==",
-      "path": "fastreport.opensource.export.pdfsimple/2020.3.17",
-      "hashPath": "fastreport.opensource.export.pdfsimple.2020.3.17.nupkg.sha512"
+      "sha512": "sha512-ewlMGozVcVsefw/RHhoA6p1RPT79je6KyfpkIZqHHZLnTeaPtj7S/55l9lSo7iXY371PyQ9Jpd/0KTSW9iz0cw==",
+      "path": "fastreport.opensource.export.pdfsimple/2020.4.0",
+      "hashPath": "fastreport.opensource.export.pdfsimple.2020.4.0.nupkg.sha512"
     },
     "JetBrains.Annotations/10.3.0": {
       "type": "package",
@@ -2430,19 +2430,19 @@
       "path": "microsoft.csharp/4.0.1",
       "hashPath": "microsoft.csharp.4.0.1.nupkg.sha512"
     },
-    "Microsoft.Data.Sqlite/3.1.7": {
+    "Microsoft.Data.Sqlite/3.1.8": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-hJyGT7w+mpEb+7oaaIQZRmuysufbYAOTmDbVFpJIXNtnNQyl0zPsKSVZ2dmEfTE3wOZxLNF0FCTkjxr/taDqPg==",
-      "path": "microsoft.data.sqlite/3.1.7",
-      "hashPath": "microsoft.data.sqlite.3.1.7.nupkg.sha512"
+      "sha512": "sha512-1n1Jhlym5Ljw5KCwc9KNe8HGIAjLJuhE9B7DRgQJ9sD+8/sHD0aNCS9XfJanaPBJl2zuBDimO67cmfm0jckzlg==",
+      "path": "microsoft.data.sqlite/3.1.8",
+      "hashPath": "microsoft.data.sqlite.3.1.8.nupkg.sha512"
     },
-    "Microsoft.Data.Sqlite.Core/3.1.7": {
+    "Microsoft.Data.Sqlite.Core/3.1.8": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-NpX0Ni0ZYxbWXtTxVfFnHR7i/+dCX+BayFSPjH8rCEv5NZXtndKyR0Gh3xl5jpuhv4m1eZr8njq+sV2fNREPjw==",
-      "path": "microsoft.data.sqlite.core/3.1.7",
-      "hashPath": "microsoft.data.sqlite.core.3.1.7.nupkg.sha512"
+      "sha512": "sha512-7zA23EkPltGmtobG/X1JviLEnylQ27zoupMfTs4Prif9WQpGdyrajLQP1Emfxq8nzimB99omKO2piM2g8IhqfA==",
+      "path": "microsoft.data.sqlite.core/3.1.8",
+      "hashPath": "microsoft.data.sqlite.core.3.1.8.nupkg.sha512"
     },
     "Microsoft.Extensions.PlatformAbstractions/1.1.0": {
       "type": "package",

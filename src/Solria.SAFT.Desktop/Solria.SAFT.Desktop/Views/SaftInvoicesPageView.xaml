@@ -110,6 +110,13 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="ATCUD" SortMemberPath="ATCUD">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding ATCUD}" Classes="datagrid" ToolTip.Tip="{Binding ATCUD}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Estado" SortMemberPath="DocumentStatus.InvoiceStatus">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
