@@ -1,7 +1,5 @@
 ﻿using Avalonia.Collections;
 using FastReport;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
 using Solria.SAFT.Desktop.Models.Saft;
@@ -10,11 +8,13 @@ using Solria.SAFT.Desktop.Views;
 using Splat;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Solria.SAFT.Desktop.ViewModels
@@ -24,6 +24,8 @@ namespace Solria.SAFT.Desktop.ViewModels
         private readonly ISaftValidator saftValidator;
         private readonly IDialogManager dialogManager;
         private readonly IReportService reportService;
+
+        private Header header;
 
         public SaftInvoicesPageViewModel(IScreen screen) : base(screen, MenuIds.SAFT_INVOICES_PAGE)
         {
@@ -39,7 +41,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             SearchDetailsClearCommand = ReactiveCommand.Create(OnSearchDetailsClear);
             ShowCustomerCommand = ReactiveCommand.Create(OnShowCustomer);
             ShowInvoiceDetailsCommand = ReactiveCommand.Create(OnShowInvoiceDetails);
-            DoOpenExcelCommand = ReactiveCommand.CreateFromTask(OnDoOpenExcel);
+            DoOpenExcelCommand = ReactiveCommand.CreateFromTask(OnSaveExcel);
             TestHashCommand = ReactiveCommand.CreateFromTask(OnTestHash);
         }
 
@@ -49,6 +51,8 @@ namespace Solria.SAFT.Desktop.ViewModels
 
             Task.Run(() =>
             {
+                header = SaftHeaderPageViewModel.GetHeader(saftValidator);
+
                 var invoices = new List<SourceDocumentsSalesInvoicesInvoice>();
                 if (saftValidator?.SaftFileV4?.SourceDocuments?.SalesInvoices != null)
                 {
@@ -56,10 +60,45 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                     foreach (var c in saft_invoices)
                     {
+                        var customer = saftValidator.SaftFileV4.MasterFiles?.Customer?.Where(t => t.CustomerID == c.CustomerID).FirstOrDefault();
+
                         invoices.Add(new SourceDocumentsSalesInvoicesInvoice
                         {
                             ATCUD = c.ATCUD,
                             CustomerID = c.CustomerID,
+                            Customer = new Customer
+                            {
+                                AccountID = customer?.AccountID,
+                                BillingAddress = new AddressStructure
+                                {
+                                    AddressDetail = customer?.BillingAddress?.AddressDetail,
+                                    BuildingNumber = customer?.BillingAddress?.BuildingNumber,
+                                    City = customer?.BillingAddress?.City,
+                                    Country = customer?.BillingAddress?.Country,
+                                    PostalCode = customer?.BillingAddress?.PostalCode,
+                                    Region = customer?.BillingAddress?.Region,
+                                    StreetName = customer?.BillingAddress?.StreetName
+                                },
+                                CompanyName = customer?.CompanyName,
+                                Contact = customer?.Contact,
+                                CustomerID = customer?.CustomerID,
+                                CustomerTaxID = customer?.CustomerTaxID,
+                                Email = customer?.Email,
+                                Fax = customer?.Fax,
+                                SelfBillingIndicator = customer?.SelfBillingIndicator,
+                                ShipToAddress = customer?.ShipToAddress?.Select(b => new AddressStructure
+                                {
+                                    AddressDetail = b.AddressDetail,
+                                    BuildingNumber = b.BuildingNumber,
+                                    City = b.City,
+                                    Country = b.Country,
+                                    PostalCode = b.PostalCode,
+                                    Region = b.Region,
+                                    StreetName = b.StreetName
+                                }).ToArray(),
+                                Telephone = customer?.Telephone,
+                                Website = customer?.Website
+                            },
                             DocumentStatus = new SourceDocumentsSalesInvoicesInvoiceDocumentStatus
                             {
                                 InvoiceStatus = c.DocumentStatus?.InvoiceStatus.ToString(),
@@ -292,9 +331,44 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                     foreach (var c in saft_invoices)
                     {
+                        var customer = saftValidator.SaftFileV3.MasterFiles?.Customer?.Where(c => c.CustomerID == CurrentInvoice.CustomerID).FirstOrDefault();
+
                         invoices.Add(new SourceDocumentsSalesInvoicesInvoice
                         {
                             CustomerID = c.CustomerID,
+                            Customer = new Customer
+                            {
+                                AccountID = customer?.AccountID,
+                                BillingAddress = new AddressStructure
+                                {
+                                    AddressDetail = customer?.BillingAddress?.AddressDetail,
+                                    BuildingNumber = customer?.BillingAddress?.BuildingNumber,
+                                    City = customer?.BillingAddress?.City,
+                                    Country = customer?.BillingAddress?.Country,
+                                    PostalCode = customer?.BillingAddress?.PostalCode,
+                                    Region = customer?.BillingAddress?.Region,
+                                    StreetName = customer?.BillingAddress?.StreetName
+                                },
+                                CompanyName = customer?.CompanyName,
+                                Contact = customer?.Contact,
+                                CustomerID = customer?.CustomerID,
+                                CustomerTaxID = customer?.CustomerTaxID,
+                                Email = customer?.Email,
+                                Fax = customer?.Fax,
+                                SelfBillingIndicator = customer?.SelfBillingIndicator,
+                                ShipToAddress = customer?.ShipToAddress?.Select(b => new AddressStructure
+                                {
+                                    AddressDetail = b.AddressDetail,
+                                    BuildingNumber = b.BuildingNumber,
+                                    City = b.City,
+                                    Country = b.Country,
+                                    PostalCode = b.PostalCode,
+                                    Region = b.Region,
+                                    StreetName = b.StreetName
+                                }).ToArray(),
+                                Telephone = customer?.Telephone,
+                                Website = customer?.Website
+                            },
                             DocumentStatus = new SourceDocumentsSalesInvoicesInvoiceDocumentStatus
                             {
                                 InvoiceStatus = c.DocumentStatus?.InvoiceStatus.ToString(),
@@ -760,78 +834,56 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                 if (string.IsNullOrWhiteSpace(file) == false)
                 {
-                    var workbook = new XSSFWorkbook();
-                    var sheet = workbook.CreateSheet("Documentos");
+                    using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                    var sheet = workbook.Worksheets.Add("Documentos");
 
-                    // Create the style object
-                    var detailSubtotalCellStyle = workbook.CreateCellStyle();
-                    // Define a thin border for the top and bottom of the cell
-                    detailSubtotalCellStyle.BorderTop = BorderStyle.Thin;
-                    detailSubtotalCellStyle.BorderBottom = BorderStyle.Thin;
+                    DocHeader(sheet, 1);
 
-                    var row_header = sheet.CreateRow(0);
-                    GenerateHeaderExcel(row_header, detailSubtotalCellStyle);
-
-                    var rowIndex = 1;
+                    var rowIndex = 2;
                     foreach (var c in invoice)
                     {
-                        //create a new row
-                        var row = sheet.CreateRow(rowIndex);
-
-                        row.CreateCell(0).SetCellValue(c.ATCUD);
-                        row.CreateCell(1).SetCellValue(c.InvoiceType);
-                        row.CreateCell(2).SetCellValue(c.InvoiceNo);
-                        row.CreateCell(3).SetCellValue(c.DocumentStatus.InvoiceStatus);
-                        row.CreateCell(4).SetCellValue(c.InvoiceDate);
-                        row.CreateCell(5).SetCellValue(c.CustomerID);
-                        row.CreateCell(6).SetCellValue(Convert.ToDouble(c.DocumentTotals.NetTotal));
-                        row.CreateCell(7).SetCellValue(Convert.ToDouble(c.DocumentTotals.TaxPayable));
-                        row.CreateCell(8).SetCellValue(Convert.ToDouble(c.DocumentTotals.GrossTotal));
+                        sheet.Cell(rowIndex, 1).Value = c.ATCUD;
+                        sheet.Cell(rowIndex, 2).Value = c.InvoiceType;
+                        sheet.Cell(rowIndex, 3).Value = c.InvoiceNo;
+                        sheet.Cell(rowIndex, 4).Value = c.DocumentStatus.InvoiceStatus;
+                        sheet.Cell(rowIndex, 5).Value = c.InvoiceDate;
+                        sheet.Cell(rowIndex, 6).Value = c.CustomerID;
+                        sheet.Cell(rowIndex, 7).Value = c.DocumentTotals.NetTotal;
+                        sheet.Cell(rowIndex, 8).Value = c.DocumentTotals.TaxPayable;
+                        sheet.Cell(rowIndex, 9).Value = c.DocumentTotals.GrossTotal;
 
                         rowIndex += 2;
 
-                        //create a new row
-                        var row_line_header = sheet.CreateRow(rowIndex);
-
                         //create lines header
-                        GenerateLineHeaderExcel(row_line_header, detailSubtotalCellStyle);
+                        LineHeader(sheet, rowIndex);
 
                         foreach (var l in c.Line)
                         {
                             rowIndex++;
 
-                            //create a new row
-                            var row_line = sheet.CreateRow(rowIndex);
-
-                            row_line.CreateCell(1).SetCellValue(l.LineNumber);
-                            row_line.CreateCell(2).SetCellValue(l.ProductCode);
-                            row_line.CreateCell(3).SetCellValue(l.ProductDescription);
-                            row_line.CreateCell(4).SetCellValue(Convert.ToDouble(l.Quantity));
-                            row_line.CreateCell(5).SetCellValue(Convert.ToDouble(l.UnitPrice));
-                            row_line.CreateCell(6).SetCellValue(Convert.ToDouble(l.CreditAmount));
-                            row_line.CreateCell(7).SetCellValue(Convert.ToDouble(l.DebitAmount));
-                            row_line.CreateCell(8).SetCellValue(Convert.ToDouble(l.SettlementAmount));
-                            row_line.CreateCell(9).SetCellValue(Convert.ToDouble(l.Tax.TaxPercentage));
-                            row_line.CreateCell(10).SetCellValue(l.TaxExemptionReason);
-                            row_line.CreateCell(11).SetCellValue(l.TaxExemptionCode);
-                            row_line.CreateCell(12).SetCellValue(l.References != null && l.References.Length > 0 ? l.References[0].Reference : string.Empty);
-                            row_line.CreateCell(13).SetCellValue(l.References != null && l.References.Length > 0 ? l.References[0].Reason : string.Empty);
-                            row_line.CreateCell(14).SetCellValue(l.UnitOfMeasure);
-                            row_line.CreateCell(15).SetCellValue(l.TaxPointDate);
-                            row_line.CreateCell(16).SetCellValue(l.Description);
+                            sheet.Cell(rowIndex, 1).Value = l.LineNumber;
+                            sheet.Cell(rowIndex, 2).Value = l.ProductCode;
+                            sheet.Cell(rowIndex, 3).Value = l.ProductDescription;
+                            sheet.Cell(rowIndex, 4).Value = l.Quantity;
+                            sheet.Cell(rowIndex, 5).Value = l.UnitPrice;
+                            sheet.Cell(rowIndex, 6).Value = l.CreditAmount;
+                            sheet.Cell(rowIndex, 7).Value = l.DebitAmount;
+                            sheet.Cell(rowIndex, 8).Value = l.SettlementAmount;
+                            sheet.Cell(rowIndex, 9).Value = l.Tax.TaxPercentage;
+                            sheet.Cell(rowIndex, 10).Value = l.TaxExemptionReason;
+                            sheet.Cell(rowIndex, 11).Value = l.TaxExemptionCode;
+                            sheet.Cell(rowIndex, 12).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reference : string.Empty;
+                            sheet.Cell(rowIndex, 13).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reason : string.Empty;
+                            sheet.Cell(rowIndex, 14).Value = l.UnitOfMeasure;
+                            sheet.Cell(rowIndex, 15).Value = l.Description;
                         }
 
                         rowIndex += 2;
                     }
 
-                    for (int i = 0; i <= 16; i++)
-                    {
-                        sheet.AutoSizeColumn(i);
-                    }
+                    sheet.Columns().AdjustToContents();
 
-                    using FileStream fs = new FileStream(file, FileMode.Create);
-                    workbook.Write(fs);
-                    fs.Close();
+                    workbook.SaveAs(file);
                 }
             }
         }
@@ -847,14 +899,8 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                 if (string.IsNullOrWhiteSpace(file) == false)
                 {
-                    var workbook = new XSSFWorkbook();
-                    var sheet = workbook.CreateSheet("Impostos");
-
-                    // Create the style object
-                    var detailSubtotalCellStyle = workbook.CreateCellStyle();
-                    // Define a thin border for the top and bottom of the cell
-                    detailSubtotalCellStyle.BorderTop = BorderStyle.Thin;
-                    detailSubtotalCellStyle.BorderBottom = BorderStyle.Thin;
+                    using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                    var sheet = workbook.Worksheets.Add("Impostos");
 
                     var taxes_selling_group = invoices
                         .SelectMany(i => i.Line)
@@ -865,32 +911,28 @@ namespace Solria.SAFT.Desktop.ViewModels
                         .ThenBy(g => g.Tax);
 
                     var rowIndex = 1;
+
+                    sheet.Cell(rowIndex, 1).Value = "Documento";
+                    sheet.Cell(rowIndex, 2).Value = "Imposto";
+                    sheet.Cell(rowIndex, 3).Value = "Incidência";
+                    sheet.Cell(rowIndex, 4).Value = "Total";
+
+                    rowIndex++;
                     foreach (var tax in taxes_selling_group)
                     {
-                        //create a new row
-                        var row = sheet.CreateRow(rowIndex);
-
-                        row.CreateCell(0).SetCellValue(tax.InvoiceNo);
-                        row.CreateCell(1).SetCellValue(Convert.ToDouble(tax.Tax));
-                        row.CreateCell(2).SetCellValue(Convert.ToDouble(tax.NetTotal));
-                        row.CreateCell(3).SetCellValue(Convert.ToDouble(
-                            Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax.GetValueOrDefault(0) * 0.01m, 2, MidpointRounding.AwayFromZero)));
+                        sheet.Cell(rowIndex, 1).Value = tax.InvoiceNo;
+                        sheet.Cell(rowIndex, 2).Value = tax.Tax;
+                        sheet.Cell(rowIndex, 3).Value = tax.NetTotal;
+                        sheet.Cell(rowIndex, 4).Value = Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax.GetValueOrDefault(0) * 0.01m, 2, MidpointRounding.AwayFromZero);
 
                         rowIndex++;
                     }
 
-                    var total_row = sheet.CreateRow(rowIndex);
-                    total_row.CreateCell(3).SetCellFormula($"SOMA(D2:D{rowIndex})");
+                    sheet.Cell(rowIndex, 4).FormulaA1 = $"=SUM(D2:D{rowIndex - 1})";
 
-                    for (int i = 0; i <= 2; i++)
-                    {
-                        sheet.AutoSizeColumn(i);
-                    }
+                    sheet.Columns().AdjustToContents();
 
-
-                    using FileStream fs = new FileStream(file, FileMode.Create);
-                    workbook.Write(fs);
-                    fs.Close();
+                    workbook.SaveAs(file);
                 }
             }
         }
@@ -932,35 +974,57 @@ namespace Solria.SAFT.Desktop.ViewModels
                 Quantity = l.Quantity,
                 UnitPrice = l.UnitPrice,
                 TaxBase = l.TaxBase,
-                Description = l.Description
+                Description = l.Description,
+                TaxCode = l.Tax.TaxCode
             }).ToArray();
-            report.RegisterData(lines, "Lines");
+            var taxes = new List<Models.Reporting.Tax>();
+            foreach (var l in CurrentInvoice.Line)
+            {
+                var existing = taxes
+                    .Where(t => t.TaxType == l.Tax.TaxType && t.TaxCountryRegion == l.Tax.TaxCountryRegion && t.TaxPercentage == l.Tax.TaxPercentage)
+                    .FirstOrDefault();
 
-            var customer = saftValidator?.SaftFileV4?.MasterFiles?.Customer?.Where(c => c.CustomerID == CurrentInvoice.CustomerID).FirstOrDefault();
-            report.SetParameterValue("DocNo", CurrentInvoice.InvoiceNo);
-            report.SetParameterValue("ATCUD", CurrentInvoice.ATCUD);
-            report.SetParameterValue("Status", CurrentInvoice.DocumentStatus.InvoiceStatus);
-            report.SetParameterValue("Date", CurrentInvoice.InvoiceDate);
-            report.SetParameterValue("CustomerTaxID", customer?.CustomerTaxID);
-            report.SetParameterValue("CustomerName", customer?.CompanyName);
-            report.SetParameterValue("GrossTotal", CurrentInvoice.DocumentTotals.GrossTotal);
-            report.SetParameterValue("NetTotal", CurrentInvoice.DocumentTotals.NetTotal);
-            report.SetParameterValue("TaxPayable", CurrentInvoice.DocumentTotals.TaxPayable);
-            report.SetParameterValue("Hash", CurrentInvoice.Hash);
+                if (existing != null)
+                {
+                    existing.TaxAmount += l.CreditAmount * l.Tax.TaxPercentage * 0.01m;
+                }
+                else
+                {
+                    existing = new Models.Reporting.Tax
+                    {
+                        TaxAmount = l.CreditAmount * l.Tax.TaxPercentage * 0.01m,
+                        TaxCode = l.Tax.TaxCode,
+                        TaxCountryRegion = l.Tax.TaxCountryRegion,
+                        TaxPercentage = l.Tax.TaxPercentage,
+                        TaxType = l.Tax.TaxType
+                    };
+                    taxes.Add(existing);
+                }
+            }
+            var document = new Models.Reporting.Document { Taxes = taxes.ToArray(), Lines = lines };
+
+            var qrCode = GetATQrCode(header, CurrentInvoice.Customer, CurrentInvoice);
+
+            ReportRegisterData(report, document);
+            ReportRegisterParameters(report, "Original", qrCode, CurrentInvoice.Customer);
 
             // prepare the report
             report.Prepare();
+            report.Load(Path.Combine(Environment.CurrentDirectory, "Reports", "BillingDocument_A4.frx"));
+            ReportRegisterData(report, document);
+            ReportRegisterParameters(report, "Duplicado", qrCode, CurrentInvoice.Customer);
+            report.Prepare(true);
 
             //save prepared report
-            string preparedReport = Path.Combine(Path.GetTempPath(), "Prepared_Report.fpx");
+            string preparedReport = Path.Combine(Path.GetTempPath(), $"{DateTime.Now:yyyyMMddHHmmss}_report.fpx");
             report.SavePrepared(preparedReport);
 
             //var pdfexport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-            //report.Export(pdfexport, Path.Combine(Environment.CurrentDirectory, "pdf.pdf"));
+            //report.Export(pdfexport, Path.Combine(Path.GetTempPath(), $"{DateTime.Now:yyyyMMddHHmmss}_report.pdf"));
 
             reportService.View(preparedReport);
         }
-        private async Task OnDoOpenExcel()
+        private async Task OnSaveExcel()
         {
             if (CurrentInvoice == null)
                 return;
@@ -973,76 +1037,52 @@ namespace Solria.SAFT.Desktop.ViewModels
 
             if (string.IsNullOrWhiteSpace(file) == false)
             {
-                var workbook = new XSSFWorkbook();
-                var sheet = workbook.CreateSheet("Documento");
+                using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                var sheet = workbook.Worksheets.Add("Documento");
 
-                // Create the style object
-                var detailSubtotalCellStyle = workbook.CreateCellStyle();
-                // Define a thin border for the top and bottom of the cell
-                detailSubtotalCellStyle.BorderTop = BorderStyle.Thin;
-                detailSubtotalCellStyle.BorderBottom = BorderStyle.Thin;
+                DocHeader(sheet, 1);
 
-                var row_header = sheet.CreateRow(0);
-                GenerateHeaderExcel(row_header, detailSubtotalCellStyle);
+                var rowIndex = 2;
 
-                var rowIndex = 1;
-
-                //create a new row
-                var row = sheet.CreateRow(rowIndex);
-
-                var c = CurrentInvoice;
-
-                row.CreateCell(0).SetCellValue(c.ATCUD);
-                row.CreateCell(1).SetCellValue(c.InvoiceType);
-                row.CreateCell(2).SetCellValue(c.InvoiceNo);
-                row.CreateCell(3).SetCellValue(c.DocumentStatus.InvoiceStatus);
-                row.CreateCell(4).SetCellValue(c.InvoiceDate);
-                row.CreateCell(5).SetCellValue(c.CustomerID);
-                row.CreateCell(6).SetCellValue(Convert.ToDouble(c.DocumentTotals.NetTotal));
-                row.CreateCell(7).SetCellValue(Convert.ToDouble(c.DocumentTotals.TaxPayable));
-                row.CreateCell(8).SetCellValue(Convert.ToDouble(c.DocumentTotals.GrossTotal));
+                sheet.Cell(rowIndex, 1).Value = CurrentInvoice.ATCUD;
+                sheet.Cell(rowIndex, 2).Value = CurrentInvoice.InvoiceType;
+                sheet.Cell(rowIndex, 3).Value = CurrentInvoice.InvoiceNo;
+                sheet.Cell(rowIndex, 4).Value = CurrentInvoice.DocumentStatus.InvoiceStatus;
+                sheet.Cell(rowIndex, 5).Value = CurrentInvoice.InvoiceDate;
+                sheet.Cell(rowIndex, 6).Value = CurrentInvoice.CustomerID;
+                sheet.Cell(rowIndex, 7).Value = CurrentInvoice.DocumentTotals.NetTotal;
+                sheet.Cell(rowIndex, 8).Value = CurrentInvoice.DocumentTotals.TaxPayable;
+                sheet.Cell(rowIndex, 9).Value = CurrentInvoice.DocumentTotals.GrossTotal;
 
                 rowIndex += 2;
 
-                //create a new row
-                var row_line_header = sheet.CreateRow(rowIndex);
-
                 //create lines header
-                GenerateLineHeaderExcel(row_line_header, detailSubtotalCellStyle);
+                LineHeader(sheet, rowIndex);
 
-                foreach (var l in c.Line)
+                foreach (var l in CurrentInvoice.Line)
                 {
                     rowIndex++;
 
-                    //create a new row
-                    var row_line = sheet.CreateRow(rowIndex);
-
-                    row_line.CreateCell(1).SetCellValue(l.LineNumber);
-                    row_line.CreateCell(2).SetCellValue(l.ProductCode);
-                    row_line.CreateCell(3).SetCellValue(l.ProductDescription);
-                    row_line.CreateCell(4).SetCellValue(Convert.ToDouble(l.Quantity));
-                    row_line.CreateCell(5).SetCellValue(Convert.ToDouble(l.UnitPrice));
-                    row_line.CreateCell(6).SetCellValue(Convert.ToDouble(l.CreditAmount));
-                    row_line.CreateCell(7).SetCellValue(Convert.ToDouble(l.DebitAmount));
-                    row_line.CreateCell(8).SetCellValue(Convert.ToDouble(l.SettlementAmount));
-                    row_line.CreateCell(9).SetCellValue(Convert.ToDouble(l.Tax.TaxPercentage));
-                    row_line.CreateCell(10).SetCellValue(l.TaxExemptionReason);
-                    row_line.CreateCell(11).SetCellValue(l.TaxExemptionCode);
-                    row_line.CreateCell(12).SetCellValue(l.References != null && l.References.Length > 0 ? l.References[0].Reference : string.Empty);
-                    row_line.CreateCell(13).SetCellValue(l.References != null && l.References.Length > 0 ? l.References[0].Reason : string.Empty);
-                    row_line.CreateCell(14).SetCellValue(l.UnitOfMeasure);
-                    row_line.CreateCell(15).SetCellValue(l.TaxPointDate);
-                    row_line.CreateCell(16).SetCellValue(l.Description);
+                    sheet.Cell(rowIndex, 1).Value = l.LineNumber;
+                    sheet.Cell(rowIndex, 2).Value = l.ProductCode;
+                    sheet.Cell(rowIndex, 3).Value = l.ProductDescription;
+                    sheet.Cell(rowIndex, 4).Value = l.Quantity;
+                    sheet.Cell(rowIndex, 5).Value = l.UnitPrice;
+                    sheet.Cell(rowIndex, 6).Value = l.CreditAmount;
+                    sheet.Cell(rowIndex, 7).Value = l.DebitAmount;
+                    sheet.Cell(rowIndex, 8).Value = l.SettlementAmount;
+                    sheet.Cell(rowIndex, 9).Value = l.Tax.TaxPercentage;
+                    sheet.Cell(rowIndex, 10).Value = l.TaxExemptionReason;
+                    sheet.Cell(rowIndex, 11).Value = l.TaxExemptionCode;
+                    sheet.Cell(rowIndex, 12).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reference : string.Empty;
+                    sheet.Cell(rowIndex, 13).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reason : string.Empty;
+                    sheet.Cell(rowIndex, 14).Value = l.UnitOfMeasure;
+                    sheet.Cell(rowIndex, 15).Value = l.Description;
                 }
 
-                for (int i = 0; i <= 16; i++)
-                {
-                    sheet.AutoSizeColumn(i);
-                }
+                sheet.Columns().AdjustToContents();
 
-                using FileStream fs = new FileStream(file, FileMode.Create);
-                workbook.Write(fs);
-                fs.Close();
+                workbook.SaveAs(file);
             }
         }
         private async Task OnTestHash()
@@ -1090,110 +1130,125 @@ namespace Solria.SAFT.Desktop.ViewModels
             return 1;
         }
 
-        private void GenerateHeaderExcel(IRow row, ICellStyle cellStyle)
+        private void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
         {
-            var cell = row.CreateCell(0);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("ATCUD");
-
-            cell = row.CreateCell(1);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Tipo");
-
-            cell = row.CreateCell(2);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Nº");
-
-            cell = row.CreateCell(3);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Estado");
-
-            cell = row.CreateCell(4);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Data");
-
-            cell = row.CreateCell(5);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Cliente");
-
-            cell = row.CreateCell(6);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Incidência");
-
-            cell = row.CreateCell(7);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("IVA");
-
-            cell = row.CreateCell(8);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Total");
+            sheet.Cell(row, 1).Value = "ATCUD";
+            sheet.Cell(row, 2).Value = "Tipo";
+            sheet.Cell(row, 3).Value = "Nº";
+            sheet.Cell(row, 4).Value = "Estado";
+            sheet.Cell(row, 5).Value = "Data";
+            sheet.Cell(row, 6).Value = "Cliente";
+            sheet.Cell(row, 7).Value = "Incidência";
+            sheet.Cell(row, 8).Value = "IVA";
+            sheet.Cell(row, 9).Value = "Total";
         }
 
-        private void GenerateLineHeaderExcel(IRow row, ICellStyle cellStyle)
+        private void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
         {
-            var cell = row.CreateCell(1);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Nº linha");
-
-            cell = row.CreateCell(2);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Código produto");
-
-            cell = row.CreateCell(3);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Descrição produto");
-
-            cell = row.CreateCell(4);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Quantidade");
-
-            cell = row.CreateCell(5);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Preço");
-
-            cell = row.CreateCell(6);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Crédito");
-
-            cell = row.CreateCell(7);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Débito");
-
-            cell = row.CreateCell(8);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Desconto");
-
-            cell = row.CreateCell(9);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Imposto");
-
-            cell = row.CreateCell(10);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Isenção");
-
-            cell = row.CreateCell(11);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Cód. Isenção");
-
-            cell = row.CreateCell(12);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Referência");
-
-            cell = row.CreateCell(13);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Razão");
-
-            cell = row.CreateCell(14);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Unidade medida");
-
-            cell = row.CreateCell(15);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Data");
-
-            cell = row.CreateCell(16);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Descrição");
+            sheet.Cell(row, 1).Value = "Nº linha";
+            sheet.Cell(row, 2).Value = "Código produto";
+            sheet.Cell(row, 3).Value = "Descrição produto";
+            sheet.Cell(row, 4).Value = "Quantidade";
+            sheet.Cell(row, 5).Value = "Preço";
+            sheet.Cell(row, 6).Value = "Crédito";
+            sheet.Cell(row, 7).Value = "Débito";
+            sheet.Cell(row, 8).Value = "Desconto";
+            sheet.Cell(row, 9).Value = "Imposto";
+            sheet.Cell(row, 10).Value = "Isenção";
+            sheet.Cell(row, 11).Value = "Cód. Isenção";
+            sheet.Cell(row, 12).Value = "Referência";
+            sheet.Cell(row, 13).Value = "Razão";
+            sheet.Cell(row, 14).Value = "Unidade medida";
+            sheet.Cell(row, 15).Value = "Descrição";
         }
+
+        private void ReportRegisterData(Report report, Models.Reporting.Document document)
+        {
+            report.RegisterData(new Models.Reporting.Document[] { document }, "Document", 2);
+        }
+        private void ReportRegisterParameters(Report report, string copyNumber, string qrCode, Customer customer)
+        {
+            report.SetParameterValue("CopyNumber", copyNumber);
+            report.SetParameterValue("CompanyName", saftValidator?.SaftFileV4?.Header?.CompanyName);
+            report.SetParameterValue("BusinessName", saftValidator?.SaftFileV4?.Header?.BusinessName);
+            report.SetParameterValue("TaxRegistrationNumber", saftValidator?.SaftFileV4?.Header?.TaxRegistrationNumber);
+            report.SetParameterValue("Address", saftValidator?.SaftFileV4?.Header?.CompanyAddress?.AddressDetail);
+            report.SetParameterValue("DocNo", CurrentInvoice.InvoiceNo);
+            report.SetParameterValue("ATCUD", CurrentInvoice.ATCUD);
+            report.SetParameterValue("Status", CurrentInvoice.DocumentStatus.InvoiceStatus);
+            report.SetParameterValue("Date", CurrentInvoice.InvoiceDate);
+            report.SetParameterValue("CustomerTaxID", customer?.CustomerTaxID);
+            report.SetParameterValue("CustomerName", customer?.CompanyName);
+            report.SetParameterValue("GrossTotal", CurrentInvoice.DocumentTotals.GrossTotal);
+            report.SetParameterValue("NetTotal", CurrentInvoice.DocumentTotals.NetTotal);
+            report.SetParameterValue("TaxPayable", CurrentInvoice.DocumentTotals.TaxPayable);
+            report.SetParameterValue("Hash", $"{CurrentInvoice.Hash[0]}{CurrentInvoice.Hash[10]}{CurrentInvoice.Hash[20]}{CurrentInvoice.Hash[30]} - {saftValidator?.SaftFileV4?.Header?.SoftwareCertificateNumber}");
+            report.SetParameterValue("QrCode", qrCode);
+        }
+
+        public string GetATQrCode(Header header, Customer customer, SourceDocumentsSalesInvoicesInvoice invoice)
+        {
+            var taxes = invoice.Line.Select(l => l.Tax).ToArray();
+
+            var qrCode = new StringBuilder();
+            qrCode.AppendFormat("A:{0}", header.TaxRegistrationNumber);
+            qrCode.AppendFormat("*B:{0}", customer.CustomerTaxID);
+            qrCode.AppendFormat("*C:{0}", customer.BillingAddress.Country);
+            qrCode.AppendFormat("*D:{0}", invoice.InvoiceType);
+            qrCode.AppendFormat("*E:{0}", invoice.DocumentStatus.InvoiceStatus);
+            qrCode.AppendFormat("*F:{0:yyyyMMdd}", invoice.InvoiceDate);
+            qrCode.AppendFormat("*G:{0}", invoice.InvoiceNo);
+            qrCode.AppendFormat("*H:{0}", invoice.ATCUD);
+
+            if (taxes != null && taxes.Length > 0)
+            {
+                var taxesGrouped = taxes.OrderBy(t => t.TaxCode).GroupBy(t => t.TaxCountryRegion);
+                foreach (var group in taxesGrouped)
+                {
+                    string countryLetter = "I";
+                    if (group.Key == "PT")
+                        qrCode.Append("*I1:PT");
+                    else if (group.Key == "PT-AC")
+                    {
+                        countryLetter = "J";
+                        qrCode.Append("*J1:PT-AC");
+                    }
+                    else if (group.Key == "PT-MA")
+                    {
+                        countryLetter = "K";
+                        qrCode.Append("*K1:PT-MA");
+                    }
+
+                    foreach (var tax in group)
+                    {
+                        var valueSum = invoice.Line.Where(l => l.Tax.TaxPercentage == tax.TaxPercentage).Sum(l => l.CreditAmount);
+
+                        if (tax.TaxPercentage == 0)
+                            qrCode.AppendFormat(CultureInfo.InvariantCulture, "*{0}2:{1:N2}", countryLetter, valueSum);
+                        else if (tax.TaxCode == "NOR")
+                            qrCode.AppendFormat(CultureInfo.InvariantCulture, "*{0}7:{1:N2}*{0}8:{2:N2}", countryLetter, valueSum, tax.TaxAmount);
+                        else if (tax.TaxCode == "INT")
+                            qrCode.AppendFormat(CultureInfo.InvariantCulture, "*{0}5:{1:N2}*{0}6:{2:N2}", countryLetter, valueSum, tax.TaxAmount);
+                        else if (tax.TaxCode == "RED")
+                            qrCode.AppendFormat(CultureInfo.InvariantCulture, "*{0}3:{1:N2}*{0}4:{2:N2}", countryLetter, valueSum, tax.TaxAmount);
+                    }
+                }
+            }
+            else
+                qrCode.Append("*I1:0");
+
+            qrCode.AppendFormat(CultureInfo.InvariantCulture, "*N:{0:N2}", invoice.DocumentTotals.TaxPayable);
+            qrCode.AppendFormat(CultureInfo.InvariantCulture, "*O:{0:N2}", invoice.DocumentTotals.GrossTotal);
+
+            if (invoice.WithholdingTax != null && invoice.WithholdingTax.Length > 0)
+                qrCode.AppendFormat(CultureInfo.InvariantCulture, "*P:{0:N2}", invoice.WithholdingTax.Sum(r => r.WithholdingTaxAmount));
+
+            var hash = invoice.Hash;
+            qrCode.AppendFormat(CultureInfo.InvariantCulture, "*Q:{0}", $"{hash[0]}{hash[10]}{hash[20]}{hash[30]}");
+            qrCode.AppendFormat(CultureInfo.InvariantCulture, "*R:{0}", header.SoftwareCertificateNumber);
+
+            return qrCode.ToString();
+        }
+
     }
 }

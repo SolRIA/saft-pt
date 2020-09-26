@@ -1,6 +1,4 @@
 ﻿using Avalonia.Collections;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
 using Solria.SAFT.Desktop.Models.Saft;
@@ -514,75 +512,54 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                 if (string.IsNullOrWhiteSpace(file) == false)
                 {
-                    var workbook = new XSSFWorkbook();
-                    var sheet = workbook.CreateSheet("Documentos");
+                    using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                    var sheet = workbook.Worksheets.Add("Documentos");
 
-                    // Create the style object
-                    var detailSubtotalCellStyle = workbook.CreateCellStyle();
-                    // Define a thin border for the top and bottom of the cell
-                    detailSubtotalCellStyle.BorderTop = BorderStyle.Thin;
-                    detailSubtotalCellStyle.BorderBottom = BorderStyle.Thin;
+                    DocHeader(sheet, 1);
 
-                    var row_header = sheet.CreateRow(0);
-                    GenerateHeaderExcel(row_header, detailSubtotalCellStyle);
-
-                    var rowIndex = 1;
+                    var rowIndex = 2;
                     foreach (var c in document)
                     {
-                        //create a new row
-                        var row = sheet.CreateRow(rowIndex);
-
-                        row.CreateCell(0).SetCellValue(c.ATCUD);
-                        row.CreateCell(1).SetCellValue(c.MovementType);
-                        row.CreateCell(2).SetCellValue(c.DocumentNumber);
-                        row.CreateCell(3).SetCellValue(c.DocumentStatus.MovementStatus);
-                        row.CreateCell(4).SetCellValue(c.MovementDate);
-                        row.CreateCell(5).SetCellValue(c.CustomerID);
-                        row.CreateCell(6).SetCellValue(Convert.ToDouble(c.DocumentTotals.NetTotal));
-                        row.CreateCell(7).SetCellValue(Convert.ToDouble(c.DocumentTotals.TaxPayable));
-                        row.CreateCell(8).SetCellValue(Convert.ToDouble(c.DocumentTotals.GrossTotal));
+                        sheet.Cell(rowIndex, 1).Value = c.ATCUD;
+                        sheet.Cell(rowIndex, 2).Value = c.MovementType;
+                        sheet.Cell(rowIndex, 3).Value = c.DocumentNumber;
+                        sheet.Cell(rowIndex, 4).Value = c.DocumentStatus.MovementStatus;
+                        sheet.Cell(rowIndex, 5).Value = c.MovementDate;
+                        sheet.Cell(rowIndex, 6).Value = c.CustomerID;
+                        sheet.Cell(rowIndex, 7).Value = c.DocumentTotals.NetTotal;
+                        sheet.Cell(rowIndex, 8).Value = c.DocumentTotals.TaxPayable;
+                        sheet.Cell(rowIndex, 9).Value = c.DocumentTotals.GrossTotal;
 
                         rowIndex += 2;
 
-                        //create a new row
-                        var row_line_header = sheet.CreateRow(rowIndex);
-
                         //create lines header
-                        GenerateLineHeaderExcel(row_line_header, detailSubtotalCellStyle);
+                        LineHeader(sheet, rowIndex);
 
                         foreach (var l in c.Line)
                         {
                             rowIndex++;
 
-                            //create a new row
-                            var row_line = sheet.CreateRow(rowIndex);
-
-                            row_line.CreateCell(1).SetCellValue(l.LineNumber);
-                            row_line.CreateCell(2).SetCellValue(l.ProductCode);
-                            row_line.CreateCell(3).SetCellValue(l.ProductDescription);
-                            row_line.CreateCell(4).SetCellValue(Convert.ToDouble(l.Quantity));
-                            row_line.CreateCell(5).SetCellValue(Convert.ToDouble(l.UnitPrice));
-                            row_line.CreateCell(6).SetCellValue(Convert.ToDouble(l.CreditAmount));
-                            row_line.CreateCell(7).SetCellValue(Convert.ToDouble(l.DebitAmount));
-                            row_line.CreateCell(8).SetCellValue(Convert.ToDouble(l.SettlementAmount));
-                            row_line.CreateCell(9).SetCellValue(Convert.ToDouble(l.Tax.TaxPercentage));
-                            row_line.CreateCell(10).SetCellValue(l.TaxExemptionReason);
-                            row_line.CreateCell(11).SetCellValue(l.TaxExemptionCode);
-                            row_line.CreateCell(12).SetCellValue(l.UnitOfMeasure);
-                            row_line.CreateCell(13).SetCellValue(l.Description);
+                            sheet.Cell(rowIndex, 2).Value = l.LineNumber;
+                            sheet.Cell(rowIndex, 3).Value = l.ProductCode;
+                            sheet.Cell(rowIndex, 4).Value = l.ProductDescription;
+                            sheet.Cell(rowIndex, 5).Value = l.Quantity;
+                            sheet.Cell(rowIndex, 6).Value = l.UnitPrice;
+                            sheet.Cell(rowIndex, 7).Value = l.CreditAmount;
+                            sheet.Cell(rowIndex, 8).Value = l.DebitAmount;
+                            sheet.Cell(rowIndex, 9).Value = l.SettlementAmount;
+                            sheet.Cell(rowIndex, 10).Value = l.Tax.TaxPercentage;
+                            sheet.Cell(rowIndex, 11).Value = l.TaxExemptionReason;
+                            sheet.Cell(rowIndex, 12).Value = l.TaxExemptionCode;
+                            sheet.Cell(rowIndex, 13).Value = l.UnitOfMeasure;
+                            sheet.Cell(rowIndex, 14).Value = l.Description;
                         }
 
                         rowIndex += 2;
                     }
 
-                    for (int i = 0; i <= 16; i++)
-                    {
-                        sheet.AutoSizeColumn(i);
-                    }
+                    sheet.Columns().AdjustToContents();
 
-                    using FileStream fs = new FileStream(file, FileMode.Create);
-                    workbook.Write(fs);
-                    fs.Close();
+                    workbook.SaveAs(file);
                 }
             }
         }
@@ -598,14 +575,8 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                 if (string.IsNullOrWhiteSpace(file) == false)
                 {
-                    var workbook = new XSSFWorkbook();
-                    var sheet = workbook.CreateSheet("Impostos");
-
-                    // Create the style object
-                    var detailSubtotalCellStyle = workbook.CreateCellStyle();
-                    // Define a thin border for the top and bottom of the cell
-                    detailSubtotalCellStyle.BorderTop = BorderStyle.Thin;
-                    detailSubtotalCellStyle.BorderBottom = BorderStyle.Thin;
+                    using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                    var sheet = workbook.Worksheets.Add("Impostos");
 
                     var taxes_selling_group = documents
                         .SelectMany(i => i.Line)
@@ -616,32 +587,26 @@ namespace Solria.SAFT.Desktop.ViewModels
                         .ThenBy(g => g.Tax);
 
                     var rowIndex = 1;
+                    sheet.Cell(rowIndex, 1).Value = "Documento";
+                    sheet.Cell(rowIndex, 2).Value = "Imposto";
+                    sheet.Cell(rowIndex, 3).Value = "Incidência";
+                    sheet.Cell(rowIndex, 4).Value = "Total";
+
                     foreach (var tax in taxes_selling_group)
                     {
-                        //create a new row
-                        var row = sheet.CreateRow(rowIndex);
-
-                        row.CreateCell(0).SetCellValue(tax.DocumentNumber);
-                        row.CreateCell(1).SetCellValue(Convert.ToDouble(tax.Tax));
-                        row.CreateCell(2).SetCellValue(Convert.ToDouble(tax.NetTotal));
-                        row.CreateCell(3).SetCellValue(Convert.ToDouble(
-                            Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax * 0.01m, 2, MidpointRounding.AwayFromZero)));
+                        sheet.Cell(rowIndex, 1).Value = tax.DocumentNumber;
+                        sheet.Cell(rowIndex, 2).Value = tax.Tax;
+                        sheet.Cell(rowIndex, 3).Value = tax.NetTotal;
+                        sheet.Cell(rowIndex, 4).Value = Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax * 0.01m, 2, MidpointRounding.AwayFromZero);
 
                         rowIndex++;
                     }
 
-                    var total_row = sheet.CreateRow(rowIndex);
-                    total_row.CreateCell(3).SetCellFormula($"SOMA(D2:D{rowIndex})");
+                    sheet.Cell(rowIndex, 4).FormulaA1 = $"=SUM(D2:D{rowIndex - 1})";
 
-                    for (int i = 0; i <= 2; i++)
-                    {
-                        sheet.AutoSizeColumn(i);
-                    }
+                    sheet.Columns().AdjustToContents();
 
-
-                    using FileStream fs = new FileStream(file, FileMode.Create);
-                    workbook.Write(fs);
-                    fs.Close();
+                    workbook.SaveAs(file);
                 }
             }
         }
@@ -683,73 +648,50 @@ namespace Solria.SAFT.Desktop.ViewModels
 
             if (string.IsNullOrWhiteSpace(file) == false)
             {
-                var workbook = new XSSFWorkbook();
-                var sheet = workbook.CreateSheet("Documento");
+                using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                var sheet = workbook.Worksheets.Add("Documento");
 
-                // Create the style object
-                var detailSubtotalCellStyle = workbook.CreateCellStyle();
-                // Define a thin border for the top and bottom of the cell
-                detailSubtotalCellStyle.BorderTop = BorderStyle.Thin;
-                detailSubtotalCellStyle.BorderBottom = BorderStyle.Thin;
+                DocHeader(sheet, 1);
 
-                var row_header = sheet.CreateRow(0);
-                GenerateHeaderExcel(row_header, detailSubtotalCellStyle);
+                var rowIndex = 2;
 
-                var rowIndex = 1;
-
-                //create a new row
-                var row = sheet.CreateRow(rowIndex);
-
-                var c = CurrentDocument;
-
-                row.CreateCell(0).SetCellValue(c.ATCUD);
-                row.CreateCell(1).SetCellValue(c.MovementType);
-                row.CreateCell(2).SetCellValue(c.DocumentNumber);
-                row.CreateCell(3).SetCellValue(c.DocumentStatus.MovementStatus);
-                row.CreateCell(4).SetCellValue(c.MovementDate);
-                row.CreateCell(5).SetCellValue(c.CustomerID);
-                row.CreateCell(6).SetCellValue(Convert.ToDouble(c.DocumentTotals.NetTotal));
-                row.CreateCell(7).SetCellValue(Convert.ToDouble(c.DocumentTotals.TaxPayable));
-                row.CreateCell(8).SetCellValue(Convert.ToDouble(c.DocumentTotals.GrossTotal));
+                sheet.Cell(rowIndex, 1).Value = CurrentDocument.ATCUD;
+                sheet.Cell(rowIndex, 2).Value = CurrentDocument.MovementType;
+                sheet.Cell(rowIndex, 3).Value = CurrentDocument.DocumentNumber;
+                sheet.Cell(rowIndex, 4).Value = CurrentDocument.DocumentStatus.MovementStatus;
+                sheet.Cell(rowIndex, 5).Value = CurrentDocument.MovementDate;
+                sheet.Cell(rowIndex, 6).Value = CurrentDocument.CustomerID;
+                sheet.Cell(rowIndex, 7).Value = CurrentDocument.DocumentTotals.NetTotal;
+                sheet.Cell(rowIndex, 8).Value = CurrentDocument.DocumentTotals.TaxPayable;
+                sheet.Cell(rowIndex, 9).Value = CurrentDocument.DocumentTotals.GrossTotal;
 
                 rowIndex += 2;
 
-                //create a new row
-                var row_line_header = sheet.CreateRow(rowIndex);
-
                 //create lines header
-                GenerateLineHeaderExcel(row_line_header, detailSubtotalCellStyle);
+                LineHeader(sheet, rowIndex);
 
-                foreach (var l in c.Line)
+                foreach (var l in CurrentDocument.Line)
                 {
                     rowIndex++;
 
-                    //create a new row
-                    var row_line = sheet.CreateRow(rowIndex);
-
-                    row_line.CreateCell(1).SetCellValue(l.LineNumber);
-                    row_line.CreateCell(2).SetCellValue(l.ProductCode);
-                    row_line.CreateCell(3).SetCellValue(l.ProductDescription);
-                    row_line.CreateCell(4).SetCellValue(Convert.ToDouble(l.Quantity));
-                    row_line.CreateCell(5).SetCellValue(Convert.ToDouble(l.UnitPrice));
-                    row_line.CreateCell(6).SetCellValue(Convert.ToDouble(l.CreditAmount));
-                    row_line.CreateCell(7).SetCellValue(Convert.ToDouble(l.DebitAmount));
-                    row_line.CreateCell(8).SetCellValue(Convert.ToDouble(l.SettlementAmount));
-                    row_line.CreateCell(9).SetCellValue(Convert.ToDouble(l.Tax.TaxPercentage));
-                    row_line.CreateCell(10).SetCellValue(l.TaxExemptionReason);
-                    row_line.CreateCell(11).SetCellValue(l.TaxExemptionCode);
-                    row_line.CreateCell(12).SetCellValue(l.UnitOfMeasure);
-                    row_line.CreateCell(13).SetCellValue(l.Description);
+                    sheet.Cell(rowIndex, 2).Value = l.LineNumber;
+                    sheet.Cell(rowIndex, 3).Value = l.ProductCode;
+                    sheet.Cell(rowIndex, 4).Value = l.ProductDescription;
+                    sheet.Cell(rowIndex, 5).Value = l.Quantity;
+                    sheet.Cell(rowIndex, 6).Value = l.UnitPrice;
+                    sheet.Cell(rowIndex, 7).Value = l.CreditAmount;
+                    sheet.Cell(rowIndex, 8).Value = l.DebitAmount;
+                    sheet.Cell(rowIndex, 9).Value = l.SettlementAmount;
+                    sheet.Cell(rowIndex, 10).Value = l.Tax.TaxPercentage;
+                    sheet.Cell(rowIndex, 11).Value = l.TaxExemptionReason;
+                    sheet.Cell(rowIndex, 12).Value = l.TaxExemptionCode;
+                    sheet.Cell(rowIndex, 13).Value = l.UnitOfMeasure;
+                    sheet.Cell(rowIndex, 14).Value = l.Description;
                 }
 
-                for (int i = 0; i <= 16; i++)
-                {
-                    sheet.AutoSizeColumn(i);
-                }
+                sheet.Columns().AdjustToContents();
 
-                using FileStream fs = new FileStream(file, FileMode.Create);
-                workbook.Write(fs);
-                fs.Close();
+                workbook.SaveAs(file);
             }
         }
         private async Task OnTestHash()
@@ -797,98 +739,34 @@ namespace Solria.SAFT.Desktop.ViewModels
             return 1;
         }
 
-        private void GenerateHeaderExcel(IRow row, ICellStyle cellStyle)
+        private void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
         {
-            var cell = row.CreateCell(0);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("ATCUD");
-
-            cell = row.CreateCell(1);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Tipo");
-
-            cell = row.CreateCell(2);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Nº");
-
-            cell = row.CreateCell(3);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Estado");
-
-            cell = row.CreateCell(4);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Data");
-
-            cell = row.CreateCell(5);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Cliente");
-
-            cell = row.CreateCell(6);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Incidência");
-
-            cell = row.CreateCell(7);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("IVA");
-
-            cell = row.CreateCell(8);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Total");
+            sheet.Cell(row, 1).Value = "ATCUD";
+            sheet.Cell(row, 2).Value = "Tipo";
+            sheet.Cell(row, 3).Value = "Nº";
+            sheet.Cell(row, 4).Value = "Estado";
+            sheet.Cell(row, 5).Value = "Data";
+            sheet.Cell(row, 6).Value = "Cliente";
+            sheet.Cell(row, 7).Value = "Incidência";
+            sheet.Cell(row, 8).Value = "IVA";
+            sheet.Cell(row, 9).Value = "Total";
         }
 
-        private void GenerateLineHeaderExcel(IRow row, ICellStyle cellStyle)
+        private void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
         {
-            var cell = row.CreateCell(1);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Nº linha");
-
-            cell = row.CreateCell(2);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Código produto");
-
-            cell = row.CreateCell(3);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Descrição produto");
-
-            cell = row.CreateCell(4);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Quantidade");
-
-            cell = row.CreateCell(5);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Preço");
-
-            cell = row.CreateCell(6);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Crédito");
-
-            cell = row.CreateCell(7);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Débito");
-
-            cell = row.CreateCell(8);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Desconto");
-
-            cell = row.CreateCell(9);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Imposto");
-
-            cell = row.CreateCell(10);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Isenção");
-
-            cell = row.CreateCell(11);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Cód. Isenção");
-
-            cell = row.CreateCell(12);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Unidade medida");
-
-            cell = row.CreateCell(13);
-            cell.CellStyle = cellStyle;
-            cell.SetCellValue("Descrição");
+            sheet.Cell(row, 2).Value = "Nº linha";
+            sheet.Cell(row, 3).Value = "Código produto";
+            sheet.Cell(row, 4).Value = "Descrição produto";
+            sheet.Cell(row, 5).Value = "Quantidade";
+            sheet.Cell(row, 6).Value = "Preço";
+            sheet.Cell(row, 7).Value = "Crédito";
+            sheet.Cell(row, 8).Value = "Débito";
+            sheet.Cell(row, 9).Value = "Desconto";
+            sheet.Cell(row, 10).Value = "Imposto";
+            sheet.Cell(row, 12).Value = "Isenção";
+            sheet.Cell(row, 13).Value = "Cód. Isenção";
+            sheet.Cell(row, 14).Value = "Unidade medida";
+            sheet.Cell(row, 15).Value = "Descrição";
         }
     }
 }

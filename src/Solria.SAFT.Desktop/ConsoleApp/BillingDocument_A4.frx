@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="01/06/2020 00:28:06" ReportInfo.Modified="09/24/2020 23:53:27" ReportInfo.CreatorVersion="2020.4.0.0">
+  <Dictionary>
+    <BusinessObjectDataSource Name="Lines" ReferenceName="Lines" DataType="null" Enabled="true">
+      <Column Name="ProductCode" DataType="System.String"/>
+      <Column Name="ProductDescription" DataType="System.String"/>
+    </BusinessObjectDataSource>
+    <Parameter Name="DocNo" DataType="System.String"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="175.77">
+      <TextObject Name="Text1" Left="415.8" Top="18.9" Width="302.4" Height="37.8" Border.Lines="Bottom" Border.BottomLine.Width="3" Text="[DocNo]" HorzAlign="Center" Font="Segoe UI, 18pt"/>
+      <TextObject Name="Text2" Left="415.8" Top="66.15" Width="204.12" Height="18.9" Text="[ATCUD]" Font="Segoe UI, 9.75pt"/>
+      <TextObject Name="Text3" Left="623.7" Top="66.15" Width="94.5" Height="18.9" Text="[Date]" HorzAlign="Right" Font="Segoe UI, 9.75pt"/>
+      <TextObject Name="Text7" Left="378" Top="128.52" Width="340.2" Height="18.9" Text="[CustomerTaxID]" Font="Arial, 10pt"/>
+      <TextObject Name="Text8" Left="378" Top="151.2" Width="340.2" Height="18.9" Text="[CustomerName]" Font="Arial, 10pt"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="291.72" Width="718.2" Height="56.7" DataSource="Lines">
+      <TextObject Name="Text18" Top="3.78" Width="45.36" Height="18.9" Text="[Lines.LineNumber]" Font="Arial, 10pt"/>
+      <TextObject Name="Text19" Left="45.36" Top="3.78" Width="151.2" Height="18.9" Text="[Lines.ProductCode]" Font="Arial, 10pt"/>
+      <TextObject Name="Text20" Left="196.56" Top="3.78" Width="302.4" Height="18.9" Text="[Lines.ProductDescription]" Font="Arial, 10pt"/>
+      <TextObject Name="Text21" Left="498.96" Top="3.78" Width="56.7" Height="18.9" Text="[Lines.Quantity]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Right" WordWrap="false" Font="Arial, 10pt" Trimming="EllipsisCharacter"/>
+      <TextObject Name="Text22" Left="555.66" Top="3.78" Width="94.5" Height="18.9" Text="[Lines.UnitPrice]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Right" WordWrap="false" Font="Arial, 10pt" Trimming="EllipsisCharacter"/>
+      <TextObject Name="Text23" Left="650.16" Top="3.78" Width="68.04" Height="18.9" Text="[Lines.TaxCode]" Font="Arial, 10pt"/>
+    </DataBand>
+  </ReportPage>
+</Report>

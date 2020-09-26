@@ -395,6 +395,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
         public string EACCode { get; set; }
         public DateTime SystemEntryDate { get; set; }
         public string TransactionID { get; set; }
+        public Customer Customer { get; set; }
         public string CustomerID { get; set; }
         public ShippingPointStructure ShipTo { get; set; }
         public ShippingPointStructure ShipFrom { get; set; }
@@ -510,6 +511,7 @@ namespace Solria.SAFT.Desktop.Models.Saft
 
         public string LineNumber { get; set; }
         public OrderReferences[] OrderReferences { get; set; }
+        public Product Product { get; set; }
         public string ProductCode { get; set; }
         public string ProductDescription { get; set; }
         public decimal Quantity { get; set; }

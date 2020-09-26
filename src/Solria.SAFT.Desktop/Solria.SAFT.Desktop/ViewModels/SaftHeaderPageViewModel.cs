@@ -15,12 +15,14 @@ namespace Solria.SAFT.Desktop.ViewModels
             saftValidator = Locator.Current.GetService<ISaftValidator>();
         }
 
-        protected override void HandleActivation(CompositeDisposable disposables)
+        public static Models.Saft.Header GetHeader(ISaftValidator saftValidator)
         {
+            Models.Saft.Header header = null;
+
             if (saftValidator?.SaftFileV4?.Header != null)
             {
                 var h = saftValidator.SaftFileV4.Header;
-                Header = new Models.Saft.Header
+                header = new Models.Saft.Header
                 {
                     AuditFileVersion = h.AuditFileVersion,
                     BusinessName = h.BusinessName,
@@ -87,7 +89,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             else if (saftValidator?.SaftFileV3?.Header != null)
             {
                 var h = saftValidator.SaftFileV3.Header;
-                Header = new Models.Saft.Header
+                header = new Models.Saft.Header
                 {
                     AuditFileVersion = h.AuditFileVersion,
                     BusinessName = h.BusinessName,
@@ -151,6 +153,13 @@ namespace Solria.SAFT.Desktop.ViewModels
                     TooltipWebsite = h.TooltipWebsite
                 };
             }
+
+            return header;
+        }
+
+        protected override void HandleActivation(CompositeDisposable disposables)
+        {
+            Header = GetHeader(saftValidator);
         }
 
         private Models.Saft.Header header;
@@ -159,6 +168,5 @@ namespace Solria.SAFT.Desktop.ViewModels
             get => header;
             set => this.RaiseAndSetIfChanged(ref header, value);
         }
-
     }
 }
