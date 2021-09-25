@@ -30,7 +30,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
             Router = new RoutingState();
             Activator = new ViewModelActivator();
-            
+
             ShowMenu = false;
 
             dialogManager = Locator.Current.GetService<IDialogManager>();
@@ -40,7 +40,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             var canOpen = this.WhenValueChanged(x => x.DatabaseReady)
                 .ObserveOn(RxApp.MainThreadScheduler);
 
-            var canClearFiles = this.WhenAnyValue(x => x.RecentFiles, recentFiles => recentFiles != null && recentFiles.Count() > 0);
+            var canClearFiles = this.WhenAnyValue(x => x.RecentFiles, recentFiles => recentFiles != null && recentFiles.Any());
 
             ExitCommand = ReactiveCommand.Create(OnExit);
             OpenSaftCommand = ReactiveCommand.CreateFromTask(OnOpenSaft, canOpen);
@@ -54,31 +54,6 @@ namespace Solria.SAFT.Desktop.ViewModels
             ClearRecentFilesCommand = ReactiveCommand.Create(OnClearRecentFiles);
             OpenPemDialogCommand = ReactiveCommand.CreateFromTask(OnOpenPemDialog);
             OpenHashDialogCommand = ReactiveCommand.CreateFromTask(OnOpenHashDialog);
-
-            MenuHeader = new string[]
-            {
-                "Erros",
-                "Cabeçalho"
-            };
-            MenuTables = new string[]
-            {
-                "Clientes",
-                "Fornecedores",
-                "Produtos",
-                "Impostos"
-            };
-            MenuInvoices = new string[]
-            {
-                "Documentos Faturação",
-                "Pagamentos",
-                "Documentos Conferência",
-                "Documentos Movimentação"
-            };
-            MenuStock = new string[]
-            {
-                "Cabeçalho",
-                "Produtos",
-            };
 
             this.WhenActivated(disposables =>
             {
@@ -99,24 +74,15 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                 var recentFiles = databaseService.GetRecentFiles();
 
-                var recentMenu = new List<MenuItemViewModel>(
-                    recentFiles.Select(r => new MenuItemViewModel { Header = r, Command = OpenRecentFileCommand, CommandParameter = r }))
+                RecentFiles = new List<MenuItemViewModel>(recentFiles.Select(r => new MenuItemViewModel { Header = r, Command = OpenRecentFileCommand, CommandParameter = r }))
                 {
                     new MenuItemViewModel { Header = "Limpar", Command = ClearRecentFilesCommand }
-                };
-
-                RecentFiles = new ObservableCollection<MenuItemViewModel>();
-                var recentFilesMenu = new MenuItemViewModel[]
-                {
-                    new MenuItemViewModel
-                    {
-                        Header = "_Recentes",
-                        Items = recentMenu
-                    }
-                };
-                RecentFiles.AddRange(recentFilesMenu);
+                }.ToArray();
 
                 DatabaseReady = true;
+            }).ContinueWith(t =>
+            {
+                BuildMenu();
             });
 
             dialogManager.UpdateVersionInfo(databaseService.GetAppVersion());
@@ -157,41 +123,6 @@ namespace Solria.SAFT.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref isTransport, value);
         }
 
-        private string[] menuHeader;
-        public string[] MenuHeader
-        {
-            get => menuHeader;
-            set => this.RaiseAndSetIfChanged(ref menuHeader, value);
-        }
-
-        private string[] menuTables;
-        public string[] MenuTables
-        {
-            get => menuTables;
-            set => this.RaiseAndSetIfChanged(ref menuTables, value);
-        }
-
-        private string[] menuInvoices;
-        public string[] MenuInvoices
-        {
-            get => menuInvoices;
-            set => this.RaiseAndSetIfChanged(ref menuInvoices, value);
-        }
-
-        private string[] menuStock;
-        public string[] MenuStock
-        {
-            get => menuStock;
-            set => this.RaiseAndSetIfChanged(ref menuStock, value);
-        }
-
-        private string[] menuTransport;
-        public string[] MenuTransport
-        {
-            get => menuTransport;
-            set => this.RaiseAndSetIfChanged(ref menuTransport, value);
-        }
-
         private string selectedSaftMenu;
         public string SelectedSaftMenu
         {
@@ -213,11 +144,18 @@ namespace Solria.SAFT.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref selectedTransportMenu, value);
         }
 
-        private ObservableCollection<MenuItemViewModel> recentFiles;
-        public ObservableCollection<MenuItemViewModel> RecentFiles
+        private MenuItemViewModel[] recentFiles;
+        public MenuItemViewModel[] RecentFiles
         {
             get => recentFiles;
             set => this.RaiseAndSetIfChanged(ref recentFiles, value);
+        }
+
+        private MenuItemViewModel[] menuItems;
+        public MenuItemViewModel[] MenuItems
+        {
+            get => menuItems;
+            set => this.RaiseAndSetIfChanged(ref menuItems, value);
         }
 
         public ReactiveCommand<Unit, Unit> ExitCommand { get; }
@@ -390,14 +328,66 @@ namespace Solria.SAFT.Desktop.ViewModels
 
             await dialogManager.ShowChildDialogAsync(view);
         }
-    }
 
+        private void BuildMenu()
+        {
+            MenuItems = new MenuItemViewModel[]
+            {
+                new MenuItemViewModel
+                {
+                    Header = "_Ficheiro",
+                    Items = new MenuItemViewModel[]
+                    {
+                        new MenuItemViewModel { Header = "Abrir _SAFT", Command = OpenSaftCommand },
+                        new MenuItemViewModel { Header = "Abrir _Transporte", Command = OpenTransportCommand },
+                        new MenuItemViewModel { Header = "Abrir _Stocks", Command = OpenStocksCommand },
+                        new MenuItemViewModel { Header = "Recentes", Items = RecentFiles },
+                        new MenuItemViewModel { Header = "_Sair", Command = ExitCommand },
+                    }
+                },
+                new MenuItemViewModel
+                {
+                    Header = "_SAFT",
+                    Items = new MenuItemViewModel[]
+                    {
+                        new MenuItemViewModel { Header = "Erros", Command = OpenMenuSaftCommand, CommandParameter = "Erros" },
+                        new MenuItemViewModel { Header = "Cabeçalho", Command = OpenMenuSaftCommand, CommandParameter = "Cabeçalho" },
+                        new MenuItemViewModel { Header = "Clientes", Command = OpenMenuSaftCommand, CommandParameter = "Clientes" },
+                        new MenuItemViewModel { Header = "Fornecedores", Command = OpenMenuSaftCommand, CommandParameter = "Fornecedores" },
+                        new MenuItemViewModel { Header = "Produtos", Command = OpenMenuSaftCommand, CommandParameter = "Produtos" },
+                        new MenuItemViewModel { Header = "Impostos", Command = OpenMenuSaftCommand, CommandParameter = "Impostos" },
+                        new MenuItemViewModel { Header = "Documentos Faturação", Command = OpenMenuSaftCommand, CommandParameter = "Documentos Faturação" },
+                        new MenuItemViewModel { Header = "Pagamentos", Command = OpenMenuSaftCommand, CommandParameter = "Pagamentos" },
+                        new MenuItemViewModel { Header = "Documentos Conferência", Command = OpenMenuSaftCommand, CommandParameter = "Documentos Conferência" },
+                        new MenuItemViewModel { Header = "Documentos Movimentação", Command = OpenMenuSaftCommand, CommandParameter = "Documentos Movimentação" }
+                    }
+                },
+                new MenuItemViewModel
+                {
+                    Header = "_Stocks",
+                    Items = new MenuItemViewModel[]
+                    {
+                        new MenuItemViewModel { Header = "Erros", Command = OpenMenuStocksCommand, CommandParameter = "Erros" },
+                        new MenuItemViewModel { Header = "Cabeçalho", Command = OpenMenuStocksCommand, CommandParameter = "Cabeçalho" },
+                        new MenuItemViewModel { Header = "Produtos", Command = OpenMenuStocksCommand, CommandParameter = "Produtos" }
 
-    public class MenuItemViewModel
-    {
-        public string Header { get; set; }
-        public System.Windows.Input.ICommand Command { get; set; }
-        public object CommandParameter { get; set; }
-        public IList<MenuItemViewModel> Items { get; set; }
+                    }
+                },
+                new MenuItemViewModel
+                {
+                    Header = "_Transporte",
+                    Items = new MenuItemViewModel[] { }
+                },
+                new MenuItemViewModel
+                {
+                    Header = "_Ferramentas",
+                    Items = new MenuItemViewModel[]
+                    {
+                        new MenuItemViewModel { Header = "Ler .pem", Command = OpenPemDialogCommand },
+                        new MenuItemViewModel { Header = "Testar Hash", Command = OpenHashDialogCommand }
+                    }
+                }
+            };
+        }
     }
 }

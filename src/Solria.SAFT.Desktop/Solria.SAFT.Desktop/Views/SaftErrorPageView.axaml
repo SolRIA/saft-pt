@@ -17,17 +17,17 @@
 
       <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
               Command="{Binding SearchCommand}" >
-        <DrawingPresenter Drawing="{DynamicResource Material.FilterOutline}" HorizontalAlignment="Center" />
+        <PathIcon Data="{StaticResource Material.FilterOutline}" HorizontalAlignment="Center" />
       </Button>
 
       <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="2" VerticalAlignment="Center"
               Command="{Binding SearchClearCommand}" >
-        <DrawingPresenter Drawing="{DynamicResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
+        <PathIcon Data="{StaticResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
       </Button>
 
       <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="3" VerticalAlignment="Center"
               Command="{Binding DoPrintCommand}">
-        <DrawingPresenter Drawing="{DynamicResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
+        <PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
       </Button>
     </Grid>
 

@@ -6,41 +6,41 @@
         <local:ViewLocator/>
     </Application.DataTemplates>
 
-  <Application.Styles>
-    <!-- themes -->
-    <StyleInclude Source="avares://Avalonia.Themes.Default/DefaultTheme.xaml"/>
-    <StyleInclude Source="avares://Avalonia.Themes.Default/Accents/BaseDark.xaml"/>
 
+  <Application.Styles>
+    <FluentTheme Mode="Dark"/>
+    
     <!-- datagrid -->
-    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Default.xaml"/>
+    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+    <!--<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Default.xaml"/>-->
 
     <!-- sidebar -->
     <!--<StyleInclude Source="avares://Solria.SAFT.Desktop/Assets/Sidebar.xaml"/>-->
 
     <!-- icons -->
-    <StyleInclude Source="avares://Solria.SAFT.Desktop/Assets/Icons.xaml" />
+    <StyleInclude Source="avares://Solria.SAFT.Desktop/Assets/Icons.axaml" />
 
     <!-- custom controls -->
-    <StyleInclude Source="avares://Solria.SAFT.Desktop/Controls/ProgressRing.xaml" />
+    <!--<StyleInclude Source="avares://Solria.SAFT.Desktop/Controls/ProgressRing.xaml" />-->
 
     <!-- common values -->
-    <StyleInclude Source="avares://Solria.SAFT.Desktop/Assets/CommonValues.xaml" />
+    <StyleInclude Source="avares://Solria.SAFT.Desktop/Assets/CommonValues.axaml" />
 
     <!-- window dialog -->
-    <Style Selector="Window.dialog">
+    <!--<Style Selector="Window.dialog">
       <Setter Property="Background" Value="#FF3C3C3C" />
-    </Style>
+    </Style>-->
 
     <!-- textblock -->
-    <Style Selector="TextBlock">
+    <!--<Style Selector="TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
-    </Style>
+    </Style>-->
 
     <Style Selector="TextBlock.title">
       <Setter Property="HorizontalAlignment" Value="Stretch"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
       <Setter Property="FontSize" Value="26"/>
-      <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
+      <!--<Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />-->
       <Setter Property="Margin" Value="10,20" />
     </Style>
 
@@ -90,16 +90,16 @@
     </Style>
 
     <!-- check box -->
-    <Style Selector="CheckBox">
+    <!--<Style Selector="CheckBox">
       <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}"/>
-    </Style>
+    </Style>-->
 
     <!-- numeric up down -->
     <Style Selector="NumericUpDown">
       <Setter Property="Padding" Value="0"/>
       <!--<Setter Property="Height" Value="{StaticResource MinHeightEntries}"/>-->
       <Setter Property="ShowButtonSpinner" Value="False"/>
-      <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}"/>
+      <!--<Setter Property="FontSize" Value="{StaticResource FontSizeLarge}"/>-->
     </Style>
     <Style Selector="NumericUpDown /template/ TextBox#PART_TextBox">
       <Setter Property="Padding" Value="0"/>
@@ -116,24 +116,24 @@
 
     <!-- textbox -->
     <Style Selector="TextBox">
-      <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}"/>
+      <!--<Setter Property="FontSize" Value="{StaticResource FontSizeLarge}"/>-->
       <Setter Property="MinHeight" Value="{StaticResource MinHeightEntries}"/>
     </Style>
 
     <!-- expander -->
-    <Style Selector="Expander">
+    <!--<Style Selector="Expander">
       <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}"/>
-    </Style>
+    </Style>-->
     <!-- listBox -->
-    <Style Selector="ListBox">
+    <!--<Style Selector="ListBox">
       <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}"/>
-    </Style>
+    </Style>-->
 
     <!-- tab control style -->
-    <Style Selector="TabControl">
+    <!--<Style Selector="TabControl">
       <Setter Property="Background" Value="{DynamicResource ThemeControlMidColor}"/>
-      <!--<Setter Property="Height" Value="120"/>-->
-    </Style>
+      <Setter Property="Height" Value="120"/>
+    </Style>-->
     <Style Selector="TabControl WrapPanel">
       <Setter Property="Background" Value="#2B579A"/>
     </Style>
@@ -171,7 +171,7 @@
     <!-- end tab control style -->
 
     <!--start datagrid style remove after the update on the avalonia project -->
-    <Style Selector="DataGridCell">
+    <!--<Style Selector="DataGridCell">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
       <Setter Property="VerticalContentAlignment" Value="Stretch" />
@@ -402,7 +402,7 @@
           </Border>
         </ControlTemplate>
       </Setter>
-    </Style>
+    </Style>-->
 
   </Application.Styles>
 </Application>

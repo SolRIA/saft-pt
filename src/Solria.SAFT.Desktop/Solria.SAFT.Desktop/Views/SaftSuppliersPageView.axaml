@@ -2,11 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:controls="clr-namespace:Solria.SAFT.Desktop.Controls;assembly=Solria.SAFT.Desktop"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Solria.SAFT.Desktop.Views.SaftCustomersPageView">
+             x:Class="Solria.SAFT.Desktop.Views.SaftSuppliersPageView">
   <Grid RowDefinitions="Auto,Auto,*">
-
     <Grid ColumnDefinitions="*,Auto,Auto,Auto">
       <TextBox Grid.Column="0" Margin="2" Text="{Binding Filter, Mode=TwoWay}"
            Watermark="Filtro por: NIF, Nome, Código, Email, Telefone, Website ou Contacto"
@@ -16,88 +14,95 @@
         </TextBox.KeyBindings>
       </TextBox>
 
-      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar" Grid.Column="1" VerticalAlignment="Center"
+      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
               Command="{Binding SearchCommand}" >
-        <DrawingPresenter Drawing="{DynamicResource Material.FilterOutline}" HorizontalAlignment="Center" />
+        <PathIcon Data="{StaticResource Material.FilterOutline}" HorizontalAlignment="Center" />
       </Button>
 
       <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="2" VerticalAlignment="Center"
               Command="{Binding SearchClearCommand}" >
-        <DrawingPresenter Drawing="{DynamicResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
+        <PathIcon Data="{StaticResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
       </Button>
 
       <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="2" VerticalAlignment="Center"
               Command="{Binding DoPrintCommand}">
-        <DrawingPresenter Drawing="{DynamicResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
+        <PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
       </Button>
     </Grid>
 
-    <controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
-                           Grid.Row="1" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>
+    <!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
+                           Grid.Row="1" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>-->
 
-    <DataGrid Grid.Row="2" IsReadOnly="True" 
+    <DataGrid Grid.Row="1" IsReadOnly="True" FontSize="16"
               Items="{Binding CollectionView}">
       <DataGrid.Columns>
-        <DataGridTemplateColumn Header="Código" SortMemberPath="CustomerID">
+        <DataGridTemplateColumn Header="Código" SortMemberPath="SupplierID" Width="*">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding CustomerID}" ToolTip.Tip="{Binding TooltipCustomerID}" Classes="datagrid"/>
+              <TextBlock Text="{Binding SupplierID}" Classes="datagrid" ToolTip.Tip="{Binding TooltipSupplierID}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="NIF" SortMemberPath="CustomerTaxID">
+        <DataGridTemplateColumn Header="Nº conta" SortMemberPath="AccountID">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding CustomerTaxID}" ToolTip.Tip="{Binding TooltipCustomerTaxID}" Classes="datagrid"/>
+              <TextBlock Text="{Binding AccountID}" Classes="datagrid" ToolTip.Tip="{Binding TooltipAccountID}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Nome" SortMemberPath="CompanyName">
+        <DataGridTemplateColumn Header="NIF" SortMemberPath="SupplierTaxID">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding CompanyName}" ToolTip.Tip="{Binding TooltipCompanyName}" Classes="datagrid"/>
+              <TextBlock Text="{Binding SupplierTaxID}" Classes="datagrid" ToolTip.Tip="{Binding TooltipSupplierTaxID}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Nome" SortMemberPath="CompanyName" Width="*">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding CompanyName}" Classes="datagrid" ToolTip.Tip="{Binding TooltipCompanyName}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Contacto" SortMemberPath="Contact">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Contact}" ToolTip.Tip="{Binding TooltipContact}" Classes="datagrid"/>
+              <TextBlock Text="{Binding Contact}" Classes="datagrid" ToolTip.Tip="{Binding TooltipContact}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Telefone" SortMemberPath="Telephone">
+        <DataGridTemplateColumn Header="Código" SortMemberPath="Telephone">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Telephone}" ToolTip.Tip="{Binding TooltipTelephone}" Classes="datagrid"/>
+              <TextBlock Text="{Binding Telephone}" Classes="datagrid" ToolTip.Tip="{Binding TooltipTelephone}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Fax" SortMemberPath="Fax">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Fax}" ToolTip.Tip="{Binding TooltipFax}" Classes="datagrid"/>
+              <TextBlock Text="{Binding Fax}" Classes="datagrid" ToolTip.Tip="{Binding TooltipFax}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Email" SortMemberPath="Email">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Email}" ToolTip.Tip="{Binding TooltipEmail}" Classes="datagrid"/>
+              <TextBlock Text="{Binding Email}" Classes="datagrid" ToolTip.Tip="{Binding TooltipEmail}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Website" SortMemberPath="Website">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Website}" ToolTip.Tip="{Binding TooltipWebsite}" Classes="datagrid"/>
+              <TextBlock Text="{Binding Website}" Classes="datagrid" ToolTip.Tip="{Binding TooltipWebsite}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Autofacturação" SortMemberPath="SelfBillingIndicator">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding SelfBillingIndicator}" ToolTip.Tip="{Binding TooltipSelfBillingIndicator}" Classes="datagrid"/>
+              <TextBlock Text="{Binding SelfBillingIndicator}" Classes="datagrid" ToolTip.Tip="{Binding TooltipSelfBillingIndicator}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>

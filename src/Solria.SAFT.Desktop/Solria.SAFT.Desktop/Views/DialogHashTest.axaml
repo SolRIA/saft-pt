@@ -16,14 +16,14 @@
 
         <TextBlock Text="Chave:" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Margin="3" />
         <TextBlock Text="Tipo:" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" Margin="3" />
-        <TextBlock Text="Série:" Grid.Column="0" Grid.Row="3" HorizontalAlignment="Right" Margin="3" />
+        <!--<TextBlock Text="Série:" Grid.Column="0" Grid.Row="3" HorizontalAlignment="Right" Margin="3" />
         <TextBlock Text="Número:" Grid.Column="0" Grid.Row="4" HorizontalAlignment="Right" Margin="3" />
-        <TextBlock Text="Total:" Grid.Column="0" Grid.Row="5" HorizontalAlignment="Right" Margin="3" />
-        <TextBlock Text="Datas:" Grid.Column="0" Grid.Row="6" HorizontalAlignment="Right" Margin="3" />
-        <TextBlock Text="Hash anterior:" Grid.Column="0" Grid.Row="7" HorizontalAlignment="Right" Margin="3" />
-        <TextBlock Text="Hash:" Grid.Column="0" Grid.Row="8" HorizontalAlignment="Right" Margin="3" />
-        <TextBlock Text="Hash actual:" Grid.Column="0" Grid.Row="9" HorizontalAlignment="Right" Margin="3"
-                   IsVisible="{Binding ValuesFromDocument}" />
+        <TextBlock Text="Total:" Grid.Column="0" Grid.Row="5" HorizontalAlignment="Right" Margin="3" />-->
+        <!--<TextBlock Text="Datas:" Grid.Column="0" Grid.Row="6" HorizontalAlignment="Right" Margin="3" />-->
+        <!--<TextBlock Text="Hash anterior:" Grid.Column="0" Grid.Row="7" HorizontalAlignment="Right" Margin="3" />-->
+        <!--<TextBlock Text="Hash:" Grid.Column="0" Grid.Row="8" HorizontalAlignment="Right" Margin="3" />-->
+        <!--<TextBlock Text="Hash actual:" Grid.Column="0" Grid.Row="9" HorizontalAlignment="Right" Margin="3"
+                   IsVisible="{Binding ValuesFromDocument}" />-->
 
         <ComboBox Items="{Binding PemFiles}"
                   SelectedItem="{Binding PemFile, Mode=TwoWay}"
@@ -39,17 +39,23 @@
                          Text="{Binding DocumenType, Mode=TwoWay}"
                          Grid.Column="1" Grid.Row="2" Margin="3" />
 
-        <TextBox Text="{Binding BillingNumber}" Grid.Column="1" Grid.Row="3" Margin="3"/>
-        <NumericUpDown Value="{Binding DocumentNumber}" CultureInfo="pt-PT" Minimum="1" Grid.Column="1" Grid.Row="4" Margin="3" />
-        <NumericUpDown Value="{Binding DocumentTotal}" CultureInfo="pt-PT" Minimum="0.01" Increment=".01" FormatString="c2" Grid.Column="1" Grid.Row="5" Margin="3"/>
+        <TextBox Text="{Binding BillingNumber}" Grid.Column="1" Grid.Row="3" Margin="3" Watermark="Série" UseFloatingWatermark="True"/>
+        <NumericUpDown Value="{Binding DocumentNumber}" CultureInfo="pt-PT" Minimum="1" Grid.Column="1" Grid.Row="4" Margin="3" Watermark="Número" />
+        <NumericUpDown Value="{Binding DocumentTotal}" CultureInfo="pt-PT" Minimum="0.01" Increment=".01" FormatString="c2" Grid.Column="1" Grid.Row="5" Margin="3" Watermark="Total" />
         <DockPanel Grid.Column="1" Grid.Row="6">
-          <DatePicker SelectedDate="{Binding DocumentDate}" Margin="3" DockPanel.Dock="Top" ToolTip.Tip="Data do documento" FontSize="16"/>
-          <DatePicker SelectedDate="{Binding SystemDate}" Margin="3" DockPanel.Dock="Bottom" ToolTip.Tip="Data do sistema" FontSize="16"/>
+          <StackPanel Orientation="Horizontal">
+            <DatePicker Header="Data do documento" SelectedDate="{Binding DocumentDate}" Margin="3" FontSize="16"/>
+            <TimePicker Header="Hora do documento" SelectedTime="{Binding DocumentDate}" Margin="3" FontSize="16"/>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <DatePicker Header="Data do sistema" SelectedDate="{Binding SystemDate}" Margin="3" FontSize="16" />
+            <TimePicker Header="Hora do sistema" SelectedTime="{Binding SystemDate}" Margin="3" FontSize="16"/>
+          </StackPanel>
         </DockPanel>
-        <TextBox Text="{Binding PreviousHash}" Grid.Column="1" Grid.Row="7" Margin="3"/>
-        <TextBox Text="{Binding DocumentHash}" Grid.Column="1" Grid.Row="8" Margin="3"/>
+        <TextBox Text="{Binding PreviousHash}" Grid.Column="1" Grid.Row="7" Margin="3" Watermark="Hash anterior" UseFloatingWatermark="True"/>
+        <TextBox Text="{Binding DocumentHash}" Grid.Column="1" Grid.Row="8" Margin="3" Watermark="Hash" UseFloatingWatermark="True"/>
         <TextBox Text="{Binding CurrentDocumentHash}" Grid.Column="1" Grid.Row="9" Margin="3"
-                 IsVisible="{Binding ValuesFromDocument}"/>
+                 IsVisible="{Binding ValuesFromDocument}" Watermark="Hash atual" UseFloatingWatermark="True"/>
         <TextBox Text="{Binding Message}" Grid.ColumnSpan="2" Grid.Row="10" Margin="3" />
       </Grid>
     </ScrollViewer>

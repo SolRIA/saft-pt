@@ -10,7 +10,7 @@ namespace Solria.SAFT.Desktop.Views
         {
             this.InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+            //this.AttachDevTools();
 #endif
         }
 

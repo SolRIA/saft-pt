@@ -1,0 +1,52 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Solria.SAFT.Desktop.ViewModels;assembly=Solria.SAFT.Desktop"
+        xmlns:views="clr-namespace:Solria.SAFT.Desktop.Views;assembly=Solria.SAFT.Desktop"
+        xmlns:rxui="http://reactiveui.net"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Solria.SAFT.Desktop.Views.MainWindow"
+        Icon="/Assets/solria.ico"
+        Title="SolRIA SAFT - Validador" WindowState="Maximized" WindowStartupLocation="CenterScreen"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True">
+
+  <Design.DataContext>
+    <vm:MainWindowViewModel/>
+  </Design.DataContext>
+
+  <Panel>
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial
+            BackgroundSource="Digger"
+            TintColor="Black"
+            TintOpacity="1"
+            MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
+
+    <Grid RowDefinitions="45,*" ColumnDefinitions="Auto,*">
+
+      <Menu Items="{Binding MenuItems}" FontSize="16" Grid.Row="0">
+        <Menu.Styles>
+          <Style Selector="MenuItem">
+            <Setter Property="Header" Value="{Binding Header}"/>
+            <Setter Property="Items" Value="{Binding Items}"/>
+            <Setter Property="Command" Value="{Binding Command}"/>
+            <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+          </Style>
+        </Menu.Styles>
+      </Menu>
+
+      <!-- current view -->
+      <rxui:RoutedViewHost Router="{Binding Router}" Grid.Row="1" Grid.ColumnSpan="2" Margin="2">
+        <rxui:RoutedViewHost.DefaultContent>
+          <views:MainMenuPageView />
+        </rxui:RoutedViewHost.DefaultContent>
+      </rxui:RoutedViewHost>
+    </Grid>
+  </Panel>
+</Window>

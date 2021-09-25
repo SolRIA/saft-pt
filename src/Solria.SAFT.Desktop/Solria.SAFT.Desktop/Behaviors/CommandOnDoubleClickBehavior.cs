@@ -14,7 +14,7 @@ namespace Solria.SAFT.Desktop.Behaviors
 
 			base.OnAttached();
 
-			Disposables.Add(AssociatedObject.AddHandler(InputElement.DoubleTappedEvent, (sender, e) => e.Handled = ExecuteCommand()));
+			//Disposables.Add(AssociatedObject.AddHandler(InputElement.DoubleTappedEvent, (sender, e) => e.Handled = ExecuteCommand()));
 		}
 
 		protected override void OnDetaching()

@@ -1,5 +1,4 @@
 ﻿using Avalonia.Collections;
-using FastReport;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
 using Solria.SAFT.Desktop.Models.Saft;
@@ -9,7 +8,6 @@ using Splat;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -959,11 +957,7 @@ namespace Solria.SAFT.Desktop.ViewModels
         }
         private void OnShowInvoiceDetails()
         {
-            // create report instance
-            Report report = new Report();
-
-            // load the existing report
-            report.Load(Path.Combine(Environment.CurrentDirectory, "Reports", "BillingDocument_A4.frx"));
+            //create report instance
 
             // register the array
             var lines = CurrentInvoice.Line.Select(l => new Models.Reporting.DocumentLine
@@ -1004,25 +998,6 @@ namespace Solria.SAFT.Desktop.ViewModels
             var document = new Models.Reporting.Document { Taxes = taxes.ToArray(), Lines = lines };
 
             var qrCode = GetATQrCode(header, CurrentInvoice.Customer, CurrentInvoice);
-
-            ReportRegisterData(report, document);
-            ReportRegisterParameters(report, "Original", qrCode, CurrentInvoice.Customer);
-
-            // prepare the report
-            report.Prepare();
-            report.Load(Path.Combine(Environment.CurrentDirectory, "Reports", "BillingDocument_A4.frx"));
-            ReportRegisterData(report, document);
-            ReportRegisterParameters(report, "Duplicado", qrCode, CurrentInvoice.Customer);
-            report.Prepare(true);
-
-            //save prepared report
-            string preparedReport = Path.Combine(Path.GetTempPath(), $"{DateTime.Now:yyyyMMddHHmmss}_report.fpx");
-            report.SavePrepared(preparedReport);
-
-            //var pdfexport = new FastReport.Export.PdfSimple.PDFSimpleExport();
-            //report.Export(pdfexport, Path.Combine(Path.GetTempPath(), $"{DateTime.Now:yyyyMMddHHmmss}_report.pdf"));
-
-            reportService.View(preparedReport);
         }
         private async Task OnSaveExcel()
         {
@@ -1160,30 +1135,6 @@ namespace Solria.SAFT.Desktop.ViewModels
             sheet.Cell(row, 13).Value = "Razão";
             sheet.Cell(row, 14).Value = "Unidade medida";
             sheet.Cell(row, 15).Value = "Descrição";
-        }
-
-        private void ReportRegisterData(Report report, Models.Reporting.Document document)
-        {
-            report.RegisterData(new Models.Reporting.Document[] { document }, "Document", 2);
-        }
-        private void ReportRegisterParameters(Report report, string copyNumber, string qrCode, Customer customer)
-        {
-            report.SetParameterValue("CopyNumber", copyNumber);
-            report.SetParameterValue("CompanyName", saftValidator?.SaftFileV4?.Header?.CompanyName);
-            report.SetParameterValue("BusinessName", saftValidator?.SaftFileV4?.Header?.BusinessName);
-            report.SetParameterValue("TaxRegistrationNumber", saftValidator?.SaftFileV4?.Header?.TaxRegistrationNumber);
-            report.SetParameterValue("Address", saftValidator?.SaftFileV4?.Header?.CompanyAddress?.AddressDetail);
-            report.SetParameterValue("DocNo", CurrentInvoice.InvoiceNo);
-            report.SetParameterValue("ATCUD", CurrentInvoice.ATCUD);
-            report.SetParameterValue("Status", CurrentInvoice.DocumentStatus.InvoiceStatus);
-            report.SetParameterValue("Date", CurrentInvoice.InvoiceDate);
-            report.SetParameterValue("CustomerTaxID", customer?.CustomerTaxID);
-            report.SetParameterValue("CustomerName", customer?.CompanyName);
-            report.SetParameterValue("GrossTotal", CurrentInvoice.DocumentTotals.GrossTotal);
-            report.SetParameterValue("NetTotal", CurrentInvoice.DocumentTotals.NetTotal);
-            report.SetParameterValue("TaxPayable", CurrentInvoice.DocumentTotals.TaxPayable);
-            report.SetParameterValue("Hash", $"{CurrentInvoice.Hash[0]}{CurrentInvoice.Hash[10]}{CurrentInvoice.Hash[20]}{CurrentInvoice.Hash[30]} - {saftValidator?.SaftFileV4?.Header?.SoftwareCertificateNumber}");
-            report.SetParameterValue("QrCode", qrCode);
         }
 
         public string GetATQrCode(Header header, Customer customer, SourceDocumentsSalesInvoicesInvoice invoice)
