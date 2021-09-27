@@ -3,7 +3,6 @@ using Avalonia.Controls.Notifications;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.ReactiveUI;
-using Avalonia.Threading;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Services;
 using Solria.SAFT.Desktop.ViewModels;

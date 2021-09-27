@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Solria.SAFT.Desktop.Models
+namespace Solria.SAFT.Parser.Models
 {
     public class BaseData
-    {
-        public BaseData()
-        {
+	{
+		public BaseData()
+		{
 			Pk = Guid.NewGuid().ToString();
 		}
 
@@ -14,9 +14,5 @@ namespace Solria.SAFT.Desktop.Models
 		/// </summary>
 		[System.Xml.Serialization.XmlIgnore]
 		public string Pk { get; }
-    }
-
-	public partial class SchemaResults { }
-
-	public partial class HashResults { }
+	}
 }

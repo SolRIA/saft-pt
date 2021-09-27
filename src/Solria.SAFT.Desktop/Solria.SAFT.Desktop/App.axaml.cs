@@ -24,8 +24,7 @@ namespace Solria.SAFT.Desktop
             {
                 var mainWindow = new MainWindow();
 
-                IXmlSerializer xmlSerializer = new XmlSerializer();
-                ISaftValidator saftValidator = new SaftValidator(xmlSerializer);
+                ISaftValidator saftValidator = new SaftValidator();
                 IDatabaseService databaseService = new DatabaseService();
                 IReportService reportService = mainWindow;
 

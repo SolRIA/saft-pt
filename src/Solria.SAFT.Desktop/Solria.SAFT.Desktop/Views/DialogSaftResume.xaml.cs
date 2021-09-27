@@ -1,12 +1,11 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
 namespace Solria.SAFT.Desktop.Views
 {
-    public class SaftDialogResume : Window
+    public class DialogSaftResume : Window
     {
-        public SaftDialogResume()
+        public DialogSaftResume()
         {
             InitializeComponent();
 #if DEBUG

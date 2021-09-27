@@ -110,7 +110,7 @@ namespace Solria.SAFT.Desktop.Models
 			BillingAddressPostalCode = string.Format("2.2.6.5 * Texto 20{0}Código postal.{0}Deverá ser preenchido com a designação «Desconhecido» nas seguintes situações:{0}• Sistemas não integrados, se a informação não for conhecida;{0}• Operações realizadas com «Consumidor final»; e{0}• No caso do setor bancário, para as atividades não sujeitas a IVA.", Environment.NewLine);
 			BillingAddressRegion = string.Format("2.2.6.6 Texto 50{0}Distrito.", Environment.NewLine);
 			BillingAddressCountry = string.Format("2.2.6.7 * Texto 12{0}País.{0}Sendo conhecido, deve ser preenchido de acordo com a norma ISO 3166-1-alpha-2.{0}Deverá ser preenchido com a designação «Desconhecido», nas seguintes situações:{0}• Sistemas não integrados, se a informação não for conhecida;{0}• Operações realizadas com «Consumidor final;{0}• No caso do setor bancário, para as atividades não sujeitas a IVA.", Environment.NewLine);
-			ShipToAddress = string.Format("2.2.7 Morada de expedição.", Environment.NewLine);
+			ShipToAddress = "2.2.7 Morada de expedição.";
 			ShipToAddressBuildingNumber = string.Format("2.2.7.1 Texto 10{0}Número de polícia.", Environment.NewLine);
 			ShipToAddressStreetName = string.Format("2.2.7.2 Texto 90{0}Nome da rua.", Environment.NewLine);
 			ShipToAddressAddressDetail = string.Format("2.2.7.3 * Texto 100{0}Morada detalhada.{0}Deve incluir o nome da rua, número de polícia e andar, se aplicável.{0}Deverá ser preenchido com a designação «Desconhecido», nas seguintes situações:{0}• Sistemas não integrados, se a informação não for conhecida;{0}• Operações realizadas com «Consumidor final»; e{0}• No caso do setor bancário, para as atividades não sujeitas a IVA.", Environment.NewLine);
@@ -170,7 +170,7 @@ namespace Solria.SAFT.Desktop.Models
 			BillingAddressPostalCode = string.Format("2.3.6.5 * Texto 20{0}Código postal.", Environment.NewLine);
 			BillingAddressRegion = string.Format("2.3.6.6 Texto 50{0}Distrito.", Environment.NewLine);
 			BillingAddressCountry = string.Format("2.3.6.7 * Texto 2{0}País.{0}Deve ser preenchido de acordo com a norma ISO 3166-1-alpha-2.", Environment.NewLine);
-			ShipFromAddress = string.Format("2.3.7 Morada da expedição.", Environment.NewLine);
+			ShipFromAddress = "2.3.7 Morada da expedição.";
 			ShipFromAddressBuildingNumber = string.Format("2.3.7.1 Texto 10{0}Número de polícia.", Environment.NewLine);
 			ShipFromAddressStreetName = string.Format("2.3.7.2 Texto 90{0}Nome da rua.", Environment.NewLine);
 			ShipFromAddressAddressDetail = string.Format("2.3.7.3 * Texto 100{0}Morada detalhada.{0}Deve incluir o nome da rua, número de polícia e andar, se aplicável.", Environment.NewLine);
@@ -233,7 +233,7 @@ namespace Solria.SAFT.Desktop.Models
 	{
 		public TaxToolTipService()
 		{
-			TaxTableEntry = string.Format("2.5.1 * Registo na tabela de impostos.", Environment.NewLine);
+			TaxTableEntry = "2.5.1 * Registo na tabela de impostos.";
 			TaxType = string.Format("2.5.1.1 * Texto 3{0}Código do tipo de imposto.{0}Neste campo deve ser indicado o tipo de imposto.{0}Deve ser preenchido com:{0}«IVA» - Imposto sobre o valor acrescentado;{0}«IS» - Imposto do selo.", Environment.NewLine);
 			TaxCountryRegion = string.Format("2.5.1.2 * Texto 5{0}País ou região do imposto.{0}Deve ser preenchido de acordo com a norma ISO 3166-1-alpha 2.{0}No caso das Regiões Autónomas da Madeira e Açores deve ser preenchido com: «PT-AC» - Espaço fiscal da Região Autónoma dos Açores; e «PT-MA» - Espaço fiscal da Região Autónoma da Madeira.", Environment.NewLine);
 			TaxCode = string.Format("2.5.1.3 * Texto 10{0}Código do imposto.{0}No caso do código do tipo de imposto (TaxType) = IVA, deve ser preenchido com:{0}«RED» - Taxa reduzida;{0}«INT» - Taxa intermédia;{0}«NOR» - Taxa normal;{0}«ISE» - Isenta;{0}«OUT» - Outros, aplicável para os regimes especiais de IVA.{0}No caso do código do tipo de imposto (TaxType) = IS, deve ser preenchido com o código da verba respetiva.", Environment.NewLine);
@@ -260,10 +260,10 @@ namespace Solria.SAFT.Desktop.Models
 			NumberOfEntries = string.Format("3.1 * Inteiro{0}Número de registo de movimentos contabilísticos.", Environment.NewLine);
 			TotalDebit = string.Format("3.2 * Monetário{0}Total dos débitos.{0}Soma a débito de todos os movimentos do período selecionado, registados no campo 3.4.3.11.6 - Valor a débito (DebitAmount).", Environment.NewLine);
 			TotalCredit = string.Format("3.3 * Monetário{0}Total dos créditos.{0}Soma a crédito de todos os movimentos do período selecionado, registados no campo 3.4.3.11.7 - Valor a crédito (CreditAmount).", Environment.NewLine);
-			Journal = string.Format("3.4 Diários.", Environment.NewLine);
+			Journal = "3.4 Diários.";
 			JournalID = string.Format("3.4.1 * Texto 30{0}Identificador do diário.", Environment.NewLine);
 			JournalDescription = string.Format("3.4.2 * Texto 60{0}Descrição do diário.", Environment.NewLine);
-			Transaction = string.Format("3.4.3 Identificador da transação.", Environment.NewLine);
+			Transaction = "3.4.3 Identificador da transação.";
 			TransactionID = string.Format("3.4.3.1 * Texto Chave única do movimento contabilístico.{0}Deve ser construída de forma a ser única e a corresponder ao número de documento contabilístico, que é utilizado para detetar o documento físico no arquivo, pelo que, deve resultar de uma concatenação, separada por espaços, entre os seguintes valores: data do documento, identificador do diário e número de arquivo do documento (TransactionDate, JournalID e DocArchivalNumber).", Environment.NewLine);
 			Period = string.Format("3.4.3.2 Inteiro{0}* Período contabilístico.{0}Deve ser indicado o número do mês do período de tributação, de «1» a «12», contado desde a data do seu início.{0}Pode ainda ser preenchido com «13», «14», «15» ou «16» para movimentos efetuados no último mês do período de tributação, relacionados com o apuramento do resultado.{0}Exemplo: movimentos de apuramentos de inventários, depreciações, ajustamentos ou apuramentos de resultados.", Environment.NewLine);
 			TransactionDate = string.Format("3.4.3.3 * Data{0}Data do documento.{0}Deve ser indicada a data impressa no documento que serve de suporte ao registo.", Environment.NewLine);
@@ -274,7 +274,7 @@ namespace Solria.SAFT.Desktop.Models
 			GLPostingDate = string.Format("3.4.3.8 * Data e hora{0}Data do movimento contabilístico.{0}Registo do movimento ao segundo.{0}Tipo de data e hora: «AAAA-MM-DDThh:mm:ss».{0}Quando as gravações são feitas em procedimentos do tipo Batch, poderão ficar com a data de início ou de fim desse processamento.", Environment.NewLine);
 			CustomerID = string.Format("3.4.3.9 ** Texto 30{0}Identificador do cliente.{0}O preenchimento é obrigatório, no caso de o cliente ser não residente ou a transação consubstanciar uma venda que deva figurar no anexo O da IES/declaração anual ou que deva figurar no anexo I da declaração periódica de IVA.{0}Deve ser indicada a chave do registo na tabela de clientes.", Environment.NewLine);
 			SupplierID = string.Format("3.4.3.10 ** Texto 30{0}Identificador do fornecedor.{0}O preenchimento é obrigatório, no caso de o fornecedor ser não residente ou a transação consubstanciar uma compra que deva figurar no anexo P da IES/declaração anual.{0}Deve ser indicada a chave do registo na tabela de fornecedores.", Environment.NewLine);
-			Line = string.Format("3.4.3.11 Linha.", Environment.NewLine);
+			Line = "3.4.3.11 Linha.";
 			RecordID = string.Format("3.4.3.11.1 * Texto 30{0}Identificador do registo de linha.{0}Deve ser indicada a chave única do registo dessa linha no documento.", Environment.NewLine);
 			AccountID = string.Format("3.4.3.11.2 * Texto 30{0}Código da conta.", Environment.NewLine);
 			SourceDocumentID = string.Format("3.4.3.11.3 Texto 30{0}Chave única da tabela de movimentos contabilísticos.{0}Deve ser indicado o tipo e número do documento comercial relacionado com esta linha.", Environment.NewLine);
@@ -319,9 +319,9 @@ namespace Solria.SAFT.Desktop.Models
 			NumberOfEntries = string.Format("4.1.1 * Inteiro{0}Número de registos de documentos comerciais.{0}Deve conter o número total de documentos, incluindo os documentos cujo estado atual (InvoiceStatus) seja do tipo «A» ou «F».", Environment.NewLine);
 			TotalDebit = string.Format("4.1.2 * Monetário{0}Total dos débitos.{0}Deve conter a soma de controlo do campo 4.1.4.18.11 - Valor a débito (DebitAmount), dela excluindo os documentos em que o campo 4.1.4.2.1 - Estado atual do documento (InvoiceStatus) seja do tipo «A» ou «F».", Environment.NewLine);
 			TotalCredit = string.Format("4.1.3 * Monetário{0}Total dos créditos.{0}Deve conter a soma de controlo do campo 4.1.4.18.12 - Valor a crédito (CreditAmount), dela excluindo os documentos em que o campo 4.1.4.2.1 - Estado atual do documento (InvoiceStatus) seja do tipo «A» ou «F».", Environment.NewLine);
-			Invoice = string.Format("4.1.4 * Documento de venda", Environment.NewLine);
+			Invoice = "4.1.4 * Documento de venda";
 			InvoiceNo = string.Format("4.1.4.1 * Texto 60{0}Identificação única do documento de venda.{0}Esta identificação é composta sequencialmente pelos seguintes elementos:{0}o código interno do documento atribuído pela aplicação, um espaço, o identificador da série do documento, uma barra (/) e o número sequencial desse documento dentro dessa série.{0}Não podem existir registos com a mesma identificação.{0}Não podem ser utilizados o mesmo código interno de documento em tipos de documentos (InvoiceType) diferentes.", Environment.NewLine);
-			DocumentStatus = string.Format("4.1.4.2 * Situação do documento.", Environment.NewLine);
+			DocumentStatus = "4.1.4.2 * Situação do documento.";
 			InvoiceStatus = string.Format("4.1.4.2.1 * Texto 1{0}Estado atual do documento.{0}Deve ser preenchido com:{0}«N» - Normal;{0}«S» - Autofaturação;{0}«A» - Documento anulado;{0}«R» - Documento de resumo doutros documentos criados noutras aplicações e gerado nesta aplicação;{0}«F» - Documento faturado:{0}• Quando o documento é do tipo talão de venda ou talão de devolução e existe na tabela o correspondente do tipo fatura ou nota de crédito para dados até 2012-12-31;{0}• Quando o documento é do tipo fatura simplificada e existe na tabela o correspondente do tipo fatura - para dados após 2013-01-01.", Environment.NewLine);
 			InvoiceStatusDate = string.Format("4.1.4.2.2 * Data e hora{0}Data e hora do estado atual do documento.{0}Data da última gravação do estado do documento ao segundo.{0}Tipo data e hora: «AAAA-MM-DDThh:mm:ss».", Environment.NewLine);
 			Reason = string.Format("4.1.4.2.3 Texto 50{0}Motivo da alteração de estado.{0}Deve ser indicada a razão que levou à alteração de estado do documento.", Environment.NewLine);
@@ -344,7 +344,7 @@ namespace Solria.SAFT.Desktop.Models
 			ShipToDeliveryDate = string.Format("4.1.4.13.2 Data{0}Data da entrega.", Environment.NewLine);
 			ShipToWarehouseID = string.Format("4.1.4.13.3 Texto 50{0}Identificador do armazém de destino.", Environment.NewLine);
 			ShipToLocationID = string.Format("4.1.4.13.4 Texto 30{0}Localização dos bens no armazém de destino.", Environment.NewLine);
-			ShipToAddress = string.Format("4.1.4.13.5 Morada.", Environment.NewLine);
+			ShipToAddress = "4.1.4.13.5 Morada.";
 			ShipToBuildingNumber = string.Format("4.1.4.13.5.1 Texto 10{0}Número de polícia.", Environment.NewLine);
 			ShipToStreetName = string.Format("4.1.4.13.5.2 Texto 90{0}Nome da rua.", Environment.NewLine);
 			ShipToAddressDetail = string.Format("4.1.4.13.5.3 * Texto 100{0}Morada detalhada.{0}Deve incluir o nome da rua, número de polícia e andar, se aplicável.", Environment.NewLine);
@@ -357,7 +357,7 @@ namespace Solria.SAFT.Desktop.Models
 			ShipFromDeliveryDate = string.Format("4.1.4.14.2 Data{0}Data de receção.", Environment.NewLine);
 			ShipFromWarehouseID = string.Format("4.1.4.14.3 Texto 50{0}Identificador do armazém de partida.", Environment.NewLine);
 			ShipFromLocationID = string.Format("4.1.4.14.4 Texto 30{0}Localização dos bens no armazém de partida.", Environment.NewLine);
-			ShipFromAddress = string.Format("4.1.4.14.5 Morada.", Environment.NewLine);
+			ShipFromAddress = "4.1.4.14.5 Morada.";
 			ShipFromBuildingNumber = string.Format("4.1.4.14.5.1 Texto 10{0}Número de polícia.", Environment.NewLine);
 			ShipFromStreetName = string.Format("4.1.4.14.5.2 Texto 90{0}Nome da rua.", Environment.NewLine);
 			ShipFromAddressDetail = string.Format("4.1.4.14.5.3 * Texto 100{0}Morada detalhada.{0}Deve incluir o nome da rua, número de polícia e andar, se aplicável.", Environment.NewLine);
@@ -375,7 +375,7 @@ namespace Solria.SAFT.Desktop.Models
 			Description = string.Format("4.1.4.18.10 * Texto 60{0}Descrição.{0}Descrição da linha do documento.", Environment.NewLine);
 			DebitAmount = string.Format("4.1.4.18.11 ** Monetário{0}Valor a débito.{0}Valor da linha dos documentos a lançar a débito na conta de vendas.{0}Este valor é sem imposto e deduzido dos descontos de linha e cabeçalho.", Environment.NewLine);
 			CreditAmount = string.Format("4.1.4.18.12 ** Monetário{0}Valor a crédito.{0}Valor da linha dos documentos a lançar a crédito à conta de vendas.{0}Este valor é sem imposto e deduzido dos descontos de linha e cabeçalho.", Environment.NewLine);
-			Tax = string.Format("4.1.4.18.13 Taxa de imposto.", Environment.NewLine);
+			Tax = "4.1.4.18.13 Taxa de imposto.";
 			TaxType = string.Format("4.1.4.18.13 * Texto 3{0}Identificador do regime de imposto.{0}Neste campo deve ser indicado o tipo de imposto.{0}Deve preenchido com: «IVA» - Imposto sobre o valor acrescentado; «IS» - Imposto do selo.", Environment.NewLine);
 			TaxCountryRegion = string.Format("4.1.4.18.13 * Texto 5{0}País ou região do imposto.{0}Deve ser preenchido de acordo com a norma ISO 3166-1-alpha-2.{0}No caso das Regiões Autónomas da Madeira e Açores deve ser preenchido com: «PT-AC» - Espaço fiscal da Região Autónoma dos Açores; «PT-MA» - Espaço fiscal da Região Autónoma da Madeira.", Environment.NewLine);
 			TaxCode = string.Format("4.1.4.18.13 * Texto 10{0}Código da taxa.{0}Código da taxa na tabela de impostos.{0}Tem que ser preenchido quando os campos percentagem da taxa de imposto (TaxPercentage) ou montante do imposto (TaxAmount) são diferentes de zero.{0}No caso do código do tipo de imposto (TaxType) = IVA, deve ser preenchido com: «RED» - Taxa reduzida; «INT» - Taxa intermédia; «NOR» - Taxa normal; «ISE» - Isenta; «OUT» - Outros, aplicável para os regimes especiais de IVA.{0}No caso do código do tipo de imposto (TaxType) = «IS», deve ser preenchido com o código da verba respetiva.", Environment.NewLine);
@@ -383,7 +383,7 @@ namespace Solria.SAFT.Desktop.Models
 			TaxAmount = string.Format("4.1.4.18.13 ** Monetário{0}Montante do imposto.{0}O preenchimento é obrigatório, no caso de se tratar de uma verba fixa de imposto do selo.", Environment.NewLine);
 			TaxExemptionReason = string.Format("4.1.4.18.14 ** Texto 60{0}Motivo da isenção de imposto.{0}O preenchimento é obrigatório, quando os campos percentagem da taxa de imposto (TaxPercentage) ou montante do imposto (TaxAmount) são iguais a zero.{0}Deve ser referido o preceito legal aplicável.{0}Este campo deve ser igualmente preenchido nos casos de não sujeição aos impostos referidos na tabela 2.5 - Tabela de impostos (TaxTable).", Environment.NewLine);
 			LineSettlementAmount = string.Format("4.1.4.18.15 Monetário{0}Montante do desconto da linha.{0}Deve refletir todos os descontos concedidos (globais e de linha) que afetam o valor do campo 4.1.4.19.3 - GrossTotal.", Environment.NewLine);
-			DocumentTotals = string.Format("4.1.4.19 * Totais do documento.", Environment.NewLine);
+			DocumentTotals = "4.1.4.19 * Totais do documento.";
 			TaxPayable = string.Format("4.1.4.19.1 * Monetário{0}Valor do imposto a pagar.", Environment.NewLine);
 			NetTotal = string.Format("4.1.4.19.2 * Monetário{0}Total do documento sem impostos.{0}Este campo não deve incluir as parcelas referentes aos impostos constantes da tabela de impostos (TaxTable).", Environment.NewLine);
 			GrossTotal = string.Format("4.1.4.19.3 * Monetário{0}Total do documento com impostos.{0}Este campo não deve refletir eventuais retenções na fonte constantes no campo 4.1.4.20 - Retenção na fonte (WithholdingTax).", Environment.NewLine);
@@ -396,7 +396,7 @@ namespace Solria.SAFT.Desktop.Models
 			SettlementDate = string.Format("4.1.4.19.5.3 Data{0}Data acordada para o desconto.{0}A informação a constar é a data acordada para o pagamento com desconto.", Environment.NewLine);
 			PaymentTerms = string.Format("4.1.4.19.5.4 Texto 100{0}Acordos de pagamento.{0}A informação a constar são os acordos estabelecidos, a data limite de pagamento ou os prazos relativos a regimes especiais de exigibilidade de IVA.", Environment.NewLine);
 			PaymentMechanism = string.Format("4.1.4.19.5.5 Texto 2{0}Forma prevista de pagamento.{0}Deve ser preenchido com:{0}«CC» - Cartão crédito;{0}«CD» - Cartão débito{0}«CH» - Cheque;{0}«CS» - Compensação de saldos em conta corrente;{0}«LC» - Letra comercial;{0}«MB» - Multibanco;{0}«NU» - Numerário;{0}«PR» - Permuta;{0}«TB» - Transferência bancária;{0}«TR» - Ticket restaurante.", Environment.NewLine);
-			WithholdingTax = string.Format("4.1.4.20 Retenção na fonte.", Environment.NewLine);
+			WithholdingTax = "4.1.4.20 Retenção na fonte.";
 			WithholdingTaxType = string.Format("4.1.4.20.1 Texto 3{0}Código do tipo de imposto retido.{0}Neste campo deve ser indicado o tipo de imposto retido, preenchendo-o com:{0}«IRS» - Imposto sobre o rendimento de pessoas singulares;{0}«IRC» - Imposto sobre o rendimento de pessoas coletivas;{0}«IS» - Imposto do selo.", Environment.NewLine);
 			WithholdingTaxDescription = string.Format("4.1.4.20.2 Texto 60{0}Motivo da retenção na fonte.{0}Deve ser indicado o normativo legal aplicável.{0}No caso do código do tipo de imposto (TaxType) = IS, deve ser preenchido com o código da verba respetiva.", Environment.NewLine);
 			WithholdingTaxAmount = string.Format("4.1.4.20.3 * Monetário{0}Montante da retenção na fonte.{0}Deve ser indicado o montante retido de imposto.", Environment.NewLine);
@@ -493,9 +493,9 @@ namespace Solria.SAFT.Desktop.Models
 	{
 		public SourceDocumentsSalesInvoicesInvoiceLineToolTipService()
 		{
-			Line = string.Format("4.1.4.18 * Linha.", Environment.NewLine);
+			Line = "4.1.4.18 * Linha.";
 			LineNumber = string.Format("4.1.4.18.1 * Inteiro{0}Número de linha.{0}As linhas devem ser exportadas pela mesma ordem em que se encontram no documento original.", Environment.NewLine);
-			OrderReferences = string.Format("4.1.4.18.2 Referência ao documento de origem.", Environment.NewLine);
+			OrderReferences = "4.1.4.18.2 Referência ao documento de origem.";
 			OriginatingON = string.Format("4.1.4.18.2.1 Texto 255{0}Número do documento de origem.{0}Deve ser indicado o tipo, a série e o número do documento que despoletou a emissão.{0}Se o documento estiver contido no SAF-T(PT) deve ser utilizada a estrutura de numeração do campo de origem.{0}Caso sejam referenciados vários documentos, estes deverão ser separados por «;».", Environment.NewLine);
 			OrderDate = string.Format("4.1.4.18.2.2 Data{0}Data do documento de origem.", Environment.NewLine);
 			ProductCode = string.Format("4.1.4.18.3 * Texto 30{0}Identificador do produto ou serviço.{0}Chave do registo na tabela de produtos/serviços.", Environment.NewLine);
@@ -526,9 +526,9 @@ namespace Solria.SAFT.Desktop.Models
 			MovementOfGoods = string.Format("4.2 Movimentos de bens.{0}Devem ser exportados os documentos, nomeadamente guias de transporte ou de remessa, que sirvam de documento de transporte, de acordo com o disposto no regime de bens em circulação, aprovado pelo Decreto-Lei n.º 147/2003, de 11 de julho.{0}Não devem aqui ser exportados os documentos de transporte que devam constar da tabela 4.1.{0}- Documentos comerciais a clientes (SalesInvoices).", Environment.NewLine);
 			NumberOfMovementLines = string.Format("4.2.1 * Inteiro{0}Número de registos das linhas de movimentos dos bens.{0}Deve conter o número total de linhas com relevância fiscal dos documentos do período disponibilizado.", Environment.NewLine);
 			TotalQuantityIssued = string.Format("4.2.2 * Decimal{0}Total das quantidades movimentadas.{0}Deve conter a soma de controlo do campo 4.2.3.19.5 - Quantidade (Quantity).", Environment.NewLine);
-			StockMovement = string.Format("4.2.3 * Documento de movimentação de mercadorias.", Environment.NewLine);
+			StockMovement = "4.2.3 * Documento de movimentação de mercadorias.";
 			DocumentNumber = string.Format("4.2.3.1 * Texto 60{0}Identificação única do documento de movimentação de mercadorias.{0}Esta identificação é composta sequencialmente pelos seguintes elementos: o código interno do documento atribuído pela aplicação, um espaço, o identificador da série do documento, uma barra (/) e o número sequencial desse documento dentro dessa série.{0}Não podem neste campo existir registos com a mesma identificação.{0}Não podem ser utilizados o mesmo código interno de documento em tipos de documentos (InvoiceType) diferentes.", Environment.NewLine);
-			DocumentStatus = string.Format("4.2.3.2 * Situação do documento.", Environment.NewLine);
+			DocumentStatus = "4.2.3.2 * Situação do documento.";
 			MovementStatus = string.Format("4.2.3.2.1 * Texto 1{0}Estado atual do documento.{0}Deve ser preenchido com:{0}«N» - Normal;{0}«T» - Por conta de terceiros;{0}«A» - Documento anulado.", Environment.NewLine);
 			MovementStatusDate = string.Format("4.2.3.2.2 * Data e hora{0}Data e hora do estado atual do documento.{0}Data da última gravação do estado do documento ao segundo.{0}Tipo data e hora: «AAAA-MM-DDThh:mm:ss».", Environment.NewLine);
 			Reason = string.Format("4.2.3.2.3 Texto 50{0}Motivo da alteração do estado.{0}Deve ser indicada a razão que levou à alteração de estado do documento.", Environment.NewLine);
@@ -549,7 +549,7 @@ namespace Solria.SAFT.Desktop.Models
 			ShipToDeliveryDate = string.Format("4.2.3.14.2 Data{0}Data da entrega.", Environment.NewLine);
 			ShipToWarehouseID = string.Format("4.2.3.14.3 Texto 50{0}Identificador do armazém de destino.", Environment.NewLine);
 			ShipToLocationID = string.Format("4.2.3.14.4 Texto 30{0}Localização dos bens no armazém de destino.", Environment.NewLine);
-			ShipToAddress = string.Format("4.2.3.14.5 Morada.", Environment.NewLine);
+			ShipToAddress = "4.2.3.14.5 Morada.";
 			ShipToBuildingNumber = string.Format("4.2.3.14.5.1 Texto 10{0}Número de polícia.", Environment.NewLine);
 			ShipToStreetName = string.Format("4.2.3.14.5.2 Texto 90{0}Nome da rua.", Environment.NewLine);
 			ShipToAddressDetail = string.Format("4.2.3.14.5.3 * Texto 100{0}Morada detalhada.{0}Deve incluir o nome da rua, número de polícia e andar, se aplicável.", Environment.NewLine);
@@ -572,11 +572,11 @@ namespace Solria.SAFT.Desktop.Models
 			MovementEndTime = string.Format("4.2.3.16 Data e hora{0}Data e hora de fim de transporte.{0}Tipo de data e hora: «AAAA-MM-DDThh:mm:ss» em que o «ss» pode ser «00», na ausência de informação concreta.", Environment.NewLine);
 			MovementStartTime = string.Format("4.2.3.17 * Data e hora{0}Data e hora para o início de transporte.{0}Tipo de data e hora: «AAAA-MM-DDThh:mm:ss» em que o «ss» pode ser «00», na ausência de informação concreta.", Environment.NewLine);
 			ATDocCodeID = string.Format("4.2.3.18 Texto 200{0}Código de identificação do documento.{0}Código de identificação atribuído pela AT ao documento, nos termos do Decreto-Lei n.º 198/2012, de 24 de agosto.", Environment.NewLine);
-			DocumentTotals = string.Format("4.2.3.20 * Totais do documento.", Environment.NewLine);
+			DocumentTotals = "4.2.3.20 * Totais do documento.";
 			TaxPayable = string.Format("4.2.3.20.1 * Monetário{0}Valor do imposto a pagar.{0}Quando a guia não for valorizada deve ser preenchido com «0.00».", Environment.NewLine);
 			NetTotal = string.Format("4.2.3.20.2 * Monetário{0}Total do documento sem impostos.{0}Este campo não deve incluir as parcelas referentes aos impostos constantes da tabela de impostos (TaxTable).{0}Quando a guia não for valorizada este campo deve ser preenchido com «0.00».", Environment.NewLine);
 			GrossTotal = string.Format("4.2.3.20.3 * Monetário{0}Total do documento com impostos.{0}Quando a guia não for valorizada este campo deve ser preenchido com «0.00».", Environment.NewLine);
-			Currency = string.Format("4.2.3.20.4 Moeda.", Environment.NewLine);
+			Currency = "4.2.3.20.4 Moeda.";
 			CurrencyCode = string.Format("4.2.3.20.4.1 * Texto 3{0}Código de moeda.{0}No caso de moeda estrangeira deve ser preenchido de acordo com a norma ISO 4217.", Environment.NewLine);
 			CurrencyAmount = string.Format("4.2.3.20.4.2 * Monetário{0}Valor total em moeda estrangeira.{0}Valor do campo 4.2.3.20.3. GrossTotal na moeda original do documento.", Environment.NewLine);
 			ExchangeRate = string.Format("4.2.3.20.4.3 Decimal{0}Taxa de câmbio.{0}Deve ser indicada a taxa de câmbio utilizada na conversão para EUR.", Environment.NewLine);
@@ -645,9 +645,9 @@ namespace Solria.SAFT.Desktop.Models
 	{
 		public MovementOfGoodsLineToolTipService()
 		{
-			Line = string.Format("4.2.3.19 * Linha.", Environment.NewLine);
+			Line = "4.2.3.19 * Linha.";
 			LineNumber = string.Format("4.2.3.19.1 * Inteiro{0}Número de linha.{0}As linhas devem ser exportadas pela mesma ordem em que se encontram no documento original.", Environment.NewLine);
-			OrderReferences = string.Format("4.2.3.19.2 Referência ao documento de origem.", Environment.NewLine);
+			OrderReferences = "4.2.3.19.2 Referência ao documento de origem.";
 			OriginatingON = string.Format("4.2.3.19.2.1 Texto 255{0}Número do documento de origem.{0}Se o documento estiver contido no SAF-T(PT) deve ser utilizada a estrutura de numeração do campo de origem.{0}Caso existam várias referencias, estas deverão ser separadas por «;».", Environment.NewLine);
 			OrderDate = string.Format("4.2.3.19.2.2 Data{0}Data do documento de origem.", Environment.NewLine);
 			ProductCode = string.Format("4.2.3.19.3 * Texto 30{0}Identificador do produto ou serviço.{0}Chave do registo na tabela de produtos/serviços.", Environment.NewLine);
@@ -693,13 +693,13 @@ namespace Solria.SAFT.Desktop.Models
 	{
 		public WorkingDocumentsToolTipService()
 		{
-			WorkingDocuments = string.Format("4.3 Documentos de conferência.", Environment.NewLine);
+			WorkingDocuments = "4.3 Documentos de conferência.";
 			NumberOfEntries = string.Format("4.3.1 * Inteiro{0}Número de registos de documentos de conferência.{0}Deve conter o número total de documentos, incluindo os documentos cujo estado atual (WorkStatus) seja do tipo «A» ou «F».", Environment.NewLine);
 			TotalDebit = string.Format("4.3.2 * Monetário{0}Total dos débitos.{0}Deve conter a soma de controlo do campo 4.3.4.11.10.{0}- valor a débito (DebitAmount), dela excluindo os documentos em que o campo 4.3.4.2.1.{0}- estado atual do documento (WorkStatus) seja do tipo «A».", Environment.NewLine);
 			TotalCredit = string.Format("4.3.3 * Monetário{0}Total dos créditos.{0}Deve conter a soma de controlo do campo 4.3.4.11.11.{0}- valor a crédito (CreditAmount), dela excluindo os documentos em que o campo 4.3.4.2.1.{0}- estado atual do documento (WorkStatus) seja do tipo «A».", Environment.NewLine);
-			WorkDocument = string.Format("4.3.4 * Documento de conferência.", Environment.NewLine);
+			WorkDocument = "4.3.4 * Documento de conferência.";
 			DocumentNumber = string.Format("4.3.4.1 * Texto 60{0}Identificação única do documento.{0}Esta identificação é composta sequencialmente pelos seguintes elementos: o código interno do documento atribuído pela aplicação, um espaço, o identificador da série do documento, uma barra (/) e o número sequencial desse documento dentro dessa série.{0}Não podem neste campo, existir registos com a mesma identificação.{0}Não podem ser utilizados o mesmo código interno de documento em tipos de documentos (InvoiceType) diferente.", Environment.NewLine);
-			DocumentStatus = string.Format("4.3.4.2 * Situação do documento.", Environment.NewLine);
+			DocumentStatus = "4.3.4.2 * Situação do documento.";
 			WorkStatus = string.Format("4.3.4.2.1 * Texto 1{0}Estado atual do documento.{0}Deve ser preenchido com:{0}«N» - Normal;{0}«A» - Documento anulado;{0}«F» - Documento faturado, quando para este documento também existe na tabela 4.1 o correspondente do tipo fatura ou fatura simplificada.", Environment.NewLine);
 			WorkStatusDate = string.Format("4.3.4.2.2 * Data e hora{0}Data e hora do estado atual do documento.{0}Data da última gravação do estado do documento ao segundo.{0}Tipo data e hora: «AAAA-MM-DDThh:mm:ss».", Environment.NewLine);
 			Reason = string.Format("4.3.4.2.3 Texto 50{0}Motivo da alteração de estado.{0}Deve ser indicada a razão que levou à alteração de estado do documento.", Environment.NewLine);
@@ -712,11 +712,11 @@ namespace Solria.SAFT.Desktop.Models
 			GeneratedDocumentUserSourceID = string.Format("4.3.4.8 * Texto 30{0}Código do utilizador.{0}Utilizador que gerou o documento.", Environment.NewLine);
 			SystemEntryDate = string.Format("4.3.4.9 * Data e hora{0}Data de gravação do documento.{0}Data da gravação do registo ao segundo, no momento da assinatura.{0}Tipo data e hora: «AAAA-MM-DDThh:mm:ss».", Environment.NewLine);
 			CustomerID = string.Format("4.3.4.10 * Texto 30{0}Identificador do cliente.{0}Chave única da tabela de clientes (Customer) respeitando a regra aí definida para o campo identificador único do cliente (CustomerID).", Environment.NewLine);
-			DocumentTotals = string.Format("4.3.4.12 * Totais do documento.", Environment.NewLine);
+			DocumentTotals = "4.3.4.12 * Totais do documento.";
 			TaxPayable = string.Format("4.3.4.12.1 * Monetário{0}Valor do imposto a pagar.", Environment.NewLine);
 			NetTotal = string.Format("4.3.4.12.2 * Monetário{0}Total do documento sem impostos.{0}Este campo não deve incluir as parcelas referentes aos impostos constantes da tabela de impostos (TaxTable).", Environment.NewLine);
 			GrossTotal = string.Format("4.3.4.12.3 * Monetário{0}Total do documento com impostos.", Environment.NewLine);
-			Currency = string.Format("4.3.4.12.4 Moeda.", Environment.NewLine);
+			Currency = "4.3.4.12.4 Moeda.";
 			CurrencyCode = string.Format("4.3.4.12.4.1 * Texto 3{0}Código de moeda.{0}No caso de moeda estrangeira deve ser preenchido de acordo com a norma ISO 4217.", Environment.NewLine);
 			CurrencyAmount = string.Format("4.3.4.12.4.2 * Monetário{0}Valor total em moeda estrangeira.{0}Valor do campo 4.3.4.12.3 - total do documento com impostos (GrossTotal) na moeda original do documento.", Environment.NewLine);
 			ExchangeRate = string.Format("4.3.4.12.4.3 Decimal{0}Taxa de câmbio.{0}Deve ser indicada a taxa de câmbio utilizada na conversão para EUR.", Environment.NewLine);
@@ -755,9 +755,9 @@ namespace Solria.SAFT.Desktop.Models
 	{
 		public WorkingDocumentsLineToolTipService()
 		{
-			Line = string.Format("4.3.4.11 * Linha.", Environment.NewLine);
+			Line = "4.3.4.11 * Linha.";
 			LineNumber = string.Format("4.3.4.11.1 * Inteiro{0}Número de linha.{0}As linhas devem ser exportadas pela mesma ordem em que se encontram no documento original.", Environment.NewLine);
-			OrderReferences = string.Format("4.3.4.11.2 Referência ao documento de origem.", Environment.NewLine);
+			OrderReferences = "4.3.4.11.2 Referência ao documento de origem.";
 			OriginatingON = string.Format("4.3.4.11.2.1 Texto 255{0}Número do documento precedente.{0}Se o documento estiver contido no SAF-T(PT) deve ser utilizada a estrutura de numeração do campo de origem.{0}Caso sejam referenciados vários documentos, estes deverão ser separados por «;».", Environment.NewLine);
 			OrderDate = string.Format("4.3.4.11.2.2 Data{0}Data do documento de origem.", Environment.NewLine);
 			ProductCode = string.Format("4.3.4.11.3 * Texto 30{0}Identificador do produto ou serviço.{0}Chave do registo na tabela de produtos/serviços.", Environment.NewLine);
@@ -769,7 +769,7 @@ namespace Solria.SAFT.Desktop.Models
 			Description = string.Format("4.3.4.11.9 * Texto 60{0}Descrição.{0}Descrição da linha do documento.", Environment.NewLine);
 			DebitAmount = string.Format("4.3.4.11.10 ** Monetário{0}Valor a débito.{0}Valor da linha dos documentos a débito.{0}Este valor é sem imposto e deduzido dos descontos de linha e cabeçalho.", Environment.NewLine);
 			CreditAmount = string.Format("4.3.4.11.11 ** Monetário{0}Valor a crédito.{0}Valor da linha dos documentos a crédito.{0}Este valor é sem imposto e deduzido dos descontos de linha e cabeçalho.", Environment.NewLine);
-			Tax = string.Format("4.3.4.11.12 Taxa de imposto.", Environment.NewLine);
+			Tax = "4.3.4.11.12 Taxa de imposto.";
 			TaxType = string.Format("4.3.4.11.12 * Texto 3{0}Identificador do regime de imposto.{0}Neste campo deve ser indicado o tipo de imposto.{0}Deve preenchido com:{0}«IVA» - Imposto sobre o valor acrescentado;{0}«IS» - Imposto do selo.", Environment.NewLine);
 			TaxCountryRegion = string.Format("4.3.4.11.12 * Texto 5{0}País ou região do imposto.{0}Deve ser preenchido de acordo com a norma ISO 3166-1-alpha 2.{0}No caso das regiões autónomas da Madeira e Açores deve ser preenchido com:{0}«PT-AC» - Espaço fiscal da região autónoma dos Açores;{0}«PT-MA» - Espaço fiscal da região autónoma da Madeira.", Environment.NewLine);
 			TaxCode = string.Format("4.3.4.11.12 * Texto 10{0}Código da taxa.{0}Código da taxa na tabela de impostos.{0}Tem que ser preenchido quando os campos percentagem da taxa de imposto (TaxPercentage) ou montante do imposto (TaxAmount) são diferentes de zero.{0}No caso do código do tipo de imposto (TaxType) = IVA, deve ser preenchido com:{0}«RED» - Taxa reduzida;{0}«INT» - Taxa intermédia;{0}«NOR» - Taxa normal;{0}«ISE» - Isenta;{0}«OUT» - Outros, aplicável para os regimes especiais de IVA.{0}No caso do código do tipo de imposto (TaxType) = «IS», deve ser preenchido com o código da verba respetiva.", Environment.NewLine);

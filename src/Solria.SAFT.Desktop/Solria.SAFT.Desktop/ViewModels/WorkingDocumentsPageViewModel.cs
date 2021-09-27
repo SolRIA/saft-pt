@@ -1,13 +1,12 @@
 ﻿using Avalonia.Collections;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Models.Saft;
 using Solria.SAFT.Desktop.Services;
 using Solria.SAFT.Desktop.Views;
+using Solria.SAFT.Parser.Models;
 using Splat;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -42,192 +41,24 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             IsLoading = true;
 
-            Task.Run(() =>
-            {
-                var documents = new List<SourceDocumentsWorkingDocumentsWorkDocument>();
-                if (saftValidator?.SaftFileV4?.SourceDocuments?.WorkingDocuments != null)
-                {
-                    var saft_documents = saftValidator.SaftFileV4.SourceDocuments?.WorkingDocuments.WorkDocument;
+                var documents = saftValidator.SaftFile?.SourceDocuments?.WorkingDocuments?.WorkDocument ?? Array.Empty<SourceDocumentsWorkingDocumentsWorkDocument>();
 
-                    foreach (var c in saft_documents)
-                    {
-                        documents.Add(new SourceDocumentsWorkingDocumentsWorkDocument
-                        {
-                            ATCUD = c.ATCUD,
-                            CustomerID = c.CustomerID,
-                            DocumentStatus = new SourceDocumentsWorkingDocumentsWorkDocumentDocumentStatus
-                            {
-                                WorkStatus = c.DocumentStatus?.WorkStatus.ToString(),
-                                WorkStatusDate = c.DocumentStatus?.WorkStatusDate ?? DateTime.MinValue,
-                                Reason = c.DocumentStatus?.Reason,
-                                SourceBilling = c.DocumentStatus?.SourceBilling.ToString(),
-                                SourceID = c.DocumentStatus?.SourceID
-                            },
-                            DocumentTotals = new SourceDocumentsWorkingDocumentsWorkDocumentDocumentTotals
-                            {
-                                Currency = new Currency
-                                {
-                                    CurrencyAmount = c.DocumentTotals?.Currency?.CurrencyAmount ?? 0,
-                                    CurrencyCode = c.DocumentTotals?.Currency?.CurrencyCode,
-                                    ExchangeRate = c.DocumentTotals?.Currency?.ExchangeRate ?? 0
-                                },
-                                GrossTotal = c.DocumentTotals?.GrossTotal ?? 0,
-                                NetTotal = c.DocumentTotals?.NetTotal ?? 0,
-                                TaxPayable = c.DocumentTotals?.TaxPayable ?? 0
-                            },
-                            EACCode = c.EACCode,
-                            Hash = c.Hash,
-                            HashControl = c.HashControl,
-                            WorkType = c.WorkType.ToString(),
-                            DocumentNumber = c.DocumentNumber,
-                            WorkDate = c.WorkDate,
-                            Line = c.Line?.Select(l => new SourceDocumentsWorkingDocumentsWorkDocumentLine
-                            {
-                                DocumentNumber = l.DocNo,
-                                CreditAmount = l.ItemElementName == Models.SaftV4.ItemChoiceType7.CreditAmount ? l.Item : 0,
-                                DebitAmount = l.ItemElementName == Models.SaftV4.ItemChoiceType7.DebitAmount ? l.Item : 0,
-                                CustomsInformation = new CustomsInformation
-                                {
-                                    ARCNo = l.CustomsInformation?.ARCNo,
-                                    IECAmount = l.CustomsInformation?.IECAmount ?? 0
-                                },
-                                Description = l.Description,
-                                LineNumber = l.LineNumber,
-                                OrderReferences = l.OrderReferences?.Select(o => new OrderReferences
-                                {
-                                    OrderDate = o.OrderDate,
-                                    OriginatingON = o.OriginatingON
-                                }).ToArray(),
-                                ProductCode = l.ProductCode,
-                                ProductDescription = l.ProductDescription,
-                                ProductSerialNumber = l.ProductSerialNumber,
-                                Quantity = l.Quantity,
-                                References = l.References?.Select(r => new References
-                                {
-                                    Reason = r.Reason,
-                                    Reference = r.Reference
-                                }).ToArray(),
-                                SettlementAmount = l.SettlementAmount,
-                                Tax = new Tax
-                                {
-                                    TaxAmount = l.Tax?.ItemElementName == Models.SaftV4.ItemChoiceType1.TaxAmount ? l.Tax?.Item : 0,
-                                    TaxPercentage = l.Tax?.ItemElementName == Models.SaftV4.ItemChoiceType1.TaxPercentage ? l.Tax?.Item : 0,
-                                    TaxCode = l.Tax?.TaxCode,
-                                    TaxCountryRegion = l.Tax?.TaxCountryRegion,
-                                    TaxType = l.Tax?.TaxType.ToString()
-                                },
-                                TaxBase = l.TaxBase,
-                                TaxExemptionCode = l.TaxExemptionCode,
-                                TaxExemptionReason = l.TaxExemptionReason,
-                                TaxPointDate = l.TaxPointDate,
-                                UnitOfMeasure = l.UnitOfMeasure,
-                                UnitPrice = l.UnitPrice
-                            }).ToArray(),
-                            Period = c.Period,
-                            SourceID = c.SourceID,
-                            SystemEntryDate = c.SystemEntryDate,
-                            TransactionID = c.TransactionID
-                        });
-                    }
-                }
-                else if (saftValidator?.SaftFileV3?.SourceDocuments?.WorkingDocuments != null)
-                {
-                    var saft_documents = saftValidator.SaftFileV3.SourceDocuments.WorkingDocuments.WorkDocument;
-
-                    foreach (var c in saft_documents)
-                    {
-                        documents.Add(new SourceDocumentsWorkingDocumentsWorkDocument
-                        {
-                            CustomerID = c.CustomerID,
-                            DocumentStatus = new SourceDocumentsWorkingDocumentsWorkDocumentDocumentStatus
-                            {
-                                WorkStatus = c.DocumentStatus?.WorkStatus.ToString(),
-                                WorkStatusDate = c.DocumentStatus?.WorkStatusDate ?? DateTime.MinValue,
-                                Reason = c.DocumentStatus?.Reason,
-                                SourceBilling = c.DocumentStatus?.SourceBilling.ToString(),
-                                SourceID = c.DocumentStatus?.SourceID
-                            },
-                            DocumentTotals = new SourceDocumentsWorkingDocumentsWorkDocumentDocumentTotals
-                            {
-                                Currency = new Currency
-                                {
-                                    CurrencyAmount = c.DocumentTotals?.Currency?.CurrencyAmount ?? 0,
-                                    CurrencyCode = c.DocumentTotals?.Currency?.CurrencyCode,
-                                    ExchangeRate = c.DocumentTotals?.Currency?.ExchangeRate ?? 0
-                                },
-                                GrossTotal = c.DocumentTotals?.GrossTotal ?? 0,
-                                NetTotal = c.DocumentTotals?.NetTotal ?? 0,
-                                TaxPayable = c.DocumentTotals?.TaxPayable ?? 0
-                            },
-                            EACCode = c.EACCode,
-                            Hash = c.Hash,
-                            HashControl = c.HashControl,
-                            WorkType = c.WorkType.ToString(),
-                            DocumentNumber = c.DocumentNumber,
-                            WorkDate = c.WorkDate,
-                            Line = c.Line?.Select(l => new SourceDocumentsWorkingDocumentsWorkDocumentLine
-                            {
-                                DocumentNumber = l.DocNo,
-                                CreditAmount = l.ItemElementName == Models.SaftV3.ItemChoiceType8.CreditAmount ? l.Item : 0,
-                                DebitAmount = l.ItemElementName == Models.SaftV3.ItemChoiceType8.DebitAmount ? l.Item : 0,
-                                Description = l.Description,
-                                LineNumber = l.LineNumber,
-                                OrderReferences = l.OrderReferences?.Select(o => new OrderReferences
-                                {
-                                    OrderDate = o.OrderDate,
-                                    OriginatingON = o.OriginatingON
-                                }).ToArray(),
-                                ProductCode = l.ProductCode,
-                                ProductDescription = l.ProductDescription,
-                                Quantity = l.Quantity,
-                                SettlementAmount = l.SettlementAmount,
-                                Tax = new Tax
-                                {
-                                    TaxAmount = l.Tax?.ItemElementName == Models.SaftV3.ItemChoiceType1.TaxAmount ? l.Tax?.Item : 0,
-                                    TaxPercentage = l.Tax?.ItemElementName == Models.SaftV3.ItemChoiceType1.TaxPercentage ? l.Tax?.Item : 0,
-                                    TaxCode = l.Tax?.TaxCode,
-                                    TaxCountryRegion = l.Tax?.TaxCountryRegion,
-                                    TaxType = l.Tax?.TaxType.ToString()
-                                },
-                                TaxExemptionReason = l.TaxExemptionReason,
-                                TaxPointDate = l.TaxPointDate,
-                                UnitOfMeasure = l.UnitOfMeasure,
-                                UnitPrice = l.UnitPrice
-                            }).ToArray(),
-                            Period = c.Period,
-                            SourceID = c.SourceID,
-                            SystemEntryDate = c.SystemEntryDate
-                        });
-                    }
-                }
-
-                return documents;
-            }).ContinueWith(async c =>
-            {
-                var documents = await c;
-
-                DocNumberOfEntries = documents.Count();
+                DocNumberOfEntries = documents.Length;
                 DocTotalCredit = documents
-                    .Where(i => i.DocumentStatus.WorkStatus != "A" && i.DocumentStatus.WorkStatus != "F")
+                    .Where(i => i.DocumentStatus.WorkStatus != WorkStatus.A && i.DocumentStatus.WorkStatus != WorkStatus.F)
                     .Sum(i => i.Line.Sum(l => l.CreditAmount ?? 0))
                     .ToString("c");
 
                 DocTotalDebit = documents
-                    .Where(i => i.DocumentStatus.WorkStatus != "A" && i.DocumentStatus.WorkStatus != "F")
+                    .Where(i => i.DocumentStatus.WorkStatus != WorkStatus.A && i.DocumentStatus.WorkStatus != WorkStatus.F)
                     .Sum(i => i.Line.Sum(l => l.DebitAmount ?? 0))
                     .ToString("c");
 
-                if (saftValidator?.SaftFileV4?.SourceDocuments?.WorkingDocuments != null)
+                if (saftValidator?.SaftFile?.SourceDocuments?.WorkingDocuments != null)
                 {
-                    NumberOfEntries = saftValidator.SaftFileV4.SourceDocuments.WorkingDocuments.NumberOfEntries;
-                    TotalCredit = saftValidator.SaftFileV4.SourceDocuments.WorkingDocuments.TotalCredit.ToString("c");
-                    TotalDebit = saftValidator.SaftFileV4.SourceDocuments.WorkingDocuments.TotalDebit.ToString("c");
-                }
-                else if (saftValidator?.SaftFileV3?.SourceDocuments?.WorkingDocuments != null)
-                {
-                    NumberOfEntries = saftValidator.SaftFileV3.SourceDocuments.WorkingDocuments.NumberOfEntries;
-                    TotalCredit = saftValidator.SaftFileV3.SourceDocuments.WorkingDocuments.TotalCredit.ToString("c");
-                    TotalDebit = saftValidator.SaftFileV3.SourceDocuments.WorkingDocuments.TotalDebit.ToString("c");
+                    NumberOfEntries = saftValidator.SaftFile.SourceDocuments.WorkingDocuments.NumberOfEntries;
+                    TotalCredit = saftValidator.SaftFile.SourceDocuments.WorkingDocuments.TotalCredit.ToString("c");
+                    TotalDebit = saftValidator.SaftFile.SourceDocuments.WorkingDocuments.TotalDebit.ToString("c");
                 }
 
                 FiltroDataInicio = documents.Min(i => i.WorkDate);
@@ -246,7 +77,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                                 return true;
                             if (document.CustomerID != null && document.CustomerID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
-                            if (document.DocumentStatus != null && document.DocumentStatus.WorkStatus != null && document.DocumentStatus.WorkStatus.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            if (document.DocumentStatus?.WorkStatus != null && document.DocumentStatus.WorkStatus.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
                             if (document.DocumentStatus != null && document.DocumentStatus.Reason != null && document.DocumentStatus.Reason.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
@@ -254,7 +85,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                                 return true;
                             if (document.DocumentNumber != null && document.DocumentNumber.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
-                            if (document.WorkType != null && document.WorkType.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            if (document.WorkType.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
                             if (document.Period != null && document.Period.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
@@ -276,7 +107,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                         if (o is SourceDocumentsWorkingDocumentsWorkDocumentLine line)
                         {
-                            if (ShowAllLines == false && line.DocumentNumber.Equals(CurrentDocument.DocumentNumber, StringComparison.OrdinalIgnoreCase) == false)
+                            if (ShowAllLines == false && line.DocNo.Equals(CurrentDocument.DocumentNumber, StringComparison.OrdinalIgnoreCase) == false)
                                 return false;
 
                             if (string.IsNullOrWhiteSpace(FilterLines))
@@ -314,7 +145,6 @@ namespace Solria.SAFT.Desktop.ViewModels
                     .DisposeWith(disposables);
 
                 IsLoading = false;
-            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         protected override void HandleDeactivation()
@@ -514,9 +344,9 @@ namespace Solria.SAFT.Desktop.ViewModels
                     var taxes_selling_group = documents
                         .SelectMany(i => i.Line)
                         .Where(c => c.CreditAmount > 0)
-                        .GroupBy(l => new { l.DocumentNumber, l.Tax.TaxPercentage })
-                        .Select(g => new { g.Key.DocumentNumber, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.Quantity * l.UnitPrice) })
-                        .OrderBy(g => g.DocumentNumber)
+                        .GroupBy(l => new { l.DocNo, l.Tax.TaxPercentage })
+                        .Select(g => new { g.Key.DocNo, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.Quantity * l.UnitPrice) })
+                        .OrderBy(g => g.DocNo)
                         .ThenBy(g => g.Tax);
 
                     var rowIndex = 1;
@@ -529,7 +359,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                     rowIndex++;
                     foreach (var tax in taxes_selling_group)
                     {
-                        sheet.Cell(rowIndex, 1).Value = tax.DocumentNumber;
+                        sheet.Cell(rowIndex, 1).Value = tax.DocNo;
                         sheet.Cell(rowIndex, 2).Value = tax.Tax;
                         sheet.Cell(rowIndex, 3).Value = tax.NetTotal;
                         sheet.Cell(rowIndex, 4).Value = Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax.GetValueOrDefault(0) * 0.01m, 2, MidpointRounding.AwayFromZero);
@@ -667,17 +497,17 @@ namespace Solria.SAFT.Desktop.ViewModels
             }
         }
 
-        private int Operation(SourceDocumentsWorkingDocumentsWorkDocument i, SourceDocumentsWorkingDocumentsWorkDocumentLine l)
+        private static int Operation(SourceDocumentsWorkingDocumentsWorkDocument i, SourceDocumentsWorkingDocumentsWorkDocumentLine l)
         {
-            if (i.WorkType == "CM" || i.WorkType == "FC" || i.WorkType == "FO" || i.WorkType == "NE" || i.WorkType == "OU" || i.WorkType == "OR" || i.WorkType == "PF" || i.WorkType == "DC" || i.WorkType == "RP" || i.WorkType == "RE" || i.WorkType == "CS" || i.WorkType == "LD" || i.WorkType == "RA")
+            if (i.WorkType == WorkType.CM || i.WorkType == WorkType.FC || i.WorkType == WorkType.FO || i.WorkType == WorkType.NE || i.WorkType == WorkType.OU || i.WorkType == WorkType.OR || i.WorkType == WorkType.PF || i.WorkType == WorkType.DC || i.WorkType == WorkType.RP || i.WorkType == WorkType.RE || i.WorkType == WorkType.CS || i.WorkType == WorkType.LD || i.WorkType == WorkType.RA)
                 return l.CreditAmount > 0 ? 1 : -1;
-            else if (i.WorkType == "CC")
+            else if (i.WorkType == WorkType.CC)
                 return l.DebitAmount > 0 ? 1 : -1;
 
             return 1;
         }
 
-        private void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
+        private static void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
         {
             sheet.Cell(row, 1).Value = "ATCUD";
             sheet.Cell(row, 2).Value = "Tipo";
@@ -690,7 +520,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             sheet.Cell(row, 9).Value = "Total";
         }
 
-        private void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
+        private static void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
         {
             sheet.Cell(row, 2).Value = "Nº linha";
             sheet.Cell(row, 3).Value = "Código produto";

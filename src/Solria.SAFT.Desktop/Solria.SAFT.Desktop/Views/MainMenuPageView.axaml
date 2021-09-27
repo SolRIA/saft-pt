@@ -8,7 +8,7 @@
 
     <Button Command="{Binding OpenSaftCommand}" Margin="5" Grid.Row="1" Grid.Column="1">
       <Grid Width="130" Height="130" RowDefinitions="*,40" HorizontalAlignment="Stretch">
-        <PathIcon Data="{StaticResource Material.FileCode}" Grid.Row="0" Width="70" Height="70" HorizontalAlignment="Center"/>
+        <PathIcon Data="{StaticResource Material.FileCode}" Foreground="Orange" Grid.Row="0" Width="60" Height="60" HorizontalAlignment="Center"/>
 
         <Border Grid.Row="1">
           <TextBlock Text="SAFT-PT" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
@@ -18,7 +18,7 @@
 
     <Button Command="{Binding OpenTransportCommand}" Margin="5" Grid.Row="1" Grid.Column="2">
       <Grid Width="130" Height="130" RowDefinitions="*,40">
-        <PathIcon Data="{StaticResource Material.Truck}" Grid.Row="0" Width="70" Height="70" HorizontalAlignment="Center"/>
+        <PathIcon Data="{StaticResource Material.Truck}" Foreground="LightBlue" Grid.Row="0" Width="60" Height="60" HorizontalAlignment="Center"/>
 
         <Border Grid.Row="1">
           <TextBlock Text="Transporte" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
@@ -28,7 +28,7 @@
 
     <Button Command="{Binding OpenStocksCommand}" Margin="5" Grid.Row="1" Grid.Column="3">
       <Grid Width="130" Height="130" RowDefinitions="*,40">
-        <PathIcon Data="{StaticResource Material.BarcodeScan}" Grid.Row="0" Width="70" Height="70" HorizontalAlignment="Center"/>
+        <PathIcon Data="{StaticResource Material.BarcodeScan}" Foreground="LightGreen" Grid.Row="0" Width="60" Height="60" HorizontalAlignment="Center"/>
 
         <Border Grid.Row="1">
           <TextBlock Text="Stocks" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>

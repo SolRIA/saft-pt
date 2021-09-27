@@ -5,54 +5,71 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" Width="800"
         x:Class="Solria.SAFT.Desktop.Views.DialogConvertPemKey"
         Title="{Binding Title}" ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
-        Classes="dialog">
-  <Grid ColumnDefinitions="200,*" RowDefinitions="*,Auto">
+        Classes="dialog"
+        TransparencyLevelHint="AcrylicBlur"
+        ExtendClientAreaToDecorationsHint="True"
+        Background="Transparent" >
 
-    <ListBox Items="{Binding PemFiles}" SelectedItem="{Binding PemFile, Mode=TwoWay}"
-             BorderThickness="0" Background="Transparent">
-      <ListBox.ItemTemplate>
-        <DataTemplate>
-          <Border Background="White" CornerRadius="2" Padding="4" Margin="2">
-            <TextBlock Text="{Binding Name}" Foreground="Black"/>
-          </Border>
-        </DataTemplate>
-      </ListBox.ItemTemplate>
-    </ListBox>
-    
-    <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-      <Grid Margin="5,0" ColumnDefinitions="*,50" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto">
+  <Panel>
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial
+            BackgroundSource="Digger"
+            TintColor="Black"
+            TintOpacity="1"
+            MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
 
-        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Margin="3" VerticalAlignment="Stretch" TextWrapping="Wrap" FontSize="14"
-                   Text="Esta ferramenta permite converter o conteúdo de um ficheiro no formato Pem para o equivalente RSACryptoServiceProvider. O RSACryptoServiceProvider poderá ser utilizado directamente no .NET para gerar as assinaturas dos documentos de facturação."/>
+    <Grid ColumnDefinitions="200,*" RowDefinitions="*,Auto" Margin="10,50,10,10">
 
-        <TextBlock Text="Conversor de chaves Pem" FontSize="14" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" />
+      <ListBox Items="{Binding PemFiles}" SelectedItem="{Binding PemFile, Mode=TwoWay}"
+               BorderThickness="0" Background="Transparent">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <Border Background="White" CornerRadius="2" Padding="4" Margin="2">
+              <TextBlock Text="{Binding Name}" Foreground="Black"/>
+            </Border>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
 
-        <TextBox Text="{Binding PemFileName}" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Padding="3" IsReadOnly="True" Margin="5"
-                 ToolTip.Tip="Abrir o ficheiro pem com a chave privada ou pública"/>
+      <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="5,0" ColumnDefinitions="*,50" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto">
 
-        <Button Command="{Binding OpenPemFileCommand}" Content="..." Background="Transparent" Grid.Column="1" Grid.Row="2" Width="40" HorizontalAlignment="Right" Padding="3" Margin="8" BorderBrush="{x:Null}"
-                ToolTip.Tip="Abrir o ficheiro pem com a chave privada ou pública"/>
+          <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Margin="3" VerticalAlignment="Stretch" TextWrapping="Wrap" FontSize="14"
+                     Text="Esta ferramenta permite converter o conteúdo de um ficheiro no formato Pem para o equivalente RSACryptoServiceProvider. O RSACryptoServiceProvider poderá ser utilizado directamente no .NET para gerar as assinaturas dos documentos de facturação."/>
 
-        <TextBlock Text="Nome:" FontSize="12" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" />
-        <TextBox Text="{Binding PemFile.Name, Mode=TwoWay}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Margin="5"/>
+          <TextBlock Text="Conversor de chaves Pem" FontSize="14" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" />
 
-        <CheckBox IsChecked="{Binding PemFile.PrivateKey}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" Content="Chave privada"/>
-        
-        <TextBlock Text="Ficheiro Pem:" FontSize="12" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" />
-        <TextBox Text="{Binding PemFile.PemText}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" IsReadOnly="True" Margin="5"/>
-        
-        <TextBlock Text="RSACryptoServiceProvider:" FontSize="12" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="2" />
-        <TextBox Text="{Binding PemFile.RsaSettings}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="9" IsReadOnly="True" Margin="5"/>
+          <TextBox Text="{Binding PemFileName}" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Padding="3" IsReadOnly="True" Margin="5"
+                   ToolTip.Tip="Abrir o ficheiro pem com a chave privada ou pública"/>
+
+          <Button Command="{Binding OpenPemFileCommand}" Content="..." Background="Transparent" Grid.Column="1" Grid.Row="2" Width="40" HorizontalAlignment="Right" Padding="3" Margin="8" BorderBrush="{x:Null}"
+                  ToolTip.Tip="Abrir o ficheiro pem com a chave privada ou pública"/>
+
+          <TextBlock Text="Nome:" FontSize="12" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" />
+          <TextBox Text="{Binding PemFile.Name, Mode=TwoWay}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Margin="5"/>
+
+          <CheckBox IsChecked="{Binding PemFile.PrivateKey}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" Content="Chave privada"/>
+
+          <TextBlock Text="Ficheiro Pem:" FontSize="12" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" />
+          <TextBox Text="{Binding PemFile.PemText}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" IsReadOnly="True" Margin="5"/>
+
+          <TextBlock Text="RSACryptoServiceProvider:" FontSize="12" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="2" />
+          <TextBox Text="{Binding PemFile.RsaSettings}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="9" IsReadOnly="True" Margin="5"/>
+        </Grid>
+
+      </ScrollViewer>
+
+      <Grid Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+            Background="{DynamicResource ThemeAccentBrush}"
+            ColumnDefinitions="*,100,100,100">
+        <Button Command="{Binding DeleteKeyCommand}" Content="Apagar" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="1"/>
+        <Button Command="{Binding SaveCloseCommand}" Content="Guardar" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="2" />
+        <Button Command="{Binding CloseCommand}" Content="Fechar" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="3" />
       </Grid>
 
-    </ScrollViewer>
-
-    <Grid Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-          Background="{DynamicResource ThemeAccentBrush}"
-          ColumnDefinitions="*,Auto,Auto">
-      <Button Command="{Binding DeleteKeyCommand}" Content="Apagar" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="1" />
-      <Button Command="{Binding SaveCloseCommand}" Content="Guardar" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="2" />
     </Grid>
-
-  </Grid>
+  </Panel>
 </Window>

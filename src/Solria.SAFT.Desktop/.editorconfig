@@ -2,3 +2,6 @@
 
 # IDE0008: Use explicit type
 csharp_style_var_when_type_is_apparent = true
+
+# CA1806: Do not ignore method results
+dotnet_diagnostic.CA1806.severity = none

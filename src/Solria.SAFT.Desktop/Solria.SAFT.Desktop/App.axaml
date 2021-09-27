@@ -56,6 +56,9 @@
     </Style>
 
     <!-- button -->
+    <Style Selector="Button">
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
     <Style Selector="Button.btnCleanStyle">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
@@ -132,13 +135,12 @@
     <!-- tab control style -->
     <!--<Style Selector="TabControl">
       <Setter Property="Background" Value="{DynamicResource ThemeControlMidColor}"/>
-      <Setter Property="Height" Value="120"/>
     </Style>-->
     <Style Selector="TabControl WrapPanel">
       <Setter Property="Background" Value="#2B579A"/>
     </Style>
 
-    <Style Selector="TabItem">
+    <!--<Style Selector="TabItem">
       <Setter Property="FontSize" Value="18"/>
       <Setter Property="Height" Value="34"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
@@ -167,7 +169,7 @@
     </Style>
     <Style Selector="TabItem:selected /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="#f0f0f0"/>
-    </Style>
+    </Style>-->
     <!-- end tab control style -->
 
     <!--start datagrid style remove after the update on the avalonia project -->

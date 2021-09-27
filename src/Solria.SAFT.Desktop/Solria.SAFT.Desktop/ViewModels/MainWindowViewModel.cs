@@ -191,13 +191,13 @@ namespace Solria.SAFT.Desktop.ViewModels
             {
                 var saft_file = results.First();
                 databaseService.AddRecentFile(saft_file);
-                await saftValidator.OpenSaftFileV4(saft_file);
+                await saftValidator.OpenSaftFile(saft_file);
 
                 dialogManager.SetFileName(saft_file);
-                dialogManager.SetTitle(saftValidator.SaftFileV4?.Header?.CompanyName);
+                dialogManager.SetTitle(saftValidator.SaftFile?.Header?.CompanyName);
 
-                var view = new SaftDialogResume();
-                var vm = new SaftDialogResumeViewModel(this);
+                var view = new DialogSaftResume();
+                var vm = new DialogSaftResumeViewModel(this);
                 vm.Init();
                 view.DataContext = vm;
 
@@ -288,14 +288,14 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             if (File.Exists(saft_file) == true)
             {
-                await saftValidator.OpenSaftFileV4(saft_file);
+                await saftValidator.OpenSaftFile(saft_file);
 
                 dialogManager.SetFileName(saft_file);
-                dialogManager.SetTitle(saftValidator.SaftFileV4?.Header?.CompanyName);
+                dialogManager.SetTitle(saftValidator.SaftFile?.Header?.CompanyName);
 
                 //show resume
-                var view = new SaftDialogResume();
-                var vm = new SaftDialogResumeViewModel(this);
+                var view = new DialogSaftResume();
+                var vm = new DialogSaftResumeViewModel(this);
                 vm.Init();
                 view.DataContext = vm;
 
@@ -376,7 +376,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                 new MenuItemViewModel
                 {
                     Header = "_Transporte",
-                    Items = new MenuItemViewModel[] { }
+                    Items = System.Array.Empty<MenuItemViewModel>()
                 },
                 new MenuItemViewModel
                 {

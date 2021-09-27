@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Solria.SAFT.Parser.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -8,26 +9,26 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 {
     public partial class SourceDocumentsPaymentsPayment : BaseData
     {
-        public Error ValidatePaymentRefNo()
+        public ValidationError ValidatePaymentRefNo()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(PaymentRefNo) || PaymentRefNo.Length > 60)
             {
-                erro = new Error { Description = "Identificação única com tamanho incorrecto.", Field = "PaymentRefNo", TypeofError = GetType(), Value = PaymentRefNo, UID = Pk };
+                erro = new ValidationError { Description = "Identificação única com tamanho incorrecto.", Field = "PaymentRefNo", TypeofError = GetType(), Value = PaymentRefNo, UID = Pk };
                 //if (appendError)
                 //    Tooltip.PaymentRefNo = Tooltip.PaymentRefNo.FormatTooltipWithError(erro.Description);
             }
             else if (!Regex.IsMatch(PaymentRefNo, "[^ ]+ [^/^ ]+/[0-9]+"))
             {
-                erro = new Error { Description = "Identificação única com caracteres não permitidos.", Field = "PaymentRefNo", TypeofError = GetType(), Value = PaymentRefNo, UID = Pk };
+                erro = new ValidationError { Description = "Identificação única com caracteres não permitidos.", Field = "PaymentRefNo", TypeofError = GetType(), Value = PaymentRefNo, UID = Pk };
                 //if (appendError)
                 //    Tooltip.PaymentRefNo = Tooltip.PaymentRefNo.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidatePeriod()
+        public ValidationError ValidatePeriod()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(Period) == false)
             {
@@ -36,7 +37,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 
                 if (periodo < 1 || periodo > 12)
                 {
-                    erro = new Error { Description = string.Format("Mês do período de tributação do documento {0} incorrecto.", PaymentRefNo), Field = "Period", TypeofError = GetType(), Value = Period, UID = Pk };
+                    erro = new ValidationError { Description = string.Format("Mês do período de tributação do documento {0} incorrecto.", PaymentRefNo), Field = "Period", TypeofError = GetType(), Value = Period, UID = Pk };
                     //if (appendError)
                     //    Tooltip.Period = Tooltip.Period.FormatTooltipWithError(erro.Description);
                 }
@@ -44,130 +45,130 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 
             return erro;
         }
-        public Error ValidateTransactionID()
+        public ValidationError ValidateTransactionID()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (!string.IsNullOrEmpty(TransactionID) && TransactionID.Length > 70)
             {
-                erro = new Error { Description = string.Format("Identificador da transacção do documento {0} incorrecto.", PaymentRefNo), Field = "TransactionID", TypeofError = GetType(), Value = TransactionID, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Identificador da transacção do documento {0} incorrecto.", PaymentRefNo), Field = "TransactionID", TypeofError = GetType(), Value = TransactionID, UID = Pk };
                 //if (appendError)
                 //    Tooltip.TransactionID = Tooltip.TransactionID.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateTransactionDate()
+        public ValidationError ValidateTransactionDate()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (TransactionDate > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data de emissão do documento {0} incorrecta.", PaymentRefNo), Field = "TransactionDate", TypeofError = GetType(), Value = TransactionDate.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data de emissão do documento {0} incorrecta.", PaymentRefNo), Field = "TransactionDate", TypeofError = GetType(), Value = TransactionDate.ToString(), UID = Pk };
                 //if (appendError)
                 //    Tooltip.TransactionDate = Tooltip.TransactionDate.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateDescription()
+        public ValidationError ValidateDescription()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (!string.IsNullOrEmpty(Description) && Description.Length > 200)
             {
-                erro = new Error { Description = string.Format("Tamanho da descrição do recibo {0} incorrecto.", PaymentRefNo), Field = "Description", TypeofError = GetType(), Value = Description, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Tamanho da descrição do recibo {0} incorrecto.", PaymentRefNo), Field = "Description", TypeofError = GetType(), Value = Description, UID = Pk };
                 //if (appendError)
                 //    Tooltip.Description = Tooltip.Description.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidatePaymentStatusDate()
+        public ValidationError ValidatePaymentStatusDate()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (DocumentStatus.PaymentStatusDate > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data e hora do estado atual do recibo {0} incorrecta.", PaymentRefNo), Field = "PaymentStatusDate", TypeofError = GetType(), Value = DocumentStatus.PaymentStatusDate.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data e hora do estado atual do recibo {0} incorrecta.", PaymentRefNo), Field = "PaymentStatusDate", TypeofError = GetType(), Value = DocumentStatus.PaymentStatusDate.ToString(), UID = Pk };
                 //if (appendError)
                 //    Tooltip.PaymentStatusDate = Tooltip.PaymentStatusDate.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateReason()
+        public ValidationError ValidateReason()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (!string.IsNullOrEmpty(DocumentStatus.Reason) && DocumentStatus.Reason.Length > 50)
             {
-                erro = new Error { Description = string.Format("Tamanho do motivo da alteração de estado do recibo {0} incorrecto.", PaymentRefNo), Field = "Reason", TypeofError = GetType(), Value = DocumentStatus.Reason, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Tamanho do motivo da alteração de estado do recibo {0} incorrecto.", PaymentRefNo), Field = "Reason", TypeofError = GetType(), Value = DocumentStatus.Reason, UID = Pk };
                 //if (appendError)
                 //    Tooltip.Reason = Tooltip.Reason.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateDocumentStatusSourceID()
+        public ValidationError ValidateDocumentStatusSourceID()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(DocumentStatus.SourceID) || DocumentStatus.SourceID.Length > 30)
             {
-                erro = new Error { Description = string.Format("Utilizador responsável pelo estado atual do recibo {0} incorrecto.", DocumentStatus.SourceID), Field = "SourceID", TypeofError = GetType(), Value = DocumentStatus.SourceID, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Utilizador responsável pelo estado atual do recibo {0} incorrecto.", DocumentStatus.SourceID), Field = "SourceID", TypeofError = GetType(), Value = DocumentStatus.SourceID, UID = Pk };
                 //if (appendError)
                 //    Tooltip.ResponsableUserSourceID = Tooltip.ResponsableUserSourceID.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateSystemID()
+        public ValidationError ValidateSystemID()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(SystemID) == false && SystemID.Length > 35)
             {
-                erro = new Error { Description = string.Format("Tamanho do número único do recibo {0} incorrecto.", PaymentRefNo), Field = "SystemID", TypeofError = GetType(), Value = SystemID, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Tamanho do número único do recibo {0} incorrecto.", PaymentRefNo), Field = "SystemID", TypeofError = GetType(), Value = SystemID, UID = Pk };
                 //if (appendError)
                 //    Tooltip.SystemID = Tooltip.SystemID.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateSourceID()
+        public ValidationError ValidateSourceID()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(SourceID) || SourceID.Length > 30)
             {
-                erro = new Error { Description = string.Format("Utilizador que gerou o documento {0} incorrecto.", SourceID), Field = "SourceID", TypeofError = GetType(), Value = SourceID, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Utilizador que gerou o documento {0} incorrecto.", SourceID), Field = "SourceID", TypeofError = GetType(), Value = SourceID, UID = Pk };
                 //if (appendError)
                 //    Tooltip.GeneratedDocumentUserSourceID = Tooltip.GeneratedDocumentUserSourceID.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateSystemEntryDate()
+        public ValidationError ValidateSystemEntryDate()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (SystemEntryDate > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data da gravação do documento {0} incorrecta.", PaymentRefNo), Field = "SystemEntryDate", TypeofError = GetType(), Value = SystemEntryDate.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data da gravação do documento {0} incorrecta.", PaymentRefNo), Field = "SystemEntryDate", TypeofError = GetType(), Value = SystemEntryDate.ToString(), UID = Pk };
                 //if (appendError)
                 //    Tooltip.SystemEntryDate = Tooltip.SystemEntryDate.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateCustomerID()
+        public ValidationError ValidateCustomerID()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(CustomerID) || CustomerID.Length > 30)
             {
-                erro = new Error { Description = string.Format("Chave única da tabela de clientes no documento {0} incorrecta.", PaymentRefNo), Field = "CustomerID", TypeofError = GetType(), Value = CustomerID, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Chave única da tabela de clientes no documento {0} incorrecta.", PaymentRefNo), Field = "CustomerID", TypeofError = GetType(), Value = CustomerID, UID = Pk };
                 //if (appendError)
                 //    Tooltip.CustomerID = Tooltip.CustomerID.FormatTooltipWithError(erro.Description);
             }
@@ -175,9 +176,9 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
             return erro;
         }
 
-        public Error[] ValidatePaymentMethod()
+        public ValidationError[] ValidatePaymentMethod()
         {
-            List<Error> listErro = new List<Error>();
+            List<ValidationError> listErro = new List<ValidationError>();
 
             if (PaymentMethod != null && PaymentMethod.Length > 0)
             {
@@ -185,7 +186,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
                 {
                     if (pay.PaymentAmount < 0)
                     {
-                        Error erro = new Error { Description = string.Format("Utilizador que gerou o documento {0} incorrecto.", PaymentRefNo), Field = "PaymentAmount", TypeofError = GetType(), Value = pay.PaymentAmount.ToString(), UID = Pk };
+                        ValidationError erro = new ValidationError { Description = string.Format("Utilizador que gerou o documento {0} incorrecto.", PaymentRefNo), Field = "PaymentAmount", TypeofError = GetType(), Value = pay.PaymentAmount.ToString(), UID = Pk };
                         listErro.Add(erro);
                         //if (appendError)
                         //    Tooltip.PaymentMechanism = Tooltip.PaymentMechanism.FormatTooltipWithError(erro.Description);
@@ -193,7 +194,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 
                     if (pay.PaymentDate > DateTime.Now)
                     {
-                        Error erro = new Error { Description = string.Format("Data do pagamento do documento {0} incorrecta.", PaymentRefNo), Field = "PaymentDate", TypeofError = GetType(), Value = pay.PaymentDate.ToString(), UID = Pk };
+                        ValidationError erro = new ValidationError { Description = string.Format("Data do pagamento do documento {0} incorrecta.", PaymentRefNo), Field = "PaymentDate", TypeofError = GetType(), Value = pay.PaymentDate.ToString(), UID = Pk };
                         listErro.Add(erro);
                         //if (appendError)
                         //    Tooltip.PaymentMechanism = Tooltip.PaymentMechanism.FormatTooltipWithError(erro.Description);
@@ -211,9 +212,9 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
         /// </summary>
         public string DocNo { get; set; }
 
-        public Error ValidateLineNumber(string SupPk = "", string paymentNo = "")
+        public ValidationError ValidateLineNumber(string SupPk = "", string paymentNo = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             int num = -1;
             if (!string.IsNullOrEmpty(LineNumber))
                 Int32.TryParse(LineNumber, out num);
@@ -223,38 +224,38 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
                 if (!string.IsNullOrEmpty(paymentNo))
                     paymentNo = string.Format(", documento {0}", paymentNo);
 
-                erro = new Error { Description = string.Format("Número de linha incorrecto{0}.", paymentNo), Field = "LineNumber", TypeofError = GetType(), Value = LineNumber, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Número de linha incorrecto{0}.", paymentNo), Field = "LineNumber", TypeofError = GetType(), Value = LineNumber, UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.LineNumber = Tooltip.LineNumber.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateSettlementAmount(string SupPk = "", string paymentNo = "")
+        public ValidationError ValidateSettlementAmount(string SupPk = "", string paymentNo = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (SettlementAmount < 0)
             {
                 if (!string.IsNullOrEmpty(paymentNo))
                     paymentNo = string.Format(" documento {0}", paymentNo);
 
-                erro = new Error { Description = string.Format("Montante do desconto, {0} linha {1}.", paymentNo, LineNumber), Field = "SettlementAmount", TypeofError = GetType(), Value = SettlementAmount.ToString(), UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Montante do desconto, {0} linha {1}.", paymentNo, LineNumber), Field = "SettlementAmount", TypeofError = GetType(), Value = SettlementAmount.ToString(), UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.LineSettlementAmount = Tooltip.LineSettlementAmount.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateItem(string SupPk = "", string paymentNo = "")
+        public ValidationError ValidateItem(string SupPk = "", string paymentNo = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (Item < 0)
             {
                 if (!string.IsNullOrEmpty(paymentNo))
                     paymentNo = string.Format(" documento {0}", paymentNo);
 
                 if (ItemElementName == ItemChoiceType9.CreditAmount)
-                    erro = new Error { Description = string.Format("Valor a crédito incorrecta, {0} linha {1}.", paymentNo, LineNumber), Field = "CreditAmount", TypeofError = GetType(), Value = Item.ToString(), UID = Pk, SupUID = SupPk };
+                    erro = new ValidationError { Description = string.Format("Valor a crédito incorrecta, {0} linha {1}.", paymentNo, LineNumber), Field = "CreditAmount", TypeofError = GetType(), Value = Item.ToString(), UID = Pk, SupUID = SupPk };
                 if (ItemElementName == ItemChoiceType9.DebitAmount)
-                    erro = new Error { Description = string.Format("Valor a débito incorrecto, {0} linha {1}.", paymentNo, LineNumber), Field = "DebitAmount", TypeofError = GetType(), Value = Item.ToString(), UID = Pk, SupUID = SupPk };
+                    erro = new ValidationError { Description = string.Format("Valor a débito incorrecto, {0} linha {1}.", paymentNo, LineNumber), Field = "DebitAmount", TypeofError = GetType(), Value = Item.ToString(), UID = Pk, SupUID = SupPk };
 
                 //if (appendError && ItemElementName == ItemChoiceType9.CreditAmount)
                 //    Tooltip.CreditAmount = Tooltip.CreditAmount.FormatTooltipWithError(erro.Description);
@@ -263,61 +264,61 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
             }
             return erro;
         }
-        public Error ValidateTaxExemptionReason(string SupPk = "", string paymentNo = "")
+        public ValidationError ValidateTaxExemptionReason(string SupPk = "", string paymentNo = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if ((Tax != null && Tax.Item == 0 && string.IsNullOrEmpty(TaxExemptionReason)) || (string.IsNullOrEmpty(TaxExemptionReason) == false && TaxExemptionReason.Length > 60))
             {
                 if (!string.IsNullOrEmpty(paymentNo))
                     paymentNo = string.Format(" documento {0}", paymentNo);
 
-                erro = new Error { Description = string.Format("Motivo da isenção de imposto incorrecto, {0} linha {1}.", paymentNo, LineNumber), Field = "TaxExemptionReason", TypeofError = GetType(), Value = TaxExemptionReason, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Motivo da isenção de imposto incorrecto, {0} linha {1}.", paymentNo, LineNumber), Field = "TaxExemptionReason", TypeofError = GetType(), Value = TaxExemptionReason, UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.TaxExemptionReason = Tooltip.TaxExemptionReason.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
 
-        public Error[] ValidateSourceDocumentID(string SupPk = "", string paymentNo = "")
+        public ValidationError[] ValidateSourceDocumentID(string SupPk = "", string paymentNo = "")
         {
-            List<Error> listErro = new List<Error>();
+            List<ValidationError> listErro = new List<ValidationError>();
 
             if (!string.IsNullOrEmpty(paymentNo))
                 paymentNo = string.Format(" documento {0}", paymentNo);
 
             if (SourceDocumentID == null || SourceDocumentID.Length == 0)
-                listErro.Add(new Error { Description = string.Format("Referência ao documento de origem inexistente,{0} linha {1}.", paymentNo, LineNumber), Field = "SourceDocumentID", TypeofError = GetType(), UID = Pk, SupUID = SupPk });
+                listErro.Add(new ValidationError { Description = string.Format("Referência ao documento de origem inexistente,{0} linha {1}.", paymentNo, LineNumber), Field = "SourceDocumentID", TypeofError = GetType(), UID = Pk, SupUID = SupPk });
 
             if (SourceDocumentID != null && SourceDocumentID.Length > 0)
             {
                 foreach (var doc in SourceDocumentID)
                 {
                     if (string.IsNullOrEmpty(doc.Description) == false && doc.Description.Length > 100)
-                        listErro.Add(new Error { Description = string.Format("Tamanho da descrição da linha incorrecto,{0} linha {1}.", paymentNo, LineNumber), Field = "Description", TypeofError = GetType(), Value = doc.Description, UID = Pk, SupUID = SupPk });
+                        listErro.Add(new ValidationError { Description = string.Format("Tamanho da descrição da linha incorrecto,{0} linha {1}.", paymentNo, LineNumber), Field = "Description", TypeofError = GetType(), Value = doc.Description, UID = Pk, SupUID = SupPk });
                     if (doc.InvoiceDate > DateTime.Now)
-                        listErro.Add(new Error { Description = string.Format("Data do documento de origem incorrecta,{0} linha {1}.", paymentNo, LineNumber), Field = "InvoiceDate", TypeofError = GetType(), Value = doc.InvoiceDate.ToString(), UID = Pk, SupUID = SupPk });
+                        listErro.Add(new ValidationError { Description = string.Format("Data do documento de origem incorrecta,{0} linha {1}.", paymentNo, LineNumber), Field = "InvoiceDate", TypeofError = GetType(), Value = doc.InvoiceDate.ToString(), UID = Pk, SupUID = SupPk });
                     if (string.IsNullOrEmpty(doc.OriginatingON) || doc.OriginatingON.Length > 60)
-                        listErro.Add(new Error { Description = string.Format("Número do documento de origem incorrecto,{0} linha {1}.", paymentNo, LineNumber), Field = "OriginatingON", TypeofError = GetType(), Value = doc.OriginatingON, UID = Pk, SupUID = SupPk });
+                        listErro.Add(new ValidationError { Description = string.Format("Número do documento de origem incorrecto,{0} linha {1}.", paymentNo, LineNumber), Field = "OriginatingON", TypeofError = GetType(), Value = doc.OriginatingON, UID = Pk, SupUID = SupPk });
                 }
             }
             return listErro.ToArray();
         }
-        public Error[] ValidateTax(string SupPk = "", string paymentNo = "")
+        public ValidationError[] ValidateTax(string SupPk = "", string paymentNo = "")
         {
-            List<Error> listErro = new List<Error>();
+            List<ValidationError> listErro = new List<ValidationError>();
             if (Tax != null)
             {
                 if (!string.IsNullOrEmpty(paymentNo))
                     paymentNo = string.Format(" documento {0}", paymentNo);
 
                 if (Tax.Item < 0 && Tax.ItemElementName == ItemChoiceType.TaxAmount)
-                    listErro.Add(new Error { Description = string.Format("Montante do imposto incorrecto, {0} linha {1}.", paymentNo, LineNumber), Field = "TaxAmount", TypeofError = GetType(), Value = Tax.Item.ToString(), UID = Pk, SupUID = SupPk });
+                    listErro.Add(new ValidationError { Description = string.Format("Montante do imposto incorrecto, {0} linha {1}.", paymentNo, LineNumber), Field = "TaxAmount", TypeofError = GetType(), Value = Tax.Item.ToString(), UID = Pk, SupUID = SupPk });
                 if ((Tax.Item < 0 || Tax.Item > 100) && Tax.ItemElementName == ItemChoiceType.TaxPercentage)
-                    listErro.Add(new Error { Description = string.Format("Montante do imposto incorrecto, {0} linha {1}.", paymentNo, LineNumber), Field = "TaxPercentage", TypeofError = GetType(), Value = Tax.Item.ToString(), UID = Pk, SupUID = SupPk });
+                    listErro.Add(new ValidationError { Description = string.Format("Montante do imposto incorrecto, {0} linha {1}.", paymentNo, LineNumber), Field = "TaxPercentage", TypeofError = GetType(), Value = Tax.Item.ToString(), UID = Pk, SupUID = SupPk });
                 if (string.IsNullOrEmpty(Tax.TaxCode) || Tax.TaxCode.Length > 10)
-                    listErro.Add(new Error { Description = string.Format("Código da taxa incorrecto, {0} linha {1}.", paymentNo, LineNumber), Field = "TaxCode", TypeofError = GetType(), Value = Tax.TaxCode, UID = Pk, SupUID = SupPk });
+                    listErro.Add(new ValidationError { Description = string.Format("Código da taxa incorrecto, {0} linha {1}.", paymentNo, LineNumber), Field = "TaxCode", TypeofError = GetType(), Value = Tax.TaxCode, UID = Pk, SupUID = SupPk });
                 if (string.IsNullOrEmpty(Tax.TaxCountryRegion) || Tax.TaxCode.Length > 5)
-                    listErro.Add(new Error { Description = string.Format("País ou região do imposto incorrecto, {0} linha {1}.", paymentNo, LineNumber), Field = "TaxCountryRegion", TypeofError = GetType(), Value = Tax.TaxCountryRegion, UID = Pk, SupUID = SupPk });
+                    listErro.Add(new ValidationError { Description = string.Format("País ou região do imposto incorrecto, {0} linha {1}.", paymentNo, LineNumber), Field = "TaxCountryRegion", TypeofError = GetType(), Value = Tax.TaxCountryRegion, UID = Pk, SupUID = SupPk });
             }
             return listErro.ToArray();
         }
@@ -327,52 +328,52 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
     {
         public string HashTest { get; set; }
 
-        public Error ValidateDocumentNumber()
+        public ValidationError ValidateDocumentNumber()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(DocumentNumber) || DocumentNumber.Length > 60)
             {
-                erro = new Error { Description = "Identificação única com tamanho incorrecto.", Field = "DocumentNumber", TypeofError = GetType(), Value = DocumentNumber, UID = Pk };
+                erro = new ValidationError { Description = "Identificação única com tamanho incorrecto.", Field = "DocumentNumber", TypeofError = GetType(), Value = DocumentNumber, UID = Pk };
                 //if (appendError)
                 //    Tooltip.DocumentNumber = Tooltip.DocumentNumber.FormatTooltipWithError(erro.Description);
             }
             else if (!Regex.IsMatch(DocumentNumber, "([a-zA-Z0-9./_-])+ ([a-zA-Z0-9]*/[0-9]+)"))
             {
-                erro = new Error { Description = "Identificação única com caracteres não permitidos.", Field = "DocumentNumber", TypeofError = GetType(), Value = DocumentNumber, UID = Pk };
+                erro = new ValidationError { Description = "Identificação única com caracteres não permitidos.", Field = "DocumentNumber", TypeofError = GetType(), Value = DocumentNumber, UID = Pk };
                 //if (appendError)
                 //    Tooltip.DocumentNumber = Tooltip.DocumentNumber.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateHash()
+        public ValidationError ValidateHash()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(Hash) || Hash.Length != 172)
             {
-                erro = new Error { Description = string.Format("Assinatura do documento {0} de tamanho incorrecto.", DocumentNumber), Field = "Hash", TypeofError = GetType(), Value = Hash, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Assinatura do documento {0} de tamanho incorrecto.", DocumentNumber), Field = "Hash", TypeofError = GetType(), Value = Hash, UID = Pk };
                 //if (appendError)
                 //    Tooltip.Hash = Tooltip.Hash.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateHashControl()
+        public ValidationError ValidateHashControl()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(HashControl) || HashControl.Length > 40)
             {
-                erro = new Error { Description = string.Format("Versão da chave privada utilizada na assinatura do documento {0} incorrecta.", DocumentNumber), Field = "HashControl", TypeofError = GetType(), Value = HashControl, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Versão da chave privada utilizada na assinatura do documento {0} incorrecta.", DocumentNumber), Field = "HashControl", TypeofError = GetType(), Value = HashControl, UID = Pk };
                 //if (appendError)
                 //    Tooltip.HashControl = Tooltip.HashControl.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidatePeriod()
+        public ValidationError ValidatePeriod()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(Period) == false)
             {
@@ -381,7 +382,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 
                 if (periodo < 1 || periodo > 12)
                 {
-                    erro = new Error { Description = string.Format("Mês do período de tributação do documento {0} incorrecto.", DocumentNumber), Field = "Period", TypeofError = GetType(), Value = Period, UID = Pk };
+                    erro = new ValidationError { Description = string.Format("Mês do período de tributação do documento {0} incorrecto.", DocumentNumber), Field = "Period", TypeofError = GetType(), Value = Period, UID = Pk };
                     //if (appendError)
                     //    Tooltip.Period = Tooltip.Period.FormatTooltipWithError(erro.Description);
                 }
@@ -389,65 +390,65 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 
             return erro;
         }
-        public Error ValidateMovementDate()
+        public ValidationError ValidateMovementDate()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (MovementDate > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data de emissão do documento {0} incorrecta.", DocumentNumber), Field = "InvoiceDate", TypeofError = GetType(), Value = MovementDate.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data de emissão do documento {0} incorrecta.", DocumentNumber), Field = "InvoiceDate", TypeofError = GetType(), Value = MovementDate.ToString(), UID = Pk };
                 //if (appendError)
                 //    Tooltip.MovementDate = Tooltip.MovementDate.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateSystemEntryDate()
+        public ValidationError ValidateSystemEntryDate()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (SystemEntryDate > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data da gravação do documento {0} incorrecta.", DocumentNumber), Field = "SystemEntryDate", TypeofError = GetType(), Value = SystemEntryDate.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data da gravação do documento {0} incorrecta.", DocumentNumber), Field = "SystemEntryDate", TypeofError = GetType(), Value = SystemEntryDate.ToString(), UID = Pk };
                 //if (appendError)
                 //    Tooltip.SystemEntryDate = Tooltip.SystemEntryDate.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateTransactionID()
+        public ValidationError ValidateTransactionID()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (!string.IsNullOrEmpty(TransactionID) && TransactionID.Length > 70)
             {
-                erro = new Error { Description = string.Format("Identificador da transacção do documento {0} incorrecto.", DocumentNumber), Field = "TransactionID", TypeofError = GetType(), Value = TransactionID, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Identificador da transacção do documento {0} incorrecto.", DocumentNumber), Field = "TransactionID", TypeofError = GetType(), Value = TransactionID, UID = Pk };
                 //if (appendError)
                 //    Tooltip.TransactionID = Tooltip.TransactionID.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateMovementEndTime()
+        public ValidationError ValidateMovementEndTime()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (MovementEndTimeSpecified && MovementEndTime > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data e hora de fim de transporte do documento {0} incorrecta.", DocumentNumber), Field = "MovementEndTime", TypeofError = GetType(), Value = MovementEndTime.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data e hora de fim de transporte do documento {0} incorrecta.", DocumentNumber), Field = "MovementEndTime", TypeofError = GetType(), Value = MovementEndTime.ToString(), UID = Pk };
                 //if (appendError)
                 //    Tooltip.MovementEndTime = Tooltip.MovementEndTime.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateMovementStartTime()
+        public ValidationError ValidateMovementStartTime()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (MovementStartTime > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data e hora de início de transporte do documento {0} incorrecta.", DocumentNumber), Field = "MovementStartTime", TypeofError = GetType(), Value = MovementStartTime.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data e hora de início de transporte do documento {0} incorrecta.", DocumentNumber), Field = "MovementStartTime", TypeofError = GetType(), Value = MovementStartTime.ToString(), UID = Pk };
                 //if (appendError)
                 //    Tooltip.MovementStartTime = Tooltip.MovementStartTime.FormatTooltipWithError(erro.Description);
             }
@@ -455,108 +456,108 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
             return erro;
         }
 
-        public Error[] ValidateDocumentStatus()
+        public ValidationError[] ValidateDocumentStatus()
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (DocumentStatus == null)
-                listError.Add(new Error { Description = string.Format("Situação do documento {0} inexistente.", DocumentNumber), Field = "DocumentStatus", TypeofError = GetType(), UID = Pk });
+                listError.Add(new ValidationError { Description = string.Format("Situação do documento {0} inexistente.", DocumentNumber), Field = "DocumentStatus", TypeofError = GetType(), UID = Pk });
 
             if (DocumentStatus != null)
             {
                 if (DocumentStatus.MovementStatusDate > DateTime.Now)
-                    listError.Add(new Error { Description = string.Format("Data e hora do estado atual do documento {0} incorrecta.", DocumentNumber), Field = "InvoiceStatusDate", TypeofError = GetType(), Value = DocumentStatus.MovementStatusDate.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Data e hora do estado atual do documento {0} incorrecta.", DocumentNumber), Field = "InvoiceStatusDate", TypeofError = GetType(), Value = DocumentStatus.MovementStatusDate.ToString(), UID = Pk });
                 if (string.IsNullOrEmpty(DocumentStatus.Reason) == false && DocumentStatus.Reason.Length > 50)
-                    listError.Add(new Error { Description = string.Format("Tamanho do motivo da alteração de estado {0} incorrecto.", DocumentNumber), Field = "Reason", TypeofError = GetType(), Value = DocumentStatus.Reason, UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Tamanho do motivo da alteração de estado {0} incorrecto.", DocumentNumber), Field = "Reason", TypeofError = GetType(), Value = DocumentStatus.Reason, UID = Pk });
                 if (string.IsNullOrEmpty(DocumentStatus.SourceID) || DocumentStatus.SourceID.Length > 30)
-                    listError.Add(new Error { Description = string.Format("Utilizador responsável pelo estado atual do documento {0} incorrecto.", DocumentNumber), Field = "SourceID", TypeofError = GetType(), Value = DocumentStatus.SourceID, UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Utilizador responsável pelo estado atual do documento {0} incorrecto.", DocumentNumber), Field = "SourceID", TypeofError = GetType(), Value = DocumentStatus.SourceID, UID = Pk });
             }
 
             return listError.ToArray();
         }
-        public Error[] ValidateShipTo()
+        public ValidationError[] ValidateShipTo()
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (ShipTo != null)
             {
                 if (ShipTo.Address != null)
                 {
                     if (string.IsNullOrEmpty(ShipTo.Address.AddressDetail) || ShipTo.Address.AddressDetail.Length > 100)
-                        listError.Add(new Error { Description = string.Format("Tamanho da morada detalhada do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "AddressDetail", TypeofError = GetType(), Value = ShipTo.Address.AddressDetail, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho da morada detalhada do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "AddressDetail", TypeofError = GetType(), Value = ShipTo.Address.AddressDetail, UID = Pk });
                     if (string.IsNullOrEmpty(ShipTo.Address.BuildingNumber) == false && ShipTo.Address.BuildingNumber.Length > 10)
-                        listError.Add(new Error { Description = string.Format("Tamanho do número de polícia do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "BuildingNumber", TypeofError = GetType(), Value = ShipTo.Address.BuildingNumber, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do número de polícia do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "BuildingNumber", TypeofError = GetType(), Value = ShipTo.Address.BuildingNumber, UID = Pk });
                     if (string.IsNullOrEmpty(ShipTo.Address.City) || ShipTo.Address.City.Length > 50)
-                        listError.Add(new Error { Description = string.Format("Tamanho da localidade do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "City", TypeofError = GetType(), Value = ShipTo.Address.City, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho da localidade do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "City", TypeofError = GetType(), Value = ShipTo.Address.City, UID = Pk });
                     if (string.IsNullOrEmpty(ShipTo.Address.Country) || ShipTo.Address.Country.Length != 2)
-                        listError.Add(new Error { Description = string.Format("Tamanho do País do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "Country", TypeofError = GetType(), Value = ShipTo.Address.Country, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do País do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "Country", TypeofError = GetType(), Value = ShipTo.Address.Country, UID = Pk });
                     if (string.IsNullOrEmpty(ShipTo.Address.PostalCode) || ShipTo.Address.PostalCode.Length > 20)
-                        listError.Add(new Error { Description = string.Format("Tamanho do código postal do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "PostalCode", TypeofError = GetType(), Value = ShipTo.Address.PostalCode, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do código postal do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "PostalCode", TypeofError = GetType(), Value = ShipTo.Address.PostalCode, UID = Pk });
                     if (string.IsNullOrEmpty(ShipTo.Address.Region) == false && ShipTo.Address.Region.Length > 50)
-                        listError.Add(new Error { Description = string.Format("Tamanho do distrito do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "Region", TypeofError = GetType(), Value = ShipTo.Address.Region, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do distrito do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "Region", TypeofError = GetType(), Value = ShipTo.Address.Region, UID = Pk });
                     if (string.IsNullOrEmpty(ShipTo.Address.StreetName) == false && ShipTo.Address.StreetName.Length > 90)
-                        listError.Add(new Error { Description = string.Format("Tamanho do nome da rua do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "StreetName", TypeofError = GetType(), Value = ShipTo.Address.StreetName, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do nome da rua do documento {0} do local de descarga incorrecto.", DocumentNumber), Field = "StreetName", TypeofError = GetType(), Value = ShipTo.Address.StreetName, UID = Pk });
                 }
                 if (ShipTo.DeliveryDate > DateTime.Now)
-                    listError.Add(new Error { Description = string.Format("Data da entrega do documento {0} incorrecto.", DocumentNumber), Field = "DeliveryDate", TypeofError = GetType(), Value = ShipTo.DeliveryDate.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Data da entrega do documento {0} incorrecto.", DocumentNumber), Field = "DeliveryDate", TypeofError = GetType(), Value = ShipTo.DeliveryDate.ToString(), UID = Pk });
             }
 
             return listError.ToArray();
         }
-        public Error[] ValidateShipFrom()
+        public ValidationError[] ValidateShipFrom()
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (ShipFrom != null)
             {
                 if (ShipFrom.Address != null)
                 {
                     if (string.IsNullOrEmpty(ShipFrom.Address.AddressDetail) || ShipFrom.Address.AddressDetail.Length > 100)
-                        listError.Add(new Error { Description = string.Format("Tamanho da morada detalhada do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "AddressDetail", TypeofError = GetType(), Value = ShipFrom.Address.AddressDetail, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho da morada detalhada do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "AddressDetail", TypeofError = GetType(), Value = ShipFrom.Address.AddressDetail, UID = Pk });
                     if (string.IsNullOrEmpty(ShipFrom.Address.BuildingNumber) == false && ShipFrom.Address.BuildingNumber.Length > 10)
-                        listError.Add(new Error { Description = string.Format("Tamanho do número de polícia do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "BuildingNumber", TypeofError = GetType(), Value = ShipFrom.Address.BuildingNumber, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do número de polícia do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "BuildingNumber", TypeofError = GetType(), Value = ShipFrom.Address.BuildingNumber, UID = Pk });
                     if (string.IsNullOrEmpty(ShipFrom.Address.City) || ShipFrom.Address.City.Length > 50)
-                        listError.Add(new Error { Description = string.Format("Tamanho da localidade do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "City", TypeofError = GetType(), Value = ShipFrom.Address.City, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho da localidade do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "City", TypeofError = GetType(), Value = ShipFrom.Address.City, UID = Pk });
                     if (string.IsNullOrEmpty(ShipFrom.Address.Country) || ShipFrom.Address.Country.Length != 2)
-                        listError.Add(new Error { Description = string.Format("Tamanho do País do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "Country", TypeofError = GetType(), Value = ShipFrom.Address.Country, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do País do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "Country", TypeofError = GetType(), Value = ShipFrom.Address.Country, UID = Pk });
                     if (string.IsNullOrEmpty(ShipFrom.Address.PostalCode) || ShipFrom.Address.PostalCode.Length > 20)
-                        listError.Add(new Error { Description = string.Format("Tamanho do código postal do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "PostalCode", TypeofError = GetType(), Value = ShipFrom.Address.PostalCode, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do código postal do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "PostalCode", TypeofError = GetType(), Value = ShipFrom.Address.PostalCode, UID = Pk });
                     if (string.IsNullOrEmpty(ShipFrom.Address.Region) == false && ShipFrom.Address.Region.Length > 50)
-                        listError.Add(new Error { Description = string.Format("Tamanho do distrito do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "Region", TypeofError = GetType(), Value = ShipFrom.Address.Region, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do distrito do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "Region", TypeofError = GetType(), Value = ShipFrom.Address.Region, UID = Pk });
                     if (string.IsNullOrEmpty(ShipFrom.Address.StreetName) == false && ShipFrom.Address.StreetName.Length > 90)
-                        listError.Add(new Error { Description = string.Format("Tamanho do nome da rua do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "StreetName", TypeofError = GetType(), Value = ShipFrom.Address.StreetName, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do nome da rua do documento {0} do local de carga incorrecto.", DocumentNumber), Field = "StreetName", TypeofError = GetType(), Value = ShipFrom.Address.StreetName, UID = Pk });
                 }
                 if (ShipFrom.DeliveryDate > DateTime.Now)
-                    listError.Add(new Error { Description = string.Format("Data da receção do documento {0} incorrecto.", DocumentNumber), Field = "DeliveryDate", TypeofError = GetType(), Value = ShipFrom.DeliveryDate.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Data da receção do documento {0} incorrecto.", DocumentNumber), Field = "DeliveryDate", TypeofError = GetType(), Value = ShipFrom.DeliveryDate.ToString(), UID = Pk });
             }
 
             return listError.ToArray();
         }
-        public Error[] ValidateDocumentTotals()
+        public ValidationError[] ValidateDocumentTotals()
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (DocumentTotals == null)
-                listError.Add(new Error { Description = string.Format("Totais do documento {0} inexistentes.", DocumentNumber), Field = "DocumentTotals", TypeofError = GetType(), UID = Pk });
+                listError.Add(new ValidationError { Description = string.Format("Totais do documento {0} inexistentes.", DocumentNumber), Field = "DocumentTotals", TypeofError = GetType(), UID = Pk });
 
             if (DocumentTotals != null)
             {
                 if (DocumentTotals.Currency != null)
                 {
                     if (DocumentTotals.Currency.CurrencyAmount < 0)
-                        listError.Add(new Error { Description = string.Format("Valor total em moeda estrangeira do documento {0} incorrecto.", DocumentNumber), Field = "CurrencyAmount", TypeofError = GetType(), Value = DocumentTotals.Currency.CurrencyAmount.ToString(), UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Valor total em moeda estrangeira do documento {0} incorrecto.", DocumentNumber), Field = "CurrencyAmount", TypeofError = GetType(), Value = DocumentTotals.Currency.CurrencyAmount.ToString(), UID = Pk });
                     if (string.IsNullOrEmpty(DocumentTotals.Currency.CurrencyCode) || DocumentTotals.Currency.CurrencyCode.Length > 3)
-                        listError.Add(new Error { Description = string.Format("Tamanho do código de moeda do documento {0} incorrecto.", DocumentNumber), Field = "CurrencyCode", TypeofError = GetType(), Value = DocumentTotals.Currency.CurrencyCode, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do código de moeda do documento {0} incorrecto.", DocumentNumber), Field = "CurrencyCode", TypeofError = GetType(), Value = DocumentTotals.Currency.CurrencyCode, UID = Pk });
                     if (DocumentTotals.Currency.ExchangeRate < 0)
-                        listError.Add(new Error { Description = string.Format("Taxa de câmbio do documento {0} incorrecta.", DocumentNumber), Field = "ExchangeRate", TypeofError = GetType(), Value = DocumentTotals.Currency.ExchangeRate.ToString(), UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Taxa de câmbio do documento {0} incorrecta.", DocumentNumber), Field = "ExchangeRate", TypeofError = GetType(), Value = DocumentTotals.Currency.ExchangeRate.ToString(), UID = Pk });
                 }
 
                 if (DocumentTotals.GrossTotal < 0)
-                    listError.Add(new Error { Description = string.Format("Total do documento {0} incorrecto.", DocumentNumber), Field = "GrossTotal", TypeofError = GetType(), Value = DocumentTotals.GrossTotal.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Total do documento {0} incorrecto.", DocumentNumber), Field = "GrossTotal", TypeofError = GetType(), Value = DocumentTotals.GrossTotal.ToString(), UID = Pk });
                 if (DocumentTotals.NetTotal < 0)
-                    listError.Add(new Error { Description = string.Format("Total do documento {0} sem impostos incorrecto.", DocumentNumber), Field = "NetTotal", TypeofError = GetType(), Value = DocumentTotals.NetTotal.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Total do documento {0} sem impostos incorrecto.", DocumentNumber), Field = "NetTotal", TypeofError = GetType(), Value = DocumentTotals.NetTotal.ToString(), UID = Pk });
                 if (DocumentTotals.TaxPayable < 0)
-                    listError.Add(new Error { Description = string.Format("Valor do imposto a pagar do documento {0} incorrecto.", DocumentNumber), Field = "TaxPayable", TypeofError = GetType(), Value = DocumentTotals.TaxPayable.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Valor do imposto a pagar do documento {0} incorrecto.", DocumentNumber), Field = "TaxPayable", TypeofError = GetType(), Value = DocumentTotals.TaxPayable.ToString(), UID = Pk });
             }
 
             return listError.ToArray();
@@ -570,9 +571,9 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
         /// </summary>
         public string DocNo { get; set; }
 
-        public Error ValidateLineNumber(string SupPk = "", string movement = "")
+        public ValidationError ValidateLineNumber(string SupPk = "", string movement = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             int num = -1;
             if (!string.IsNullOrEmpty(LineNumber))
                 Int32.TryParse(LineNumber, out num);
@@ -582,115 +583,115 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
                 if (!string.IsNullOrEmpty(movement))
                     movement = string.Format(", documento {0}", movement);
 
-                erro = new Error { Description = string.Format("Número de linha incorrecto {0}.", movement), Field = "LineNumber", TypeofError = GetType(), Value = LineNumber, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Número de linha incorrecto {0}.", movement), Field = "LineNumber", TypeofError = GetType(), Value = LineNumber, UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.LineNumber = Tooltip.LineNumber.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateProductCode(string SupPk = "", string movement = "")
+        public ValidationError ValidateProductCode(string SupPk = "", string movement = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(ProductCode) || ProductCode.Length > 30)
             {
                 if (!string.IsNullOrEmpty(movement))
                     movement = string.Format(" documento {0}", movement);
 
-                erro = new Error { Description = string.Format("Identificador do produto ou serviço incorrecto, {0} linha {1}.", movement, LineNumber), Field = "ProductCode", TypeofError = GetType(), Value = ProductCode, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Identificador do produto ou serviço incorrecto, {0} linha {1}.", movement, LineNumber), Field = "ProductCode", TypeofError = GetType(), Value = ProductCode, UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.ProductCode = Tooltip.ProductCode.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateProductDescription(string SupPk = "", string movement = "")
+        public ValidationError ValidateProductDescription(string SupPk = "", string movement = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(ProductDescription) || ProductDescription.Length > 200)
             {
                 if (!string.IsNullOrEmpty(movement))
                     movement = string.Format(" documento {0}", movement);
 
-                erro = new Error { Description = string.Format("Descrição do produto ou serviço incorrecta, {0} linha {1}.", movement, LineNumber), Field = "ProductDescription", TypeofError = GetType(), Value = ProductDescription, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Descrição do produto ou serviço incorrecta, {0} linha {1}.", movement, LineNumber), Field = "ProductDescription", TypeofError = GetType(), Value = ProductDescription, UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.ProductDescription = Tooltip.ProductDescription.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateQuantity(string SupPk = "", string movement = "")
+        public ValidationError ValidateQuantity(string SupPk = "", string movement = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (Quantity <= 0)
             {
                 if (!string.IsNullOrEmpty(movement))
                     movement = string.Format(" documento {0}", movement);
 
-                erro = new Error { Description = string.Format("Quantidade incorrecta, {0} linha {1}.", movement, LineNumber), Field = "Quantity", TypeofError = GetType(), Value = Quantity.ToString(), UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Quantidade incorrecta, {0} linha {1}.", movement, LineNumber), Field = "Quantity", TypeofError = GetType(), Value = Quantity.ToString(), UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.Quantity = Tooltip.Quantity.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateUnitOfMeasure(string SupPk = "", string movement = "")
+        public ValidationError ValidateUnitOfMeasure(string SupPk = "", string movement = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(UnitOfMeasure) || UnitOfMeasure.Length > 20)
             {
                 if (!string.IsNullOrEmpty(movement))
                     movement = string.Format(" documento {0}", movement);
 
-                erro = new Error { Description = string.Format("Unidade de medida incorrecta, {0} linha {1}.", movement, LineNumber), Field = "UnitOfMeasure", TypeofError = GetType(), Value = UnitOfMeasure, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Unidade de medida incorrecta, {0} linha {1}.", movement, LineNumber), Field = "UnitOfMeasure", TypeofError = GetType(), Value = UnitOfMeasure, UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.UnitOfMeasure = Tooltip.UnitOfMeasure.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateUnitPrice(string SupPk = "", string movement = "")
+        public ValidationError ValidateUnitPrice(string SupPk = "", string movement = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (UnitPrice == 0)
             {
                 if (!string.IsNullOrEmpty(movement))
                     movement = string.Format(" documento {0}", movement);
 
-                erro = new Error { Description = string.Format("Preço unitário incorrecto, {0} linha {1}.", movement, LineNumber), Field = "UnitPrice", TypeofError = GetType(), Value = UnitPrice.ToString(), UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Preço unitário incorrecto, {0} linha {1}.", movement, LineNumber), Field = "UnitPrice", TypeofError = GetType(), Value = UnitPrice.ToString(), UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.UnitPrice = Tooltip.UnitPrice.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
 
-        public Error[] ValidateOrderReferences(string SupPk = "", string movement = "")
+        public ValidationError[] ValidateOrderReferences(string SupPk = "", string movement = "")
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (OrderReferences != null && OrderReferences.Length > 0)
             {
                 foreach (var referencia in OrderReferences)
                 {
                     if (string.IsNullOrEmpty(referencia.OriginatingON) == false && referencia.OriginatingON.Length > 60)
-                        listError.Add(new Error { Description = string.Format("Tamanho do número do documento de origem na linha {0} do documento {1} incorrecto.", LineNumber, movement), Field = "OriginatingON", TypeofError = GetType(), Value = referencia.OriginatingON, UID = Pk, SupUID = SupPk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do número do documento de origem na linha {0} do documento {1} incorrecto.", LineNumber, movement), Field = "OriginatingON", TypeofError = GetType(), Value = referencia.OriginatingON, UID = Pk, SupUID = SupPk });
                     if (referencia.OrderDateSpecified && referencia.OrderDate > DateTime.Now)
-                        listError.Add(new Error { Description = string.Format("Data do documento de origem na linha {0} do documento {1} incorrecto.", LineNumber, movement), Field = "OrderDate", TypeofError = GetType(), Value = referencia.OrderDate.ToString(), UID = Pk, SupUID = SupPk });
+                        listError.Add(new ValidationError { Description = string.Format("Data do documento de origem na linha {0} do documento {1} incorrecto.", LineNumber, movement), Field = "OrderDate", TypeofError = GetType(), Value = referencia.OrderDate.ToString(), UID = Pk, SupUID = SupPk });
                 }
             }
 
             return listError.ToArray();
         }
-        public Error[] ValidateTax(string SupPk = "", string movement = "")
+        public ValidationError[] ValidateTax(string SupPk = "", string movement = "")
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (Tax == null)
-                listError.Add(new Error { Description = string.Format("Taxa de imposto na linha {0} do documento {1} inexistente.", LineNumber, movement), Field = "Tax", TypeofError = GetType(), UID = Pk, SupUID = SupPk });
+                listError.Add(new ValidationError { Description = string.Format("Taxa de imposto na linha {0} do documento {1} inexistente.", LineNumber, movement), Field = "Tax", TypeofError = GetType(), UID = Pk, SupUID = SupPk });
 
             if (Tax != null)
             {
                 if (Tax.TaxPercentage < 0 || Tax.TaxPercentage > 100)
-                    listError.Add(new Error { Description = string.Format("Percentagem da taxa do imposto na linha {0} do documento {1} incorrecto.", LineNumber, movement), Field = "TaxPercentage", TypeofError = GetType(), Value = Tax.TaxPercentage.ToString(), UID = Pk, SupUID = SupPk });
+                    listError.Add(new ValidationError { Description = string.Format("Percentagem da taxa do imposto na linha {0} do documento {1} incorrecto.", LineNumber, movement), Field = "TaxPercentage", TypeofError = GetType(), Value = Tax.TaxPercentage.ToString(), UID = Pk, SupUID = SupPk });
                 if (string.IsNullOrEmpty(Tax.TaxCode) || Tax.TaxCode.Length > 10)
-                    listError.Add(new Error { Description = string.Format("Código da taxa na linha {0} do documento {1} incorrecto.", LineNumber, movement), Field = "TaxCode", TypeofError = GetType(), Value = Tax.TaxCode, UID = Pk, SupUID = SupPk });
+                    listError.Add(new ValidationError { Description = string.Format("Código da taxa na linha {0} do documento {1} incorrecto.", LineNumber, movement), Field = "TaxCode", TypeofError = GetType(), Value = Tax.TaxCode, UID = Pk, SupUID = SupPk });
                 if (string.IsNullOrEmpty(Tax.TaxCountryRegion) || Tax.TaxCountryRegion.Length > 5)
-                    listError.Add(new Error { Description = string.Format("País ou região do imposto na linha {0} do documento {1} incorrecto.", LineNumber, movement), Field = "TaxCountryRegion", TypeofError = GetType(), Value = Tax.TaxCountryRegion, UID = Pk, SupUID = SupPk });
+                    listError.Add(new ValidationError { Description = string.Format("País ou região do imposto na linha {0} do documento {1} incorrecto.", LineNumber, movement), Field = "TaxCountryRegion", TypeofError = GetType(), Value = Tax.TaxCountryRegion, UID = Pk, SupUID = SupPk });
             }
 
             return listError.ToArray();
@@ -701,52 +702,52 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
     {
         public string HashTest { get; set; }
 
-        public Error ValidateDocumentNumber()
+        public ValidationError ValidateDocumentNumber()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(DocumentNumber) || DocumentNumber.Length > 60)
             {
-                erro = new Error { Description = "Identificação única com tamanho incorrecto.", Field = "DocumentNumber", TypeofError = GetType(), Value = DocumentNumber, UID = Pk };
+                erro = new ValidationError { Description = "Identificação única com tamanho incorrecto.", Field = "DocumentNumber", TypeofError = GetType(), Value = DocumentNumber, UID = Pk };
                 //if (appendError)
                 //    Tooltip.DocumentNumber = Tooltip.DocumentNumber.FormatTooltipWithError(erro.Description);
             }
             else if (!Regex.IsMatch(DocumentNumber, "([a-zA-Z0-9./_-])+ ([a-zA-Z0-9]*/[0-9]+)"))
             {
-                erro = new Error { Description = "Identificação única com caracteres não permitidos.", Field = "DocumentNumber", TypeofError = GetType(), Value = DocumentNumber, UID = Pk };
+                erro = new ValidationError { Description = "Identificação única com caracteres não permitidos.", Field = "DocumentNumber", TypeofError = GetType(), Value = DocumentNumber, UID = Pk };
                 //if (appendError)
                 //    Tooltip.DocumentNumber = Tooltip.DocumentNumber.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateHash()
+        public ValidationError ValidateHash()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(Hash) || Hash.Length != 172)
             {
-                erro = new Error { Description = string.Format("Assinatura do documento {0} de tamanho incorrecto.", DocumentNumber), Field = "Hash", TypeofError = GetType(), Value = Hash, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Assinatura do documento {0} de tamanho incorrecto.", DocumentNumber), Field = "Hash", TypeofError = GetType(), Value = Hash, UID = Pk };
                 //if (appendError)
                 //    Tooltip.Hash = Tooltip.Hash.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateHashControl()
+        public ValidationError ValidateHashControl()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(HashControl) || HashControl.Length > 40)
             {
-                erro = new Error { Description = string.Format("Versão da chave privada utilizada na assinatura do documento {0} incorrecta.", DocumentNumber), Field = "HashControl", TypeofError = GetType(), Value = HashControl, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Versão da chave privada utilizada na assinatura do documento {0} incorrecta.", DocumentNumber), Field = "HashControl", TypeofError = GetType(), Value = HashControl, UID = Pk };
                 //if (appendError)
                 //    Tooltip.HashControl = Tooltip.HashControl.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidatePeriod()
+        public ValidationError ValidatePeriod()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(Period) == false)
             {
@@ -755,7 +756,7 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 
                 if (periodo < 1 || periodo > 12)
                 {
-                    erro = new Error { Description = string.Format("Mês do período de tributação do documento {0} incorrecto.", DocumentNumber), Field = "Period", TypeofError = GetType(), Value = Period, UID = Pk };
+                    erro = new ValidationError { Description = string.Format("Mês do período de tributação do documento {0} incorrecto.", DocumentNumber), Field = "Period", TypeofError = GetType(), Value = Period, UID = Pk };
                     //if (appendError)
                     //    Tooltip.Period = Tooltip.Period.FormatTooltipWithError(erro.Description);
                 }
@@ -763,26 +764,26 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 
             return erro;
         }
-        public Error ValidateWorkDate()
+        public ValidationError ValidateWorkDate()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (WorkDate > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data de emissão do documento {0} incorrecta.", DocumentNumber), Field = "WorkDate", TypeofError = GetType(), Value = WorkDate.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data de emissão do documento {0} incorrecta.", DocumentNumber), Field = "WorkDate", TypeofError = GetType(), Value = WorkDate.ToString(), UID = Pk };
                 //if (appendError)
                 //    Tooltip.WorkDate = Tooltip.WorkDate.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateSystemEntryDate()
+        public ValidationError ValidateSystemEntryDate()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (SystemEntryDate > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data da gravação do documento {0} incorrecta.", DocumentNumber), Field = "SystemEntryDate", TypeofError = GetType(), Value = SystemEntryDate.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data da gravação do documento {0} incorrecta.", DocumentNumber), Field = "SystemEntryDate", TypeofError = GetType(), Value = SystemEntryDate.ToString(), UID = Pk };
                 //if (appendError)
                 //    Tooltip.SystemEntryDate = Tooltip.SystemEntryDate.FormatTooltipWithError(erro.Description);
             }
@@ -790,50 +791,50 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
             return erro;
         }
 
-        public Error[] ValidateDocumentStatus()
+        public ValidationError[] ValidateDocumentStatus()
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (DocumentStatus == null)
-                listError.Add(new Error { Description = string.Format("Situação do documento {0} inexistente.", DocumentNumber), Field = "DocumentStatus", TypeofError = GetType(), UID = Pk });
+                listError.Add(new ValidationError { Description = string.Format("Situação do documento {0} inexistente.", DocumentNumber), Field = "DocumentStatus", TypeofError = GetType(), UID = Pk });
 
             if (DocumentStatus != null)
             {
                 if (DocumentStatus.WorkStatusDate > DateTime.Now)
-                    listError.Add(new Error { Description = string.Format("Data e hora do estado atual do documento {0} incorrecta.", DocumentNumber), Field = "InvoiceStatusDate", TypeofError = GetType(), Value = DocumentStatus.WorkStatusDate.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Data e hora do estado atual do documento {0} incorrecta.", DocumentNumber), Field = "InvoiceStatusDate", TypeofError = GetType(), Value = DocumentStatus.WorkStatusDate.ToString(), UID = Pk });
                 if (string.IsNullOrEmpty(DocumentStatus.Reason) == false && DocumentStatus.Reason.Length > 50)
-                    listError.Add(new Error { Description = string.Format("Tamanho do motivo da alteração de estado {0} incorrecto.", DocumentNumber), Field = "Reason", TypeofError = GetType(), Value = DocumentStatus.Reason, UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Tamanho do motivo da alteração de estado {0} incorrecto.", DocumentNumber), Field = "Reason", TypeofError = GetType(), Value = DocumentStatus.Reason, UID = Pk });
                 if (string.IsNullOrEmpty(DocumentStatus.SourceID) || DocumentStatus.SourceID.Length > 30)
-                    listError.Add(new Error { Description = string.Format("Utilizador responsável pelo estado atual do documento {0} incorrecto.", DocumentNumber), Field = "SourceID", TypeofError = GetType(), Value = DocumentStatus.SourceID, UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Utilizador responsável pelo estado atual do documento {0} incorrecto.", DocumentNumber), Field = "SourceID", TypeofError = GetType(), Value = DocumentStatus.SourceID, UID = Pk });
             }
 
             return listError.ToArray();
         }
-        public Error[] ValidateDocumentTotals()
+        public ValidationError[] ValidateDocumentTotals()
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (DocumentTotals == null)
-                listError.Add(new Error { Description = string.Format("Totais do documento {0} inexistentes.", DocumentNumber), Field = "DocumentTotals", TypeofError = GetType(), UID = Pk });
+                listError.Add(new ValidationError { Description = string.Format("Totais do documento {0} inexistentes.", DocumentNumber), Field = "DocumentTotals", TypeofError = GetType(), UID = Pk });
 
             if (DocumentTotals != null)
             {
                 if (DocumentTotals.Currency != null)
                 {
                     if (DocumentTotals.Currency.CurrencyAmount < 0)
-                        listError.Add(new Error { Description = string.Format("Valor total em moeda estrangeira do documento {0} incorrecto.", DocumentNumber), Field = "CurrencyAmount", TypeofError = GetType(), Value = DocumentTotals.Currency.CurrencyAmount.ToString(), UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Valor total em moeda estrangeira do documento {0} incorrecto.", DocumentNumber), Field = "CurrencyAmount", TypeofError = GetType(), Value = DocumentTotals.Currency.CurrencyAmount.ToString(), UID = Pk });
                     if (string.IsNullOrEmpty(DocumentTotals.Currency.CurrencyCode) || DocumentTotals.Currency.CurrencyCode.Length > 3)
-                        listError.Add(new Error { Description = string.Format("Tamanho do código de moeda do documento {0} incorrecto.", DocumentNumber), Field = "CurrencyCode", TypeofError = GetType(), Value = DocumentTotals.Currency.CurrencyCode, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do código de moeda do documento {0} incorrecto.", DocumentNumber), Field = "CurrencyCode", TypeofError = GetType(), Value = DocumentTotals.Currency.CurrencyCode, UID = Pk });
                     if (DocumentTotals.Currency.ExchangeRate < 0)
-                        listError.Add(new Error { Description = string.Format("Taxa de câmbio do documento {0} incorrecta.", DocumentNumber), Field = "ExchangeRate", TypeofError = GetType(), Value = DocumentTotals.Currency.ExchangeRate.ToString(), UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Taxa de câmbio do documento {0} incorrecta.", DocumentNumber), Field = "ExchangeRate", TypeofError = GetType(), Value = DocumentTotals.Currency.ExchangeRate.ToString(), UID = Pk });
                 }
 
                 if (DocumentTotals.GrossTotal < 0)
-                    listError.Add(new Error { Description = string.Format("Total do documento {0} incorrecto.", DocumentNumber), Field = "GrossTotal", TypeofError = GetType(), Value = DocumentTotals.GrossTotal.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Total do documento {0} incorrecto.", DocumentNumber), Field = "GrossTotal", TypeofError = GetType(), Value = DocumentTotals.GrossTotal.ToString(), UID = Pk });
                 if (DocumentTotals.NetTotal < 0)
-                    listError.Add(new Error { Description = string.Format("Total do documento {0} sem impostos incorrecto.", DocumentNumber), Field = "NetTotal", TypeofError = GetType(), Value = DocumentTotals.NetTotal.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Total do documento {0} sem impostos incorrecto.", DocumentNumber), Field = "NetTotal", TypeofError = GetType(), Value = DocumentTotals.NetTotal.ToString(), UID = Pk });
                 if (DocumentTotals.TaxPayable < 0)
-                    listError.Add(new Error { Description = string.Format("Valor do imposto a pagar do documento {0} incorrecto.", DocumentNumber), Field = "TaxPayable", TypeofError = GetType(), Value = DocumentTotals.TaxPayable.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Valor do imposto a pagar do documento {0} incorrecto.", DocumentNumber), Field = "TaxPayable", TypeofError = GetType(), Value = DocumentTotals.TaxPayable.ToString(), UID = Pk });
             }
 
             return listError.ToArray();
@@ -847,9 +848,9 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
         /// </summary>
         public string DocNo { get; set; }
 
-        public Error ValidateLineNumber(string SupPk = "", string workingDocument = "")
+        public ValidationError ValidateLineNumber(string SupPk = "", string workingDocument = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             int num = -1;
             if (!string.IsNullOrEmpty(LineNumber))
                 Int32.TryParse(LineNumber, out num);
@@ -859,131 +860,131 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
                 if (!string.IsNullOrEmpty(workingDocument))
                     workingDocument = string.Format(", documento {0}", workingDocument);
 
-                erro = new Error { Description = string.Format("Número de linha incorrecto {0}.", workingDocument), Field = "LineNumber", TypeofError = GetType(), Value = LineNumber, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Número de linha incorrecto {0}.", workingDocument), Field = "LineNumber", TypeofError = GetType(), Value = LineNumber, UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.LineNumber = Tooltip.LineNumber.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateProductCode(string SupPk = "", string workingDocument = "")
+        public ValidationError ValidateProductCode(string SupPk = "", string workingDocument = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(ProductCode) || ProductCode.Length > 30)
             {
                 if (!string.IsNullOrEmpty(workingDocument))
                     workingDocument = string.Format(" documento {0}", workingDocument);
 
-                erro = new Error { Description = string.Format("Identificador do produto ou serviço incorrecto, {0} linha {1}.", workingDocument, LineNumber), Field = "ProductCode", TypeofError = GetType(), Value = ProductCode, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Identificador do produto ou serviço incorrecto, {0} linha {1}.", workingDocument, LineNumber), Field = "ProductCode", TypeofError = GetType(), Value = ProductCode, UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.ProductCode = Tooltip.ProductCode.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateProductDescription(string SupPk = "", string workingDocument = "")
+        public ValidationError ValidateProductDescription(string SupPk = "", string workingDocument = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(ProductDescription) || ProductDescription.Length > 200)
             {
                 if (!string.IsNullOrEmpty(workingDocument))
                     workingDocument = string.Format(" documento {0}", workingDocument);
 
-                erro = new Error { Description = string.Format("Descrição do produto ou serviço incorrecta, {0} linha {1}.", workingDocument, LineNumber), Field = "ProductDescription", TypeofError = GetType(), Value = ProductDescription, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Descrição do produto ou serviço incorrecta, {0} linha {1}.", workingDocument, LineNumber), Field = "ProductDescription", TypeofError = GetType(), Value = ProductDescription, UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.ProductDescription = Tooltip.ProductDescription.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateQuantity(string SupPk = "", string workingDocument = "")
+        public ValidationError ValidateQuantity(string SupPk = "", string workingDocument = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (Quantity <= 0)
             {
                 if (!string.IsNullOrEmpty(workingDocument))
                     workingDocument = string.Format(" documento {0}", workingDocument);
 
-                erro = new Error { Description = string.Format("Quantidade incorrecta, {0} linha {1}.", workingDocument, LineNumber), Field = "Quantity", TypeofError = GetType(), Value = Quantity.ToString(), UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Quantidade incorrecta, {0} linha {1}.", workingDocument, LineNumber), Field = "Quantity", TypeofError = GetType(), Value = Quantity.ToString(), UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.Quantity = Tooltip.Quantity.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateUnitOfMeasure(string SupPk = "", string workingDocument = "")
+        public ValidationError ValidateUnitOfMeasure(string SupPk = "", string workingDocument = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(UnitOfMeasure) || UnitOfMeasure.Length > 20)
             {
                 if (!string.IsNullOrEmpty(workingDocument))
                     workingDocument = string.Format(" documento {0}", workingDocument);
 
-                erro = new Error { Description = string.Format("Unidade de medida incorrecta, {0} linha {1}.", workingDocument, LineNumber), Field = "UnitOfMeasure", TypeofError = GetType(), Value = UnitOfMeasure, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Unidade de medida incorrecta, {0} linha {1}.", workingDocument, LineNumber), Field = "UnitOfMeasure", TypeofError = GetType(), Value = UnitOfMeasure, UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.UnitOfMeasure = Tooltip.UnitOfMeasure.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateUnitPrice(string SupPk = "", string workingDocument = "")
+        public ValidationError ValidateUnitPrice(string SupPk = "", string workingDocument = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (UnitPrice == 0)
             {
                 if (!string.IsNullOrEmpty(workingDocument))
                     workingDocument = string.Format(" documento {0}", workingDocument);
 
-                erro = new Error { Description = string.Format("Preço unitário incorrecto, {0} linha {1}.", workingDocument, LineNumber), Field = "UnitPrice", TypeofError = GetType(), Value = UnitPrice.ToString(), UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Preço unitário incorrecto, {0} linha {1}.", workingDocument, LineNumber), Field = "UnitPrice", TypeofError = GetType(), Value = UnitPrice.ToString(), UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.UnitPrice = Tooltip.UnitPrice.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
-        public Error ValidateTaxPointDate(string SupPk = "", string workingDocument = "")
+        public ValidationError ValidateTaxPointDate(string SupPk = "", string workingDocument = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (TaxPointDate > DateTime.Now)
             {
                 if (!string.IsNullOrEmpty(workingDocument))
                     workingDocument = string.Format(" documento {0}", workingDocument);
 
-                erro = new Error { Description = string.Format("Data de envio da mercadoria ou prestação do serviço incorrecta, {0} linha {1}.", workingDocument, LineNumber), Field = "TaxPointDate", TypeofError = GetType(), Value = TaxPointDate.ToString(), UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Data de envio da mercadoria ou prestação do serviço incorrecta, {0} linha {1}.", workingDocument, LineNumber), Field = "TaxPointDate", TypeofError = GetType(), Value = TaxPointDate.ToString(), UID = Pk, SupUID = SupPk };
                 //if (appendError)
                 //    Tooltip.TaxPointDate = Tooltip.TaxPointDate.FormatTooltipWithError(erro.Description);
             }
             return erro;
         }
 
-        public Error[] ValidateOrderReferences(string SupPk = "", string workingDocument = "")
+        public ValidationError[] ValidateOrderReferences(string SupPk = "", string workingDocument = "")
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (OrderReferences != null && OrderReferences.Length > 0)
             {
                 foreach (var referencia in OrderReferences)
                 {
                     if (string.IsNullOrEmpty(referencia.OriginatingON) == false && referencia.OriginatingON.Length > 60)
-                        listError.Add(new Error { Description = string.Format("Tamanho do número do documento de origem na linha {0} do documento {1} incorrecto.", LineNumber, workingDocument), Field = "OriginatingON", TypeofError = GetType(), Value = referencia.OriginatingON, UID = Pk, SupUID = SupPk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do número do documento de origem na linha {0} do documento {1} incorrecto.", LineNumber, workingDocument), Field = "OriginatingON", TypeofError = GetType(), Value = referencia.OriginatingON, UID = Pk, SupUID = SupPk });
                     if (referencia.OrderDate > DateTime.Now)
-                        listError.Add(new Error { Description = string.Format("Data do documento de origem na linha {0} do documento {1} incorrecto.", LineNumber, workingDocument), Field = "OrderDate", TypeofError = GetType(), Value = referencia.OrderDate.ToString(), UID = Pk, SupUID = SupPk });
+                        listError.Add(new ValidationError { Description = string.Format("Data do documento de origem na linha {0} do documento {1} incorrecto.", LineNumber, workingDocument), Field = "OrderDate", TypeofError = GetType(), Value = referencia.OrderDate.ToString(), UID = Pk, SupUID = SupPk });
                 }
             }
 
             return listError.ToArray();
         }
-        public Error[] ValidateTax(string SupPk = "", string workingDocument = "")
+        public ValidationError[] ValidateTax(string SupPk = "", string workingDocument = "")
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (Tax == null)
-                listError.Add(new Error { Description = string.Format("Taxa de imposto na linha {0} do documento {1} inexistente.", LineNumber, workingDocument), Field = "Tax", TypeofError = GetType(), UID = Pk, SupUID = SupPk });
+                listError.Add(new ValidationError { Description = string.Format("Taxa de imposto na linha {0} do documento {1} inexistente.", LineNumber, workingDocument), Field = "Tax", TypeofError = GetType(), UID = Pk, SupUID = SupPk });
 
             if (Tax != null)
             {
                 if (Tax.ItemElementName == ItemChoiceType1.TaxAmount && Tax.Item < 0)
-                    listError.Add(new Error { Description = string.Format("Montante do imposto na linha {0} do documento {1} incorrecto.", LineNumber, workingDocument), Field = "TaxAmount", TypeofError = GetType(), Value = Tax.Item.ToString(), UID = Pk, SupUID = SupPk });
+                    listError.Add(new ValidationError { Description = string.Format("Montante do imposto na linha {0} do documento {1} incorrecto.", LineNumber, workingDocument), Field = "TaxAmount", TypeofError = GetType(), Value = Tax.Item.ToString(), UID = Pk, SupUID = SupPk });
                 if (Tax.ItemElementName == ItemChoiceType1.TaxPercentage && (Tax.Item < 0 || Tax.Item > 100))
-                    listError.Add(new Error { Description = string.Format("Percentagem da taxa do imposto na linha {0} do documento {1} incorrecto.", LineNumber, workingDocument), Field = "TaxPercentage", TypeofError = GetType(), Value = Tax.Item.ToString(), UID = Pk, SupUID = SupPk });
+                    listError.Add(new ValidationError { Description = string.Format("Percentagem da taxa do imposto na linha {0} do documento {1} incorrecto.", LineNumber, workingDocument), Field = "TaxPercentage", TypeofError = GetType(), Value = Tax.Item.ToString(), UID = Pk, SupUID = SupPk });
                 if (string.IsNullOrEmpty(Tax.TaxCode) || Tax.TaxCode.Length > 10)
-                    listError.Add(new Error { Description = string.Format("Código da taxa na linha {0} do documento {1} incorrecto.", LineNumber, workingDocument), Field = "TaxCode", TypeofError = GetType(), Value = Tax.TaxCode, UID = Pk, SupUID = SupPk });
+                    listError.Add(new ValidationError { Description = string.Format("Código da taxa na linha {0} do documento {1} incorrecto.", LineNumber, workingDocument), Field = "TaxCode", TypeofError = GetType(), Value = Tax.TaxCode, UID = Pk, SupUID = SupPk });
                 if (string.IsNullOrEmpty(Tax.TaxCountryRegion) || Tax.TaxCountryRegion.Length > 5)
-                    listError.Add(new Error { Description = string.Format("País ou região do imposto na linha {0} do documento {1} incorrecto.", LineNumber, workingDocument), Field = "TaxCountryRegion", TypeofError = GetType(), Value = Tax.TaxCountryRegion, UID = Pk, SupUID = SupPk });
+                    listError.Add(new ValidationError { Description = string.Format("País ou região do imposto na linha {0} do documento {1} incorrecto.", LineNumber, workingDocument), Field = "TaxCountryRegion", TypeofError = GetType(), Value = Tax.TaxCountryRegion, UID = Pk, SupUID = SupPk });
             }
 
             return listError.ToArray();
@@ -1159,48 +1160,48 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
         public string TooltipWithholdingTaxDescription { get; set; }
         public string TooltipWithholdingTaxAmount { get; set; }
 
-        public Error ValidateInvoiceNo()
+        public ValidationError ValidateInvoiceNo()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(InvoiceNo) || InvoiceNo.Length > 60)
             {
-                erro = new Error { Description = "Identificação única com tamanho incorrecto.", Field = "InvoiceNo", TypeofError = GetType(), Value = InvoiceNo, UID = Pk };
+                erro = new ValidationError { Description = "Identificação única com tamanho incorrecto.", Field = "InvoiceNo", TypeofError = GetType(), Value = InvoiceNo, UID = Pk };
                 TooltipInvoiceNo += Environment.NewLine + erro.Description;
             }
             else if (!Regex.IsMatch(InvoiceNo, "([a-zA-Z0-9./_-])+ ([a-zA-Z0-9]*/[0-9]+)"))
             {
-                erro = new Error { Description = "Identificação única com caracteres não permitidos.", Field = "InvoiceNo", TypeofError = GetType(), Value = InvoiceNo, UID = Pk };
+                erro = new ValidationError { Description = "Identificação única com caracteres não permitidos.", Field = "InvoiceNo", TypeofError = GetType(), Value = InvoiceNo, UID = Pk };
                 TooltipInvoiceNo += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateHash()
+        public ValidationError ValidateHash()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(Hash) || Hash.Length != 172)
             {
-                erro = new Error { Description = string.Format("Assinatura do documento {0} de tamanho incorrecto.", InvoiceNo), Field = "Hash", TypeofError = GetType(), Value = Hash, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Assinatura do documento {0} de tamanho incorrecto.", InvoiceNo), Field = "Hash", TypeofError = GetType(), Value = Hash, UID = Pk };
                 TooltipHash += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateHashControl()
+        public ValidationError ValidateHashControl()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(HashControl) || HashControl.Length > 40)
             {
-                erro = new Error { Description = string.Format("Versão da chave privada utilizada na assinatura do documento {0} incorrecta.", InvoiceNo), Field = "HashControl", TypeofError = GetType(), Value = HashControl, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Versão da chave privada utilizada na assinatura do documento {0} incorrecta.", InvoiceNo), Field = "HashControl", TypeofError = GetType(), Value = HashControl, UID = Pk };
                 TooltipHashControl += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidatePeriod()
+        public ValidationError ValidatePeriod()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(Period) == false)
             {
@@ -1208,210 +1209,210 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 
                 if (periodo < 1 || periodo > 12)
                 {
-                    erro = new Error { Description = string.Format("Mês do período de tributação do documento {0} incorrecto.", InvoiceNo), Field = "Period", TypeofError = GetType(), Value = Period, UID = Pk };
+                    erro = new ValidationError { Description = string.Format("Mês do período de tributação do documento {0} incorrecto.", InvoiceNo), Field = "Period", TypeofError = GetType(), Value = Period, UID = Pk };
                     TooltipPeriod += Environment.NewLine + erro.Description;
                 }
             }
 
             return erro;
         }
-        public Error ValidateInvoiceDate()
+        public ValidationError ValidateInvoiceDate()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (InvoiceDate > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data de emissão do documento {0} incorrecta.", InvoiceNo), Field = "InvoiceDate", TypeofError = GetType(), Value = InvoiceDate.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data de emissão do documento {0} incorrecta.", InvoiceNo), Field = "InvoiceDate", TypeofError = GetType(), Value = InvoiceDate.ToString(), UID = Pk };
                 TooltipInvoiceDate += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateSystemEntryDate()
+        public ValidationError ValidateSystemEntryDate()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (SystemEntryDate > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data da gravação do documento {0} incorrecta.", InvoiceNo), Field = "SystemEntryDate", TypeofError = GetType(), Value = SystemEntryDate.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data da gravação do documento {0} incorrecta.", InvoiceNo), Field = "SystemEntryDate", TypeofError = GetType(), Value = SystemEntryDate.ToString(), UID = Pk };
                 TooltipSystemEntryDate += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateTransactionID()
+        public ValidationError ValidateTransactionID()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (!string.IsNullOrEmpty(TransactionID) && TransactionID.Length > 70)
             {
-                erro = new Error { Description = string.Format("Identificador da transacção do documento {0} incorrecto.", InvoiceNo), Field = "TransactionID", TypeofError = GetType(), Value = TransactionID, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Identificador da transacção do documento {0} incorrecto.", InvoiceNo), Field = "TransactionID", TypeofError = GetType(), Value = TransactionID, UID = Pk };
                 TooltipTransactionID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateCustomerID()
+        public ValidationError ValidateCustomerID()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(CustomerID) || CustomerID.Length > 30)
             {
-                erro = new Error { Description = string.Format("Chave única da tabela de clientes no documento {0} incorrecta.", InvoiceNo), Field = "CustomerID", TypeofError = GetType(), Value = CustomerID, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Chave única da tabela de clientes no documento {0} incorrecta.", InvoiceNo), Field = "CustomerID", TypeofError = GetType(), Value = CustomerID, UID = Pk };
                 TooltipCustomerID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateSourceID()
+        public ValidationError ValidateSourceID()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (string.IsNullOrEmpty(SourceID) || SourceID.Length > 30)
             {
-                erro = new Error { Description = string.Format("Utilizador que gerou o documento {0} incorrecto.", InvoiceNo), Field = "CustomerID", TypeofError = GetType(), Value = CustomerID, UID = Pk };
+                erro = new ValidationError { Description = string.Format("Utilizador que gerou o documento {0} incorrecto.", InvoiceNo), Field = "CustomerID", TypeofError = GetType(), Value = CustomerID, UID = Pk };
                 TooltipGeneratedDocumentUserSourceID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateMovementEndTime()
+        public ValidationError ValidateMovementEndTime()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (MovementEndTimeSpecified && MovementEndTime > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data e hora de fim de transporte do documento {0} incorrecta.", InvoiceNo), Field = "MovementEndTime", TypeofError = GetType(), Value = MovementEndTime.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data e hora de fim de transporte do documento {0} incorrecta.", InvoiceNo), Field = "MovementEndTime", TypeofError = GetType(), Value = MovementEndTime.ToString(), UID = Pk };
                 TooltipMovementEndTime += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateMovementStartTime()
+        public ValidationError ValidateMovementStartTime()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             if (MovementStartTimeSpecified && MovementStartTime > DateTime.Now)
             {
-                erro = new Error { Description = string.Format("Data e hora de início de transporte do documento {0} incorrecta.", InvoiceNo), Field = "MovementStartTime", TypeofError = GetType(), Value = MovementStartTime.ToString(), UID = Pk };
+                erro = new ValidationError { Description = string.Format("Data e hora de início de transporte do documento {0} incorrecta.", InvoiceNo), Field = "MovementStartTime", TypeofError = GetType(), Value = MovementStartTime.ToString(), UID = Pk };
                 TooltipMovementStartTime += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
 
-        public Error[] ValidateDocumentStatus()
+        public ValidationError[] ValidateDocumentStatus()
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (DocumentStatus == null)
-                listError.Add(new Error { Description = string.Format("Situação do documento {0} inexistente.", InvoiceNo), Field = "DocumentStatus", TypeofError = GetType(), UID = Pk });
+                listError.Add(new ValidationError { Description = string.Format("Situação do documento {0} inexistente.", InvoiceNo), Field = "DocumentStatus", TypeofError = GetType(), UID = Pk });
 
             if (DocumentStatus != null)
             {
                 if (DocumentStatus.InvoiceStatusDate > DateTime.Now)
-                    listError.Add(new Error { Description = string.Format("Data e hora do estado atual do documento {0} incorrecta.", InvoiceNo), Field = "InvoiceStatusDate", TypeofError = GetType(), Value = DocumentStatus.InvoiceStatusDate.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Data e hora do estado atual do documento {0} incorrecta.", InvoiceNo), Field = "InvoiceStatusDate", TypeofError = GetType(), Value = DocumentStatus.InvoiceStatusDate.ToString(), UID = Pk });
                 if (string.IsNullOrEmpty(DocumentStatus.Reason) == false && DocumentStatus.Reason.Length > 50)
-                    listError.Add(new Error { Description = string.Format("Tamanho do motivo da alteração de estado {0} incorrecto.", InvoiceNo), Field = "Reason", TypeofError = GetType(), Value = DocumentStatus.Reason, UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Tamanho do motivo da alteração de estado {0} incorrecto.", InvoiceNo), Field = "Reason", TypeofError = GetType(), Value = DocumentStatus.Reason, UID = Pk });
                 if (string.IsNullOrEmpty(DocumentStatus.SourceID) || DocumentStatus.SourceID.Length > 30)
-                    listError.Add(new Error { Description = string.Format("Utilizador responsável pelo estado atual do documento {0} incorrecto.", InvoiceNo), Field = "SourceID", TypeofError = GetType(), Value = DocumentStatus.SourceID, UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Utilizador responsável pelo estado atual do documento {0} incorrecto.", InvoiceNo), Field = "SourceID", TypeofError = GetType(), Value = DocumentStatus.SourceID, UID = Pk });
             }
 
             return listError.ToArray();
         }
-        public Error[] ValidateSpecialRegimes()
+        public ValidationError[] ValidateSpecialRegimes()
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (SpecialRegimes != null)
             {
                 int.TryParse(SpecialRegimes.SelfBillingIndicator, out int auto);
                 if (string.IsNullOrEmpty(SpecialRegimes.SelfBillingIndicator) || (auto != 0 && auto != 1))
-                    listError.Add(new Error { Description = string.Format("Indicador de autofaturação do documento {0} incorrecto.", InvoiceNo), Field = "SelfBillingIndicator", TypeofError = GetType(), Value = SpecialRegimes.SelfBillingIndicator, UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Indicador de autofaturação do documento {0} incorrecto.", InvoiceNo), Field = "SelfBillingIndicator", TypeofError = GetType(), Value = SpecialRegimes.SelfBillingIndicator, UID = Pk });
 
                 if (string.IsNullOrEmpty(SpecialRegimes.CashVATSchemeIndicator) || (SpecialRegimes.CashVATSchemeIndicator != "0" && SpecialRegimes.CashVATSchemeIndicator != "1"))
-                    listError.Add(new Error { Description = string.Format("Indicador da existência de adesão ao regime de IVA de Caixa do documento {0} incorrecto.", InvoiceNo), Field = "CashVATSchemeIndicator", TypeofError = GetType(), Value = SpecialRegimes.CashVATSchemeIndicator, UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Indicador da existência de adesão ao regime de IVA de Caixa do documento {0} incorrecto.", InvoiceNo), Field = "CashVATSchemeIndicator", TypeofError = GetType(), Value = SpecialRegimes.CashVATSchemeIndicator, UID = Pk });
                 if (string.IsNullOrEmpty(SpecialRegimes.ThirdPartiesBillingIndicator) || (SpecialRegimes.ThirdPartiesBillingIndicator != "0" && SpecialRegimes.CashVATSchemeIndicator != "1"))
-                    listError.Add(new Error { Description = string.Format("Indicador da existência de adesão ao regime de IVA de Caixa do documento {0} incorrecto.", InvoiceNo), Field = "ThirdPartiesBillingIndicator", TypeofError = GetType(), Value = SpecialRegimes.ThirdPartiesBillingIndicator, UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Indicador da existência de adesão ao regime de IVA de Caixa do documento {0} incorrecto.", InvoiceNo), Field = "ThirdPartiesBillingIndicator", TypeofError = GetType(), Value = SpecialRegimes.ThirdPartiesBillingIndicator, UID = Pk });
             }
 
             return listError.ToArray();
         }
-        public Error[] ValidateShipTo()
+        public ValidationError[] ValidateShipTo()
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (ShipTo != null)
             {
                 if (ShipTo.Address != null)
                 {
                     if (string.IsNullOrEmpty(ShipTo.Address.AddressDetail) || ShipTo.Address.AddressDetail.Length > 100)
-                        listError.Add(new Error { Description = string.Format("Tamanho da morada detalhada do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "AddressDetail", TypeofError = GetType(), Value = ShipTo.Address.AddressDetail, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho da morada detalhada do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "AddressDetail", TypeofError = GetType(), Value = ShipTo.Address.AddressDetail, UID = Pk });
                     if (string.IsNullOrEmpty(ShipTo.Address.BuildingNumber) == false && ShipTo.Address.BuildingNumber.Length > 10)
-                        listError.Add(new Error { Description = string.Format("Tamanho do número de polícia do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "BuildingNumber", TypeofError = GetType(), Value = ShipTo.Address.BuildingNumber, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do número de polícia do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "BuildingNumber", TypeofError = GetType(), Value = ShipTo.Address.BuildingNumber, UID = Pk });
                     if (string.IsNullOrEmpty(ShipTo.Address.City) || ShipTo.Address.City.Length > 50)
-                        listError.Add(new Error { Description = string.Format("Tamanho da localidade do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "City", TypeofError = GetType(), Value = ShipTo.Address.City, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho da localidade do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "City", TypeofError = GetType(), Value = ShipTo.Address.City, UID = Pk });
                     if (string.IsNullOrEmpty(ShipTo.Address.Country) || ShipTo.Address.Country.Length != 2)
-                        listError.Add(new Error { Description = string.Format("Tamanho do País do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "Country", TypeofError = GetType(), Value = ShipTo.Address.Country, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do País do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "Country", TypeofError = GetType(), Value = ShipTo.Address.Country, UID = Pk });
                     if (string.IsNullOrEmpty(ShipTo.Address.PostalCode) || ShipTo.Address.PostalCode.Length > 20)
-                        listError.Add(new Error { Description = string.Format("Tamanho do código postal do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "PostalCode", TypeofError = GetType(), Value = ShipTo.Address.PostalCode, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do código postal do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "PostalCode", TypeofError = GetType(), Value = ShipTo.Address.PostalCode, UID = Pk });
                     if (string.IsNullOrEmpty(ShipTo.Address.Region) == false && ShipTo.Address.Region.Length > 50)
-                        listError.Add(new Error { Description = string.Format("Tamanho do distrito do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "Region", TypeofError = GetType(), Value = ShipTo.Address.Region, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do distrito do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "Region", TypeofError = GetType(), Value = ShipTo.Address.Region, UID = Pk });
                     if (string.IsNullOrEmpty(ShipTo.Address.StreetName) == false && ShipTo.Address.StreetName.Length > 90)
-                        listError.Add(new Error { Description = string.Format("Tamanho do nome da rua do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "StreetName", TypeofError = GetType(), Value = ShipTo.Address.StreetName, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do nome da rua do documento {0} do local de descarga incorrecto.", InvoiceNo), Field = "StreetName", TypeofError = GetType(), Value = ShipTo.Address.StreetName, UID = Pk });
                 }
                 if (ShipTo.DeliveryDate > DateTime.Now)
-                    listError.Add(new Error { Description = string.Format("Data da entrega do documento {0} incorrecto.", InvoiceNo), Field = "DeliveryDate", TypeofError = GetType(), Value = ShipTo.DeliveryDate.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Data da entrega do documento {0} incorrecto.", InvoiceNo), Field = "DeliveryDate", TypeofError = GetType(), Value = ShipTo.DeliveryDate.ToString(), UID = Pk });
             }
 
             return listError.ToArray();
         }
-        public Error[] ValidateShipFrom()
+        public ValidationError[] ValidateShipFrom()
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (ShipFrom != null)
             {
                 if (ShipFrom.Address != null)
                 {
                     if (string.IsNullOrEmpty(ShipFrom.Address.AddressDetail) || ShipFrom.Address.AddressDetail.Length > 100)
-                        listError.Add(new Error { Description = string.Format("Tamanho da morada detalhada do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "AddressDetail", TypeofError = GetType(), Value = ShipFrom.Address.AddressDetail, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho da morada detalhada do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "AddressDetail", TypeofError = GetType(), Value = ShipFrom.Address.AddressDetail, UID = Pk });
                     if (string.IsNullOrEmpty(ShipFrom.Address.BuildingNumber) == false && ShipFrom.Address.BuildingNumber.Length > 10)
-                        listError.Add(new Error { Description = string.Format("Tamanho do número de polícia do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "BuildingNumber", TypeofError = GetType(), Value = ShipFrom.Address.BuildingNumber, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do número de polícia do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "BuildingNumber", TypeofError = GetType(), Value = ShipFrom.Address.BuildingNumber, UID = Pk });
                     if (string.IsNullOrEmpty(ShipFrom.Address.City) || ShipFrom.Address.City.Length > 50)
-                        listError.Add(new Error { Description = string.Format("Tamanho da localidade do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "City", TypeofError = GetType(), Value = ShipFrom.Address.City, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho da localidade do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "City", TypeofError = GetType(), Value = ShipFrom.Address.City, UID = Pk });
                     if (string.IsNullOrEmpty(ShipFrom.Address.Country) || ShipFrom.Address.Country.Length != 2)
-                        listError.Add(new Error { Description = string.Format("Tamanho do País do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "Country", TypeofError = GetType(), Value = ShipFrom.Address.Country, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do País do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "Country", TypeofError = GetType(), Value = ShipFrom.Address.Country, UID = Pk });
                     if (string.IsNullOrEmpty(ShipFrom.Address.PostalCode) || ShipFrom.Address.PostalCode.Length > 20)
-                        listError.Add(new Error { Description = string.Format("Tamanho do código postal do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "PostalCode", TypeofError = GetType(), Value = ShipFrom.Address.PostalCode, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do código postal do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "PostalCode", TypeofError = GetType(), Value = ShipFrom.Address.PostalCode, UID = Pk });
                     if (string.IsNullOrEmpty(ShipFrom.Address.Region) == false && ShipFrom.Address.Region.Length > 50)
-                        listError.Add(new Error { Description = string.Format("Tamanho do distrito do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "Region", TypeofError = GetType(), Value = ShipFrom.Address.Region, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do distrito do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "Region", TypeofError = GetType(), Value = ShipFrom.Address.Region, UID = Pk });
                     if (string.IsNullOrEmpty(ShipFrom.Address.StreetName) == false && ShipFrom.Address.StreetName.Length > 90)
-                        listError.Add(new Error { Description = string.Format("Tamanho do nome da rua do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "StreetName", TypeofError = GetType(), Value = ShipFrom.Address.StreetName, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do nome da rua do documento {0} do local de carga incorrecto.", InvoiceNo), Field = "StreetName", TypeofError = GetType(), Value = ShipFrom.Address.StreetName, UID = Pk });
                 }
                 if (ShipFrom.DeliveryDate > DateTime.Now)
-                    listError.Add(new Error { Description = string.Format("Data da receção do documento {0} incorrecto.", InvoiceNo), Field = "DeliveryDate", TypeofError = GetType(), Value = ShipFrom.DeliveryDate.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Data da receção do documento {0} incorrecto.", InvoiceNo), Field = "DeliveryDate", TypeofError = GetType(), Value = ShipFrom.DeliveryDate.ToString(), UID = Pk });
             }
 
             return listError.ToArray();
         }
-        public Error[] ValidateDocumentTotals()
+        public ValidationError[] ValidateDocumentTotals()
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (DocumentTotals == null)
-                listError.Add(new Error { Description = string.Format("Totais do documento {0} inexistentes.", InvoiceNo), Field = "DocumentTotals", TypeofError = GetType(), UID = Pk });
+                listError.Add(new ValidationError { Description = string.Format("Totais do documento {0} inexistentes.", InvoiceNo), Field = "DocumentTotals", TypeofError = GetType(), UID = Pk });
 
             if (DocumentTotals != null)
             {
                 if (DocumentTotals.Currency != null)
                 {
                     if (DocumentTotals.Currency.CurrencyAmount < 0)
-                        listError.Add(new Error { Description = string.Format("Valor total em moeda estrangeira do documento {0} incorrecto.", InvoiceNo), Field = "CurrencyAmount", TypeofError = GetType(), Value = DocumentTotals.Currency.CurrencyAmount.ToString(), UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Valor total em moeda estrangeira do documento {0} incorrecto.", InvoiceNo), Field = "CurrencyAmount", TypeofError = GetType(), Value = DocumentTotals.Currency.CurrencyAmount.ToString(), UID = Pk });
                     if (string.IsNullOrEmpty(DocumentTotals.Currency.CurrencyCode) || DocumentTotals.Currency.CurrencyCode.Length > 3)
-                        listError.Add(new Error { Description = string.Format("Tamanho do código de moeda do documento {0} incorrecto.", InvoiceNo), Field = "CurrencyCode", TypeofError = GetType(), Value = DocumentTotals.Currency.CurrencyCode, UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do código de moeda do documento {0} incorrecto.", InvoiceNo), Field = "CurrencyCode", TypeofError = GetType(), Value = DocumentTotals.Currency.CurrencyCode, UID = Pk });
                     if (DocumentTotals.Currency.ExchangeRate < 0)
-                        listError.Add(new Error { Description = string.Format("Taxa de câmbio do documento {0} incorrecta.", InvoiceNo), Field = "ExchangeRate", TypeofError = GetType(), Value = DocumentTotals.Currency.ExchangeRate.ToString(), UID = Pk });
+                        listError.Add(new ValidationError { Description = string.Format("Taxa de câmbio do documento {0} incorrecta.", InvoiceNo), Field = "ExchangeRate", TypeofError = GetType(), Value = DocumentTotals.Currency.ExchangeRate.ToString(), UID = Pk });
                 }
 
                 if (DocumentTotals.Settlement != null && DocumentTotals.Settlement.Length > 0)
@@ -1419,22 +1420,22 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
                     foreach (var acordo in DocumentTotals.Settlement)
                     {
                         if (string.IsNullOrEmpty(acordo.PaymentTerms) == false && acordo.PaymentTerms.Length > 100)
-                            listError.Add(new Error { Description = string.Format("Tamanho do acordo de pagamento do documento {0} incorrecto.", InvoiceNo), Field = "PaymentTerms", TypeofError = GetType(), Value = acordo.PaymentTerms, UID = Pk });
+                            listError.Add(new ValidationError { Description = string.Format("Tamanho do acordo de pagamento do documento {0} incorrecto.", InvoiceNo), Field = "PaymentTerms", TypeofError = GetType(), Value = acordo.PaymentTerms, UID = Pk });
                         if (acordo.SettlementAmountSpecified && acordo.SettlementAmount < 0)
-                            listError.Add(new Error { Description = string.Format("Acordos de descontos futuros do documento {0} incorrecto.", InvoiceNo), Field = "SettlementAmount", TypeofError = GetType(), Value = acordo.SettlementAmount.ToString(), UID = Pk });
+                            listError.Add(new ValidationError { Description = string.Format("Acordos de descontos futuros do documento {0} incorrecto.", InvoiceNo), Field = "SettlementAmount", TypeofError = GetType(), Value = acordo.SettlementAmount.ToString(), UID = Pk });
                         if (acordo.SettlementDateSpecified)
-                            listError.Add(new Error { Description = string.Format("Data acordada para o desconto do documento {0} incorrecto.", InvoiceNo), Field = "SettlementDate", TypeofError = GetType(), Value = acordo.SettlementDate.ToString(), UID = Pk });
+                            listError.Add(new ValidationError { Description = string.Format("Data acordada para o desconto do documento {0} incorrecto.", InvoiceNo), Field = "SettlementDate", TypeofError = GetType(), Value = acordo.SettlementDate.ToString(), UID = Pk });
                         if (string.IsNullOrEmpty(acordo.SettlementDiscount) == false && acordo.SettlementDiscount.Length > 30)
-                            listError.Add(new Error { Description = string.Format("Montante do desconto do documento {0} incorrecto.", InvoiceNo), Field = "SettlementAmount", TypeofError = GetType(), Value = acordo.SettlementAmount.ToString(), UID = Pk });
+                            listError.Add(new ValidationError { Description = string.Format("Montante do desconto do documento {0} incorrecto.", InvoiceNo), Field = "SettlementAmount", TypeofError = GetType(), Value = acordo.SettlementAmount.ToString(), UID = Pk });
                     }
                 }
 
                 if (DocumentTotals.GrossTotal < 0)
-                    listError.Add(new Error { Description = string.Format("Total do documento {0} incorrecto.", InvoiceNo), Field = "GrossTotal", TypeofError = GetType(), Value = DocumentTotals.GrossTotal.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Total do documento {0} incorrecto.", InvoiceNo), Field = "GrossTotal", TypeofError = GetType(), Value = DocumentTotals.GrossTotal.ToString(), UID = Pk });
                 if (DocumentTotals.NetTotal < 0)
-                    listError.Add(new Error { Description = string.Format("Total do documento {0} sem impostos incorrecto.", InvoiceNo), Field = "NetTotal", TypeofError = GetType(), Value = DocumentTotals.NetTotal.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Total do documento {0} sem impostos incorrecto.", InvoiceNo), Field = "NetTotal", TypeofError = GetType(), Value = DocumentTotals.NetTotal.ToString(), UID = Pk });
                 if (DocumentTotals.TaxPayable < 0)
-                    listError.Add(new Error { Description = string.Format("Valor do imposto a pagar do documento {0} incorrecto.", InvoiceNo), Field = "TaxPayable", TypeofError = GetType(), Value = DocumentTotals.TaxPayable.ToString(), UID = Pk });
+                    listError.Add(new ValidationError { Description = string.Format("Valor do imposto a pagar do documento {0} incorrecto.", InvoiceNo), Field = "TaxPayable", TypeofError = GetType(), Value = DocumentTotals.TaxPayable.ToString(), UID = Pk });
             }
 
             return listError.ToArray();
@@ -1473,9 +1474,9 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
         public string TooltipUnitPrice { get; set; }
         public string TooltipTaxPointDate { get; set; }
 
-        public Error ValidateLineNumber(string SupPk = "", string invoiceNo = "")
+        public ValidationError ValidateLineNumber(string SupPk = "", string invoiceNo = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             int.TryParse(LineNumber, out int num);
 
             if (string.IsNullOrEmpty(LineNumber) || num == -1)
@@ -1483,141 +1484,141 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
                 if (!string.IsNullOrEmpty(invoiceNo))
                     invoiceNo = string.Format(", documento {0}", invoiceNo);
 
-                erro = new Error { Description = string.Format("Número de linha incorrecto {0}.", invoiceNo), Field = "LineNumber", TypeofError = GetType(), Value = LineNumber, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Número de linha incorrecto {0}.", invoiceNo), Field = "LineNumber", TypeofError = GetType(), Value = LineNumber, UID = Pk, SupUID = SupPk };
                 TooltipLineNumber += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateProductCode(string SupPk = "", string invoiceNo = "")
+        public ValidationError ValidateProductCode(string SupPk = "", string invoiceNo = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(ProductCode) || ProductCode.Length > 30)
             {
                 if (!string.IsNullOrEmpty(invoiceNo))
                     invoiceNo = string.Format(" documento {0}", invoiceNo);
 
-                erro = new Error { Description = string.Format("Identificador do produto ou serviço incorrecto, {0} linha {1}.", invoiceNo, LineNumber), Field = "ProductCode", TypeofError = GetType(), Value = ProductCode, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Identificador do produto ou serviço incorrecto, {0} linha {1}.", invoiceNo, LineNumber), Field = "ProductCode", TypeofError = GetType(), Value = ProductCode, UID = Pk, SupUID = SupPk };
                 TooltipProductCode += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateProductDescription(string SupPk = "", string invoiceNo = "")
+        public ValidationError ValidateProductDescription(string SupPk = "", string invoiceNo = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(ProductDescription) || ProductDescription.Length > 200)
             {
                 if (!string.IsNullOrEmpty(invoiceNo))
                     invoiceNo = string.Format(" documento {0}", invoiceNo);
 
-                erro = new Error { Description = string.Format("Descrição do produto ou serviço incorrecta, {0} linha {1}.", invoiceNo, LineNumber), Field = "ProductDescription", TypeofError = GetType(), Value = ProductDescription, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Descrição do produto ou serviço incorrecta, {0} linha {1}.", invoiceNo, LineNumber), Field = "ProductDescription", TypeofError = GetType(), Value = ProductDescription, UID = Pk, SupUID = SupPk };
                 TooltipProductDescription += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateQuantity(string SupPk = "", string invoiceNo = "")
+        public ValidationError ValidateQuantity(string SupPk = "", string invoiceNo = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (Quantity <= 0)
             {
                 if (!string.IsNullOrEmpty(invoiceNo))
                     invoiceNo = string.Format(" documento {0}", invoiceNo);
 
-                erro = new Error { Description = string.Format("Quantidade incorrecta, {0} linha {1}.", invoiceNo, LineNumber), Field = "Quantity", TypeofError = GetType(), Value = Quantity.ToString(), UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Quantidade incorrecta, {0} linha {1}.", invoiceNo, LineNumber), Field = "Quantity", TypeofError = GetType(), Value = Quantity.ToString(), UID = Pk, SupUID = SupPk };
                 TooltipQuantity += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateUnitOfMeasure(string SupPk = "", string invoiceNo = "")
+        public ValidationError ValidateUnitOfMeasure(string SupPk = "", string invoiceNo = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(UnitOfMeasure) || UnitOfMeasure.Length > 20)
             {
                 if (!string.IsNullOrEmpty(invoiceNo))
                     invoiceNo = string.Format(" documento {0}", invoiceNo);
 
-                erro = new Error { Description = string.Format("Unidade de medida incorrecta, {0} linha {1}.", invoiceNo, LineNumber), Field = "UnitOfMeasure", TypeofError = GetType(), Value = UnitOfMeasure, UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Unidade de medida incorrecta, {0} linha {1}.", invoiceNo, LineNumber), Field = "UnitOfMeasure", TypeofError = GetType(), Value = UnitOfMeasure, UID = Pk, SupUID = SupPk };
                 TooltipUnitOfMeasure += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateUnitPrice(string SupPk = "", string invoiceNo = "")
+        public ValidationError ValidateUnitPrice(string SupPk = "", string invoiceNo = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (UnitPrice == 0)
             {
                 if (!string.IsNullOrEmpty(invoiceNo))
                     invoiceNo = string.Format(" documento {0}", invoiceNo);
 
-                erro = new Error { Description = string.Format("Preço unitário incorrecto, {0} linha {1}.", invoiceNo, LineNumber), Field = "UnitPrice", TypeofError = GetType(), Value = UnitPrice.ToString(), UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Preço unitário incorrecto, {0} linha {1}.", invoiceNo, LineNumber), Field = "UnitPrice", TypeofError = GetType(), Value = UnitPrice.ToString(), UID = Pk, SupUID = SupPk };
                 TooltipUnitPrice += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateTaxPointDate(string SupPk = "", string invoiceNo = "")
+        public ValidationError ValidateTaxPointDate(string SupPk = "", string invoiceNo = "")
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (TaxPointDate > DateTime.Now)
             {
                 if (!string.IsNullOrEmpty(invoiceNo))
                     invoiceNo = string.Format(" documento {0}", invoiceNo);
 
-                erro = new Error { Description = string.Format("Data de envio da mercadoria ou prestação do serviço incorrecta, {0} linha {1}.", invoiceNo, LineNumber), Field = "TaxPointDate", TypeofError = GetType(), Value = TaxPointDate.ToString(), UID = Pk, SupUID = SupPk };
+                erro = new ValidationError { Description = string.Format("Data de envio da mercadoria ou prestação do serviço incorrecta, {0} linha {1}.", invoiceNo, LineNumber), Field = "TaxPointDate", TypeofError = GetType(), Value = TaxPointDate.ToString(), UID = Pk, SupUID = SupPk };
                 TooltipTaxPointDate += Environment.NewLine + erro.Description;
             }
             return erro;
         }
 
-        public Error[] ValidateOrderReferences(string SupPk = "", string invoiceNo = "")
+        public ValidationError[] ValidateOrderReferences(string SupPk = "", string invoiceNo = "")
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (OrderReferences != null && OrderReferences.Length > 0)
             {
                 foreach (var referencia in OrderReferences)
                 {
                     if (string.IsNullOrEmpty(referencia.OriginatingON) == false && referencia.OriginatingON.Length > 60)
-                        listError.Add(new Error { Description = string.Format("Tamanho do número do documento de origem na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "OriginatingON", TypeofError = GetType(), Value = referencia.OriginatingON, UID = Pk, SupUID = SupPk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do número do documento de origem na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "OriginatingON", TypeofError = GetType(), Value = referencia.OriginatingON, UID = Pk, SupUID = SupPk });
                     if (referencia.OrderDateSpecified && referencia.OrderDate > DateTime.Now)
-                        listError.Add(new Error { Description = string.Format("Data do documento de origem na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "OrderDate", TypeofError = GetType(), Value = referencia.OrderDate.ToString(), UID = Pk, SupUID = SupPk });
+                        listError.Add(new ValidationError { Description = string.Format("Data do documento de origem na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "OrderDate", TypeofError = GetType(), Value = referencia.OrderDate.ToString(), UID = Pk, SupUID = SupPk });
                 }
             }
 
             return listError.ToArray();
         }
-        public Error[] ValidateReferences(string SupPk = "", string invoiceNo = "")
+        public ValidationError[] ValidateReferences(string SupPk = "", string invoiceNo = "")
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (References != null && References.Length > 0)
             {
                 foreach (var referencia in References)
                 {
                     if (string.IsNullOrEmpty(referencia.Reason) == false && referencia.Reason.Length > 50)
-                        listError.Add(new Error { Description = string.Format("Tamanho do motivo da emissão na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "Reason", TypeofError = GetType(), Value = referencia.Reason, UID = Pk, SupUID = SupPk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho do motivo da emissão na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "Reason", TypeofError = GetType(), Value = referencia.Reason, UID = Pk, SupUID = SupPk });
                     if (string.IsNullOrEmpty(referencia.Reference) == false && referencia.Reference.Length > 60)
-                        listError.Add(new Error { Description = string.Format("Tamanho da referência à fatura ou fatura simplificada na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "Reference", TypeofError = GetType(), Value = referencia.Reference, UID = Pk, SupUID = SupPk });
+                        listError.Add(new ValidationError { Description = string.Format("Tamanho da referência à fatura ou fatura simplificada na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "Reference", TypeofError = GetType(), Value = referencia.Reference, UID = Pk, SupUID = SupPk });
                 }
             }
 
             return listError.ToArray();
         }
-        public Error[] ValidateTax(string SupPk = "", string invoiceNo = "")
+        public ValidationError[] ValidateTax(string SupPk = "", string invoiceNo = "")
         {
-            List<Error> listError = new List<Error>();
+            List<ValidationError> listError = new List<ValidationError>();
 
             if (Tax == null)
-                listError.Add(new Error { Description = string.Format("Taxa de imposto na linha {0} do documento {1} inexistente.", LineNumber, invoiceNo), Field = "Tax", TypeofError = GetType(), UID = Pk, SupUID = SupPk });
+                listError.Add(new ValidationError { Description = string.Format("Taxa de imposto na linha {0} do documento {1} inexistente.", LineNumber, invoiceNo), Field = "Tax", TypeofError = GetType(), UID = Pk, SupUID = SupPk });
 
             if (Tax != null)
             {
                 if (Tax.ItemElementName == ItemChoiceType1.TaxAmount && Tax.Item < 0)
-                    listError.Add(new Error { Description = string.Format("Montante do imposto na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "TaxAmount", TypeofError = GetType(), Value = Tax.Item.ToString(), UID = Pk, SupUID = SupPk });
+                    listError.Add(new ValidationError { Description = string.Format("Montante do imposto na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "TaxAmount", TypeofError = GetType(), Value = Tax.Item.ToString(), UID = Pk, SupUID = SupPk });
                 if (Tax.ItemElementName == ItemChoiceType1.TaxPercentage && (Tax.Item < 0 || Tax.Item > 100))
-                    listError.Add(new Error { Description = string.Format("Percentagem da taxa do imposto na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "TaxPercentage", TypeofError = GetType(), Value = Tax.Item.ToString(), UID = Pk, SupUID = SupPk });
+                    listError.Add(new ValidationError { Description = string.Format("Percentagem da taxa do imposto na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "TaxPercentage", TypeofError = GetType(), Value = Tax.Item.ToString(), UID = Pk, SupUID = SupPk });
                 if (string.IsNullOrEmpty(Tax.TaxCode) || Tax.TaxCode.Length > 10)
-                    listError.Add(new Error { Description = string.Format("Código da taxa na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "TaxCode", TypeofError = GetType(), Value = Tax.TaxCode, UID = Pk, SupUID = SupPk });
+                    listError.Add(new ValidationError { Description = string.Format("Código da taxa na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "TaxCode", TypeofError = GetType(), Value = Tax.TaxCode, UID = Pk, SupUID = SupPk });
                 if (string.IsNullOrEmpty(Tax.TaxCountryRegion) || Tax.TaxCountryRegion.Length > 5)
-                    listError.Add(new Error { Description = string.Format("País ou região do imposto na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "TaxCountryRegion", TypeofError = GetType(), Value = Tax.TaxCountryRegion, UID = Pk, SupUID = SupPk });
+                    listError.Add(new ValidationError { Description = string.Format("País ou região do imposto na linha {0} do documento {1} incorrecto.", LineNumber, invoiceNo), Field = "TaxCountryRegion", TypeofError = GetType(), Value = Tax.TaxCountryRegion, UID = Pk, SupUID = SupPk });
             }
 
             return listError.ToArray();
@@ -1689,285 +1690,285 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
         public string TooltipEmail { get; set; }
         public string TooltipWebsite { get; set; }
 
-        public Error ValidateTaxRegistrationNumber()
+        public ValidationError ValidateTaxRegistrationNumber()
         {
-            Error erro = null;
-            if (!Validations.Validations.CheckTaxRegistrationNumber(TaxRegistrationNumber))
+            ValidationError erro = null;
+            if (!Validations.CheckTaxRegistrationNumber(TaxRegistrationNumber))
             {
-                erro = new Error { Description = "NIF inválido", Field = "TaxRegistrationNumber", TypeofError = GetType(), Value = TaxRegistrationNumber, UID = Pk };
+                erro = new ValidationError { Description = "NIF inválido", Field = "TaxRegistrationNumber", TypeofError = GetType(), Value = TaxRegistrationNumber, UID = Pk };
                 TooltipTaxRegistrationNumber += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateAuditFileVersion()
+        public ValidationError ValidateAuditFileVersion()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(AuditFileVersion) || AuditFileVersion.Length > 10)
             {
-                erro = new Error { Description = "Versão do ficheiro SAF-T PT incorrecta.", Field = "AuditFileVersion", TypeofError = GetType(), Value = AuditFileVersion, UID = Pk };
+                erro = new ValidationError { Description = "Versão do ficheiro SAF-T PT incorrecta.", Field = "AuditFileVersion", TypeofError = GetType(), Value = AuditFileVersion, UID = Pk };
                 TooltipAuditFileVersion += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateBusinessName()
+        public ValidationError ValidateBusinessName()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(BusinessName) == false)
             {
                 if (BusinessName.Length > 60)
                 {
-                    erro = new Error { Description = "Designação comercial incorrecta.", Field = "BusinessName", TypeofError = GetType(), Value = BusinessName, UID = Pk };
+                    erro = new ValidationError { Description = "Designação comercial incorrecta.", Field = "BusinessName", TypeofError = GetType(), Value = BusinessName, UID = Pk };
                     TooltipBusinessName += Environment.NewLine + erro.Description;
                 }
             }
             return erro;
         }
-        public Error ValidateAddressDetail()
+        public ValidationError ValidateAddressDetail()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(CompanyAddress.AddressDetail) || CompanyAddress.AddressDetail.Length > 100)
             {
-                erro = new Error { Description = "Morada detalhada incorrecta.", Field = "AddressDetail", TypeofError = GetType(), Value = CompanyAddress.AddressDetail, UID = Pk };
+                erro = new ValidationError { Description = "Morada detalhada incorrecta.", Field = "AddressDetail", TypeofError = GetType(), Value = CompanyAddress.AddressDetail, UID = Pk };
                 TooltipAddressDetail += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateBuildingNumber()
+        public ValidationError ValidateBuildingNumber()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(CompanyAddress.BuildingNumber) && CompanyAddress.BuildingNumber.Length > 10)
             {
-                erro = new Error { Description = "Número polícia incorrecto.", Field = "BuildingNumber", TypeofError = GetType(), Value = CompanyAddress.BuildingNumber, UID = Pk };
+                erro = new ValidationError { Description = "Número polícia incorrecto.", Field = "BuildingNumber", TypeofError = GetType(), Value = CompanyAddress.BuildingNumber, UID = Pk };
                 TooltipBuildingNumber += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateCity()
+        public ValidationError ValidateCity()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(CompanyAddress.City) || CompanyAddress.City.Length > 50)
             {
-                erro = new Error { Description = "Localidade incorrecta.", Field = "City", TypeofError = GetType(), Value = CompanyAddress.City, UID = Pk };
+                erro = new ValidationError { Description = "Localidade incorrecta.", Field = "City", TypeofError = GetType(), Value = CompanyAddress.City, UID = Pk };
                 TooltipCity += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateCountry()
+        public ValidationError ValidateCountry()
         {
             string country = null;
             if (CompanyAddress != null || CompanyAddress.Country != null)
                 country = CompanyAddress.Country.ToString();
 
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(country) || country != "PT")
             {
-                erro = new Error { Description = "Localidade incorrecta.", Field = "Country", TypeofError = GetType(), Value = country, UID = Pk };
+                erro = new ValidationError { Description = "Localidade incorrecta.", Field = "Country", TypeofError = GetType(), Value = country, UID = Pk };
                 TooltipCountry += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidatePostalCode()
+        public ValidationError ValidatePostalCode()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(CompanyAddress.PostalCode) || CompanyAddress.PostalCode.Length > 50)
             {
-                erro = new Error { Description = "Código postal incorrecto.", Field = "PostalCode", TypeofError = GetType(), Value = CompanyAddress.PostalCode, UID = Pk };
+                erro = new ValidationError { Description = "Código postal incorrecto.", Field = "PostalCode", TypeofError = GetType(), Value = CompanyAddress.PostalCode, UID = Pk };
                 TooltipPostalCode += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateRegion()
+        public ValidationError ValidateRegion()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(CompanyAddress.Region) && CompanyAddress.Region.Length > 50)
             {
-                erro = new Error { Description = "Distrito incorrecto.", Field = "Region", TypeofError = GetType(), Value = CompanyAddress.Region, UID = Pk };
+                erro = new ValidationError { Description = "Distrito incorrecto.", Field = "Region", TypeofError = GetType(), Value = CompanyAddress.Region, UID = Pk };
                 TooltipRegion += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateStreetName()
+        public ValidationError ValidateStreetName()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(CompanyAddress.StreetName) && CompanyAddress.StreetName.Length > 90)
             {
-                erro = new Error { Description = "Nome da rua incorrecto.", Field = "StreetName", TypeofError = GetType(), Value = CompanyAddress.StreetName, UID = Pk };
+                erro = new ValidationError { Description = "Nome da rua incorrecto.", Field = "StreetName", TypeofError = GetType(), Value = CompanyAddress.StreetName, UID = Pk };
                 TooltipStreetName += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateCompanyID()
+        public ValidationError ValidateCompanyID()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(CompanyID) || CompanyID.Length > 50 || !Regex.IsMatch(CompanyID, "([0-9])+|([a-zA-Z0-9-/]+ [0-9]+)"))
             {
-                if (!Validations.Validations.CheckTaxRegistrationNumber(CompanyID))
+                if (!Validations.CheckTaxRegistrationNumber(CompanyID))
                 {
-                    erro = new Error { Description = "Registo comercial incorrecto.", Field = "CompanyID", TypeofError = GetType(), Value = CompanyID, UID = Pk };
+                    erro = new ValidationError { Description = "Registo comercial incorrecto.", Field = "CompanyID", TypeofError = GetType(), Value = CompanyID, UID = Pk };
                     TooltipCompanyID += Environment.NewLine + erro.Description;
                 }
             }
             return erro;
         }
-        public Error ValidateCompanyName()
+        public ValidationError ValidateCompanyName()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(CompanyName) || CompanyName.Length > 100)
             {
-                erro = new Error { Description = "Nome empresa incorrecto.", Field = "CompanyName", TypeofError = GetType(), Value = CompanyName, UID = Pk };
+                erro = new ValidationError { Description = "Nome empresa incorrecto.", Field = "CompanyName", TypeofError = GetType(), Value = CompanyName, UID = Pk };
                 TooltipCompanyName += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateCurrencyCode()
+        public ValidationError ValidateCurrencyCode()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (CurrencyCode == null || CurrencyCode.ToString() != "EUR")
             {
-                erro = new Error { Description = "Código moeda incorrecto.", Field = "CurrencyCode", TypeofError = GetType(), Value = string.Format("{0}", CurrencyCode ?? "null"), UID = Pk };
+                erro = new ValidationError { Description = "Código moeda incorrecto.", Field = "CurrencyCode", TypeofError = GetType(), Value = string.Format("{0}", CurrencyCode ?? "null"), UID = Pk };
                 TooltipCurrencyCode += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateDateCreated()
+        public ValidationError ValidateDateCreated()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (DateCreated > DateTime.Now)
             {
-                erro = new Error { Description = "Data de criação do ficheiro incorrecta.", Field = "DateCreated", TypeofError = GetType(), Value = DateCreated.ToString(), UID = Pk };
+                erro = new ValidationError { Description = "Data de criação do ficheiro incorrecta.", Field = "DateCreated", TypeofError = GetType(), Value = DateCreated.ToString(), UID = Pk };
                 TooltipDateCreated += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateEmail()
+        public ValidationError ValidateEmail()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Email) && (Email.Length > 60 || !Regex.IsMatch(Email, @"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b", RegexOptions.IgnoreCase)))
             {
-                erro = new Error { Description = "Email incorrecto.", Field = "Email", TypeofError = GetType(), Value = Email, UID = Pk };
+                erro = new ValidationError { Description = "Email incorrecto.", Field = "Email", TypeofError = GetType(), Value = Email, UID = Pk };
                 TooltipEmail += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateEndDate()
+        public ValidationError ValidateEndDate()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (EndDate == DateTime.MinValue)
             {
-                erro = new Error { Description = "Data do fim do periodo incorrecta.", Field = "EndDate", TypeofError = GetType(), Value = EndDate.ToString(), UID = Pk };
+                erro = new ValidationError { Description = "Data do fim do periodo incorrecta.", Field = "EndDate", TypeofError = GetType(), Value = EndDate.ToString(), UID = Pk };
                 TooltipEndDate += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateFax()
+        public ValidationError ValidateFax()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Fax) && Fax.Length > 20)
             {
-                erro = new Error { Description = "Fax incorrecto.", Field = "Fax", TypeofError = GetType(), Value = Fax, UID = Pk };
+                erro = new ValidationError { Description = "Fax incorrecto.", Field = "Fax", TypeofError = GetType(), Value = Fax, UID = Pk };
                 TooltipFax += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateFiscalYear()
+        public ValidationError ValidateFiscalYear()
         {
-            Error erro = null;
+            ValidationError erro = null;
             int.TryParse(FiscalYear, out int ano);
             if (string.IsNullOrEmpty(FiscalYear) || FiscalYear.Length > 4 || ano == -1)
             {
-                erro = new Error { Description = "Ano fiscal incorrecto.", Field = "FiscalYear", TypeofError = GetType(), Value = FiscalYear, UID = Pk };
+                erro = new ValidationError { Description = "Ano fiscal incorrecto.", Field = "FiscalYear", TypeofError = GetType(), Value = FiscalYear, UID = Pk };
                 TooltipFiscalYear += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateHeaderComment()
+        public ValidationError ValidateHeaderComment()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(HeaderComment) && HeaderComment.Length > 255)
             {
-                erro = new Error { Description = "Comentário demasiado longo.", Field = "HeaderComment", TypeofError = GetType(), Value = HeaderComment, UID = Pk };
+                erro = new ValidationError { Description = "Comentário demasiado longo.", Field = "HeaderComment", TypeofError = GetType(), Value = HeaderComment, UID = Pk };
                 TooltipHeaderComment += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateProductCompanyTaxID()
+        public ValidationError ValidateProductCompanyTaxID()
         {
-            Error erro = null;
-            if (!Validations.Validations.CheckTaxRegistrationNumber(ProductCompanyTaxID))
+            ValidationError erro = null;
+            if (!Validations.CheckTaxRegistrationNumber(ProductCompanyTaxID))
             {
-                erro = new Error { Description = "NIF da empresa produtora de saftware inválido.", Field = "ProductCompanyTaxID", TypeofError = GetType(), Value = ProductCompanyTaxID, UID = Pk };
+                erro = new ValidationError { Description = "NIF da empresa produtora de saftware inválido.", Field = "ProductCompanyTaxID", TypeofError = GetType(), Value = ProductCompanyTaxID, UID = Pk };
                 TooltipProductCompanyTaxID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateProductID()
+        public ValidationError ValidateProductID()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(ProductID) || ProductID.Length > 255 || !ProductID.Contains('/'))
             {
-                erro = new Error { Description = "Nome da aplicação incorrecto.", Field = "ProductID", TypeofError = GetType(), Value = ProductID, UID = Pk };
+                erro = new ValidationError { Description = "Nome da aplicação incorrecto.", Field = "ProductID", TypeofError = GetType(), Value = ProductID, UID = Pk };
                 TooltipProductID += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateProductVersion()
+        public ValidationError ValidateProductVersion()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(ProductVersion) || ProductVersion.Length > 30)
             {
-                erro = new Error { Description = "Versão da aplicação incorrecta.", Field = "ProductVersion", TypeofError = GetType(), Value = ProductVersion, UID = Pk };
+                erro = new ValidationError { Description = "Versão da aplicação incorrecta.", Field = "ProductVersion", TypeofError = GetType(), Value = ProductVersion, UID = Pk };
                 TooltipProductVersion += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateSoftwareCertificateNumber()
+        public ValidationError ValidateSoftwareCertificateNumber()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(SoftwareCertificateNumber) || SoftwareCertificateNumber.Length > 20)
             {
-                erro = new Error { Description = "Número de certificação incorrecto.", Field = "SoftwareCertificateNumber", TypeofError = GetType(), Value = SoftwareCertificateNumber, UID = Pk };
+                erro = new ValidationError { Description = "Número de certificação incorrecto.", Field = "SoftwareCertificateNumber", TypeofError = GetType(), Value = SoftwareCertificateNumber, UID = Pk };
                 TooltipSoftwareCertificateNumber += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateTaxAccountingBasis()
+        public ValidationError ValidateTaxAccountingBasis()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(TaxAccountingBasis.ToString()) || TaxAccountingBasis.ToString().Length > 1)
             {
-                erro = new Error { Description = "Sistema contabilístico incorrecto.", Field = "TaxAccountingBasis", TypeofError = GetType(), Value = TaxAccountingBasis.ToString(), UID = Pk };
+                erro = new ValidationError { Description = "Sistema contabilístico incorrecto.", Field = "TaxAccountingBasis", TypeofError = GetType(), Value = TaxAccountingBasis.ToString(), UID = Pk };
                 TooltipTaxAccountingBasis += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateTaxEntity()
+        public ValidationError ValidateTaxEntity()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(TaxEntity) || TaxEntity.Length > 20)
             {
-                erro = new Error { Description = "Identificação do estabelecimento incorrecta.", Field = "TaxEntity", TypeofError = GetType(), Value = TaxEntity, UID = Pk };
+                erro = new ValidationError { Description = "Identificação do estabelecimento incorrecta.", Field = "TaxEntity", TypeofError = GetType(), Value = TaxEntity, UID = Pk };
                 TooltipTaxEntity += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateTelephone()
+        public ValidationError ValidateTelephone()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Telephone) && Telephone.Length > 20)
             {
-                erro = new Error { Description = "Identificação do estabelecimento incorrecta.", Field = "Telephone", TypeofError = GetType(), Value = Telephone, UID = Pk };
+                erro = new ValidationError { Description = "Identificação do estabelecimento incorrecta.", Field = "Telephone", TypeofError = GetType(), Value = Telephone, UID = Pk };
                 TooltipTelephone += Environment.NewLine + erro.Description;
             }
             return erro;
         }
-        public Error ValidateWebsite()
+        public ValidationError ValidateWebsite()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Website) && Website.Length > 60)
             {
-                erro = new Error { Description = "Website incorrecto.", Field = "Website", TypeofError = GetType(), Value = Website, UID = Pk };
+                erro = new ValidationError { Description = "Website incorrecto.", Field = "Website", TypeofError = GetType(), Value = Website, UID = Pk };
                 TooltipWebsite += Environment.NewLine + erro.Description;
             }
             return erro;
@@ -1993,45 +1994,45 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
         public string TooltipProductDescription { get; set; }
         public string TooltipProductNumberCode { get; set; }
 
-        public Error ValidateProductCode()
+        public ValidationError ValidateProductCode()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(ProductCode) || ProductCode.Length > 30)
             {
-                erro = new Error { Description = "Código do produto inválido", Field = "ProductCode", TypeofError = GetType(), Value = ProductCode, UID = Pk };
+                erro = new ValidationError { Description = "Código do produto inválido", Field = "ProductCode", TypeofError = GetType(), Value = ProductCode, UID = Pk };
                 TooltipProductCode += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateProductGroup()
+        public ValidationError ValidateProductGroup()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(ProductGroup) && ProductCode.Length > 50)
             {
-                erro = new Error { Description = "Família do produto ou serviço inválida", Field = "ProductGroup", TypeofError = GetType(), Value = ProductGroup, UID = Pk };
+                erro = new ValidationError { Description = "Família do produto ou serviço inválida", Field = "ProductGroup", TypeofError = GetType(), Value = ProductGroup, UID = Pk };
                 TooltipProductGroup += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateProductDescription()
+        public ValidationError ValidateProductDescription()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(ProductDescription) || ProductDescription.Length > 200)
             {
-                erro = new Error { Description = "Descrição do produto ou serviço inválida", Field = "ProductDescription", TypeofError = GetType(), Value = ProductDescription, UID = Pk };
+                erro = new ValidationError { Description = "Descrição do produto ou serviço inválida", Field = "ProductDescription", TypeofError = GetType(), Value = ProductDescription, UID = Pk };
                 TooltipProductDescription += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateProductNumberCode()
+        public ValidationError ValidateProductNumberCode()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(ProductNumberCode) || ProductNumberCode.Length > 50)
             {
-                erro = new Error { Description = "Família do produto ou serviço inválida", Field = "ProductNumberCode", TypeofError = GetType(), Value = ProductNumberCode, UID = Pk };
+                erro = new ValidationError { Description = "Família do produto ou serviço inválida", Field = "ProductNumberCode", TypeofError = GetType(), Value = ProductNumberCode, UID = Pk };
                 TooltipProductNumberCode += Environment.NewLine + erro.Description;
             }
 
@@ -2098,108 +2099,108 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
         public string TooltipWebsite { get; set; }
         public string TooltipSelfBillingIndicator { get; set; }
 
-        public Error ValidateCustomerID()
+        public ValidationError ValidateCustomerID()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(CustomerID) || CustomerID.Length > 30)
             {
-                erro = new Error { Description = "Identificador único do cliente inválido", Field = "CustomerID", TypeofError = GetType(), Value = CustomerID, UID = Pk };
+                erro = new ValidationError { Description = "Identificador único do cliente inválido", Field = "CustomerID", TypeofError = GetType(), Value = CustomerID, UID = Pk };
                 TooltipCustomerID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateAccountID()
+        public ValidationError ValidateAccountID()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(AccountID) || AccountID.Length > 30)
             {
-                erro = new Error { Description = "Código da conta inválido", Field = "AccountID", TypeofError = GetType(), Value = AccountID, UID = Pk };
+                erro = new ValidationError { Description = "Código da conta inválido", Field = "AccountID", TypeofError = GetType(), Value = AccountID, UID = Pk };
                 TooltipAccountID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateCustomerTaxID()
+        public ValidationError ValidateCustomerTaxID()
         {
-            Error erro = null;
-            if (BillingAddress?.Country == "PT" && !Validations.Validations.CheckTaxRegistrationNumber(CustomerTaxID))
+            ValidationError erro = null;
+            if (BillingAddress?.Country == "PT" && !Validations.CheckTaxRegistrationNumber(CustomerTaxID))
             {
-                erro = new Error { Description = "Número de identificação fiscal inválido", Field = "CustomerTaxID", TypeofError = GetType(), Value = CustomerTaxID, UID = Pk };
+                erro = new ValidationError { Description = "Número de identificação fiscal inválido", Field = "CustomerTaxID", TypeofError = GetType(), Value = CustomerTaxID, UID = Pk };
                 TooltipCustomerTaxID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateCompanyName()
+        public ValidationError ValidateCompanyName()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(CompanyName) || CompanyName.Length > 100)
             {
-                erro = new Error { Description = "Nome da empresa inválido", Field = "CompanyName", TypeofError = GetType(), Value = CompanyName, UID = Pk };
+                erro = new ValidationError { Description = "Nome da empresa inválido", Field = "CompanyName", TypeofError = GetType(), Value = CompanyName, UID = Pk };
                 TooltipCompanyName += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateContact()
+        public ValidationError ValidateContact()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Contact) && Contact.Length > 50)
             {
-                erro = new Error { Description = "Nome do contacto na empresa inválido.", Field = "Contact", TypeofError = GetType(), Value = Contact, UID = Pk };
+                erro = new ValidationError { Description = "Nome do contacto na empresa inválido.", Field = "Contact", TypeofError = GetType(), Value = Contact, UID = Pk };
                 TooltipContact += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateTelephone()
+        public ValidationError ValidateTelephone()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Telephone) && Telephone.Length > 20)
             {
-                erro = new Error { Description = "Telefone inválido", Field = "Telephone", TypeofError = GetType(), Value = Telephone, UID = Pk };
+                erro = new ValidationError { Description = "Telefone inválido", Field = "Telephone", TypeofError = GetType(), Value = Telephone, UID = Pk };
                 TooltipTelephone += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateFax()
+        public ValidationError ValidateFax()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Fax) && Fax.Length > 20)
             {
-                erro = new Error { Description = "Fax inválido", Field = "Fax", TypeofError = GetType(), Value = Fax, UID = Pk };
+                erro = new ValidationError { Description = "Fax inválido", Field = "Fax", TypeofError = GetType(), Value = Fax, UID = Pk };
                 TooltipFax += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateEmail()
+        public ValidationError ValidateEmail()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Email) && Email.Length > 60)
             {
-                erro = new Error { Description = "Email inválido", Field = "Email", TypeofError = GetType(), Value = Email, UID = Pk };
+                erro = new ValidationError { Description = "Email inválido", Field = "Email", TypeofError = GetType(), Value = Email, UID = Pk };
                 TooltipEmail += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateWebsite()
+        public ValidationError ValidateWebsite()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Website) && Website.Length > 60)
             {
-                erro = new Error { Description = "Website inválido", Field = "Website", TypeofError = GetType(), Value = Website, UID = Pk };
+                erro = new ValidationError { Description = "Website inválido", Field = "Website", TypeofError = GetType(), Value = Website, UID = Pk };
                 TooltipWebsite += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateSelfBillingIndicator()
+        public ValidationError ValidateSelfBillingIndicator()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             int selfBillingIndicator = -1;
             if (!string.IsNullOrEmpty(SelfBillingIndicator))
@@ -2207,62 +2208,62 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 
             if (string.IsNullOrEmpty(SelfBillingIndicator) || selfBillingIndicator == -1)
             {
-                erro = new Error { Description = "Nº de conta inválido", Field = "SelfBillingIndicator", TypeofError = GetType(), Value = SelfBillingIndicator, UID = Pk };
+                erro = new ValidationError { Description = "Nº de conta inválido", Field = "SelfBillingIndicator", TypeofError = GetType(), Value = SelfBillingIndicator, UID = Pk };
                 TooltipSelfBillingIndicator += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
 
-        public Error[] ValidateBillingAddress()
+        public ValidationError[] ValidateBillingAddress()
         {
-            List<Error> listErro = new List<Error>();
+            List<ValidationError> listErro = new List<ValidationError>();
 
             if (BillingAddress == null)
-                listErro.Add(new Error { Description = "Morada de faturação inexistente", Field = "BillingAddress", TypeofError = GetType(), UID = Pk });
+                listErro.Add(new ValidationError { Description = "Morada de faturação inexistente", Field = "BillingAddress", TypeofError = GetType(), UID = Pk });
 
             if (BillingAddress != null)
             {
                 if (string.IsNullOrEmpty(BillingAddress.AddressDetail) || BillingAddress.AddressDetail.Length > 100)
-                    listErro.Add(new Error { Description = "Tamanho da morada detalhada.", Field = "AddressDetail", TypeofError = GetType(), Value = BillingAddress.AddressDetail, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho da morada detalhada.", Field = "AddressDetail", TypeofError = GetType(), Value = BillingAddress.AddressDetail, UID = Pk });
                 if (string.IsNullOrEmpty(BillingAddress.BuildingNumber) == false && BillingAddress.BuildingNumber.Length > 10)
-                    listErro.Add(new Error { Description = "Tamanho do número de polícia incorrecto.", Field = "BuildingNumber", TypeofError = GetType(), Value = BillingAddress.BuildingNumber, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho do número de polícia incorrecto.", Field = "BuildingNumber", TypeofError = GetType(), Value = BillingAddress.BuildingNumber, UID = Pk });
                 if (string.IsNullOrEmpty(BillingAddress.City) || BillingAddress.City.Length > 50)
-                    listErro.Add(new Error { Description = "Tamanho da localidade incorrecto.", Field = "City", TypeofError = GetType(), Value = BillingAddress.City, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho da localidade incorrecto.", Field = "City", TypeofError = GetType(), Value = BillingAddress.City, UID = Pk });
                 if (string.IsNullOrEmpty(BillingAddress.PostalCode) || BillingAddress.PostalCode.Length > 20)
-                    listErro.Add(new Error { Description = "Tamanho do código postal incorrecto.", Field = "PostalCode", TypeofError = GetType(), Value = BillingAddress.PostalCode, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho do código postal incorrecto.", Field = "PostalCode", TypeofError = GetType(), Value = BillingAddress.PostalCode, UID = Pk });
                 if (string.IsNullOrEmpty(BillingAddress.Region) == false && BillingAddress.Region.Length > 50)
-                    listErro.Add(new Error { Description = "Tamanho do distrito incorrecto.", Field = "Region", TypeofError = GetType(), Value = BillingAddress.Region, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho do distrito incorrecto.", Field = "Region", TypeofError = GetType(), Value = BillingAddress.Region, UID = Pk });
                 if (string.IsNullOrEmpty(BillingAddress.StreetName) == false && BillingAddress.StreetName.Length > 90)
-                    listErro.Add(new Error { Description = "Tamanho do nome da rua incorrecto.", Field = "StreetName", TypeofError = GetType(), Value = BillingAddress.StreetName, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho do nome da rua incorrecto.", Field = "StreetName", TypeofError = GetType(), Value = BillingAddress.StreetName, UID = Pk });
                 if (string.IsNullOrEmpty(BillingAddress.Country) || (BillingAddress.Country.Length != 2 && BillingAddress.Country != "Desconhecido"))
-                    listErro.Add(new Error { Description = "Tamanho do País incorrecto.", Field = "Country", TypeofError = GetType(), Value = BillingAddress.Country, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho do País incorrecto.", Field = "Country", TypeofError = GetType(), Value = BillingAddress.Country, UID = Pk });
             }
 
             return listErro.ToArray();
         }
-        public Error[] ValidateShipToAddress()
+        public ValidationError[] ValidateShipToAddress()
         {
-            List<Error> listErro = new List<Error>();
+            List<ValidationError> listErro = new List<ValidationError>();
 
             if (ShipToAddress != null && ShipToAddress.Length > 0)
             {
                 foreach (var morada in ShipToAddress)
                 {
                     if (string.IsNullOrEmpty(morada.AddressDetail) || morada.AddressDetail.Length > 100)
-                        listErro.Add(new Error { Description = "Tamanho da morada detalhada.", Field = "AddressDetail", TypeofError = GetType(), Value = morada.AddressDetail, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho da morada detalhada.", Field = "AddressDetail", TypeofError = GetType(), Value = morada.AddressDetail, UID = Pk });
                     if (string.IsNullOrEmpty(morada.BuildingNumber) == false && morada.BuildingNumber.Length > 10)
-                        listErro.Add(new Error { Description = "Tamanho do número de polícia incorrecto.", Field = "BuildingNumber", TypeofError = GetType(), Value = morada.BuildingNumber, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho do número de polícia incorrecto.", Field = "BuildingNumber", TypeofError = GetType(), Value = morada.BuildingNumber, UID = Pk });
                     if (string.IsNullOrEmpty(morada.City) || morada.City.Length > 50)
-                        listErro.Add(new Error { Description = "Tamanho da localidade incorrecto.", Field = "City", TypeofError = GetType(), Value = morada.City, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho da localidade incorrecto.", Field = "City", TypeofError = GetType(), Value = morada.City, UID = Pk });
                     if (string.IsNullOrEmpty(morada.Country) || morada.Country.Length != 2 || morada.Country != "Desconhecido")
-                        listErro.Add(new Error { Description = "Tamanho do País incorrecto.", Field = "Country", TypeofError = GetType(), Value = morada.Country, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho do País incorrecto.", Field = "Country", TypeofError = GetType(), Value = morada.Country, UID = Pk });
                     if (string.IsNullOrEmpty(morada.PostalCode) || morada.PostalCode.Length > 20)
-                        listErro.Add(new Error { Description = "Tamanho do código postal incorrecto.", Field = "PostalCode", TypeofError = GetType(), Value = morada.PostalCode, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho do código postal incorrecto.", Field = "PostalCode", TypeofError = GetType(), Value = morada.PostalCode, UID = Pk });
                     if (string.IsNullOrEmpty(morada.Region) == false && morada.Region.Length > 50)
-                        listErro.Add(new Error { Description = "Tamanho do distrito incorrecto.", Field = "Region", TypeofError = GetType(), Value = morada.Region, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho do distrito incorrecto.", Field = "Region", TypeofError = GetType(), Value = morada.Region, UID = Pk });
                     if (string.IsNullOrEmpty(morada.StreetName) == false && morada.StreetName.Length > 90)
-                        listErro.Add(new Error { Description = "Tamanho do nome da rua incorrecto.", Field = "StreetName", TypeofError = GetType(), Value = morada.StreetName, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho do nome da rua incorrecto.", Field = "StreetName", TypeofError = GetType(), Value = morada.StreetName, UID = Pk });
                 }
             }
 
@@ -2293,36 +2294,36 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
         public string TooltipTaxPercentage { get; set; }
         public string TooltipTaxAmount { get; set; }
 
-        public Error ValidateTaxCountryRegion()
+        public ValidationError ValidateTaxCountryRegion()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(TaxCountryRegion) || TaxCountryRegion.Length > 5)
             {
-                erro = new Error { Description = "País ou região do imposto inválido", Field = "TaxCountryRegion", TypeofError = GetType(), Value = TaxCountryRegion, UID = Pk };
+                erro = new ValidationError { Description = "País ou região do imposto inválido", Field = "TaxCountryRegion", TypeofError = GetType(), Value = TaxCountryRegion, UID = Pk };
                 //if (appendError)
                 //	Tooltip.TaxCountryRegion = Tooltip.TaxCountryRegion.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateTaxCode()
+        public ValidationError ValidateTaxCode()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(TaxCode) || TaxCode.Length > 10)
             {
-                erro = new Error { Description = "Código do imposto inválido", Field = "TaxCode", TypeofError = GetType(), Value = TaxCode, UID = Pk };
+                erro = new ValidationError { Description = "Código do imposto inválido", Field = "TaxCode", TypeofError = GetType(), Value = TaxCode, UID = Pk };
                 //if (appendError)
                 //	Tooltip.TaxCode = Tooltip.TaxCode.FormatTooltipWithError(erro.Description);
             }
 
             return erro;
         }
-        public Error ValidateDescription()
+        public ValidationError ValidateDescription()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(Description) || Description.Length > 255)
             {
-                erro = new Error { Description = "Identificador único do cliente inválido", Field = "Description", TypeofError = GetType(), Value = Description, UID = Pk };
+                erro = new ValidationError { Description = "Identificador único do cliente inválido", Field = "Description", TypeofError = GetType(), Value = Description, UID = Pk };
                 TooltipDescription += Environment.NewLine + erro.Description;
             }
 
@@ -2424,108 +2425,108 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
         public string TooltipWebsite { get; set; }
         public string TooltipSelfBillingIndicator { get; set; }
 
-        public Error ValidateCustomerID()
+        public ValidationError ValidateCustomerID()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(SupplierID) || SupplierID.Length > 30)
             {
-                erro = new Error { Description = "Identificador único do fornecedor inválido", Field = "SupplierID", TypeofError = GetType(), Value = SupplierID, UID = Pk };
+                erro = new ValidationError { Description = "Identificador único do fornecedor inválido", Field = "SupplierID", TypeofError = GetType(), Value = SupplierID, UID = Pk };
                 TooltipSupplierID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateAccountID()
+        public ValidationError ValidateAccountID()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(AccountID) || AccountID.Length > 30)
             {
-                erro = new Error { Description = "Código da conta inválido", Field = "AccountID", TypeofError = GetType(), Value = AccountID, UID = Pk };
+                erro = new ValidationError { Description = "Código da conta inválido", Field = "AccountID", TypeofError = GetType(), Value = AccountID, UID = Pk };
                 TooltipAccountID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateSupplierTaxID()
+        public ValidationError ValidateSupplierTaxID()
         {
-            Error erro = null;
-            if (BillingAddress?.Country == "PT" && !Validations.Validations.CheckTaxRegistrationNumber(SupplierTaxID))
+            ValidationError erro = null;
+            if (BillingAddress?.Country == "PT" && !Validations.CheckTaxRegistrationNumber(SupplierTaxID))
             {
-                erro = new Error { Description = "Número de identificação fiscal inválido", Field = "SupplierTaxID", TypeofError = GetType(), Value = SupplierTaxID, UID = Pk };
+                erro = new ValidationError { Description = "Número de identificação fiscal inválido", Field = "SupplierTaxID", TypeofError = GetType(), Value = SupplierTaxID, UID = Pk };
                 TooltipSupplierTaxID += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateCompanyName()
+        public ValidationError ValidateCompanyName()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (string.IsNullOrEmpty(CompanyName) || CompanyName.Length > 100)
             {
-                erro = new Error { Description = "Nome da empresa inválido", Field = "CompanyName", TypeofError = GetType(), Value = CompanyName, UID = Pk };
+                erro = new ValidationError { Description = "Nome da empresa inválido", Field = "CompanyName", TypeofError = GetType(), Value = CompanyName, UID = Pk };
                 TooltipCompanyName += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateContact()
+        public ValidationError ValidateContact()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Contact) && Contact.Length > 50)
             {
-                erro = new Error { Description = "Nome do contacto na empresa inválido.", Field = "Contact", TypeofError = GetType(), Value = Contact, UID = Pk };
+                erro = new ValidationError { Description = "Nome do contacto na empresa inválido.", Field = "Contact", TypeofError = GetType(), Value = Contact, UID = Pk };
                 TooltipContact += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateTelephone()
+        public ValidationError ValidateTelephone()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Telephone) && Telephone.Length > 20)
             {
-                erro = new Error { Description = "Telefone inválido", Field = "Telephone", TypeofError = GetType(), Value = Telephone, UID = Pk };
+                erro = new ValidationError { Description = "Telefone inválido", Field = "Telephone", TypeofError = GetType(), Value = Telephone, UID = Pk };
                 TooltipTelephone += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateFax()
+        public ValidationError ValidateFax()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Fax) && Fax.Length > 20)
             {
-                erro = new Error { Description = "Fax inválido", Field = "Fax", TypeofError = GetType(), Value = Fax, UID = Pk };
+                erro = new ValidationError { Description = "Fax inválido", Field = "Fax", TypeofError = GetType(), Value = Fax, UID = Pk };
                 TooltipFax += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateEmail()
+        public ValidationError ValidateEmail()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Email) && Email.Length > 60)
             {
-                erro = new Error { Description = "Email inválido", Field = "Email", TypeofError = GetType(), Value = Email, UID = Pk };
+                erro = new ValidationError { Description = "Email inválido", Field = "Email", TypeofError = GetType(), Value = Email, UID = Pk };
                 TooltipEmail += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateWebsite()
+        public ValidationError ValidateWebsite()
         {
-            Error erro = null;
+            ValidationError erro = null;
             if (!string.IsNullOrEmpty(Website) && Website.Length > 60)
             {
-                erro = new Error { Description = "Website inválido", Field = "Website", TypeofError = GetType(), Value = Website, UID = Pk };
+                erro = new ValidationError { Description = "Website inválido", Field = "Website", TypeofError = GetType(), Value = Website, UID = Pk };
                 TooltipWebsite += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
-        public Error ValidateSelfBillingIndicator()
+        public ValidationError ValidateSelfBillingIndicator()
         {
-            Error erro = null;
+            ValidationError erro = null;
 
             int selfBillingIndicator = -1;
             if (!string.IsNullOrEmpty(SelfBillingIndicator))
@@ -2533,62 +2534,62 @@ namespace Solria.SAFT.Desktop.Models.SaftV3
 
             if (string.IsNullOrEmpty(SelfBillingIndicator) || selfBillingIndicator == -1)
             {
-                erro = new Error { Description = "Nº de conta inválido", Field = "SelfBillingIndicator", TypeofError = GetType(), Value = SelfBillingIndicator, UID = Pk };
+                erro = new ValidationError { Description = "Nº de conta inválido", Field = "SelfBillingIndicator", TypeofError = GetType(), Value = SelfBillingIndicator, UID = Pk };
                 TooltipSelfBillingIndicator += Environment.NewLine + erro.Description;
             }
 
             return erro;
         }
 
-        public Error[] ValidateBillingAddress()
+        public ValidationError[] ValidateBillingAddress()
         {
-            List<Error> listErro = new List<Error>();
+            List<ValidationError> listErro = new List<ValidationError>();
 
             if (BillingAddress == null)
-                listErro.Add(new Error { Description = "Morada de faturação inexistente", Field = "BillingAddress", TypeofError = GetType(), UID = Pk });
+                listErro.Add(new ValidationError { Description = "Morada de faturação inexistente", Field = "BillingAddress", TypeofError = GetType(), UID = Pk });
 
             if (BillingAddress != null)
             {
                 if (string.IsNullOrEmpty(BillingAddress.AddressDetail) || BillingAddress.AddressDetail.Length > 100)
-                    listErro.Add(new Error { Description = "Tamanho da morada detalhada.", Field = "AddressDetail", TypeofError = GetType(), Value = BillingAddress.AddressDetail, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho da morada detalhada.", Field = "AddressDetail", TypeofError = GetType(), Value = BillingAddress.AddressDetail, UID = Pk });
                 if (string.IsNullOrEmpty(BillingAddress.BuildingNumber) == false && BillingAddress.BuildingNumber.Length > 10)
-                    listErro.Add(new Error { Description = "Tamanho do número de polícia incorrecto.", Field = "BuildingNumber", TypeofError = GetType(), Value = BillingAddress.BuildingNumber, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho do número de polícia incorrecto.", Field = "BuildingNumber", TypeofError = GetType(), Value = BillingAddress.BuildingNumber, UID = Pk });
                 if (string.IsNullOrEmpty(BillingAddress.City) || BillingAddress.City.Length > 50)
-                    listErro.Add(new Error { Description = "Tamanho da localidade incorrecto.", Field = "City", TypeofError = GetType(), Value = BillingAddress.City, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho da localidade incorrecto.", Field = "City", TypeofError = GetType(), Value = BillingAddress.City, UID = Pk });
                 if (string.IsNullOrEmpty(BillingAddress.Country) || BillingAddress.Country.Length != 2)
-                    listErro.Add(new Error { Description = "Tamanho do País incorrecto.", Field = "Country", TypeofError = GetType(), Value = BillingAddress.Country, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho do País incorrecto.", Field = "Country", TypeofError = GetType(), Value = BillingAddress.Country, UID = Pk });
                 if (string.IsNullOrEmpty(BillingAddress.PostalCode) || BillingAddress.PostalCode.Length > 20)
-                    listErro.Add(new Error { Description = "Tamanho do código postal incorrecto.", Field = "PostalCode", TypeofError = GetType(), Value = BillingAddress.PostalCode, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho do código postal incorrecto.", Field = "PostalCode", TypeofError = GetType(), Value = BillingAddress.PostalCode, UID = Pk });
                 if (string.IsNullOrEmpty(BillingAddress.Region) == false && BillingAddress.Region.Length > 50)
-                    listErro.Add(new Error { Description = "Tamanho do distrito incorrecto.", Field = "Region", TypeofError = GetType(), Value = BillingAddress.Region, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho do distrito incorrecto.", Field = "Region", TypeofError = GetType(), Value = BillingAddress.Region, UID = Pk });
                 if (string.IsNullOrEmpty(BillingAddress.StreetName) == false && BillingAddress.StreetName.Length > 90)
-                    listErro.Add(new Error { Description = "Tamanho do nome da rua incorrecto.", Field = "StreetName", TypeofError = GetType(), Value = BillingAddress.StreetName, UID = Pk });
+                    listErro.Add(new ValidationError { Description = "Tamanho do nome da rua incorrecto.", Field = "StreetName", TypeofError = GetType(), Value = BillingAddress.StreetName, UID = Pk });
             }
 
             return listErro.ToArray();
         }
-        public Error[] ValidateShipFromAddress()
+        public ValidationError[] ValidateShipFromAddress()
         {
-            List<Error> listErro = new List<Error>();
+            List<ValidationError> listErro = new List<ValidationError>();
 
             if (ShipFromAddress != null && ShipFromAddress.Length > 0)
             {
                 foreach (var morada in ShipFromAddress)
                 {
                     if (string.IsNullOrEmpty(morada.AddressDetail) || morada.AddressDetail.Length > 100)
-                        listErro.Add(new Error { Description = "Tamanho da morada detalhada.", Field = "AddressDetail", TypeofError = GetType(), Value = morada.AddressDetail, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho da morada detalhada.", Field = "AddressDetail", TypeofError = GetType(), Value = morada.AddressDetail, UID = Pk });
                     if (string.IsNullOrEmpty(morada.BuildingNumber) == false && morada.BuildingNumber.Length > 10)
-                        listErro.Add(new Error { Description = "Tamanho do número de polícia incorrecto.", Field = "BuildingNumber", TypeofError = GetType(), Value = morada.BuildingNumber, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho do número de polícia incorrecto.", Field = "BuildingNumber", TypeofError = GetType(), Value = morada.BuildingNumber, UID = Pk });
                     if (string.IsNullOrEmpty(morada.City) || morada.City.Length > 50)
-                        listErro.Add(new Error { Description = "Tamanho da localidade incorrecto.", Field = "City", TypeofError = GetType(), Value = morada.City, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho da localidade incorrecto.", Field = "City", TypeofError = GetType(), Value = morada.City, UID = Pk });
                     if (string.IsNullOrEmpty(morada.Country) || morada.Country.Length != 2)
-                        listErro.Add(new Error { Description = "Tamanho do País incorrecto.", Field = "Country", TypeofError = GetType(), Value = morada.Country, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho do País incorrecto.", Field = "Country", TypeofError = GetType(), Value = morada.Country, UID = Pk });
                     if (string.IsNullOrEmpty(morada.PostalCode) || morada.PostalCode.Length > 20)
-                        listErro.Add(new Error { Description = "Tamanho do código postal incorrecto.", Field = "PostalCode", TypeofError = GetType(), Value = morada.PostalCode, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho do código postal incorrecto.", Field = "PostalCode", TypeofError = GetType(), Value = morada.PostalCode, UID = Pk });
                     if (string.IsNullOrEmpty(morada.Region) == false && morada.Region.Length > 50)
-                        listErro.Add(new Error { Description = "Tamanho do distrito incorrecto.", Field = "Region", TypeofError = GetType(), Value = morada.Region, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho do distrito incorrecto.", Field = "Region", TypeofError = GetType(), Value = morada.Region, UID = Pk });
                     if (string.IsNullOrEmpty(morada.StreetName) == false && morada.StreetName.Length > 90)
-                        listErro.Add(new Error { Description = "Tamanho do nome da rua incorrecto.", Field = "StreetName", TypeofError = GetType(), Value = morada.StreetName, UID = Pk });
+                        listErro.Add(new ValidationError { Description = "Tamanho do nome da rua incorrecto.", Field = "StreetName", TypeofError = GetType(), Value = morada.StreetName, UID = Pk });
                 }
             }
 

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Solria.SAFT.Desktop.Models
+namespace Solria.SAFT.Parser.Models
 {
-	public class Error
-    {
+	public class ValidationError
+	{
 		public string Description { get; set; }
 
 		public Type TypeofError { get; set; }

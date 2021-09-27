@@ -1,8 +1,8 @@
 ﻿using Avalonia.Collections;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Models.Saft;
 using Solria.SAFT.Desktop.Services;
+using Solria.SAFT.Parser.Models;
 using Splat;
 using System;
 using System.Collections.Generic;
@@ -34,50 +34,7 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             IsLoading = true;
 
-            Task.Run(() =>
-            {
-                var taxes = new List<TaxTableEntry>();
-                if (saftValidator?.SaftFileV4?.MasterFiles?.TaxTable != null)
-                {
-                    var saft_taxes = saftValidator.SaftFileV4.MasterFiles.TaxTable;
-
-                    foreach (var c in saft_taxes)
-                    {
-                        taxes.Add(new TaxTableEntry
-                        {
-                            Description = c.Description,
-                            TaxAmount = c.ItemElementName == Models.SaftV4.ItemChoiceType2.TaxAmount ? c.Item : 0,
-                            TaxPercentage = c.ItemElementName == Models.SaftV4.ItemChoiceType2.TaxPercentage ? c.Item : 0,
-                            TaxCode = c.TaxCode,
-                            TaxCountryRegion = c.TaxCountryRegion,
-                            TaxType = c.TaxType.ToString(),
-                            TaxExpirationDate = c.TaxExpirationDateSpecified ? c.TaxExpirationDate.ToString("yyyy-MM-dd") : null
-                        });
-                    }
-                }
-                else if (saftValidator?.SaftFileV3?.MasterFiles?.TaxTable != null)
-                {
-                    var saft_taxes = saftValidator.SaftFileV4.MasterFiles.TaxTable;
-
-                    foreach (var c in saft_taxes)
-                    {
-                        taxes.Add(new TaxTableEntry
-                        {
-                            Description = c.Description,
-                            TaxAmount = c.ItemElementName == Models.SaftV4.ItemChoiceType2.TaxAmount ? c.Item : 0,
-                            TaxPercentage = c.ItemElementName == Models.SaftV4.ItemChoiceType2.TaxPercentage ? c.Item : 0,
-                            TaxCode = c.TaxCode,
-                            TaxCountryRegion = c.TaxCountryRegion,
-                            TaxType = c.TaxType.ToString(),
-                            TaxExpirationDate = c.TaxExpirationDateSpecified ? c.TaxExpirationDate.ToString("yyyy-MM-dd") : null
-                        });
-                    }
-                }
-
-                return taxes;
-            }).ContinueWith(async t =>
-            {
-                var taxes = await t;
+                var taxes = saftValidator?.SaftFile?.MasterFiles?.TaxTable ?? Array.Empty<TaxTableEntry>();
 
                 CollectionView = new DataGridCollectionView(taxes)
                 {
@@ -94,7 +51,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                                 return true;
                             if (tax.TaxCountryRegion != null && tax.TaxCountryRegion.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
-                            if (tax.TaxType != null && tax.TaxType.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            if (tax.TaxType.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
                             if (tax.TaxAmount != null && tax.TaxAmount.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
@@ -115,7 +72,6 @@ namespace Solria.SAFT.Desktop.ViewModels
                     .DisposeWith(disposables);
 
                 IsLoading = false;
-            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         protected override void HandleDeactivation()

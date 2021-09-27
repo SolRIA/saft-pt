@@ -1,9 +1,9 @@
 ﻿using Avalonia.Collections;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Models.Saft;
 using Solria.SAFT.Desktop.Services;
 using Solria.SAFT.Desktop.Views;
+using Solria.SAFT.Parser.Models;
 using Splat;
 using System;
 using System.Collections.Generic;
@@ -47,664 +47,119 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             IsLoading = true;
 
-            Task.Run(() =>
+
+            header = saftValidator.SaftFile?.Header;
+
+
+            var invoices = saftValidator.SaftFile?.SourceDocuments?.SalesInvoices?.Invoice ?? Array.Empty<SourceDocumentsSalesInvoicesInvoice>();
+
+            DocNumberOfEntries = invoices.Length;
+            DocTotalCredit = invoices
+                .Where(i => i.DocumentStatus.InvoiceStatus != InvoiceStatus.A && i.DocumentStatus.InvoiceStatus != InvoiceStatus.F)
+                .Sum(i => i.Line.Sum(l => l.CreditAmount ?? 0))
+                .ToString("c");
+
+            DocTotalDebit = invoices
+                .Where(i => i.DocumentStatus.InvoiceStatus != InvoiceStatus.A && i.DocumentStatus.InvoiceStatus != InvoiceStatus.F)
+                .Sum(i => i.Line.Sum(l => l.DebitAmount ?? 0))
+                .ToString("c");
+
+            if (saftValidator?.SaftFile?.SourceDocuments?.SalesInvoices != null)
             {
-                header = SaftHeaderPageViewModel.GetHeader(saftValidator);
+                NumberOfEntries = saftValidator.SaftFile.SourceDocuments.SalesInvoices.NumberOfEntries;
+                TotalCredit = saftValidator.SaftFile.SourceDocuments.SalesInvoices.TotalCredit.ToString("c");
+                TotalDebit = saftValidator.SaftFile.SourceDocuments.SalesInvoices.TotalDebit.ToString("c");
+            }
 
-                var invoices = new List<SourceDocumentsSalesInvoicesInvoice>();
-                if (saftValidator?.SaftFileV4?.SourceDocuments?.SalesInvoices != null)
-                {
-                    var saft_invoices = saftValidator.SaftFileV4.SourceDocuments?.SalesInvoices.Invoice;
+            FiltroDataInicio = invoices.Min(i => i.InvoiceDate);
+            FiltroDataFim = invoices.Max(i => i.InvoiceDate);
 
-                    foreach (var c in saft_invoices)
-                    {
-                        var customer = saftValidator.SaftFileV4.MasterFiles?.Customer?.Where(t => t.CustomerID == c.CustomerID).FirstOrDefault();
-
-                        invoices.Add(new SourceDocumentsSalesInvoicesInvoice
-                        {
-                            ATCUD = c.ATCUD,
-                            CustomerID = c.CustomerID,
-                            Customer = new Customer
-                            {
-                                AccountID = customer?.AccountID,
-                                BillingAddress = new AddressStructure
-                                {
-                                    AddressDetail = customer?.BillingAddress?.AddressDetail,
-                                    BuildingNumber = customer?.BillingAddress?.BuildingNumber,
-                                    City = customer?.BillingAddress?.City,
-                                    Country = customer?.BillingAddress?.Country,
-                                    PostalCode = customer?.BillingAddress?.PostalCode,
-                                    Region = customer?.BillingAddress?.Region,
-                                    StreetName = customer?.BillingAddress?.StreetName
-                                },
-                                CompanyName = customer?.CompanyName,
-                                Contact = customer?.Contact,
-                                CustomerID = customer?.CustomerID,
-                                CustomerTaxID = customer?.CustomerTaxID,
-                                Email = customer?.Email,
-                                Fax = customer?.Fax,
-                                SelfBillingIndicator = customer?.SelfBillingIndicator,
-                                ShipToAddress = customer?.ShipToAddress?.Select(b => new AddressStructure
-                                {
-                                    AddressDetail = b.AddressDetail,
-                                    BuildingNumber = b.BuildingNumber,
-                                    City = b.City,
-                                    Country = b.Country,
-                                    PostalCode = b.PostalCode,
-                                    Region = b.Region,
-                                    StreetName = b.StreetName
-                                }).ToArray(),
-                                Telephone = customer?.Telephone,
-                                Website = customer?.Website
-                            },
-                            DocumentStatus = new SourceDocumentsSalesInvoicesInvoiceDocumentStatus
-                            {
-                                InvoiceStatus = c.DocumentStatus?.InvoiceStatus.ToString(),
-                                InvoiceStatusDate = c.DocumentStatus?.InvoiceStatusDate ?? DateTime.MinValue,
-                                Reason = c.DocumentStatus?.Reason,
-                                SourceBilling = c.DocumentStatus?.SourceBilling.ToString(),
-                                SourceID = c.DocumentStatus?.SourceID
-                            },
-                            DocumentTotals = new SourceDocumentsSalesInvoicesInvoiceDocumentTotals
-                            {
-                                Currency = new Currency
-                                {
-                                    CurrencyAmount = c.DocumentTotals?.Currency?.CurrencyAmount ?? 0,
-                                    CurrencyCode = c.DocumentTotals?.Currency?.CurrencyCode,
-                                    ExchangeRate = c.DocumentTotals?.Currency?.ExchangeRate ?? 0
-                                },
-                                GrossTotal = c.DocumentTotals?.GrossTotal ?? 0,
-                                NetTotal = c.DocumentTotals?.NetTotal ?? 0,
-                                Payment = c.DocumentTotals?.Payment?.Select(p => new PaymentMethod
-                                {
-                                    PaymentAmount = p.PaymentAmount,
-                                    PaymentDate = p.PaymentDate,
-                                    PaymentMechanism = p.PaymentMechanism.ToString()
-                                }).ToArray(),
-                                Settlement = c.DocumentTotals?.Settlement?.Select(s => new Settlement
-                                {
-                                    PaymentTerms = s.PaymentTerms,
-                                    SettlementAmount = s.SettlementAmount,
-                                    SettlementDate = s.SettlementDate,
-                                    SettlementDiscount = s.SettlementDiscount
-                                }).ToArray(),
-                                TaxPayable = c.DocumentTotals?.TaxPayable ?? 0
-                            },
-                            EACCode = c.EACCode,
-                            Hash = c.Hash,
-                            HashControl = c.HashControl,
-                            InvoiceDate = c.InvoiceDate,
-                            InvoiceNo = c.InvoiceNo,
-                            InvoiceType = c.InvoiceType.ToString(),
-                            Line = c.Line?.Select(l => new SourceDocumentsSalesInvoicesInvoiceLine
-                            {
-                                CreditAmount = l.ItemElementName == Models.SaftV4.ItemChoiceType4.CreditAmount ? l.Item : 0,
-                                DebitAmount = l.ItemElementName == Models.SaftV4.ItemChoiceType4.DebitAmount ? l.Item : 0,
-                                CustomsInformation = new CustomsInformation
-                                {
-                                    ARCNo = l.CustomsInformation?.ARCNo,
-                                    IECAmount = l.CustomsInformation?.IECAmount ?? 0
-                                },
-                                Description = l.Description,
-                                InvoiceNo = l.InvoiceNo,
-                                LineNumber = l.LineNumber,
-                                OrderReferences = l.OrderReferences?.Select(o => new OrderReferences
-                                {
-                                    OrderDate = o.OrderDate,
-                                    OriginatingON = o.OriginatingON
-                                }).ToArray(),
-                                ProductCode = l.ProductCode,
-                                ProductDescription = l.ProductDescription,
-                                ProductSerialNumber = l.ProductSerialNumber,
-                                Quantity = l.Quantity,
-                                References = l.References?.Select(r => new References
-                                {
-                                    Reason = r.Reason,
-                                    Reference = r.Reference
-                                }).ToArray(),
-                                SettlementAmount = l.SettlementAmount,
-                                Tax = new Tax
-                                {
-                                    TaxAmount = l.Tax?.ItemElementName == Models.SaftV4.ItemChoiceType1.TaxAmount ? l.Tax?.Item : 0,
-                                    TaxPercentage = l.Tax?.ItemElementName == Models.SaftV4.ItemChoiceType1.TaxPercentage ? l.Tax?.Item : 0,
-                                    TaxCode = l.Tax?.TaxCode,
-                                    TaxCountryRegion = l.Tax?.TaxCountryRegion,
-                                    TaxType = l.Tax?.TaxType.ToString()
-                                },
-                                TaxBase = l.TaxBase,
-                                TaxExemptionCode = l.TaxExemptionCode,
-                                TaxExemptionReason = l.TaxExemptionReason,
-                                TaxPointDate = l.TaxPointDate,
-                                UnitOfMeasure = l.UnitOfMeasure,
-                                UnitPrice = l.UnitPrice,
-                                TooltipLineNumber = l.TooltipLineNumber,
-                                TooltipOrderDate = l.TooltipOrderDate,
-                                TooltipOrderReferences = l.TooltipOrderReferences,
-                                TooltipOriginatingON = l.TooltipOriginatingON,
-                                TooltipProductCode = l.TooltipProductCode,
-                                TooltipProductDescription = l.TooltipProductDescription,
-                                TooltipQuantity = l.TooltipQuantity,
-                                TooltipTaxPointDate = l.TooltipTaxPointDate,
-                                TooltipUnitOfMeasure = l.TooltipUnitOfMeasure,
-                                TooltipUnitPrice = l.TooltipUnitPrice
-                            }).ToArray(),
-                            MovementEndTime = c.MovementEndTime,
-                            MovementStartTime = c.MovementStartTime,
-                            Period = c.Period,
-                            ShipFrom = new ShippingPointStructure
-                            {
-                                Address = new AddressStructure
-                                {
-                                    AddressDetail = c.ShipFrom?.Address?.AddressDetail,
-                                    BuildingNumber = c.ShipFrom?.Address?.BuildingNumber,
-                                    City = c.ShipFrom?.Address?.City,
-                                    Country = c.ShipFrom?.Address?.Country,
-                                    PostalCode = c.ShipFrom?.Address?.PostalCode,
-                                    Region = c.ShipFrom?.Address?.Region,
-                                    StreetName = c.ShipFrom?.Address?.StreetName
-                                },
-                                DeliveryDate = c.ShipFrom?.DeliveryDate,
-                                DeliveryID = c.ShipFrom?.DeliveryID,
-                                LocationID = c.ShipFrom?.LocationID,
-                                WarehouseID = c.ShipFrom?.WarehouseID
-                            },
-                            ShipTo = new ShippingPointStructure
-                            {
-                                Address = new AddressStructure
-                                {
-                                    AddressDetail = c.ShipTo?.Address?.AddressDetail,
-                                    BuildingNumber = c.ShipTo?.Address?.BuildingNumber,
-                                    City = c.ShipTo?.Address?.City,
-                                    Country = c.ShipTo?.Address?.Country,
-                                    PostalCode = c.ShipTo?.Address?.PostalCode,
-                                    Region = c.ShipTo?.Address?.Region,
-                                    StreetName = c.ShipTo?.Address?.StreetName
-                                },
-                                DeliveryDate = c.ShipTo?.DeliveryDate,
-                                DeliveryID = c.ShipTo?.DeliveryID,
-                                LocationID = c.ShipTo?.LocationID,
-                                WarehouseID = c.ShipTo?.WarehouseID
-                            },
-                            SourceID = c.SourceID,
-                            SpecialRegimes = new SpecialRegimes
-                            {
-                                CashVATSchemeIndicator = c.SpecialRegimes?.CashVATSchemeIndicator,
-                                SelfBillingIndicator = c.SpecialRegimes?.SelfBillingIndicator,
-                                ThirdPartiesBillingIndicator = c.SpecialRegimes?.ThirdPartiesBillingIndicator
-                            },
-                            SystemEntryDate = c.SystemEntryDate,
-                            TransactionID = c.TransactionID,
-                            WithholdingTax = c.WithholdingTax?.Select(w => new WithholdingTax
-                            {
-                                WithholdingTaxAmount = w.WithholdingTaxAmount,
-                                WithholdingTaxDescription = w.WithholdingTaxDescription,
-                                WithholdingTaxType = w.WithholdingTaxType.ToString()
-                            }).ToArray(),
-                            TooltipATDocCodeID = c.TooltipATDocCodeID,
-                            TooltipCashVATSchemeIndicator = c.TooltipCashVATSchemeIndicator,
-                            TooltipCreditAmount = c.TooltipCreditAmount,
-                            TooltipCreditNote = c.TooltipCreditNote,
-                            TooltipCurrency = c.TooltipCurrency,
-                            TooltipCurrencyAmount = c.TooltipCurrencyAmount,
-                            TooltipCustomerID = c.TooltipCustomerID,
-                            TooltipDebitAmount = c.TooltipDebitAmount,
-                            TooltipDescription = c.TooltipDescription,
-                            TooltipDocumentStatus = c.TooltipDocumentStatus,
-                            TooltipDocumentTotals = c.TooltipDocumentTotals,
-                            TooltipExchangeRate = c.TooltipExchangeRate,
-                            TooltipGeneratedDocumentUserSourceID = c.TooltipGeneratedDocumentUserSourceID,
-                            TooltipGrossTotal = c.TooltipGrossTotal,
-                            TooltipHash = c.TooltipHash,
-                            TooltipHashControl = c.TooltipHashControl,
-                            TooltipInvoiceDate = c.TooltipInvoiceDate,
-                            TooltipInvoiceNo = c.TooltipInvoiceNo,
-                            TooltipInvoiceStatus = c.TooltipInvoiceStatus,
-                            TooltipInvoiceStatusDate = c.TooltipInvoiceStatusDate,
-                            TooltipInvoiceType = c.TooltipInvoiceType,
-                            TooltipLineReason = c.TooltipLineReason,
-                            TooltipLineSettlementAmount = c.TooltipLineSettlementAmount,
-                            TooltipMovementEndTime = c.TooltipMovementEndTime,
-                            TooltipMovementStartTime = c.TooltipMovementStartTime,
-                            TooltipNetTotal = c.TooltipNetTotal,
-                            TooltipPaymentMechanism = c.TooltipPaymentMechanism,
-                            TooltipPaymentTerms = c.TooltipPaymentTerms,
-                            TooltipPeriod = c.TooltipPeriod,
-                            TooltipReason = c.TooltipReason,
-                            TooltipReference = c.TooltipReference,
-                            TooltipReferences = c.TooltipReferences,
-                            TooltipResponsableUserSourceID = c.TooltipResponsableUserSourceID,
-                            TooltipSelfBillingIndicator = c.TooltipSelfBillingIndicator,
-                            TooltipSettlement = c.TooltipSettlement,
-                            TooltipSettlementAmount = c.TooltipSettlementAmount,
-                            TooltipSettlementDate = c.TooltipSettlementDate,
-                            TooltipSettlementDiscount = c.TooltipSettlementDiscount,
-                            TooltipShipFrom = c.TooltipShipFrom,
-                            TooltipShipFromAddress = c.TooltipShipFromAddress,
-                            TooltipShipFromAddressDetail = c.TooltipShipFromAddressDetail,
-                            TooltipShipFromBuildingNumber = c.TooltipShipFromBuildingNumber,
-                            TooltipShipFromCity = c.TooltipShipFromCity,
-                            TooltipShipFromCountry = c.TooltipShipFromCountry,
-                            TooltipShipFromDeliveryDate = c.TooltipShipFromDeliveryDate,
-                            TooltipShipFromDeliveryID = c.TooltipShipFromDeliveryID,
-                            TooltipShipFromLocationID = c.TooltipShipFromLocationID,
-                            TooltipShipFromPostalCode = c.TooltipShipFromPostalCode,
-                            TooltipShipFromRegion = c.TooltipShipFromRegion,
-                            TooltipShipFromStreetName = c.TooltipShipFromStreetName,
-                            TooltipShipFromWarehouseID = c.TooltipShipFromWarehouseID,
-                            TooltipShipTo = c.TooltipShipTo,
-                            TooltipShipToAddress = c.TooltipShipToAddress,
-                            TooltipShipToAddressDetail = c.TooltipShipToAddressDetail,
-                            TooltipShipToBuildingNumber = c.TooltipShipToBuildingNumber,
-                            TooltipShipToCity = c.TooltipShipToCity,
-                            TooltipShipToCountry = c.TooltipShipToCountry,
-                            TooltipShipToDeliveryDate = c.TooltipShipToDeliveryDate,
-                            TooltipShipToDeliveryID = c.TooltipShipToDeliveryID,
-                            TooltipShipToLocationID = c.TooltipShipToLocationID,
-                            TooltipShipToPostalCode = c.TooltipShipToPostalCode,
-                            TooltipShipToRegion = c.TooltipShipToRegion,
-                            TooltipShipToStreetName = c.TooltipShipToStreetName,
-                            TooltipShipToWarehouseID = c.TooltipShipToWarehouseID,
-                            TooltipSourceBilling = c.TooltipSourceBilling,
-                            TooltipSystemEntryDate = c.TooltipSystemEntryDate,
-                            TooltipTax = c.TooltipTax,
-                            TooltipTaxAmount = c.TooltipTaxAmount,
-                            TooltipTaxCode = c.TooltipTaxCode,
-                            TooltipTaxCountryRegion = c.TooltipTaxCountryRegion,
-                            TooltipTaxExemptionReason = c.TooltipTaxExemptionReason,
-                            TooltipTaxPayable = c.TooltipTaxPayable,
-                            TooltipTaxPercentage = c.TooltipTaxPercentage,
-                            TooltipTaxType = c.TooltipTaxType,
-                            TooltipThirdPartiesBillingIndicator = c.TooltipThirdPartiesBillingIndicator,
-                            TooltipTransactionID = c.TooltipTransactionID,
-                            TooltipWithholdingTax = c.TooltipWithholdingTax,
-                            TooltipWithholdingTaxAmount = c.TooltipWithholdingTaxAmount,
-                            TooltipWithholdingTaxDescription = c.TooltipWithholdingTaxDescription,
-                            TooltipWithholdingTaxType = c.TooltipWithholdingTaxType
-                        });
-                    }
-                }
-                else if (saftValidator?.SaftFileV3?.SourceDocuments?.SalesInvoices != null)
-                {
-                    var saft_invoices = saftValidator.SaftFileV3.SourceDocuments.SalesInvoices.Invoice;
-
-                    foreach (var c in saft_invoices)
-                    {
-                        var customer = saftValidator.SaftFileV3.MasterFiles?.Customer?.Where(c => c.CustomerID == CurrentInvoice.CustomerID).FirstOrDefault();
-
-                        invoices.Add(new SourceDocumentsSalesInvoicesInvoice
-                        {
-                            CustomerID = c.CustomerID,
-                            Customer = new Customer
-                            {
-                                AccountID = customer?.AccountID,
-                                BillingAddress = new AddressStructure
-                                {
-                                    AddressDetail = customer?.BillingAddress?.AddressDetail,
-                                    BuildingNumber = customer?.BillingAddress?.BuildingNumber,
-                                    City = customer?.BillingAddress?.City,
-                                    Country = customer?.BillingAddress?.Country,
-                                    PostalCode = customer?.BillingAddress?.PostalCode,
-                                    Region = customer?.BillingAddress?.Region,
-                                    StreetName = customer?.BillingAddress?.StreetName
-                                },
-                                CompanyName = customer?.CompanyName,
-                                Contact = customer?.Contact,
-                                CustomerID = customer?.CustomerID,
-                                CustomerTaxID = customer?.CustomerTaxID,
-                                Email = customer?.Email,
-                                Fax = customer?.Fax,
-                                SelfBillingIndicator = customer?.SelfBillingIndicator,
-                                ShipToAddress = customer?.ShipToAddress?.Select(b => new AddressStructure
-                                {
-                                    AddressDetail = b.AddressDetail,
-                                    BuildingNumber = b.BuildingNumber,
-                                    City = b.City,
-                                    Country = b.Country,
-                                    PostalCode = b.PostalCode,
-                                    Region = b.Region,
-                                    StreetName = b.StreetName
-                                }).ToArray(),
-                                Telephone = customer?.Telephone,
-                                Website = customer?.Website
-                            },
-                            DocumentStatus = new SourceDocumentsSalesInvoicesInvoiceDocumentStatus
-                            {
-                                InvoiceStatus = c.DocumentStatus?.InvoiceStatus.ToString(),
-                                InvoiceStatusDate = c.DocumentStatus?.InvoiceStatusDate ?? DateTime.MinValue,
-                                Reason = c.DocumentStatus?.Reason,
-                                SourceBilling = c.DocumentStatus?.SourceBilling.ToString(),
-                                SourceID = c.DocumentStatus?.SourceID
-                            },
-                            DocumentTotals = new SourceDocumentsSalesInvoicesInvoiceDocumentTotals
-                            {
-                                Currency = new Currency
-                                {
-                                    CurrencyAmount = c.DocumentTotals?.Currency?.CurrencyAmount ?? 0,
-                                    CurrencyCode = c.DocumentTotals?.Currency?.CurrencyCode,
-                                    ExchangeRate = c.DocumentTotals?.Currency?.ExchangeRate ?? 0
-                                },
-                                GrossTotal = c.DocumentTotals?.GrossTotal ?? 0,
-                                NetTotal = c.DocumentTotals?.NetTotal ?? 0,
-                                Payment = c.DocumentTotals?.Payment?.Select(p => new PaymentMethod
-                                {
-                                    PaymentAmount = p.PaymentAmount,
-                                    PaymentDate = p.PaymentDate,
-                                    PaymentMechanism = p.PaymentMechanism.ToString()
-                                }).ToArray(),
-                                Settlement = c.DocumentTotals?.Settlement?.Select(s => new Settlement
-                                {
-                                    PaymentTerms = s.PaymentTerms,
-                                    SettlementAmount = s.SettlementAmount,
-                                    SettlementDate = s.SettlementDate,
-                                    SettlementDiscount = s.SettlementDiscount
-                                }).ToArray(),
-                                TaxPayable = c.DocumentTotals?.TaxPayable ?? 0
-                            },
-                            EACCode = c.EACCode,
-                            Hash = c.Hash,
-                            HashControl = c.HashControl,
-                            InvoiceDate = c.InvoiceDate,
-                            InvoiceNo = c.InvoiceNo,
-                            InvoiceType = c.InvoiceType.ToString(),
-                            Line = c.Line?.Select(l => new SourceDocumentsSalesInvoicesInvoiceLine
-                            {
-                                CreditAmount = l.ItemElementName == Models.SaftV3.ItemChoiceType5.CreditAmount ? l.Item : 0,
-                                DebitAmount = l.ItemElementName == Models.SaftV3.ItemChoiceType5.DebitAmount ? l.Item : 0,
-                                Description = l.Description,
-                                InvoiceNo = l.InvoiceNo,
-                                LineNumber = l.LineNumber,
-                                OrderReferences = l.OrderReferences?.Select(o => new OrderReferences
-                                {
-                                    OrderDate = o.OrderDate,
-                                    OriginatingON = o.OriginatingON
-                                }).ToArray(),
-                                ProductCode = l.ProductCode,
-                                ProductDescription = l.ProductDescription,
-                                Quantity = l.Quantity,
-                                References = l.References?.Select(r => new References
-                                {
-                                    Reason = r.Reason,
-                                    Reference = r.Reference
-                                }).ToArray(),
-                                SettlementAmount = l.SettlementAmount,
-                                Tax = new Tax
-                                {
-                                    TaxAmount = l.Tax?.ItemElementName == Models.SaftV3.ItemChoiceType1.TaxAmount ? l.Tax?.Item : 0,
-                                    TaxPercentage = l.Tax?.ItemElementName == Models.SaftV3.ItemChoiceType1.TaxPercentage ? l.Tax?.Item : 0,
-                                    TaxCode = l.Tax?.TaxCode,
-                                    TaxCountryRegion = l.Tax?.TaxCountryRegion,
-                                    TaxType = l.Tax?.TaxType.ToString()
-                                },
-                                TaxExemptionReason = l.TaxExemptionReason,
-                                TaxPointDate = l.TaxPointDate,
-                                UnitOfMeasure = l.UnitOfMeasure,
-                                UnitPrice = l.UnitPrice,
-                                TooltipLineNumber = l.TooltipLineNumber,
-                                TooltipOrderDate = l.TooltipOrderDate,
-                                TooltipOrderReferences = l.TooltipOrderReferences,
-                                TooltipOriginatingON = l.TooltipOriginatingON,
-                                TooltipProductCode = l.TooltipProductCode,
-                                TooltipProductDescription = l.TooltipProductDescription,
-                                TooltipQuantity = l.TooltipQuantity,
-                                TooltipTaxPointDate = l.TooltipTaxPointDate,
-                                TooltipUnitOfMeasure = l.TooltipUnitOfMeasure,
-                                TooltipUnitPrice = l.TooltipUnitPrice
-                            }).ToArray(),
-                            MovementEndTime = c.MovementEndTime,
-                            MovementStartTime = c.MovementStartTime,
-                            Period = c.Period,
-                            ShipFrom = new ShippingPointStructure
-                            {
-                                Address = new AddressStructure
-                                {
-                                    AddressDetail = c.ShipFrom?.Address?.AddressDetail,
-                                    BuildingNumber = c.ShipFrom?.Address?.BuildingNumber,
-                                    City = c.ShipFrom?.Address?.City,
-                                    Country = c.ShipFrom?.Address?.Country,
-                                    PostalCode = c.ShipFrom?.Address?.PostalCode,
-                                    Region = c.ShipFrom?.Address?.Region,
-                                    StreetName = c.ShipFrom?.Address?.StreetName
-                                },
-                                DeliveryDate = c.ShipFrom?.DeliveryDate,
-                                DeliveryID = c.ShipFrom?.DeliveryID,
-                                LocationID = c.ShipFrom?.LocationID,
-                                WarehouseID = c.ShipFrom?.WarehouseID
-                            },
-                            ShipTo = new ShippingPointStructure
-                            {
-                                Address = new AddressStructure
-                                {
-                                    AddressDetail = c.ShipTo?.Address?.AddressDetail,
-                                    BuildingNumber = c.ShipTo?.Address?.BuildingNumber,
-                                    City = c.ShipTo?.Address?.City,
-                                    Country = c.ShipTo?.Address?.Country,
-                                    PostalCode = c.ShipTo?.Address?.PostalCode,
-                                    Region = c.ShipTo?.Address?.Region,
-                                    StreetName = c.ShipTo?.Address?.StreetName
-                                },
-                                DeliveryDate = c.ShipTo?.DeliveryDate,
-                                DeliveryID = c.ShipTo?.DeliveryID,
-                                LocationID = c.ShipTo?.LocationID,
-                                WarehouseID = c.ShipTo?.WarehouseID
-                            },
-                            SourceID = c.SourceID,
-                            SpecialRegimes = new SpecialRegimes
-                            {
-                                CashVATSchemeIndicator = c.SpecialRegimes?.CashVATSchemeIndicator,
-                                SelfBillingIndicator = c.SpecialRegimes?.SelfBillingIndicator,
-                                ThirdPartiesBillingIndicator = c.SpecialRegimes?.ThirdPartiesBillingIndicator
-                            },
-                            SystemEntryDate = c.SystemEntryDate,
-                            TransactionID = c.TransactionID,
-                            WithholdingTax = c.WithholdingTax?.Select(w => new WithholdingTax
-                            {
-                                WithholdingTaxAmount = w.WithholdingTaxAmount,
-                                WithholdingTaxDescription = w.WithholdingTaxDescription,
-                                WithholdingTaxType = w.WithholdingTaxType.ToString()
-                            }).ToArray(),
-                            TooltipATDocCodeID = c.TooltipATDocCodeID,
-                            TooltipCashVATSchemeIndicator = c.TooltipCashVATSchemeIndicator,
-                            TooltipCreditAmount = c.TooltipCreditAmount,
-                            TooltipCreditNote = c.TooltipCreditNote,
-                            TooltipCurrency = c.TooltipCurrency,
-                            TooltipCurrencyAmount = c.TooltipCurrencyAmount,
-                            TooltipCustomerID = c.TooltipCustomerID,
-                            TooltipDebitAmount = c.TooltipDebitAmount,
-                            TooltipDescription = c.TooltipDescription,
-                            TooltipDocumentStatus = c.TooltipDocumentStatus,
-                            TooltipDocumentTotals = c.TooltipDocumentTotals,
-                            TooltipExchangeRate = c.TooltipExchangeRate,
-                            TooltipGeneratedDocumentUserSourceID = c.TooltipGeneratedDocumentUserSourceID,
-                            TooltipGrossTotal = c.TooltipGrossTotal,
-                            TooltipHash = c.TooltipHash,
-                            TooltipHashControl = c.TooltipHashControl,
-                            TooltipInvoiceDate = c.TooltipInvoiceDate,
-                            TooltipInvoiceNo = c.TooltipInvoiceNo,
-                            TooltipInvoiceStatus = c.TooltipInvoiceStatus,
-                            TooltipInvoiceStatusDate = c.TooltipInvoiceStatusDate,
-                            TooltipInvoiceType = c.TooltipInvoiceType,
-                            TooltipLineReason = c.TooltipLineReason,
-                            TooltipLineSettlementAmount = c.TooltipLineSettlementAmount,
-                            TooltipMovementEndTime = c.TooltipMovementEndTime,
-                            TooltipMovementStartTime = c.TooltipMovementStartTime,
-                            TooltipNetTotal = c.TooltipNetTotal,
-                            TooltipPaymentMechanism = c.TooltipPaymentMechanism,
-                            TooltipPaymentTerms = c.TooltipPaymentTerms,
-                            TooltipPeriod = c.TooltipPeriod,
-                            TooltipReason = c.TooltipReason,
-                            TooltipReference = c.TooltipReference,
-                            TooltipReferences = c.TooltipReferences,
-                            TooltipResponsableUserSourceID = c.TooltipResponsableUserSourceID,
-                            TooltipSelfBillingIndicator = c.TooltipSelfBillingIndicator,
-                            TooltipSettlement = c.TooltipSettlement,
-                            TooltipSettlementAmount = c.TooltipSettlementAmount,
-                            TooltipSettlementDate = c.TooltipSettlementDate,
-                            TooltipSettlementDiscount = c.TooltipSettlementDiscount,
-                            TooltipShipFrom = c.TooltipShipFrom,
-                            TooltipShipFromAddress = c.TooltipShipFromAddress,
-                            TooltipShipFromAddressDetail = c.TooltipShipFromAddressDetail,
-                            TooltipShipFromBuildingNumber = c.TooltipShipFromBuildingNumber,
-                            TooltipShipFromCity = c.TooltipShipFromCity,
-                            TooltipShipFromCountry = c.TooltipShipFromCountry,
-                            TooltipShipFromDeliveryDate = c.TooltipShipFromDeliveryDate,
-                            TooltipShipFromDeliveryID = c.TooltipShipFromDeliveryID,
-                            TooltipShipFromLocationID = c.TooltipShipFromLocationID,
-                            TooltipShipFromPostalCode = c.TooltipShipFromPostalCode,
-                            TooltipShipFromRegion = c.TooltipShipFromRegion,
-                            TooltipShipFromStreetName = c.TooltipShipFromStreetName,
-                            TooltipShipFromWarehouseID = c.TooltipShipFromWarehouseID,
-                            TooltipShipTo = c.TooltipShipTo,
-                            TooltipShipToAddress = c.TooltipShipToAddress,
-                            TooltipShipToAddressDetail = c.TooltipShipToAddressDetail,
-                            TooltipShipToBuildingNumber = c.TooltipShipToBuildingNumber,
-                            TooltipShipToCity = c.TooltipShipToCity,
-                            TooltipShipToCountry = c.TooltipShipToCountry,
-                            TooltipShipToDeliveryDate = c.TooltipShipToDeliveryDate,
-                            TooltipShipToDeliveryID = c.TooltipShipToDeliveryID,
-                            TooltipShipToLocationID = c.TooltipShipToLocationID,
-                            TooltipShipToPostalCode = c.TooltipShipToPostalCode,
-                            TooltipShipToRegion = c.TooltipShipToRegion,
-                            TooltipShipToStreetName = c.TooltipShipToStreetName,
-                            TooltipShipToWarehouseID = c.TooltipShipToWarehouseID,
-                            TooltipSourceBilling = c.TooltipSourceBilling,
-                            TooltipSystemEntryDate = c.TooltipSystemEntryDate,
-                            TooltipTax = c.TooltipTax,
-                            TooltipTaxAmount = c.TooltipTaxAmount,
-                            TooltipTaxCode = c.TooltipTaxCode,
-                            TooltipTaxCountryRegion = c.TooltipTaxCountryRegion,
-                            TooltipTaxExemptionReason = c.TooltipTaxExemptionReason,
-                            TooltipTaxPayable = c.TooltipTaxPayable,
-                            TooltipTaxPercentage = c.TooltipTaxPercentage,
-                            TooltipTaxType = c.TooltipTaxType,
-                            TooltipThirdPartiesBillingIndicator = c.TooltipThirdPartiesBillingIndicator,
-                            TooltipTransactionID = c.TooltipTransactionID,
-                            TooltipWithholdingTax = c.TooltipWithholdingTax,
-                            TooltipWithholdingTaxAmount = c.TooltipWithholdingTaxAmount,
-                            TooltipWithholdingTaxDescription = c.TooltipWithholdingTaxDescription,
-                            TooltipWithholdingTaxType = c.TooltipWithholdingTaxType
-                        });
-                    }
-                }
-
-                return invoices;
-            }).ContinueWith(async c =>
+            CollectionView = new DataGridCollectionView(invoices)
             {
-                var invoices = await c;
-
-                DocNumberOfEntries = invoices.Count();
-                DocTotalCredit = invoices
-                    .Where(i => i.DocumentStatus.InvoiceStatus != "A" && i.DocumentStatus.InvoiceStatus != "F")
-                    .Sum(i => i.Line.Sum(l => l.CreditAmount))
-                    .ToString("c");
-
-                DocTotalDebit = invoices
-                    .Where(i => i.DocumentStatus.InvoiceStatus != "A" && i.DocumentStatus.InvoiceStatus != "F")
-                    .Sum(i => i.Line.Sum(l => l.DebitAmount))
-                    .ToString("c");
-
-                if (saftValidator?.SaftFileV4?.SourceDocuments?.SalesInvoices != null)
+                Filter = o =>
                 {
-                    NumberOfEntries = saftValidator.SaftFileV4.SourceDocuments.SalesInvoices.NumberOfEntries;
-                    TotalCredit = saftValidator.SaftFileV4.SourceDocuments.SalesInvoices.TotalCredit.ToString("c");
-                    TotalDebit = saftValidator.SaftFileV4.SourceDocuments.SalesInvoices.TotalDebit.ToString("c");
-                }
-                else if (saftValidator?.SaftFileV3?.SourceDocuments?.SalesInvoices != null)
-                {
-                    NumberOfEntries = saftValidator.SaftFileV3.SourceDocuments.SalesInvoices.NumberOfEntries;
-                    TotalCredit = saftValidator.SaftFileV3.SourceDocuments.SalesInvoices.TotalCredit.ToString("c");
-                    TotalDebit = saftValidator.SaftFileV3.SourceDocuments.SalesInvoices.TotalDebit.ToString("c");
-                }
+                    if (string.IsNullOrWhiteSpace(Filter))
+                        return true;
 
-                FiltroDataInicio = invoices.Min(i => i.InvoiceDate);
-                FiltroDataFim = invoices.Max(i => i.InvoiceDate);
-
-                CollectionView = new DataGridCollectionView(invoices)
-                {
-                    Filter = o =>
+                    if (o is SourceDocumentsSalesInvoicesInvoice invoice)
                     {
-                        if (string.IsNullOrWhiteSpace(Filter))
+                        if (invoice.ATCUD != null && invoice.ATCUD.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                             return true;
-
-                        if (o is SourceDocumentsSalesInvoicesInvoice invoice)
-                        {
-                            if (invoice.ATCUD != null && invoice.ATCUD.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (invoice.CustomerID != null && invoice.CustomerID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (invoice.DocumentStatus != null && invoice.DocumentStatus.InvoiceStatus != null && invoice.DocumentStatus.InvoiceStatus.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (invoice.DocumentStatus != null && invoice.DocumentStatus.Reason != null && invoice.DocumentStatus.Reason.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (invoice.EACCode != null && invoice.EACCode.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (invoice.InvoiceNo != null && invoice.InvoiceNo.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (invoice.InvoiceType != null && invoice.InvoiceType.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (invoice.Period != null && invoice.Period.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (invoice.SourceID != null && invoice.SourceID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (invoice.TransactionID != null && invoice.TransactionID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                        }
-
-                        return false;
+                        if (invoice.CustomerID != null && invoice.CustomerID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (invoice.DocumentStatus != null && invoice.DocumentStatus.InvoiceStatus.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (invoice.DocumentStatus != null && invoice.DocumentStatus.Reason != null && invoice.DocumentStatus.Reason.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (invoice.EACCode != null && invoice.EACCode.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (invoice.InvoiceNo != null && invoice.InvoiceNo.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (invoice.InvoiceType.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (invoice.Period != null && invoice.Period.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (invoice.SourceID != null && invoice.SourceID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (invoice.TransactionID != null && invoice.TransactionID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
                     }
-                };
-                CollectionViewDetails = new DataGridCollectionView(invoices.SelectMany(d => d.Line))
+
+                    return false;
+                }
+            };
+            CollectionViewDetails = new DataGridCollectionView(invoices.SelectMany(d => d.Line))
+            {
+                Filter = o =>
                 {
-                    Filter = o =>
+                    if (CurrentInvoice == null)
+                        return false;
+
+                    if (o is SourceDocumentsSalesInvoicesInvoiceLine line)
                     {
-                        if (CurrentInvoice == null)
+                        if (ShowAllLines == false && line.InvoiceNo.Equals(CurrentInvoice.InvoiceNo, StringComparison.OrdinalIgnoreCase) == false)
                             return false;
 
-                        if (o is SourceDocumentsSalesInvoicesInvoiceLine line)
-                        {
-                            if (ShowAllLines == false && line.InvoiceNo.Equals(CurrentInvoice.InvoiceNo, StringComparison.OrdinalIgnoreCase) == false)
-                                return false;
+                        if (string.IsNullOrWhiteSpace(FilterLines))
+                            return true;
 
-                            if (string.IsNullOrWhiteSpace(FilterLines))
-                                return true;
+                        if (line.Description != null && line.Description.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
+                            return true;
 
-                            if (line.Description != null && line.Description.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
-                                return true;
+                        if (line.ProductCode != null && line.ProductCode.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
+                            return true;
 
-                            if (line.ProductCode != null && line.ProductCode.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
-                                return true;
+                        if (line.ProductDescription != null && line.ProductDescription.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
+                            return true;
 
-                            if (line.ProductDescription != null && line.ProductDescription.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
-                                return true;
+                        if (line.ProductSerialNumber != null && line.ProductSerialNumber.Any(l => l.Contains(FilterLines, StringComparison.OrdinalIgnoreCase)))
+                            return true;
 
-                            if (line.ProductSerialNumber != null && line.ProductSerialNumber.Any(l => l.Contains(FilterLines, StringComparison.OrdinalIgnoreCase)))
-                                return true;
+                        if (line.TaxExemptionCode != null && line.TaxExemptionCode.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
+                            return true;
 
-                            if (line.TaxExemptionCode != null && line.TaxExemptionCode.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
-                                return true;
-
-                            if (line.TaxExemptionReason != null && line.TaxExemptionReason.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                        }
-
-                        return false;
+                        if (line.TaxExemptionReason != null && line.TaxExemptionReason.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
+                            return true;
                     }
-                };
 
-                CollectionView.GroupDescriptions.Add(new DataGridPathGroupDescription("InvoiceType"));
+                    return false;
+                }
+            };
 
-                this.WhenAnyValue(x => x.Filter)
-                    .Throttle(TimeSpan.FromSeconds(1))
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .InvokeCommand(SearchCommand)
-                    .DisposeWith(disposables);
-                this.WhenAnyValue(x => x.FilterLines)
-                    .Throttle(TimeSpan.FromSeconds(1))
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .InvokeCommand(SearchDetailsCommand)
-                    .DisposeWith(disposables);
+            CollectionView.GroupDescriptions.Add(new DataGridPathGroupDescription("InvoiceType"));
 
-                IsLoading = false;
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+            this.WhenAnyValue(x => x.Filter)
+                .Throttle(TimeSpan.FromSeconds(1))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .InvokeCommand(SearchCommand)
+                .DisposeWith(disposables);
+            this.WhenAnyValue(x => x.FilterLines)
+                .Throttle(TimeSpan.FromSeconds(1))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .InvokeCommand(SearchDetailsCommand)
+                .DisposeWith(disposables);
+
+            IsLoading = false;
         }
 
         protected override void HandleDeactivation()
@@ -975,7 +430,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             foreach (var l in CurrentInvoice.Line)
             {
                 var existing = taxes
-                    .Where(t => t.TaxType == l.Tax.TaxType && t.TaxCountryRegion == l.Tax.TaxCountryRegion && t.TaxPercentage == l.Tax.TaxPercentage)
+                    .Where(t => t.TaxType == l.Tax.TaxType.ToString() && t.TaxCountryRegion == l.Tax.TaxCountryRegion && t.TaxPercentage == l.Tax.TaxPercentage)
                     .FirstOrDefault();
 
                 if (existing != null)
@@ -990,7 +445,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                         TaxCode = l.Tax.TaxCode,
                         TaxCountryRegion = l.Tax.TaxCountryRegion,
                         TaxPercentage = l.Tax.TaxPercentage,
-                        TaxType = l.Tax.TaxType
+                        TaxType = l.Tax.TaxType.ToString()
                     };
                     taxes.Add(existing);
                 }
@@ -1069,43 +524,43 @@ namespace Solria.SAFT.Desktop.ViewModels
                 if (invoiceNo != null && invoiceNo.Length == 2)
                 {
                     int.TryParse(invoiceNo[1], out int num);
-                    num -= 1;
 
-                    if (num > 0)
+                    //found a valid number, try to find the previous document
+                    var previousDocument = invoices
+                        .Where(i => i.InvoiceNo.IndexOf(string.Format("{0}/{1}", invoiceNo[0], num - 1), StringComparison.OrdinalIgnoreCase) == 0)
+                        .FirstOrDefault();
+
+                    //encontramos um documento, vamos obter a hash
+                    if (previousDocument != null || num == 1)
                     {
-                        //found a valid number, try to find the previous document
-                        var previousDocument = invoices
-                            .Where(i => i.InvoiceNo.IndexOf(string.Format("{0}/{1}", invoiceNo[0], num), StringComparison.OrdinalIgnoreCase) == 0)
-                            .FirstOrDefault();
+                        var view = new DialogHashTest();
+                        var vm = new DialogHashTestViewModel();
+                        vm.Init();
+                        vm.InitFromInvoice(CurrentInvoice, previousDocument?.Hash ?? string.Empty);
 
-                        //encontramos um documento, vamos obter a hash
-                        if (previousDocument != null)
-                        {
-                            var view = new DialogHashTest();
-                            var vm = new DialogHashTestViewModel();
-                            vm.Init();
-                            vm.InitFromInvoice(CurrentInvoice, previousDocument.Hash);
+                        view.DataContext = vm;
 
-                            view.DataContext = vm;
-
-                            await dialogManager.ShowChildDialogAsync(view);
-                        }
+                        await dialogManager.ShowChildDialogAsync(view);
+                    }
+                    else
+                    {
+                        dialogManager.ShowNotification("Hash", "Não é possível testar a Hash deste documento, falta o documento anterior", Avalonia.Controls.Notifications.NotificationType.Warning);
                     }
                 }
             }
         }
 
-        private int Operation(SourceDocumentsSalesInvoicesInvoice i, SourceDocumentsSalesInvoicesInvoiceLine l)
+        private static int Operation(SourceDocumentsSalesInvoicesInvoice i, SourceDocumentsSalesInvoicesInvoiceLine l)
         {
-            if (i.InvoiceType == "FT" || i.InvoiceType == "VD" || i.InvoiceType == "ND" || i.InvoiceType == "FR" || i.InvoiceType == "FS" || i.InvoiceType == "TV" || i.InvoiceType == "AA")
+            if (i.InvoiceType == InvoiceType.FT || i.InvoiceType == InvoiceType.VD || i.InvoiceType == InvoiceType.ND || i.InvoiceType == InvoiceType.FR || i.InvoiceType == InvoiceType.FS || i.InvoiceType == InvoiceType.TV || i.InvoiceType == InvoiceType.AA)
                 return l.CreditAmount > 0 ? 1 : -1;
-            else if (i.InvoiceType == "NC" || i.InvoiceType == "TD" || i.InvoiceType == "DA" || i.InvoiceType == "RE")
+            else if (i.InvoiceType == InvoiceType.NC || i.InvoiceType == InvoiceType.TD || i.InvoiceType == InvoiceType.DA || i.InvoiceType == InvoiceType.RE)
                 return l.DebitAmount > 0 ? 1 : -1;
 
             return 1;
         }
 
-        private void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
+        private static void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
         {
             sheet.Cell(row, 1).Value = "ATCUD";
             sheet.Cell(row, 2).Value = "Tipo";
@@ -1118,7 +573,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             sheet.Cell(row, 9).Value = "Total";
         }
 
-        private void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
+        private static void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
         {
             sheet.Cell(row, 1).Value = "Nº linha";
             sheet.Cell(row, 2).Value = "Código produto";
@@ -1137,7 +592,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             sheet.Cell(row, 15).Value = "Descrição";
         }
 
-        public string GetATQrCode(Header header, Customer customer, SourceDocumentsSalesInvoicesInvoice invoice)
+        public static string GetATQrCode(Header header, Customer customer, SourceDocumentsSalesInvoicesInvoice invoice)
         {
             var taxes = invoice.Line.Select(l => l.Tax).ToArray();
 

@@ -20,8 +20,8 @@
     <AvaloniaXaml Remove="Views\DialogConvertPemKey.axaml" />
     <AvaloniaXaml Remove="Views\DialogHashTest.axaml" />
     <AvaloniaXaml Remove="Views\DialogMessage.axaml" />
+    <AvaloniaXaml Remove="Views\DialogSaftResume.axaml" />
     <AvaloniaXaml Remove="Views\SaftCustomersPageView.axaml" />
-    <AvaloniaXaml Remove="Views\SaftDialogResume.axaml" />
     <AvaloniaXaml Remove="Views\SaftErrorPageView.axaml" />
     <AvaloniaXaml Remove="Views\SaftHeaderPageView.axaml" />
     <AvaloniaXaml Remove="Views\SaftInvoicesPageView.axaml" />
@@ -83,7 +83,7 @@
     <EmbeddedResource Include="Views\DialogConvertPemKey.axaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\SaftDialogResume.axaml">
+    <EmbeddedResource Include="Views\DialogSaftResume.axaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\SaftInvoicesPageView.axaml">
@@ -133,8 +133,8 @@
     <Compile Update="Views\SaftHeaderPageView.xaml.cs">
       <DependentUpon>SaftHeaderPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SaftDialogResume.xaml.cs">
-      <DependentUpon>SaftDialogResume.axaml</DependentUpon>
+    <Compile Update="Views\DialogSaftResume.xaml.cs">
+      <DependentUpon>DialogSaftResume.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\SaftCustomersPageView.xaml.cs">
       <DependentUpon>SaftCustomersPageView.axaml</DependentUpon>
@@ -211,6 +211,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Solria.SAFT.Parser\Solria.SAFT.Parser.csproj" />
   </ItemGroup>
   <ItemGroup>
     <AvaloniaXaml Update="Views\MainMenuPageView.axaml">

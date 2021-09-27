@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Solria.SAFT.Desktop.Validations
+namespace Solria.SAFT.Parser.Models
 {
-	public static class Validations
-    {
+    public static class Validations
+	{
 		public static bool CheckTaxRegistrationNumber(string taxRegistrationNumber)
 		{
 			if (string.IsNullOrEmpty(taxRegistrationNumber))

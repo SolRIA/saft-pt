@@ -4,38 +4,39 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Solria.SAFT.Desktop.Views.SaftErrorPageView">
-  <Grid RowDefinitions="Auto,Auto,*">
 
-    <Grid ColumnDefinitions="*,Auto,Auto,Auto">
-      <TextBox Grid.Column="0" Margin="2" Text="{Binding Filter, Mode=TwoWay}"
-           Watermark="Filtro por: Descrição"
-           VerticalAlignment="Center">
-        <TextBox.KeyBindings>
-          <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
-        </TextBox.KeyBindings>
-      </TextBox>
+  <Grid RowDefinitions="Auto,Auto,Auto,*" ColumnDefinitions="*,Auto,Auto,Auto" Margin="5">
 
-      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
-              Command="{Binding SearchCommand}" >
-        <PathIcon Data="{StaticResource Material.FilterOutline}" HorizontalAlignment="Center" />
-      </Button>
+    <TabControl Grid.Row="0" Grid.ColumnSpan="4">
+      <TabItem Header="Erros"/>
+    </TabControl>
 
-      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="2" VerticalAlignment="Center"
-              Command="{Binding SearchClearCommand}" >
-        <PathIcon Data="{StaticResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
-      </Button>
+    <TextBox Margin="2" Text="{Binding Filter, Mode=TwoWay}" Grid.Row="1"
+             Watermark="Filtro por: Descrição" VerticalAlignment="Center">
+      <TextBox.KeyBindings>
+        <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
+      </TextBox.KeyBindings>
+    </TextBox>
 
-      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="3" VerticalAlignment="Center"
-              Command="{Binding DoPrintCommand}">
-        <PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
-      </Button>
-    </Grid>
+    <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
+            Command="{Binding SearchCommand}" >
+      <PathIcon Data="{StaticResource Material.FilterOutline}" HorizontalAlignment="Center" />
+    </Button>
 
-    <TextBlock Grid.Row="1" Margin="5" Text="{Binding NumErros}"/>
+    <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"
+            Command="{Binding SearchClearCommand}" >
+      <PathIcon Data="{StaticResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
+    </Button>
 
+    <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center"
+            Command="{Binding DoPrintCommand}">
+      <PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
+    </Button>
 
-    <DataGrid x:Name="datagrid" Grid.Row="2" IsReadOnly="True" FontSize="16"
-              Items="{Binding CollectionView}"
+    <TextBlock Grid.Row="2" Grid.ColumnSpan="4" Margin="5" Text="{Binding NumErros}"/>
+
+    <DataGrid x:Name="datagrid" Grid.Row="3" Grid.ColumnSpan="4" IsReadOnly="True" FontSize="16"
+              Items="{Binding CollectionView}" SelectionMode="Single" 
               SelectedItem="{Binding SelectedError, Mode=TwoWay}">
       <DataGrid.Columns>
         <DataGridTextColumn Header="Campo" Binding="{Binding Field}" />
@@ -49,6 +50,6 @@
         </core:EventTriggerBehavior>
       </i:Interaction.Behaviors>-->
     </DataGrid>
-  
+
   </Grid>
 </UserControl>

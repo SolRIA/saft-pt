@@ -2,11 +2,11 @@
 using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
 using Solria.SAFT.Desktop.Services;
+using Solria.SAFT.Parser.Models;
 using Splat;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -40,7 +40,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                     if (string.IsNullOrWhiteSpace(Filter))
                         return true;
 
-                    if (o is Error error)
+                    if (o is ValidationError error)
                     {
                         if (error.Description != null && error.Description.Contains(Filter, System.StringComparison.OrdinalIgnoreCase))
                             return true;
@@ -57,8 +57,8 @@ namespace Solria.SAFT.Desktop.ViewModels
             };
             //CollectionView.GroupDescriptions.Add(new DataGridPathGroupDescription("Code"));
 
-            if (saftValidator.MensagensErro.Count() > 0)
-                NumErros = $"Foram encontrados {saftValidator.MensagensErro.Count()} erro(s)";
+            if (saftValidator.MensagensErro.Count > 0)
+                NumErros = $"Foram encontrados {saftValidator.MensagensErro.Count} erro(s)";
             else
                 NumErros = "Não foram encontrados erros";
 
@@ -81,8 +81,8 @@ namespace Solria.SAFT.Desktop.ViewModels
             set => this.RaiseAndSetIfChanged(ref numErros, value);
         }
 
-        private Error selectedError;
-        public Error SelectedError
+        private ValidationError selectedError;
+        public ValidationError SelectedError
         {
             get => selectedError;
             set => this.RaiseAndSetIfChanged(ref selectedError, value);
@@ -99,7 +99,7 @@ namespace Solria.SAFT.Desktop.ViewModels
         }
         private async Task OnDoPrint()
         {
-            if (CollectionView != null && CollectionView.SourceCollection != null && CollectionView.TotalItemCount > 0 && CollectionView.SourceCollection is IEnumerable<Error> errors)
+            if (CollectionView != null && CollectionView.SourceCollection != null && CollectionView.TotalItemCount > 0 && CollectionView.SourceCollection is IEnumerable<ValidationError> errors)
             {
                 var file = await dialogManager.SaveFileDialog(
                     "Guardar erros",

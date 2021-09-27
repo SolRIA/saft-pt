@@ -1,8 +1,8 @@
 ﻿using Avalonia.Controls.Notifications;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Models.Saft;
 using Solria.SAFT.Desktop.Services;
+using Solria.SAFT.Parser.Models;
 using Splat;
 using System;
 using System.Collections.Generic;
@@ -45,7 +45,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             if (invoice != null)
             {
                 DocumentTypes = new string[] { "FT", "FS", "FR", "ND", "NC", "VD", "TV", "TD", "AA", "DA", "RP", "RE", "CS", "LD", "RA" };
-                DocumenType = invoice.InvoiceType;
+                DocumenType = invoice.InvoiceType.ToString();
                 DocumentTotal = invoice.DocumentTotals.GrossTotal;
                 DocumentDate = invoice.InvoiceDate;
                 SystemDate = invoice.SystemEntryDate;
@@ -73,7 +73,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             if (movement != null)
             {
                 DocumentTypes = new string[] { "GR", "GT", "GA", "GC", "GD" };
-                DocumenType = movement.MovementType;
+                DocumenType = movement.MovementType.ToString();
                 DocumentTotal = movement.DocumentTotals.GrossTotal;
                 DocumentDate = movement.MovementDate;
                 SystemDate = movement.SystemEntryDate;
@@ -101,7 +101,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             if (doc != null)
             {
                 DocumentTypes = new string[] { "CM", "CC", "FC", "FO", "NE", "OU", "OR", "PF", "DC", "RP", "RE", "CS", "LD", "RA" };
-                DocumenType = doc.WorkType;
+                DocumenType = doc.WorkType.ToString();
                 DocumentTotal = doc.DocumentTotals.GrossTotal;
                 DocumentDate = doc.WorkDate;
                 SystemDate = doc.SystemEntryDate;
@@ -272,7 +272,10 @@ namespace Solria.SAFT.Desktop.ViewModels
                 dialogManager.ShowNotification("Hash", Message, NotificationType.Error);
             }
             else
-                dialogManager.ShowNotification("Hash", "A Hash do documento é válida", NotificationType.Success);
+            {
+                Message = "A assinatura do documento é válida.";
+                dialogManager.ShowNotification("Hash", Message, NotificationType.Success);
+            }
         }
         private IObservable<bool> CanTestHash()
         {

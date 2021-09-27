@@ -1,13 +1,11 @@
 ﻿using Avalonia.Collections;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Models.Saft;
 using Solria.SAFT.Desktop.Services;
-using Solria.SAFT.Desktop.Views;
+using Solria.SAFT.Parser.Models;
 using Splat;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -41,198 +39,24 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             IsLoading = true;
 
-            Task.Run(() =>
-            {
-                var payments = new List<SourceDocumentsPaymentsPayment>();
-                if (saftValidator?.SaftFileV4?.SourceDocuments?.Payments != null)
-                {
-                    var saft_payments = saftValidator.SaftFileV4.SourceDocuments?.Payments.Payment;
+                var payments = saftValidator.SaftFile?.SourceDocuments?.Payments?.Payment ?? Array.Empty<SourceDocumentsPaymentsPayment>();
 
-                    foreach (var c in saft_payments)
-                    {
-                        payments.Add(new SourceDocumentsPaymentsPayment
-                        {
-                            ATCUD = c.ATCUD,
-                            CustomerID = c.CustomerID,
-                            DocumentStatus = new SourceDocumentsPaymentsPaymentDocumentStatus
-                            {
-                                PaymentStatus = c.DocumentStatus?.PaymentStatus.ToString(),
-                                PaymentStatusDate = c.DocumentStatus?.PaymentStatusDate ?? DateTime.MinValue,
-                                Reason = c.DocumentStatus?.Reason,
-                                SourceID = c.DocumentStatus?.SourceID,
-                                SourcePayment = c.DocumentStatus?.SourcePayment.ToString()
-                            },
-                            DocumentTotals = new SourceDocumentsPaymentsPaymentDocumentTotals
-                            {
-                                Currency = new Currency
-                                {
-                                    CurrencyAmount = c.DocumentTotals?.Currency?.CurrencyAmount ?? 0,
-                                    CurrencyCode = c.DocumentTotals?.Currency?.CurrencyCode,
-                                    ExchangeRate = c.DocumentTotals?.Currency?.ExchangeRate ?? 0
-                                },
-                                GrossTotal = c.DocumentTotals?.GrossTotal ?? 0,
-                                NetTotal = c.DocumentTotals?.NetTotal ?? 0,
-                                Settlement = new SourceDocumentsPaymentsPaymentDocumentTotalsSettlement
-                                {
-                                    SettlementAmount = c.DocumentTotals?.Settlement?.SettlementAmount ?? 0
-                                },
-                                TaxPayable = c.DocumentTotals?.TaxPayable ?? 0
-                            },
-                            Description = c.Description,
-                            PaymentMethod = c.PaymentMethod?.Select(p => new PaymentMethod
-                            {
-                                PaymentAmount = p.PaymentAmount,
-                                PaymentDate = p.PaymentDate,
-                                PaymentMechanism = p.PaymentMechanism.ToString()
-                            }).ToArray(),
-                            PaymentRefNo = c.PaymentRefNo,
-                            PaymentType = c.PaymentType.ToString(),
-                            SystemID = c.SystemID,
-                            TransactionDate = c.TransactionDate,
-                            Line = c.Line?.Select(l => new SourceDocumentsPaymentsPaymentLine
-                            {
-                                PaymentRefNo = c.PaymentRefNo,
-                                CreditAmount = l.ItemElementName == Models.SaftV4.ItemChoiceType8.CreditAmount ? l.Item : 0,
-                                DebitAmount = l.ItemElementName == Models.SaftV4.ItemChoiceType8.DebitAmount ? l.Item : 0,
-                                LineNumber = l.LineNumber,
-                                Tax = new PaymentTax
-                                {
-                                    TaxAmount = l.Tax?.ItemElementName == Models.SaftV4.ItemChoiceType.TaxAmount ? l.Tax?.Item : 0,
-                                    TaxPercentage = l.Tax?.ItemElementName == Models.SaftV4.ItemChoiceType.TaxPercentage ? l.Tax?.Item : 0,
-                                    TaxCode = l.Tax?.TaxCode,
-                                    TaxCountryRegion = l.Tax?.TaxCountryRegion,
-                                    TaxType = l.Tax?.TaxType.ToString()
-                                },
-                                TaxExemptionCode = l.TaxExemptionCode,
-                                TaxExemptionReason = l.TaxExemptionReason,
-                                SettlementAmount = l.SettlementAmount,
-                                SourceDocumentID = l.SourceDocumentID?.Select(s => new SourceDocumentsPaymentsPaymentLineSourceDocumentID
-                                {
-                                    Description = s.Description,
-                                    InvoiceDate = s.InvoiceDate,
-                                    OriginatingON = s.OriginatingON
-                                }).ToArray(),
-                            }).ToArray(),
-                            Period = c.Period,
-                            SourceID = c.SourceID,
-                            SystemEntryDate = c.SystemEntryDate,
-                            TransactionID = c.TransactionID,
-                            WithholdingTax = c.WithholdingTax?.Select(w => new WithholdingTax
-                            {
-                                WithholdingTaxAmount = w.WithholdingTaxAmount,
-                                WithholdingTaxDescription = w.WithholdingTaxDescription,
-                                WithholdingTaxType = w.WithholdingTaxType.ToString()
-                            }).ToArray()
-                        });
-                    }
-                }
-                else if (saftValidator?.SaftFileV3?.SourceDocuments?.Payments != null)
-                {
-                    var saft_payments = saftValidator.SaftFileV3.SourceDocuments.Payments.Payment;
-
-                    foreach (var c in saft_payments)
-                    {
-                        payments.Add(new SourceDocumentsPaymentsPayment
-                        {
-                            CustomerID = c.CustomerID,
-                            DocumentStatus = new SourceDocumentsPaymentsPaymentDocumentStatus
-                            {
-                                PaymentStatus = c.DocumentStatus?.PaymentStatus.ToString(),
-                                PaymentStatusDate = c.DocumentStatus?.PaymentStatusDate ?? DateTime.MinValue,
-                                Reason = c.DocumentStatus?.Reason,
-                                SourceID = c.DocumentStatus?.SourceID,
-                                SourcePayment = c.DocumentStatus?.SourcePayment.ToString()
-                            },
-                            DocumentTotals = new SourceDocumentsPaymentsPaymentDocumentTotals
-                            {
-                                Currency = new Currency
-                                {
-                                    CurrencyAmount = c.DocumentTotals?.Currency?.CurrencyAmount ?? 0,
-                                    CurrencyCode = c.DocumentTotals?.Currency?.CurrencyCode,
-                                    ExchangeRate = c.DocumentTotals?.Currency?.ExchangeRate ?? 0
-                                },
-                                GrossTotal = c.DocumentTotals?.GrossTotal ?? 0,
-                                NetTotal = c.DocumentTotals?.NetTotal ?? 0,
-                                Settlement = new SourceDocumentsPaymentsPaymentDocumentTotalsSettlement
-                                {
-                                    SettlementAmount = c.DocumentTotals?.Settlement?.SettlementAmount ?? 0
-                                },
-                                TaxPayable = c.DocumentTotals?.TaxPayable ?? 0
-                            },
-                            Description = c.Description,
-                            PaymentMethod = c.PaymentMethod?.Select(p => new PaymentMethod
-                            {
-                                PaymentAmount = p.PaymentAmount,
-                                PaymentDate = p.PaymentDate,
-                                PaymentMechanism = p.PaymentMechanism.ToString()
-                            }).ToArray(),
-                            PaymentRefNo = c.PaymentRefNo,
-                            PaymentType = c.PaymentType.ToString(),
-                            SystemID = c.SystemID,
-                            TransactionDate = c.TransactionDate,
-                            Line = c.Line?.Select(l => new SourceDocumentsPaymentsPaymentLine
-                            {
-                                CreditAmount = l.ItemElementName == Models.SaftV3.ItemChoiceType9.CreditAmount ? l.Item : 0,
-                                DebitAmount = l.ItemElementName == Models.SaftV3.ItemChoiceType9.DebitAmount ? l.Item : 0,
-                                LineNumber = l.LineNumber,
-                                Tax = new PaymentTax
-                                {
-                                    TaxAmount = l.Tax?.ItemElementName == Models.SaftV3.ItemChoiceType.TaxAmount ? l.Tax?.Item : 0,
-                                    TaxPercentage = l.Tax?.ItemElementName == Models.SaftV3.ItemChoiceType.TaxPercentage ? l.Tax?.Item : 0,
-                                    TaxCode = l.Tax?.TaxCode,
-                                    TaxCountryRegion = l.Tax?.TaxCountryRegion,
-                                    TaxType = l.Tax?.TaxType.ToString()
-                                },
-                                TaxExemptionReason = l.TaxExemptionReason,
-                                SettlementAmount = l.SettlementAmount,
-                                SourceDocumentID = l.SourceDocumentID?.Select(s => new SourceDocumentsPaymentsPaymentLineSourceDocumentID
-                                {
-                                    Description = s.Description,
-                                    InvoiceDate = s.InvoiceDate,
-                                    OriginatingON = s.OriginatingON
-                                }).ToArray(),
-                            }).ToArray(),
-                            Period = c.Period,
-                            SourceID = c.SourceID,
-                            SystemEntryDate = c.SystemEntryDate,
-                            TransactionID = c.TransactionID,
-                            WithholdingTax = c.WithholdingTax?.Select(w => new WithholdingTax
-                            {
-                                WithholdingTaxAmount = w.WithholdingTaxAmount,
-                                WithholdingTaxDescription = w.WithholdingTaxDescription,
-                                WithholdingTaxType = w.WithholdingTaxType.ToString()
-                            }).ToArray()
-                        });
-                    }
-                }
-
-                return payments;
-            }).ContinueWith(async c =>
-            {
-                var payments = await c;
-
-                DocNumberOfEntries = payments.Count();
+                DocNumberOfEntries = payments.Length;
                 DocTotalCredit = payments
-                    .Where(i => i.DocumentStatus.PaymentStatus != "A" && i.DocumentStatus.PaymentStatus != "F")
+                    .Where(i => i.DocumentStatus.PaymentStatus != PaymentStatus.A)
                     .Sum(i => i.Line.Sum(l => l.CreditAmount ?? 0))
                     .ToString("c");
 
                 DocTotalDebit = payments
-                    .Where(i => i.DocumentStatus.PaymentStatus != "A" && i.DocumentStatus.PaymentStatus != "F")
+                    .Where(i => i.DocumentStatus.PaymentStatus != PaymentStatus.A)
                     .Sum(i => i.Line.Sum(l => l.DebitAmount ?? 0))
                     .ToString("c");
 
-                if (saftValidator?.SaftFileV4?.SourceDocuments?.Payments != null)
+                if (saftValidator?.SaftFile?.SourceDocuments?.Payments != null)
                 {
-                    NumberOfEntries = saftValidator.SaftFileV4.SourceDocuments.Payments.NumberOfEntries;
-                    TotalCredit = saftValidator.SaftFileV4.SourceDocuments.Payments.TotalCredit.ToString("c");
-                    TotalDebit = saftValidator.SaftFileV4.SourceDocuments.Payments.TotalDebit.ToString("c");
-                }
-                else if (saftValidator?.SaftFileV3?.SourceDocuments?.Payments != null)
-                {
-                    NumberOfEntries = saftValidator.SaftFileV3.SourceDocuments.Payments.NumberOfEntries;
-                    TotalCredit = saftValidator.SaftFileV3.SourceDocuments.Payments.TotalCredit.ToString("c");
-                    TotalDebit = saftValidator.SaftFileV3.SourceDocuments.Payments.TotalDebit.ToString("c");
+                    NumberOfEntries = saftValidator.SaftFile.SourceDocuments.Payments.NumberOfEntries;
+                    TotalCredit = saftValidator.SaftFile.SourceDocuments.Payments.TotalCredit.ToString("c");
+                    TotalDebit = saftValidator.SaftFile.SourceDocuments.Payments.TotalDebit.ToString("c");
                 }
 
                 FiltroDataInicio = payments.Min(i => i.SystemEntryDate);
@@ -251,13 +75,13 @@ namespace Solria.SAFT.Desktop.ViewModels
                                 return true;
                             if (payment.CustomerID != null && payment.CustomerID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
-                            if (payment.DocumentStatus != null && payment.DocumentStatus.PaymentStatus != null && payment.DocumentStatus.PaymentStatus.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            if (payment.DocumentStatus?.PaymentStatus != null && payment.DocumentStatus.PaymentStatus.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
                             if (payment.DocumentStatus != null && payment.DocumentStatus.Reason != null && payment.DocumentStatus.Reason.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
                             if (payment.PaymentRefNo != null && payment.PaymentRefNo.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
-                            if (payment.PaymentType != null && payment.PaymentType.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            if (payment.PaymentType.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
                             if (payment.Period != null && payment.Period.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                                 return true;
@@ -279,7 +103,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                         if (o is SourceDocumentsPaymentsPaymentLine line)
                         {
-                            if (ShowAllLines == false && line.PaymentRefNo.Equals(CurrentPayment.PaymentRefNo, StringComparison.OrdinalIgnoreCase) == false)
+                            if (ShowAllLines == false && line.DocNo.Equals(CurrentPayment.PaymentRefNo, StringComparison.OrdinalIgnoreCase) == false)
                                 return false;
 
                             if (string.IsNullOrWhiteSpace(FilterLines))
@@ -308,7 +132,6 @@ namespace Solria.SAFT.Desktop.ViewModels
                     .DisposeWith(disposables);
 
                 IsLoading = false;
-            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         protected override void HandleDeactivation()
@@ -498,9 +321,9 @@ namespace Solria.SAFT.Desktop.ViewModels
                     var taxes_selling_group = documents
                         .SelectMany(i => i.Line)
                         .Where(c => c.CreditAmount > 0)
-                        .GroupBy(l => new { l.PaymentRefNo, l.Tax.TaxPercentage })
-                        .Select(g => new { g.Key.PaymentRefNo, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.CreditAmount ?? 0) })
-                        .OrderBy(g => g.PaymentRefNo)
+                        .GroupBy(l => new { l.DocNo, l.Tax.TaxPercentage })
+                        .Select(g => new { g.Key.DocNo, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.CreditAmount ?? 0) })
+                        .OrderBy(g => g.DocNo)
                         .ThenBy(g => g.Tax);
 
                     var rowIndex = 1;
@@ -512,7 +335,7 @@ namespace Solria.SAFT.Desktop.ViewModels
                     rowIndex++;
                     foreach (var tax in taxes_selling_group)
                     {
-                        sheet.Cell(rowIndex, 1).Value = tax.PaymentRefNo;
+                        sheet.Cell(rowIndex, 1).Value = tax.DocNo;
                         sheet.Cell(rowIndex, 2).Value = tax.Tax;
                         sheet.Cell(rowIndex, 3).Value = tax.NetTotal;
                         sheet.Cell(rowIndex, 4).Value = Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax.GetValueOrDefault(0) * 0.01m, 2, MidpointRounding.AwayFromZero);
@@ -607,12 +430,12 @@ namespace Solria.SAFT.Desktop.ViewModels
             }
         }
 
-        private int Operation(SourceDocumentsPaymentsPaymentLine l)
+        private static int Operation(SourceDocumentsPaymentsPaymentLine l)
         {
             return l.CreditAmount > 0 ? 1 : -1;
         }
 
-        private void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
+        private static void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
         {
             sheet.Cell(row, 1).Value = "ATCUD";
             sheet.Cell(row, 2).Value = "Tipo";
@@ -625,7 +448,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             sheet.Cell(row, 9).Value = "Total";
         }
 
-        private void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
+        private static void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
         {
             sheet.Cell(row, 2).Value = "Nº linha";
             sheet.Cell(row, 3).Value = "Crédito";

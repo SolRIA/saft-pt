@@ -100,7 +100,7 @@
     </Grid>
 
     <DataGrid IsReadOnly="True" Grid.Row="1" Grid.Column="2" FontSize="14"
-              Items="{Binding CollectionView}"
+              Items="{Binding CollectionView}" SelectionMode="Single"
               SelectedItem="{Binding CurrentInvoice, Mode=TwoWay}">
       <DataGrid.Columns>
         <DataGridTemplateColumn Header="Nº" SortMemberPath="InvoiceNo">

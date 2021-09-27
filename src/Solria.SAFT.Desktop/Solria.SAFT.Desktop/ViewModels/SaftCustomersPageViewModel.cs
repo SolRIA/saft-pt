@@ -1,13 +1,12 @@
 ﻿using Avalonia.Collections;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Models.Saft;
 using Solria.SAFT.Desktop.Services;
+using Solria.SAFT.Parser.Models;
 using Splat;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -35,192 +34,49 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             IsLoading = true;
 
-            Task.Run(() =>
+            CollectionView = new DataGridCollectionView(saftValidator.SaftFile?.MasterFiles?.Customer ?? new Customer[] { })
             {
-                var customers = new List<Customer>();
-                if (saftValidator?.SaftFileV4?.MasterFiles?.Customer != null)
+                Filter = o =>
                 {
-                    var saft_customers = saftValidator.SaftFileV4.MasterFiles.Customer;
+                    if (string.IsNullOrWhiteSpace(Filter))
+                        return true;
 
-                    foreach (var c in saft_customers)
+                    if (o is Customer customer)
                     {
-                        customers.Add(new Customer
-                        {
-                            AccountID = c.AccountID,
-                            BillingAddress = new AddressStructure
-                            {
-                                AddressDetail = c.BillingAddress?.AddressDetail,
-                                BuildingNumber = c.BillingAddress?.BuildingNumber,
-                                City = c.BillingAddress?.City,
-                                Country = c.BillingAddress?.Country,
-                                PostalCode = c.BillingAddress?.PostalCode,
-                                Region = c.BillingAddress?.Region,
-                                StreetName = c.BillingAddress?.StreetName
-                            },
-                            ShipToAddress = c.ShipToAddress?.Select(s => new AddressStructure
-                            {
-                                AddressDetail = c.BillingAddress?.AddressDetail,
-                                BuildingNumber = c.BillingAddress?.BuildingNumber,
-                                City = c.BillingAddress?.City,
-                                Country = c.BillingAddress?.Country,
-                                PostalCode = c.BillingAddress?.PostalCode,
-                                Region = c.BillingAddress?.Region,
-                                StreetName = c.BillingAddress?.StreetName
-                            }).ToArray(),
-                            CompanyName = c.CompanyName,
-                            Contact = c.Contact,
-                            CustomerID = c.CustomerID,
-                            CustomerTaxID = c.CustomerTaxID,
-                            Email = c.Email,
-                            Fax = c.Fax,
-                            SelfBillingIndicator = c.SelfBillingIndicator,
-                            Telephone = c.Telephone,
-                            Website = c.Website,
-                            TooltipAccountID = c.TooltipAccountID,
-                            TooltipBillingAddress = c.TooltipBillingAddress,
-                            TooltipBillingAddressAddressDetail = c.TooltipBillingAddressAddressDetail,
-                            TooltipBillingAddressBuildingNumber = c.TooltipBillingAddressBuildingNumber,
-                            TooltipBillingAddressCity = c.TooltipBillingAddressCity,
-                            TooltipBillingAddressCountry = c.TooltipBillingAddressCountry,
-                            TooltipBillingAddressPostalCode = c.TooltipBillingAddressPostalCode,
-                            TooltipBillingAddressRegion = c.TooltipBillingAddressRegion,
-                            TooltipBillingAddressStreetName = c.TooltipBillingAddressStreetName,
-                            TooltipCompanyName = c.TooltipCompanyName,
-                            TooltipContact = c.TooltipContact,
-                            TooltipCustomerID = c.TooltipCustomerID,
-                            TooltipCustomerTaxID = c.TooltipCustomerTaxID,
-                            TooltipEmail = c.TooltipEmail,
-                            TooltipFax = c.TooltipFax,
-                            TooltipSelfBillingIndicator = c.TooltipSelfBillingIndicator,
-                            TooltipShipToAddress = c.TooltipShipToAddress,
-                            TooltipShipToAddressAddressDetail = c.TooltipShipToAddressAddressDetail,
-                            TooltipShipToAddressBuildingNumber = c.TooltipShipToAddressBuildingNumber,
-                            TooltipShipToAddressCity = c.TooltipShipToAddressCity,
-                            TooltipShipToAddressCountry = c.TooltipShipToAddressCountry,
-                            TooltipShipToAddressPostalCode = c.TooltipShipToAddressPostalCode,
-                            TooltipShipToAddressRegion = c.TooltipShipToAddressRegion,
-                            TooltipShipToAddressStreetName = c.TooltipShipToAddressStreetName,
-                            TooltipTelephone = c.TooltipTelephone,
-                            TooltipWebsite = c.TooltipWebsite
-                        });
-                    }
-                }
-                else if (saftValidator?.SaftFileV3?.MasterFiles?.Customer != null)
-                {
-                    var saft_customers = saftValidator.SaftFileV3.MasterFiles.Customer;
-
-                    foreach (var c in saft_customers)
-                    {
-                        customers.Add(new Customer
-                        {
-                            AccountID = c.AccountID,
-                            BillingAddress = new AddressStructure
-                            {
-                                AddressDetail = c.BillingAddress?.AddressDetail,
-                                BuildingNumber = c.BillingAddress?.BuildingNumber,
-                                City = c.BillingAddress?.City,
-                                Country = c.BillingAddress?.Country,
-                                PostalCode = c.BillingAddress?.PostalCode,
-                                Region = c.BillingAddress?.Region,
-                                StreetName = c.BillingAddress?.StreetName
-                            },
-                            ShipToAddress = c.ShipToAddress?.Select(s => new AddressStructure
-                            {
-                                AddressDetail = c.BillingAddress?.AddressDetail,
-                                BuildingNumber = c.BillingAddress?.BuildingNumber,
-                                City = c.BillingAddress?.City,
-                                Country = c.BillingAddress?.Country,
-                                PostalCode = c.BillingAddress?.PostalCode,
-                                Region = c.BillingAddress?.Region,
-                                StreetName = c.BillingAddress?.StreetName
-                            }).ToArray(),
-                            CompanyName = c.CompanyName,
-                            Contact = c.Contact,
-                            CustomerID = c.CustomerID,
-                            CustomerTaxID = c.CustomerTaxID,
-                            Email = c.Email,
-                            Fax = c.Fax,
-                            SelfBillingIndicator = c.SelfBillingIndicator,
-                            Telephone = c.Telephone,
-                            Website = c.Website,
-                            TooltipAccountID = c.TooltipAccountID,
-                            TooltipBillingAddress = c.TooltipBillingAddress,
-                            TooltipBillingAddressAddressDetail = c.TooltipBillingAddressAddressDetail,
-                            TooltipBillingAddressBuildingNumber = c.TooltipBillingAddressBuildingNumber,
-                            TooltipBillingAddressCity = c.TooltipBillingAddressCity,
-                            TooltipBillingAddressCountry = c.TooltipBillingAddressCountry,
-                            TooltipBillingAddressPostalCode = c.TooltipBillingAddressPostalCode,
-                            TooltipBillingAddressRegion = c.TooltipBillingAddressRegion,
-                            TooltipBillingAddressStreetName = c.TooltipBillingAddressStreetName,
-                            TooltipCompanyName = c.TooltipCompanyName,
-                            TooltipContact = c.TooltipContact,
-                            TooltipCustomerID = c.TooltipCustomerID,
-                            TooltipCustomerTaxID = c.TooltipCustomerTaxID,
-                            TooltipEmail = c.TooltipEmail,
-                            TooltipFax = c.TooltipFax,
-                            TooltipSelfBillingIndicator = c.TooltipSelfBillingIndicator,
-                            TooltipShipToAddress = c.TooltipShipToAddress,
-                            TooltipShipToAddressAddressDetail = c.TooltipShipToAddressAddressDetail,
-                            TooltipShipToAddressBuildingNumber = c.TooltipShipToAddressBuildingNumber,
-                            TooltipShipToAddressCity = c.TooltipShipToAddressCity,
-                            TooltipShipToAddressCountry = c.TooltipShipToAddressCountry,
-                            TooltipShipToAddressPostalCode = c.TooltipShipToAddressPostalCode,
-                            TooltipShipToAddressRegion = c.TooltipShipToAddressRegion,
-                            TooltipShipToAddressStreetName = c.TooltipShipToAddressStreetName,
-                            TooltipTelephone = c.TooltipTelephone,
-                            TooltipWebsite = c.TooltipWebsite
-                        });
-                    }
-                }
-
-                return customers;
-            }).ContinueWith(async c =>
-            {
-                var customers = await c;
-
-                CollectionView = new DataGridCollectionView(customers)
-                {
-                    Filter = o =>
-                    {
-                        if (string.IsNullOrWhiteSpace(Filter))
+                        if (customer.AccountID != null && customer.AccountID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                             return true;
-
-                        if (o is Customer customer)
-                        {
-                            if (customer.AccountID != null && customer.AccountID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (customer.CompanyName != null && customer.CompanyName.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (customer.Contact != null && customer.Contact.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (customer.CustomerID != null && customer.CustomerID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (customer.CustomerTaxID != null && customer.CustomerTaxID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (customer.Email != null && customer.Email.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (customer.Fax != null && customer.Fax.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (customer.Telephone != null && customer.Telephone.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (customer.Website != null && customer.Website.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                        }
-
-                        return false;
+                        if (customer.CompanyName != null && customer.CompanyName.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (customer.Contact != null && customer.Contact.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (customer.CustomerID != null && customer.CustomerID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (customer.CustomerTaxID != null && customer.CustomerTaxID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (customer.Email != null && customer.Email.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (customer.Fax != null && customer.Fax.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (customer.Telephone != null && customer.Telephone.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (customer.Website != null && customer.Website.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
                     }
-                };
 
-                CollectionView.GroupDescriptions.Add(new DataGridPathGroupDescription("AccountID"));
+                    return false;
+                }
+            };
 
-                this.WhenAnyValue(x => x.Filter)
-                    .Throttle(TimeSpan.FromSeconds(1))
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .InvokeCommand(SearchCommand)
-                    .DisposeWith(disposables);
+            CollectionView.GroupDescriptions.Add(new DataGridPathGroupDescription("AccountID"));
 
-                IsLoading = false;
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+            this.WhenAnyValue(x => x.Filter)
+                .Throttle(TimeSpan.FromSeconds(1))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .InvokeCommand(SearchCommand)
+                .DisposeWith(disposables);
+
+            IsLoading = false;
+
         }
 
         protected override void HandleDeactivation()

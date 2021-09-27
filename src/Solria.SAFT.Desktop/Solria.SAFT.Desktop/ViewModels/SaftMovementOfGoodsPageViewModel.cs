@@ -1,13 +1,12 @@
 ﻿using Avalonia.Collections;
 using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Models.Saft;
 using Solria.SAFT.Desktop.Services;
 using Solria.SAFT.Desktop.Views;
+using Solria.SAFT.Parser.Models;
 using Splat;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -42,351 +41,115 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             IsLoading = true;
 
-            Task.Run(() =>
+            var documents = saftValidator?.SaftFile?.SourceDocuments?.MovementOfGoods?.StockMovement ?? Array.Empty<SourceDocumentsMovementOfGoodsStockMovement>();
+
+            DocNumberOfEntries = documents.Length;
+            DocTotalCredit = documents
+                .Where(i => i.DocumentStatus.MovementStatus != MovementStatus.A && i.DocumentStatus.MovementStatus != MovementStatus.F)
+                .Sum(i => i.Line.Sum(l => l.CreditAmount ?? 0))
+                .ToString("c");
+
+            DocTotalDebit = documents
+                .Where(i => i.DocumentStatus.MovementStatus != MovementStatus.A && i.DocumentStatus.MovementStatus != MovementStatus.F)
+                .Sum(i => i.Line.Sum(l => l.DebitAmount ?? 0))
+                .ToString("c");
+
+            if (saftValidator?.SaftFile?.SourceDocuments?.MovementOfGoods != null)
             {
-                var documents = new List<SourceDocumentsMovementOfGoodsStockMovement>();
-                if (saftValidator?.SaftFileV4?.SourceDocuments?.MovementOfGoods != null)
-                {
-                    var saft_documents = saftValidator.SaftFileV4.SourceDocuments?.MovementOfGoods.StockMovement;
+                NumberOfEntries = saftValidator.SaftFile.SourceDocuments.MovementOfGoods.NumberOfMovementLines;
+                TotalQuantity = saftValidator.SaftFile.SourceDocuments.MovementOfGoods.TotalQuantityIssued;
+            }
+            
 
-                    foreach (var c in saft_documents)
-                    {
-                        documents.Add(new SourceDocumentsMovementOfGoodsStockMovement
-                        {
-                            ATCUD = c.ATCUD,
-                            CustomerID = c.ItemElementName == Models.SaftV4.ItemChoiceType5.CustomerID ? c.Item : string.Empty,
-                            SupplierID = c.ItemElementName == Models.SaftV4.ItemChoiceType5.SupplierID ? c.Item : string.Empty,
-                            DocumentStatus = new SourceDocumentsMovementOfGoodsStockMovementDocumentStatus
-                            {
-                                MovementStatus = c.DocumentStatus?.MovementStatus.ToString(),
-                                MovementStatusDate = c.DocumentStatus?.MovementStatusDate ?? DateTime.MinValue,
-                                Reason = c.DocumentStatus?.Reason,
-                                SourceBilling = c.DocumentStatus?.SourceBilling.ToString(),
-                                SourceID = c.DocumentStatus?.SourceID
-                            },
-                            DocumentTotals = new SourceDocumentsMovementOfGoodsStockMovementDocumentTotals
-                            {
-                                Currency = new Currency
-                                {
-                                    CurrencyAmount = c.DocumentTotals?.Currency?.CurrencyAmount ?? 0,
-                                    CurrencyCode = c.DocumentTotals?.Currency?.CurrencyCode,
-                                    ExchangeRate = c.DocumentTotals?.Currency?.ExchangeRate ?? 0
-                                },
-                                GrossTotal = c.DocumentTotals?.GrossTotal ?? 0,
-                                NetTotal = c.DocumentTotals?.NetTotal ?? 0,
-                                TaxPayable = c.DocumentTotals?.TaxPayable ?? 0
-                            },
-                            EACCode = c.EACCode,
-                            Hash = c.Hash,
-                            HashControl = c.HashControl,
-                            MovementType = c.MovementType.ToString(),
-                            DocumentNumber = c.DocumentNumber,
-                            MovementDate = c.MovementDate,
-                            Line = c.Line?.Select(l => new SourceDocumentsMovementOfGoodsStockMovementLine
-                            {
-                                DocumentNumber = l.DocNo,
-                                CreditAmount = l.ItemElementName == Models.SaftV4.ItemChoiceType6.CreditAmount ? l.Item : 0,
-                                DebitAmount = l.ItemElementName == Models.SaftV4.ItemChoiceType6.DebitAmount ? l.Item : 0,
-                                CustomsInformation = new CustomsInformation
-                                {
-                                    ARCNo = l.CustomsInformation?.ARCNo,
-                                    IECAmount = l.CustomsInformation?.IECAmount ?? 0
-                                },
-                                Description = l.Description,
-                                LineNumber = l.LineNumber,
-                                OrderReferences = l.OrderReferences?.Select(o => new OrderReferences
-                                {
-                                    OrderDate = o.OrderDate,
-                                    OriginatingON = o.OriginatingON
-                                }).ToArray(),
-                                ProductCode = l.ProductCode,
-                                ProductDescription = l.ProductDescription,
-                                ProductSerialNumber = l.ProductSerialNumber,
-                                Quantity = l.Quantity,
-                                SettlementAmount = l.SettlementAmount,
-                                Tax = new MovementTax
-                                {
-                                    TaxPercentage = l.Tax?.TaxPercentage ?? 0,
-                                    TaxCode = l.Tax?.TaxCode,
-                                    TaxCountryRegion = l.Tax?.TaxCountryRegion,
-                                    TaxType = l.Tax?.TaxType.ToString()
-                                },
-                                TaxExemptionCode = l.TaxExemptionCode,
-                                TaxExemptionReason = l.TaxExemptionReason,
-                                UnitOfMeasure = l.UnitOfMeasure,
-                                UnitPrice = l.UnitPrice
-                            }).ToArray(),
-                            Period = c.Period,
-                            SourceID = c.SourceID,
-                            SystemEntryDate = c.SystemEntryDate,
-                            TransactionID = c.TransactionID,
-                            ATDocCodeID = c.ATDocCodeID,
-                            MovementComments = c.MovementComments,
-                            MovementEndTime = c.MovementEndTime,
-                            MovementStartTime = c.MovementStartTime,
-                            ShipFrom = new ShippingPointStructure
-                            {
-                                Address = new AddressStructure
-                                {
-                                    AddressDetail = c.ShipFrom?.Address?.AddressDetail,
-                                    BuildingNumber = c.ShipFrom?.Address?.BuildingNumber,
-                                    City = c.ShipFrom?.Address?.City,
-                                    Country = c.ShipFrom?.Address?.Country,
-                                    PostalCode = c.ShipFrom?.Address?.PostalCode,
-                                    Region = c.ShipFrom?.Address?.Region,
-                                    StreetName = c.ShipFrom?.Address?.StreetName
-                                },
-                                DeliveryDate = c.ShipFrom?.DeliveryDate,
-                                DeliveryID = c.ShipFrom?.DeliveryID,
-                                LocationID = c.ShipFrom?.LocationID,
-                                WarehouseID = c.ShipFrom?.WarehouseID
-                            },
-                            ShipTo = new ShippingPointStructure
-                            {
-                                Address = new AddressStructure
-                                {
-                                    AddressDetail = c.ShipTo?.Address?.AddressDetail,
-                                    BuildingNumber = c.ShipTo?.Address?.BuildingNumber,
-                                    City = c.ShipTo?.Address?.City,
-                                    Country = c.ShipTo?.Address?.Country,
-                                    PostalCode = c.ShipTo?.Address?.PostalCode,
-                                    Region = c.ShipTo?.Address?.Region,
-                                    StreetName = c.ShipTo?.Address?.StreetName
-                                },
-                                DeliveryDate = c.ShipTo?.DeliveryDate,
-                                DeliveryID = c.ShipTo?.DeliveryID,
-                                LocationID = c.ShipTo?.LocationID,
-                                WarehouseID = c.ShipTo?.WarehouseID
-                            },
-                        });
-                    }
-                }
-                else if (saftValidator?.SaftFileV3?.SourceDocuments?.MovementOfGoods != null)
-                {
-                    var saft_documents = saftValidator.SaftFileV3.SourceDocuments?.MovementOfGoods.StockMovement;
+            FiltroDataInicio = documents.Min(i => i.MovementDate);
+            FiltroDataFim = documents.Max(i => i.MovementDate);
 
-                    foreach (var c in saft_documents)
-                    {
-                        documents.Add(new SourceDocumentsMovementOfGoodsStockMovement
-                        {
-                            CustomerID = c.ItemElementName == Models.SaftV3.ItemChoiceType6.CustomerID ? c.Item : string.Empty,
-                            SupplierID = c.ItemElementName == Models.SaftV3.ItemChoiceType6.SupplierID ? c.Item : string.Empty,
-                            DocumentStatus = new SourceDocumentsMovementOfGoodsStockMovementDocumentStatus
-                            {
-                                MovementStatus = c.DocumentStatus?.MovementStatus.ToString(),
-                                MovementStatusDate = c.DocumentStatus?.MovementStatusDate ?? DateTime.MinValue,
-                                Reason = c.DocumentStatus?.Reason,
-                                SourceBilling = c.DocumentStatus?.SourceBilling.ToString(),
-                                SourceID = c.DocumentStatus?.SourceID
-                            },
-                            DocumentTotals = new SourceDocumentsMovementOfGoodsStockMovementDocumentTotals
-                            {
-                                Currency = new Currency
-                                {
-                                    CurrencyAmount = c.DocumentTotals?.Currency?.CurrencyAmount ?? 0,
-                                    CurrencyCode = c.DocumentTotals?.Currency?.CurrencyCode,
-                                    ExchangeRate = c.DocumentTotals?.Currency?.ExchangeRate ?? 0
-                                },
-                                GrossTotal = c.DocumentTotals?.GrossTotal ?? 0,
-                                NetTotal = c.DocumentTotals?.NetTotal ?? 0,
-                                TaxPayable = c.DocumentTotals?.TaxPayable ?? 0
-                            },
-                            EACCode = c.EACCode,
-                            Hash = c.Hash,
-                            HashControl = c.HashControl,
-                            MovementType = c.MovementType.ToString(),
-                            DocumentNumber = c.DocumentNumber,
-                            MovementDate = c.MovementDate,
-                            Line = c.Line?.Select(l => new SourceDocumentsMovementOfGoodsStockMovementLine
-                            {
-                                DocumentNumber = l.DocNo,
-                                CreditAmount = l.ItemElementName == Models.SaftV3.ItemChoiceType7.CreditAmount ? l.Item : 0,
-                                DebitAmount = l.ItemElementName == Models.SaftV3.ItemChoiceType7.DebitAmount ? l.Item : 0,
-                                Description = l.Description,
-                                LineNumber = l.LineNumber,
-                                OrderReferences = l.OrderReferences?.Select(o => new OrderReferences
-                                {
-                                    OrderDate = o.OrderDate,
-                                    OriginatingON = o.OriginatingON
-                                }).ToArray(),
-                                ProductCode = l.ProductCode,
-                                ProductDescription = l.ProductDescription,
-                                Quantity = l.Quantity,
-                                SettlementAmount = l.SettlementAmount,
-                                Tax = new MovementTax
-                                {
-                                    TaxPercentage = l.Tax?.TaxPercentage ?? 0,
-                                    TaxCode = l.Tax?.TaxCode,
-                                    TaxCountryRegion = l.Tax?.TaxCountryRegion,
-                                    TaxType = l.Tax?.TaxType.ToString()
-                                },
-                                TaxExemptionReason = l.TaxExemptionReason,
-                                UnitOfMeasure = l.UnitOfMeasure,
-                                UnitPrice = l.UnitPrice
-                            }).ToArray(),
-                            Period = c.Period,
-                            SourceID = c.SourceID,
-                            SystemEntryDate = c.SystemEntryDate,
-                            TransactionID = c.TransactionID,
-                            ATDocCodeID = c.ATDocCodeID,
-                            MovementComments = c.MovementComments,
-                            MovementEndTime = c.MovementEndTime,
-                            MovementStartTime = c.MovementStartTime,
-                            ShipFrom = new ShippingPointStructure
-                            {
-                                Address = new AddressStructure
-                                {
-                                    AddressDetail = c.ShipFrom?.Address?.AddressDetail,
-                                    BuildingNumber = c.ShipFrom?.Address?.BuildingNumber,
-                                    City = c.ShipFrom?.Address?.City,
-                                    Country = c.ShipFrom?.Address?.Country,
-                                    PostalCode = c.ShipFrom?.Address?.PostalCode,
-                                    Region = c.ShipFrom?.Address?.Region,
-                                    StreetName = c.ShipFrom?.Address?.StreetName
-                                },
-                                DeliveryDate = c.ShipFrom?.DeliveryDate,
-                                DeliveryID = c.ShipFrom?.DeliveryID,
-                                LocationID = c.ShipFrom?.LocationID,
-                                WarehouseID = c.ShipFrom?.WarehouseID
-                            },
-                            ShipTo = new ShippingPointStructure
-                            {
-                                Address = new AddressStructure
-                                {
-                                    AddressDetail = c.ShipTo?.Address?.AddressDetail,
-                                    BuildingNumber = c.ShipTo?.Address?.BuildingNumber,
-                                    City = c.ShipTo?.Address?.City,
-                                    Country = c.ShipTo?.Address?.Country,
-                                    PostalCode = c.ShipTo?.Address?.PostalCode,
-                                    Region = c.ShipTo?.Address?.Region,
-                                    StreetName = c.ShipTo?.Address?.StreetName
-                                },
-                                DeliveryDate = c.ShipTo?.DeliveryDate,
-                                DeliveryID = c.ShipTo?.DeliveryID,
-                                LocationID = c.ShipTo?.LocationID,
-                                WarehouseID = c.ShipTo?.WarehouseID
-                            },
-                        });
-                    }
-                }
-
-                return documents;
-            }).ContinueWith(async c =>
+            CollectionView = new DataGridCollectionView(documents)
             {
-                var documents = await c;
-
-                DocNumberOfEntries = documents.Count();
-                DocTotalCredit = documents
-                    .Where(i => i.DocumentStatus.MovementStatus != "A" && i.DocumentStatus.MovementStatus != "F")
-                    .Sum(i => i.Line.Sum(l => l.CreditAmount ?? 0))
-                    .ToString("c");
-
-                DocTotalDebit = documents
-                    .Where(i => i.DocumentStatus.MovementStatus != "A" && i.DocumentStatus.MovementStatus != "F")
-                    .Sum(i => i.Line.Sum(l => l.DebitAmount ?? 0))
-                    .ToString("c");
-
-                if (saftValidator?.SaftFileV4?.SourceDocuments?.MovementOfGoods != null)
+                Filter = o =>
                 {
-                    NumberOfEntries = saftValidator.SaftFileV4.SourceDocuments.MovementOfGoods.NumberOfMovementLines;
-                    TotalQuantity = saftValidator.SaftFileV4.SourceDocuments.MovementOfGoods.TotalQuantityIssued;
-                }
-                else if (saftValidator?.SaftFileV3?.SourceDocuments?.MovementOfGoods != null)
-                {
-                    NumberOfEntries = saftValidator.SaftFileV3.SourceDocuments.MovementOfGoods.NumberOfMovementLines;
-                    TotalQuantity = saftValidator.SaftFileV3.SourceDocuments.MovementOfGoods.TotalQuantityIssued;
-                }
+                    if (string.IsNullOrWhiteSpace(Filter))
+                        return true;
 
-                FiltroDataInicio = documents.Min(i => i.MovementDate);
-                FiltroDataFim = documents.Max(i => i.MovementDate);
-
-                CollectionView = new DataGridCollectionView(documents)
-                {
-                    Filter = o =>
+                    if (o is SourceDocumentsMovementOfGoodsStockMovement document)
                     {
-                        if (string.IsNullOrWhiteSpace(Filter))
+                        if (document.ATCUD != null && document.ATCUD.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                             return true;
-
-                        if (o is SourceDocumentsMovementOfGoodsStockMovement document)
-                        {
-                            if (document.ATCUD != null && document.ATCUD.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (document.CustomerID != null && document.CustomerID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (document.DocumentStatus != null && document.DocumentStatus.MovementStatus != null && document.DocumentStatus.MovementStatus.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (document.DocumentStatus != null && document.DocumentStatus.Reason != null && document.DocumentStatus.Reason.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (document.EACCode != null && document.EACCode.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (document.DocumentNumber != null && document.DocumentNumber.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (document.MovementType != null && document.MovementType.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (document.Period != null && document.Period.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (document.SourceID != null && document.SourceID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                            if (document.TransactionID != null && document.TransactionID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                        }
-
-                        return false;
+                        if (document.CustomerID != null && document.CustomerID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (document.DocumentStatus != null && document.DocumentStatus.MovementStatus.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (document.DocumentStatus != null && document.DocumentStatus.Reason != null && document.DocumentStatus.Reason.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (document.EACCode != null && document.EACCode.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (document.DocumentNumber != null && document.DocumentNumber.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (document.MovementType.ToString().Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (document.Period != null && document.Period.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (document.SourceID != null && document.SourceID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (document.TransactionID != null && document.TransactionID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
                     }
-                };
-                CollectionViewDetails = new DataGridCollectionView(documents.SelectMany(d => d.Line))
+
+                    return false;
+                }
+            };
+            CollectionViewDetails = new DataGridCollectionView(documents.SelectMany(d => d.Line))
+            {
+                Filter = o =>
                 {
-                    Filter = o =>
+                    if (CurrentDocument == null)
+                        return false;
+
+                    if (o is SourceDocumentsMovementOfGoodsStockMovementLine line)
                     {
-                        if (CurrentDocument == null)
+                        if (ShowAllLines == false && line.DocNo.Equals(CurrentDocument.DocumentNumber, StringComparison.OrdinalIgnoreCase) == false)
                             return false;
 
-                        if (o is SourceDocumentsMovementOfGoodsStockMovementLine line)
-                        {
-                            if (ShowAllLines == false && line.DocumentNumber.Equals(CurrentDocument.DocumentNumber, StringComparison.OrdinalIgnoreCase) == false)
-                                return false;
+                        if (string.IsNullOrWhiteSpace(FilterLines))
+                            return true;
 
-                            if (string.IsNullOrWhiteSpace(FilterLines))
-                                return true;
+                        if (line.Description != null && line.Description.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
+                            return true;
 
-                            if (line.Description != null && line.Description.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
-                                return true;
+                        if (line.ProductCode != null && line.ProductCode.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
+                            return true;
 
-                            if (line.ProductCode != null && line.ProductCode.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
-                                return true;
+                        if (line.ProductDescription != null && line.ProductDescription.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
+                            return true;
 
-                            if (line.ProductDescription != null && line.ProductDescription.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
-                                return true;
+                        if (line.ProductSerialNumber != null && line.ProductSerialNumber.Any(l => l.Contains(FilterLines, StringComparison.OrdinalIgnoreCase)))
+                            return true;
 
-                            if (line.ProductSerialNumber != null && line.ProductSerialNumber.Any(l => l.Contains(FilterLines, StringComparison.OrdinalIgnoreCase)))
-                                return true;
+                        if (line.TaxExemptionCode != null && line.TaxExemptionCode.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
+                            return true;
 
-                            if (line.TaxExemptionCode != null && line.TaxExemptionCode.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
-                                return true;
-
-                            if (line.TaxExemptionReason != null && line.TaxExemptionReason.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
-                                return true;
-                        }
-
-                        return false;
+                        if (line.TaxExemptionReason != null && line.TaxExemptionReason.Contains(FilterLines, StringComparison.OrdinalIgnoreCase))
+                            return true;
                     }
-                };
 
-                CollectionView.GroupDescriptions.Add(new DataGridPathGroupDescription("MovementType"));
+                    return false;
+                }
+            };
 
-                this.WhenAnyValue(x => x.Filter)
-                    .Throttle(TimeSpan.FromSeconds(1))
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .InvokeCommand(SearchCommand)
-                    .DisposeWith(disposables);
-                this.WhenAnyValue(x => x.FilterLines)
-                    .Throttle(TimeSpan.FromSeconds(1))
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .InvokeCommand(SearchDetailsCommand)
-                    .DisposeWith(disposables);
+            CollectionView.GroupDescriptions.Add(new DataGridPathGroupDescription("MovementType"));
 
-                IsLoading = false;
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+            this.WhenAnyValue(x => x.Filter)
+                .Throttle(TimeSpan.FromSeconds(1))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .InvokeCommand(SearchCommand)
+                .DisposeWith(disposables);
+            this.WhenAnyValue(x => x.FilterLines)
+                .Throttle(TimeSpan.FromSeconds(1))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .InvokeCommand(SearchDetailsCommand)
+                .DisposeWith(disposables);
+
+            IsLoading = false;
         }
 
         protected override void HandleDeactivation()
@@ -581,9 +344,9 @@ namespace Solria.SAFT.Desktop.ViewModels
                     var taxes_selling_group = documents
                         .SelectMany(i => i.Line)
                         .Where(c => c.CreditAmount > 0)
-                        .GroupBy(l => new { l.DocumentNumber, l.Tax.TaxPercentage })
-                        .Select(g => new { g.Key.DocumentNumber, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.Quantity * l.UnitPrice) })
-                        .OrderBy(g => g.DocumentNumber)
+                        .GroupBy(l => new { l.DocNo, l.Tax.TaxPercentage })
+                        .Select(g => new { g.Key.DocNo, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.Quantity * l.UnitPrice) })
+                        .OrderBy(g => g.DocNo)
                         .ThenBy(g => g.Tax);
 
                     var rowIndex = 1;
@@ -594,7 +357,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                     foreach (var tax in taxes_selling_group)
                     {
-                        sheet.Cell(rowIndex, 1).Value = tax.DocumentNumber;
+                        sheet.Cell(rowIndex, 1).Value = tax.DocNo;
                         sheet.Cell(rowIndex, 2).Value = tax.Tax;
                         sheet.Cell(rowIndex, 3).Value = tax.NetTotal;
                         sheet.Cell(rowIndex, 4).Value = Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax * 0.01m, 2, MidpointRounding.AwayFromZero);
@@ -731,15 +494,15 @@ namespace Solria.SAFT.Desktop.ViewModels
 
         private int Operation(SourceDocumentsMovementOfGoodsStockMovement i, SourceDocumentsMovementOfGoodsStockMovementLine l)
         {
-            if (i.MovementType == "GR" || i.MovementType == "GT" || i.MovementType == "GA" || i.MovementType == "GC")
+            if (i.MovementType == MovementType.GR || i.MovementType == MovementType.GT || i.MovementType == MovementType.GA || i.MovementType == MovementType.GC)
                 return l.CreditAmount > 0 ? 1 : -1;
-            else if (i.MovementType == "GD")
+            else if (i.MovementType == MovementType.GD)
                 return l.DebitAmount > 0 ? 1 : -1;
 
             return 1;
         }
 
-        private void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
+        private static void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
         {
             sheet.Cell(row, 1).Value = "ATCUD";
             sheet.Cell(row, 2).Value = "Tipo";
@@ -752,7 +515,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             sheet.Cell(row, 9).Value = "Total";
         }
 
-        private void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
+        private static void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
         {
             sheet.Cell(row, 2).Value = "Nº linha";
             sheet.Cell(row, 3).Value = "Código produto";
