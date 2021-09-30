@@ -1,4 +1,12 @@
 # SAFT-PT
 SAFT-PT validator available on Windows, macOS and Linux.
 
-![screenshot](https://github.com/SolRIA/saft-pt/blob/master/saft.png)
+# Avalonia UI
+![screenshot](https://raw.githubusercontent.com/SolRIA/saft-pt/master/saft.png)
+
+# CLI
+![screenshot](https://raw.githubusercontent.com/SolRIA/saft-pt/master/cli1.png)
+
+![screenshot](https://raw.githubusercontent.com/SolRIA/saft-pt/master/cli2.png)
+
+![screenshot](https://raw.githubusercontent.com/SolRIA/saft-pt/master/cli3.png)
