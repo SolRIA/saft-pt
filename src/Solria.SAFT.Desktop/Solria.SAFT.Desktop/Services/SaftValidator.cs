@@ -933,15 +933,15 @@ namespace Solria.SAFT.Desktop.Services
 
         void ValidateWorkDocumentLine(SourceDocumentsWorkingDocumentsWorkDocumentLine line, SourceDocumentsWorkingDocumentsWorkDocument workDocument)
         {
-            MensagensErro.Add(line.ValidateLineNumber(SupPk: workDocument.Pk, workingDocument: workDocument.DocumentNumber));
-            MensagensErro.Add(line.ValidateProductCode(SupPk: workDocument.Pk, workingDocument: workDocument.DocumentNumber));
-            MensagensErro.Add(line.ValidateProductDescription(SupPk: workDocument.Pk, workingDocument: workDocument.DocumentNumber));
-            MensagensErro.Add(line.ValidateQuantity(SupPk: workDocument.Pk, workingDocument: workDocument.DocumentNumber));
-            MensagensErro.Add(line.ValidateTaxPointDate(SupPk: workDocument.Pk, workingDocument: workDocument.DocumentNumber));
-            MensagensErro.Add(line.ValidateUnitOfMeasure(SupPk: workDocument.Pk, workingDocument: workDocument.DocumentNumber));
-            MensagensErro.Add(line.ValidateUnitPrice(SupPk: workDocument.Pk, workingDocument: workDocument.DocumentNumber));
-            MensagensErro.AddRange(line.ValidateOrderReferences(SupPk: workDocument.Pk, workingDocument: workDocument.DocumentNumber));
-            MensagensErro.AddRange(line.ValidateTax(SupPk: workDocument.Pk, workingDocument: workDocument.DocumentNumber));
+            MensagensErro.Add(line.ValidateLineNumber(workDocument.Pk));
+            MensagensErro.Add(line.ValidateProductCode(workDocument.Pk));
+            MensagensErro.Add(line.ValidateProductDescription(workDocument.Pk));
+            MensagensErro.Add(line.ValidateQuantity(workDocument.Pk));
+            MensagensErro.Add(line.ValidateTaxPointDate(workDocument.Pk));
+            MensagensErro.Add(line.ValidateUnitOfMeasure(workDocument.Pk));
+            MensagensErro.Add(line.ValidateUnitPrice(workDocument.Pk));
+            MensagensErro.AddRange(line.ValidateOrderReferences(workDocument.Pk));
+            MensagensErro.AddRange(line.ValidateTax(workDocument.Pk));
 
             int numCasasDecimais = 6;// Workspace.Instance.Config.NumCasasDecimaisValidacoes;
 
@@ -1003,14 +1003,14 @@ namespace Solria.SAFT.Desktop.Services
 
         void ValidateMovementOfGoodsStockMovementLine(SourceDocumentsMovementOfGoodsStockMovementLine line, SourceDocumentsMovementOfGoodsStockMovement movement)
         {
-            MensagensErro.Add(line.ValidateLineNumber(SupPk: movement.Pk));
-            MensagensErro.Add(line.ValidateProductCode(SupPk: movement.Pk));
-            MensagensErro.Add(line.ValidateProductDescription(SupPk: movement.Pk));
-            MensagensErro.Add(line.ValidateQuantity(SupPk: movement.Pk));
-            MensagensErro.Add(line.ValidateUnitOfMeasure(SupPk: movement.Pk));
-            MensagensErro.Add(line.ValidateUnitPrice(SupPk: movement.Pk));
-            MensagensErro.AddRange(line.ValidateOrderReferences(SupPk: movement.Pk));
-            MensagensErro.AddRange(line.ValidateTax(SupPk: movement.Pk));
+            MensagensErro.Add(line.ValidateLineNumber(movement.Pk));
+            MensagensErro.Add(line.ValidateProductCode(movement.Pk));
+            MensagensErro.Add(line.ValidateProductDescription(movement.Pk));
+            MensagensErro.Add(line.ValidateQuantity(movement.Pk));
+            MensagensErro.Add(line.ValidateUnitOfMeasure(movement.Pk));
+            MensagensErro.Add(line.ValidateUnitPrice(movement.Pk));
+            MensagensErro.AddRange(line.ValidateOrderReferences(movement.Pk));
+            MensagensErro.AddRange(line.ValidateTax(movement.Pk));
 
             int numCasasDecimais = 6;// Workspace.Instance.Config.NumCasasDecimaisValidacoes;
 
@@ -1054,7 +1054,7 @@ namespace Solria.SAFT.Desktop.Services
                         mensagensErro.Add(new ValidationError { Value = line.LineNumber, Field = "LineNumber", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine), Description = string.Format("Número de linha incorrecto, Documento: {0}, esperado: {1}, valor: {2}", invoice.InvoiceNo, numLinha, line.LineNumber), UID = line.Pk, SupUID = invoice.Pk });
                     numLinha++;
 
-                    ValidateInvoiceLine(line, invoice.Pk, invoice.InvoiceNo);
+                    ValidateInvoiceLine(line, invoice.Pk);
 
                     if (string.IsNullOrEmpty(line.UnitOfMeasure))
                         MensagensErro.Add(new ValidationError { Value = invoice.InvoiceNo, Field = "UnitOfMeasure", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine), Description = string.Format("Unidade de medida não preenchida. Documento: {0}, linha nº: {1}", invoice.InvoiceNo, line.LineNumber), UID = invoice.Pk });
@@ -1083,18 +1083,18 @@ namespace Solria.SAFT.Desktop.Services
             }
         }
 
-        void ValidateInvoiceLine(SourceDocumentsSalesInvoicesInvoiceLine line, string supPk, string invoiceNo)
+        void ValidateInvoiceLine(SourceDocumentsSalesInvoicesInvoiceLine line, string supPk)
         {
-            MensagensErro.Add(line.ValidateLineNumber(SupPk: supPk, invoiceNo: invoiceNo));
-            MensagensErro.Add(line.ValidateProductCode(SupPk: supPk, invoiceNo: invoiceNo));
-            MensagensErro.Add(line.ValidateProductDescription(SupPk: supPk, invoiceNo: invoiceNo));
-            MensagensErro.Add(line.ValidateQuantity(SupPk: supPk, invoiceNo: invoiceNo));
-            MensagensErro.Add(line.ValidateTaxPointDate(SupPk: supPk, invoiceNo: invoiceNo));
-            MensagensErro.Add(line.ValidateUnitOfMeasure(SupPk: supPk, invoiceNo: invoiceNo));
-            MensagensErro.Add(line.ValidateUnitPrice(SupPk: supPk, invoiceNo: invoiceNo));
-            MensagensErro.AddRange(line.ValidateOrderReferences(SupPk: supPk, invoiceNo: invoiceNo));
-            MensagensErro.AddRange(line.ValidateReferences(SupPk: supPk, invoiceNo: invoiceNo));
-            MensagensErro.AddRange(line.ValidateTax(SupPk: supPk, invoiceNo: invoiceNo));
+            MensagensErro.Add(line.ValidateLineNumber(supPk));
+            MensagensErro.Add(line.ValidateProductCode(supPk));
+            MensagensErro.Add(line.ValidateProductDescription(supPk));
+            MensagensErro.Add(line.ValidateQuantity(supPk));
+            MensagensErro.Add(line.ValidateTaxPointDate(supPk));
+            MensagensErro.Add(line.ValidateUnitOfMeasure(supPk));
+            MensagensErro.Add(line.ValidateUnitPrice(supPk));
+            MensagensErro.AddRange(line.ValidateOrderReferences(supPk));
+            MensagensErro.AddRange(line.ValidateReferences(supPk));
+            MensagensErro.AddRange(line.ValidateTax(supPk));
 
             int numCasasDecimais = 6;// Workspace.Instance.Config.NumCasasDecimaisValidacoes;
             bool incidendia = Math.Abs(Math.Round(line.UnitPrice * line.Quantity, numCasasDecimais, MidpointRounding.AwayFromZero) - Math.Round(line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), numCasasDecimais, MidpointRounding.AwayFromZero)) > 0.01m;
@@ -1153,12 +1153,12 @@ namespace Solria.SAFT.Desktop.Services
 
         private void ValidatePaymentLine(SourceDocumentsPaymentsPaymentLine line, string supPk)
         {
-            MensagensErro.Add(line.ValidateItem(SupPk: supPk));
-            MensagensErro.Add(line.ValidateLineNumber(SupPk: supPk));
-            MensagensErro.Add(line.ValidateSettlementAmount(SupPk: supPk));
-            MensagensErro.Add(line.ValidateTaxExemptionReason(SupPk: supPk));
-            MensagensErro.AddRange(line.ValidateSourceDocumentID(SupPk: supPk));
-            MensagensErro.AddRange(line.ValidateTax(SupPk: supPk));
+            MensagensErro.Add(line.ValidateItem(supPk));
+            MensagensErro.Add(line.ValidateLineNumber(supPk));
+            MensagensErro.Add(line.ValidateSettlementAmount(supPk));
+            MensagensErro.Add(line.ValidateTaxExemptionReason(supPk));
+            MensagensErro.AddRange(line.ValidateSourceDocumentID(supPk));
+            MensagensErro.AddRange(line.ValidateTax(supPk));
         }
 
         public static int Operation(SourceDocumentsSalesInvoicesInvoice i, SourceDocumentsSalesInvoicesInvoiceLine l)
