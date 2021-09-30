@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Solria.SAFT.Parser.Models
 {
-	public class ValidationError
+    public class ValidationError
 	{
 		public string Description { get; set; }
 
@@ -17,6 +15,7 @@ namespace Solria.SAFT.Parser.Models
 		/// <summary>
 		/// Unique ID, to identify the register with error
 		/// </summary>
+		public string FileID { get; set; }
 		public string UID { get; set; }
 
 		public string SupUID { get; set; }

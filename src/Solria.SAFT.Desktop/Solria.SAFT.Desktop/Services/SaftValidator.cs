@@ -1003,14 +1003,14 @@ namespace Solria.SAFT.Desktop.Services
 
         void ValidateMovementOfGoodsStockMovementLine(SourceDocumentsMovementOfGoodsStockMovementLine line, SourceDocumentsMovementOfGoodsStockMovement movement)
         {
-            MensagensErro.Add(line.ValidateLineNumber(SupPk: movement.Pk, movement: movement.DocumentNumber));
-            MensagensErro.Add(line.ValidateProductCode(SupPk: movement.Pk, movement: movement.DocumentNumber));
-            MensagensErro.Add(line.ValidateProductDescription(SupPk: movement.Pk, movement: movement.DocumentNumber));
-            MensagensErro.Add(line.ValidateQuantity(SupPk: movement.Pk, movement: movement.DocumentNumber));
-            MensagensErro.Add(line.ValidateUnitOfMeasure(SupPk: movement.Pk, movement: movement.DocumentNumber));
-            MensagensErro.Add(line.ValidateUnitPrice(SupPk: movement.Pk, movement: movement.DocumentNumber));
-            MensagensErro.AddRange(line.ValidateOrderReferences(SupPk: movement.Pk, movement: movement.DocumentNumber));
-            MensagensErro.AddRange(line.ValidateTax(SupPk: movement.Pk, movement: movement.DocumentNumber));
+            MensagensErro.Add(line.ValidateLineNumber(SupPk: movement.Pk));
+            MensagensErro.Add(line.ValidateProductCode(SupPk: movement.Pk));
+            MensagensErro.Add(line.ValidateProductDescription(SupPk: movement.Pk));
+            MensagensErro.Add(line.ValidateQuantity(SupPk: movement.Pk));
+            MensagensErro.Add(line.ValidateUnitOfMeasure(SupPk: movement.Pk));
+            MensagensErro.Add(line.ValidateUnitPrice(SupPk: movement.Pk));
+            MensagensErro.AddRange(line.ValidateOrderReferences(SupPk: movement.Pk));
+            MensagensErro.AddRange(line.ValidateTax(SupPk: movement.Pk));
 
             int numCasasDecimais = 6;// Workspace.Instance.Config.NumCasasDecimaisValidacoes;
 
@@ -1115,7 +1115,7 @@ namespace Solria.SAFT.Desktop.Services
         private void ValidatePayments(SourceDocumentsPayments payments)
         {
             if (Convert.ToInt32(payments.NumberOfEntries) != (payments.Payment?.Length ?? 0))
-                MensagensErro.Add(new ValidationError { Value = payments.NumberOfEntries, Field = "Payments", TypeofError = typeof(SourceDocumentsPayments), Description = string.Format("Nº de registos dos recibos incorrecto. Documento: {0}, esperado: {1}", payments.NumberOfEntries, payments.Payment?.Length ?? 0) });
+                MensagensErro.Add(new ValidationError { Value = payments.NumberOfEntries, Field = "Payments/NumberOfEntries", TypeofError = typeof(SourceDocumentsPayments), Description = string.Format("Nº de registos dos recibos incorrecto. Documento: {0}, esperado: {1}", payments.NumberOfEntries, payments.Payment?.Length ?? 0) });
 
             if (payments.Payment != null)
             {
@@ -1142,23 +1142,23 @@ namespace Solria.SAFT.Desktop.Services
                             int.TryParse(line.LineNumber, out num);
 
                         if (numLinha != num)
-                            mensagensErro.Add(new ValidationError { Value = line.LineNumber, Field = "LineNumber", TypeofError = typeof(SourceDocumentsPaymentsPaymentLine), Description = string.Format("Número de linha incorrecto, Documento: {0}, esperado: {1}, valor: {2}", payment.PaymentRefNo, numLinha, line.LineNumber), UID = line.Pk, SupUID = payment.Pk });
+                            mensagensErro.Add(new ValidationError { Value = line.LineNumber, Field = "Payments/Line/LineNumber", TypeofError = typeof(SourceDocumentsPaymentsPaymentLine), Description = string.Format("Número de linha incorrecto, Documento: {0}, esperado: {1}, valor: {2}", payment.PaymentRefNo, numLinha, line.LineNumber), UID = line.Pk, SupUID = payment.Pk });
                         numLinha++;
 
-                        ValidatePaymentLine(line, payment.Pk, payment.PaymentRefNo);
+                        ValidatePaymentLine(line, payment.Pk);
                     }
                 }
             }
         }
 
-        private void ValidatePaymentLine(SourceDocumentsPaymentsPaymentLine line, string supPk, string paymentRefNo)
+        private void ValidatePaymentLine(SourceDocumentsPaymentsPaymentLine line, string supPk)
         {
-            MensagensErro.Add(line.ValidateItem(SupPk: supPk, paymentNo: paymentRefNo));
-            MensagensErro.Add(line.ValidateLineNumber(SupPk: supPk, paymentNo: paymentRefNo));
-            MensagensErro.Add(line.ValidateSettlementAmount(SupPk: supPk, paymentNo: paymentRefNo));
-            MensagensErro.Add(line.ValidateTaxExemptionReason(SupPk: supPk, paymentNo: paymentRefNo));
-            MensagensErro.AddRange(line.ValidateSourceDocumentID(SupPk: supPk, paymentNo: paymentRefNo));
-            MensagensErro.AddRange(line.ValidateTax(SupPk: supPk, paymentNo: paymentRefNo));
+            MensagensErro.Add(line.ValidateItem(SupPk: supPk));
+            MensagensErro.Add(line.ValidateLineNumber(SupPk: supPk));
+            MensagensErro.Add(line.ValidateSettlementAmount(SupPk: supPk));
+            MensagensErro.Add(line.ValidateTaxExemptionReason(SupPk: supPk));
+            MensagensErro.AddRange(line.ValidateSourceDocumentID(SupPk: supPk));
+            MensagensErro.AddRange(line.ValidateTax(SupPk: supPk));
         }
 
         public static int Operation(SourceDocumentsSalesInvoicesInvoice i, SourceDocumentsSalesInvoicesInvoiceLine l)

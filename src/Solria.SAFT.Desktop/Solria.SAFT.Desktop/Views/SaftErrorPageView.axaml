@@ -39,6 +39,7 @@
               Items="{Binding CollectionView}" SelectionMode="Single" 
               SelectedItem="{Binding SelectedError, Mode=TwoWay}">
       <DataGrid.Columns>
+        <DataGridTextColumn Header="ID" Binding="{Binding FileID}" />
         <DataGridTextColumn Header="Campo" Binding="{Binding Field}" />
         <DataGridTextColumn Header="Valor" Binding="{Binding Value}" />
         <DataGridTextColumn Header="Descrição" Binding="{Binding Description}"/>

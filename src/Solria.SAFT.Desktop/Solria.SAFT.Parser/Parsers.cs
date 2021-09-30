@@ -21,7 +21,7 @@ namespace Solria.SAFT.Parser
         /// Parsers
         /// 
 
-        public static DateTime ParseDate(string value, string pk, string field, Type baseType, string supPk = null)
+        public static DateTime ParseDate(string value, string pk, string id, string field, Type baseType, string supPk = null)
         {
             if (DateTime.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
                 return date;
@@ -30,7 +30,7 @@ namespace Solria.SAFT.Parser
 
             return DateTime.MinValue;
         }
-        public static DateTime ParseDateTime(string value, string pk, string field, Type baseType, string supPk = null)
+        public static DateTime ParseDateTime(string value, string pk, string id, string field, Type baseType, string supPk = null)
         {
             if (DateTime.TryParseExact(value, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
                 return date;
@@ -39,7 +39,7 @@ namespace Solria.SAFT.Parser
 
             return DateTime.MinValue;
         }
-        public static decimal ParseDecimal(string value, string pk, string field, Type baseType, string supPk = null)
+        public static decimal ParseDecimal(string value, string pk, string id, string field, Type baseType, string supPk = null)
         {
             if (decimal.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out decimal credit))
                 return credit;
@@ -48,7 +48,7 @@ namespace Solria.SAFT.Parser
 
             return default;
         }
-        public static T ParseEnum<T>(string value, string pk, string field, Type baseType, string supPk = null) where T : struct
+        public static T ParseEnum<T>(string value, string pk, string id, string field, Type baseType, string supPk = null) where T : struct
         {
             if (Enum.TryParse(value, out T type))
                 return type;

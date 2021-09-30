@@ -42,13 +42,15 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                     if (o is ValidationError error)
                     {
-                        if (error.Description != null && error.Description.Contains(Filter, System.StringComparison.OrdinalIgnoreCase))
+                        if (error.Description != null && error.Description.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                             return true;
-                        if (error.DisplayName != null && error.DisplayName.Contains(Filter, System.StringComparison.OrdinalIgnoreCase))
+                        if (error.DisplayName != null && error.DisplayName.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                             return true;
-                        if (error.Field != null && error.Field.Contains(Filter, System.StringComparison.OrdinalIgnoreCase))
+                        if (error.Field != null && error.Field.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                             return true;
-                        if (error.Value != null && error.Value.Contains(Filter, System.StringComparison.OrdinalIgnoreCase))
+                        if (error.Value != null && error.Value.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+                            return true;
+                        if (error.FileID != null && error.FileID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
                             return true;
                     }
 

@@ -353,8 +353,8 @@
         public string CustomerID { get; set; }
         public ShippingPointStructure ShipTo { get; set; }
         public ShippingPointStructure ShipFrom { get; set; }
-        public System.DateTime MovementEndTime { get; set; }
-        public System.DateTime MovementStartTime { get; set; }
+        public System.DateTime? MovementEndTime { get; set; }
+        public System.DateTime? MovementStartTime { get; set; }
         public SourceDocumentsSalesInvoicesInvoiceLine[] Line { get; set; }
         public SourceDocumentsSalesInvoicesInvoiceDocumentTotals DocumentTotals { get; set; }
         public WithholdingTax[] WithholdingTax { get; set; }
