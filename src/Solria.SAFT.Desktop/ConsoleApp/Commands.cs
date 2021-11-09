@@ -21,6 +21,7 @@ namespace ConsoleApp
 
             [Description("Tipo de documento a abrir (saft|stock|transporte).")]
             [CommandOption("--tipo")]
+            [DefaultValue("saft")]
             public string FileType { get; init; }
 
             [Description("Imprime os produtos")]
@@ -80,7 +81,7 @@ namespace ConsoleApp
             string filename = settings.FileName;
 #if DEBUG
             if (string.IsNullOrWhiteSpace(filename))
-                filename = @"E:\faturas\2021\01 Janeiro\SAFT_510958362_2021_janeiro_utf8.xml";
+                filename = @"C:\Users\frede\Desktop\SAFT_157878147_janeiro_2000_setembro_2021.xml";
 #endif
             var (saftFile, errors) = await SaftParser.ReadFile(filename);
 
@@ -117,7 +118,7 @@ namespace ConsoleApp
                     tableCustomers.AddRow(customer.CompanyName, customer.AccountID, customer.CustomerID, customer.CustomerTaxID, customer.SelfBillingIndicator);
                 }
                 tableCustomers.Expand();
-                AnsiConsole.Render(tableCustomers);
+                AnsiConsole.Write(tableCustomers);
             }
 
             if (settings.PrintAll || settings.PrintProducts)
@@ -136,7 +137,7 @@ namespace ConsoleApp
                     tableProducts.AddRow(product.ProductDescription, product.ProductCode ?? string.Empty, product.ProductGroup ?? string.Empty, product.ProductNumberCode, product.ProductType.ToString());
                 }
                 tableProducts.Expand();
-                AnsiConsole.Render(tableProducts);
+                AnsiConsole.Write(tableProducts);
             }
 
             if (settings.PrintAll || settings.PrintTaxes)
@@ -165,7 +166,7 @@ namespace ConsoleApp
                 .AddRow("[b]TotalDebit[/]", $"{auditFile.SourceDocuments.SalesInvoices.TotalDebit:N3}")
                 .AddRow("[b]TotalCredit[/]", $"{auditFile.SourceDocuments.SalesInvoices.TotalCredit:N3}");
 
-                AnsiConsole.Render(new Panel(grid).Header("Documentos faturação"));
+                AnsiConsole.Write(new Panel(grid).Header("Documentos faturação"));
 
                 var tableInvoices = new Table();
                 tableInvoices.AddColumn("InvoiceNo");
@@ -190,7 +191,7 @@ namespace ConsoleApp
                     }
                 }
                 tableInvoices.Expand();
-                AnsiConsole.Render(tableInvoices);
+                AnsiConsole.Write(tableInvoices);
             }
 
             if (settings.PrintAll || settings.PrintReceipts && auditFile.SourceDocuments.Payments != null)
@@ -202,7 +203,7 @@ namespace ConsoleApp
                 .AddRow("[b]TotalDebit[/]", $"{auditFile.SourceDocuments.Payments.TotalDebit:N3}")
                 .AddRow("[b]TotalCredit[/]", $"{auditFile.SourceDocuments.Payments.TotalCredit:N3}");
 
-                AnsiConsole.Render(new Panel(grid).Header("Recibos"));
+                AnsiConsole.Write(new Panel(grid).Header("Recibos"));
 
                 var tableInvoices = new Table();
                 tableInvoices.AddColumn("DocNo");
@@ -227,7 +228,7 @@ namespace ConsoleApp
                     }
                 }
                 tableInvoices.Expand();
-                AnsiConsole.Render(tableInvoices);
+                AnsiConsole.Write(tableInvoices);
             }
 
             if (settings.PrintAll || settings.PrintErrors)
@@ -245,7 +246,7 @@ namespace ConsoleApp
                         tableErrors.AddRow(error.Description, error.Field);
                     }
                     tableErrors.Expand();
-                    AnsiConsole.Render(tableErrors);
+                    AnsiConsole.Write(tableErrors);
                 }
                 else
                 {

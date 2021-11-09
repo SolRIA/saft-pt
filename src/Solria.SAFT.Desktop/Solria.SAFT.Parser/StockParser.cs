@@ -20,7 +20,7 @@ namespace Solria.SAFT.Parser
             }
             else if (filename.EndsWith("csv"))
             {
-                return await ReadCsv(filename);
+                return ReadCsv(filename);
             }
 
             return (null, Parsers.Validations);
@@ -63,7 +63,7 @@ namespace Solria.SAFT.Parser
             return (stockFile, Parsers.Validations);
         }
 
-        private static async Task<(StockFile stockFile, List<ValidationError> validations)> ReadCsv(string filename)
+        private static (StockFile stockFile, List<ValidationError> validations) ReadCsv(string filename)
         {
             stockFile = new StockFile
             {
