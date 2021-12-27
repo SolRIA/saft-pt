@@ -3,6 +3,7 @@ using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
 using Solria.SAFT.Desktop.Services;
 using Solria.SAFT.Desktop.Views;
+using Solria.SAFT.Parser.Services;
 using Splat;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,14 @@ namespace Solria.SAFT.Desktop.ViewModels
 
             if (pem_files != null && pem_files.Any())
             {
-                PemFiles.AddRange(pem_files);
+                PemFiles.AddRange(pem_files.Select(p => new PemFile
+                {
+                    Name = p.Name,
+                    Id = p.Id,
+                    PemText = p.PemText,
+                    PrivateKey = p.PrivateKey,
+                    RsaSettings = p.RsaSettings
+                }));
                 PemFile = PemFiles.First();
             }
         }
@@ -93,7 +101,14 @@ namespace Solria.SAFT.Desktop.ViewModels
         public ReactiveCommand<Unit, Unit> SaveCloseCommand { get; }
         private void OnSaveClose()
         {
-            databaseService.UpdatePemFiles(PemFiles);
+            databaseService.UpdatePemFiles(PemFiles.Select(p => new Parser.Models.PemFile
+            {
+                Id = p.Id,
+                Name = p.Name,
+                PemText = p.PemText,
+                PrivateKey = p.PrivateKey,
+                RsaSettings = p.RsaSettings
+            }));
             dialogManager.CloseDialog();
         }
 

@@ -32,7 +32,9 @@ namespace Solria.SAFT.Desktop.ViewModels
 
         protected override void HandleActivation(CompositeDisposable disposables)
         {
-            CollectionView = new DataGridCollectionView(saftValidator?.SaftFile?.MasterFiles?.Supplier ?? new Supplier[] { })
+            ToolTip = new SupplierToolTipService();
+
+            CollectionView = new DataGridCollectionView(saftValidator?.SaftFile?.MasterFiles?.Supplier ?? Array.Empty<Supplier>())
             {
                 Filter = o =>
                 {
@@ -76,6 +78,13 @@ namespace Solria.SAFT.Desktop.ViewModels
 
         protected override void HandleDeactivation()
         {
+        }
+
+        private SupplierToolTipService toolTip;
+        public SupplierToolTipService ToolTip
+        {
+            get => toolTip;
+            set => this.RaiseAndSetIfChanged(ref toolTip, value);
         }
 
         public ReactiveCommand<Unit, Unit> DoPrintCommand { get; }

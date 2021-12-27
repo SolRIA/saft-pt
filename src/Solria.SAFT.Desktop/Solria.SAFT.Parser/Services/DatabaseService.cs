@@ -1,18 +1,16 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.PlatformAbstractions;
-using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Models.DatabaseModels;
-using Solria.SAFT.Desktop.SQL;
+using Solria.SAFT.Parser.Models;
+using Solria.SAFT.Parser.SQL;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 
-namespace Solria.SAFT.Desktop.Services
+namespace Solria.SAFT.Parser.Services
 {
     public class DatabaseService : IDatabaseService
     {
@@ -20,7 +18,7 @@ namespace Solria.SAFT.Desktop.Services
         readonly string app_version;
         public DatabaseService()
         {
-            database_filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SolRIA SAFT", "validator.db");
+            database_filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SolRIA SAFT", "solria_saft.sqlite");
             app_version = PlatformServices.Default.Application.ApplicationVersion;
         }
 
@@ -36,7 +34,7 @@ namespace Solria.SAFT.Desktop.Services
                 using var connection = InitConnection();
                 if (File.Exists(database_filename) == false)
                 {
-                    var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SolRIA SAFT");
+                    var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SolRIA SAFT");
                     if (Directory.Exists(folder) == false)
                         Directory.CreateDirectory(folder);
 
@@ -50,7 +48,7 @@ namespace Solria.SAFT.Desktop.Services
                 if (versionTable <= 0)
                 {
                     //no table available do the full create
-                    string sqlContent = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "SQL", "v001.txt"));
+                    string sqlContent = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "SQL", "schema.sql"));
                     string[] sqlCommands = sqlContent.Split(';');
 
                     if (connection.State != ConnectionState.Open)
@@ -137,29 +135,6 @@ namespace Solria.SAFT.Desktop.Services
             connection.Execute("DELETE FROM Logs;");
         }
 
-        public void AddRecentFile(string file)
-        {
-            using var connection = InitConnection();
-            var existing_file = connection.QueryFirstOrDefault<int>("SELECT Id FROM RecentFiles WHERE FileName=@file;", new { file });
-
-            if (existing_file <= 0)
-                connection.Execute("INSERT INTO RecentFiles (FileName) VALUES (@file);", new { file });
-            else
-                connection.Execute("UPDATE RecentFiles SET LastUsed = CURRENT_TIMESTAMP WHERE Id=@existing_file;", new { existing_file });
-        }
-
-        public IEnumerable<string> GetRecentFiles()
-        {
-            using var connection = InitConnection();
-            return connection.Query<string>("SELECT FileName FROM RecentFiles ORDER BY LastUsed DESC;");
-        }
-
-        public void ClearRecentFiles()
-        {
-            using var connection = InitConnection();
-            connection.Execute("DELETE FROM RecentFiles;");
-        }
-
         public IEnumerable<PemFile> GetPemFiles()
         {
             using var connection = InitConnection();
@@ -189,66 +164,6 @@ namespace Solria.SAFT.Desktop.Services
                 connection.Execute(
                     "INSERT INTO PemFiles (Name,PemText,RsaSettings,PrivateKey) VALUES (@Name,@PemText,@RsaSettings,@PrivateKey);", 
                     insert);
-        }
-
-        public T GetPreferences<T>(string key, T defaultValue)
-        {
-            using var connection = InitConnection();
-            var preferenceValue = connection.QueryFirstOrDefault<string>(
-                "SELECT `Value` FROM Preferences WHERE `Key`=@key;", new { key });
-
-            return Preferences.Cast(preferenceValue, defaultValue);
-        }
-
-        public void UpdatePreferences(string key, object value)
-        {
-            if (string.IsNullOrWhiteSpace(key))
-                return;
-
-            using var connection = InitConnection();
-
-            if (value == null)
-                connection.Execute("DELETE FROM Preferences WHERE Key=@key;", new { key, value });
-            else
-                connection.Execute("REPLACE INTO Preferences(Key,Value) VALUES(@key, @value);", new { key, value });
-        }
-        public T GetJsonPreferences<T>(string key, T defaultValue)
-        {
-            try
-            {
-                using var connection = InitConnection();
-                var preferenceValue = connection.QueryFirstOrDefault<string>(
-                    "SELECT `Value` FROM Preferences WHERE `Key`=@key;", new { key });
-
-                if (string.IsNullOrWhiteSpace(preferenceValue))
-                    return defaultValue;
-
-                return JsonSerializer.Deserialize<T>(preferenceValue);
-            }
-            catch (Exception ex)
-            {
-                LogException(ex, "GetJsonPreferences");
-            }
-
-            return defaultValue;
-        }
-
-        public void UpdateJsonPreferences(string key, object value)
-        {
-            if (string.IsNullOrWhiteSpace(key))
-                return;
-
-            using var connection = InitConnection();
-
-            if (value == null)
-                connection.Execute("DELETE FROM Preferences WHERE Key=@key;", new { key, value });
-            else
-                connection.Execute("REPLACE INTO Preferences(Key,Value) VALUES(@key, @value);", new { key, value = JsonSerializer.Serialize(value) });
-        }
-        public void DeletePreferences(string key)
-        {
-            using var connection = InitConnection();
-            connection.Execute("DELETE * FROM Preferences WHERE Key = @key;", new { key });
         }
     }
 }

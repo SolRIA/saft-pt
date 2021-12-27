@@ -38,6 +38,7 @@ namespace Solria.SAFT.Parser
                     if (string.IsNullOrWhiteSpace(reader.Name) || reader.NodeType != XmlNodeType.Element)
                         break;
 
+                    //TODO: save the data on the database
                     if (Parsers.StringEquals(reader.Name, "Header"))
                     {
                         auditFile.Header = await ReadHeader(reader.ReadSubtree());
@@ -2159,9 +2160,9 @@ namespace Solria.SAFT.Parser
             return customer;
         }
 
-        private static async Task<AddressStructurePT> ReadAddressStructurePT(XmlReader reader)
+        private static async Task<AddressStructure> ReadAddressStructurePT(XmlReader reader)
         {
-            var address = new AddressStructurePT();
+            var address = new AddressStructure();
 
             while (await reader.ReadAsync())
             {

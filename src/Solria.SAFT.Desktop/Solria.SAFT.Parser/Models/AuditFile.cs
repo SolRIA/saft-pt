@@ -16,7 +16,7 @@
         public TaxAccountingBasis TaxAccountingBasis { get; set; }
         public string CompanyName { get; set; }
         public string BusinessName { get; set; }
-        public AddressStructurePT CompanyAddress { get; set; }
+        public AddressStructure CompanyAddress { get; set; }
         public string FiscalYear { get; set; }
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
@@ -35,17 +35,6 @@
     }
 
     public enum TaxAccountingBasis { C, E, F, I, P, R, S, T, INVALIDO }
-
-    public partial class AddressStructurePT
-    {
-        public string BuildingNumber { get; set; }
-        public string StreetName { get; set; }
-        public string AddressDetail { get; set; }
-        public string City { get; set; }
-        public string PostalCode { get; set; }
-        public string Region { get; set; }
-        public string Country { get; set; }
-    }
 
     public partial class WithholdingTax
     {

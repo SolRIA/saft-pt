@@ -600,7 +600,7 @@ namespace Solria.SAFT.Desktop.Services
             }
             catch (Exception ex)
             {
-                MensagensErro.Add(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message), TypeofError = typeof(HashResults) });
+                MensagensErro.Add(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message) });
                 return;
             }
 
@@ -642,7 +642,7 @@ namespace Solria.SAFT.Desktop.Services
             }
             catch (Exception ex)
             {
-                MensagensErro.Add(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message), TypeofError = typeof(HashResults) });
+                MensagensErro.Add(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message) });
                 return;
             }
 
@@ -684,7 +684,7 @@ namespace Solria.SAFT.Desktop.Services
             }
             catch (Exception ex)
             {
-                MensagensErro.Add(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message), TypeofError = typeof(HashResults) });
+                MensagensErro.Add(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message) });
                 return;
             }
 
@@ -740,13 +740,13 @@ namespace Solria.SAFT.Desktop.Services
             catch (Exception error)
             {
                 // XML Validation failed
-                MensagensErro.Add(new ValidationError { Description = string.Format("Mensagem de erro: {0}", error.Message), TypeofError = typeof(SchemaResults) });
+                MensagensErro.Add(new ValidationError { Description = string.Format("Mensagem de erro: {0}", error.Message) });
             }
         }
 
         void ValidationEventHandler(object sender, ValidationEventArgs e)
         {
-            MensagensErro.Add(new ValidationError { Description = e.Message, TypeofError = typeof(SchemaResults) });
+            MensagensErro.Add(new ValidationError { Description = e.Message });
         }
 
         void ValidateHeader(Header header)

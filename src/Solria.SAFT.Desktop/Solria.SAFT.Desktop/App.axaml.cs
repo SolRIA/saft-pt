@@ -5,6 +5,7 @@ using ReactiveUI;
 using Solria.SAFT.Desktop.Services;
 using Solria.SAFT.Desktop.ViewModels;
 using Solria.SAFT.Desktop.Views;
+using Solria.SAFT.Parser.Services;
 using Splat;
 using System.Reflection;
 

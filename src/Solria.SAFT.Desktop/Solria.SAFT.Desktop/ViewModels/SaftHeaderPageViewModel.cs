@@ -19,6 +19,8 @@ namespace Solria.SAFT.Desktop.ViewModels
         protected override void HandleActivation(CompositeDisposable disposables)
         {
             Header = saftValidator?.SaftFile?.Header ?? new Header();
+
+            ToolTip = new HeaderToolTipService();
         }
 
         private Header header;
@@ -26,6 +28,13 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             get => header;
             set => this.RaiseAndSetIfChanged(ref header, value);
+        }
+
+        private HeaderToolTipService toolTip;
+        public HeaderToolTipService ToolTip
+        {
+            get => toolTip;
+            set => this.RaiseAndSetIfChanged(ref toolTip, value);
         }
     }
 }

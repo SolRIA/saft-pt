@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="**\*.xaml.cs">
@@ -38,14 +38,14 @@
     <None Remove="Assets\Sidebar.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.10" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.10" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.10" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.10" />
+    <PackageReference Include="Avalonia" Version="0.10.11" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.11" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.11" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.11" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.11.5" />
     <PackageReference Include="ClosedXML" Version="0.95.4" />
     <PackageReference Include="Dapper" Version="2.0.123" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
   </ItemGroup>
@@ -175,9 +175,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Schemas\SAFTPT1.04_01.xsd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SQL\v001.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

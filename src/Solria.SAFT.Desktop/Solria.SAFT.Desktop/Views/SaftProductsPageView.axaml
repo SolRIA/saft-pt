@@ -3,79 +3,53 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:vm="clr-namespace:Solria.SAFT.Desktop.ViewModels"
+			 xmlns:model="clr-namespace:Solria.SAFT.Parser.Models;assembly=Solria.SAFT.Parser"
+			 x:DataType="vm:SaftProductsPageViewModel"
+			 x:CompileBindings="True"
              x:Class="Solria.SAFT.Desktop.Views.SaftProductsPageView">
-  <Grid RowDefinitions="Auto,Auto,*">
+	<Grid RowDefinitions="Auto,Auto,*">
 
-    <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto">
+		<Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto">
 
-      <TextBox Grid.Column="0" Margin="2" Text="{Binding Filter, Mode=TwoWay}"
-               Watermark="Filtro por: Código, Nome, Código barras ou Descrição"
-               VerticalAlignment="Center">
-        <TextBox.KeyBindings>
-          <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
-        </TextBox.KeyBindings>
-      </TextBox>
+			<TextBox Grid.Column="0" Margin="2" Text="{Binding Filter, Mode=TwoWay}"
+					 Watermark="Filtro por: Código, Nome, Código barras ou Descrição"
+					 VerticalAlignment="Center">
+				<TextBox.KeyBindings>
+					<KeyBinding Command="{CompiledBinding SearchCommand}" Gesture="Enter"/>
+				</TextBox.KeyBindings>
+			</TextBox>
 
-      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
-              Command="{Binding SearchCommand}" >
-        <PathIcon Data="{StaticResource Material.FilterOutline}" HorizontalAlignment="Center" />
-      </Button>
+			<Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
+					Command="{CompiledBinding SearchCommand}" >
+				<PathIcon Data="{StaticResource Material.FilterOutline}" HorizontalAlignment="Center" />
+			</Button>
 
-      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="2" VerticalAlignment="Center"
-              Command="{Binding SearchClearCommand}" >
-        <PathIcon Data="{StaticResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
-      </Button>
+			<Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="2" VerticalAlignment="Center"
+					Command="{CompiledBinding SearchClearCommand}" >
+				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
+			</Button>
 
-      <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="3" VerticalAlignment="Center"
-              Command="{Binding DoPrintCommand}">
-        <PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
-      </Button>
-    </Grid>
+			<Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="3" VerticalAlignment="Center"
+					Command="{CompiledBinding DoPrintCommand}">
+				<PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
+			</Button>
+		</Grid>
 
-    <!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
+		<!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
                            Grid.Row="1" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>-->
-    
-    <DataGrid Grid.Row="2" IsReadOnly="True" FontSize="16" 
-              Items="{Binding CollectionView}" >
-      <DataGrid.Columns>
-        <DataGridTemplateColumn Header="Código" SortMemberPath="ProductCode">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding ProductCode}" Classes="datagrid" FontSize="16" ToolTip.Tip="{Binding TooltipProductCode}"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Grupo" SortMemberPath="ProductGroup">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding ProductGroup}" Classes="datagrid" FontSize="16" ToolTip.Tip="{Binding TooltipProductGroup}"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Código barras" SortMemberPath="ProductNumberCode">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding ProductNumberCode}" Classes="datagrid" FontSize="16" ToolTip.Tip="{Binding TooltipProductNumberCode}"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Descrição" SortMemberPath="ProductDescription" Width="*">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding ProductDescription}" Classes="datagrid" FontSize="16" ToolTip.Tip="{Binding TooltipProductDescription}"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Preços" SortMemberPath="Prices">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding Prices}" Classes="number" FontSize="16"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-        <DataGridTextColumn Header="IVA" Binding="{Binding Taxes}" />
-      </DataGrid.Columns>
-    </DataGrid>
 
-  </Grid>
+		<DataGrid Grid.Row="2" IsReadOnly="True" FontSize="16"
+				  Items="{CompiledBinding CollectionView}" >
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Grupo" Binding="{CompiledBinding ProductGroup}" SortMemberPath="ProductGroup" x:DataType="model:Product"/>
+				<DataGridTextColumn Header="Código" Binding="{CompiledBinding ProductCode}" SortMemberPath="ProductCode" x:DataType="model:Product"/>
+				<DataGridTextColumn Header="Código barras" Binding="{CompiledBinding ProductNumberCode}" SortMemberPath="ProductNumberCode" x:DataType="model:Product"/>
+				<DataGridTextColumn Header="Descrição" Binding="{CompiledBinding ProductDescription}" Width="*" SortMemberPath="ProductDescription" x:DataType="model:Product"/>
+				<DataGridTextColumn Header="Preços" Binding="{CompiledBinding Prices}" SortMemberPath="Prices" x:DataType="model:Product"/>
+				<DataGridTextColumn Header="IVA" Binding="{CompiledBinding Taxes}" SortMemberPath="Taxes" x:DataType="model:Product"/>
+			</DataGrid.Columns>
+		</DataGrid>
+
+	</Grid>
 </UserControl>

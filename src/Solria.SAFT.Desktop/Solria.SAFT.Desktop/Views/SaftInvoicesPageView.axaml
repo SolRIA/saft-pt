@@ -106,91 +106,91 @@
         <DataGridTemplateColumn Header="Nº" SortMemberPath="InvoiceNo">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding InvoiceNo}" Classes="datagrid" ToolTip.Tip="{Binding InvoiceNo}"/>
+              <TextBlock Text="{Binding InvoiceNo}" Classes="datagrid" ToolTip.Tip="{Binding ToolTip.InvoiceNo}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="ATCUD" SortMemberPath="ATCUD">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding ATCUD}" Classes="datagrid" ToolTip.Tip="{Binding ATCUD}"/>
+              <TextBlock Text="{Binding ATCUD}" Classes="datagrid" ToolTip.Tip="{Binding ToolTip.ATCUD}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Estado" SortMemberPath="DocumentStatus.InvoiceStatus">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding DocumentStatus.InvoiceStatus}" Classes="datagrid" ToolTip.Tip="{Binding TooltipInvoiceStatus}"/>
+              <TextBlock Text="{Binding DocumentStatus.InvoiceStatus}" Classes="datagrid" ToolTip.Tip="{Binding ToolTip.InvoiceStatus}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Data" SortMemberPath="InvoiceDate">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding InvoiceDate}" Classes="datagrid" ToolTip.Tip="{Binding TooltipInvoiceDate}"/>
+              <TextBlock Text="{Binding InvoiceDate}" Classes="datagrid" ToolTip.Tip="{Binding ToolTip.InvoiceDate}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Data sistema" SortMemberPath="SystemEntryDate">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding SystemEntryDate}" Classes="datagrid" ToolTip.Tip="{Binding TooltipSystemEntryDate}"/>
+              <TextBlock Text="{Binding SystemEntryDate}" Classes="datagrid" ToolTip.Tip="{Binding ToolTip.SystemEntryDate}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Total s/ IVA" SortMemberPath="DocumentTotals.NetTotal">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding DocumentTotals.NetTotal}" Classes="number datagrid" ToolTip.Tip="{Binding TooltipNetTotal}"/>
+              <TextBlock Text="{Binding DocumentTotals.NetTotal}" Classes="number datagrid" ToolTip.Tip="{Binding ToolTip.NetTotal}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Total" SortMemberPath="DocumentTotals.GrossTotal">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding DocumentTotals.GrossTotal}" Classes="number datagrid" ToolTip.Tip="{Binding TooltipGrossTotal}"/>
+              <TextBlock Text="{Binding DocumentTotals.GrossTotal}" Classes="number datagrid" ToolTip.Tip="{Binding ToolTip.GrossTotal}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Total imposto" SortMemberPath="DocumentTotals.TaxPayable">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding DocumentTotals.TaxPayable}" Classes="number datagrid" ToolTip.Tip="{Binding TooltipTaxPayable}"/>
+              <TextBlock Text="{Binding DocumentTotals.TaxPayable}" Classes="number datagrid" ToolTip.Tip="{Binding ToolTip.TaxPayable}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Cliente" SortMemberPath="CustomerID">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding CustomerID}" Classes="datagrid" ToolTip.Tip="{Binding TooltipCustomerID}"/>
+              <TextBlock Text="{Binding CustomerID}" Classes="datagrid" ToolTip.Tip="{Binding ToolTip.CustomerID}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Periodo" SortMemberPath="Period">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Period}" Classes="datagrid" ToolTip.Tip="{Binding TooltipPeriod}"/>
+              <TextBlock Text="{Binding Period}" Classes="datagrid" ToolTip.Tip="{Binding ToolTip.Period}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Autofacturação" SortMemberPath="SelfBillingIndicator">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding SelfBillingIndicator}" Classes="datagrid" ToolTip.Tip="{Binding TooltipSelfBillingIndicator}"/>
+              <TextBlock Text="{Binding SelfBillingIndicator}" Classes="datagrid" ToolTip.Tip="{Binding ToolTip.SelfBillingIndicator}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Transacção" SortMemberPath="TransactionID">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding TransactionID}" Classes="datagrid" ToolTip.Tip="{Binding TooltipTransactionID}"/>
+              <TextBlock Text="{Binding TransactionID}" Classes="datagrid" ToolTip.Tip="{Binding ToolTip.TransactionID}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Hash" SortMemberPath="Hash" Width="100">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Hash}" Classes="datagrid" ToolTip.Tip="{Binding TooltipHash}"/>
+              <TextBlock Text="{Binding Hash}" Classes="datagrid" ToolTip.Tip="{Binding ToolTip.Hash}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
@@ -198,7 +198,7 @@
         <DataGridTemplateColumn Header="Hash Control" SortMemberPath="HashControl">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding HashControl}" Classes="datagrid" ToolTip.Tip="{Binding TooltipHashControl}"/>
+              <TextBlock Text="{Binding HashControl}" Classes="datagrid" ToolTip.Tip="{Binding ToolTip.HashControl}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
@@ -258,7 +258,7 @@
         <DataGridTemplateColumn Header="Nº linha" SortMemberPath="LineNumber">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding LineNumber}" Classes="datagrid" ToolTip.Tip="{Binding TooltipLineNumber}"/>
+              <TextBlock Text="{Binding LineNumber}" Classes="datagrid" ToolTip.Tip="{Binding ToolTipLine.LineNumber}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
@@ -266,63 +266,63 @@
         <DataGridTemplateColumn Header="Código produto" SortMemberPath="ProductCode">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding ProductCode}" Classes="datagrid" ToolTip.Tip="{Binding TooltipProductCode}"/>
+              <TextBlock Text="{Binding ProductCode}" Classes="datagrid" ToolTip.Tip="{Binding ToolTipLine.ProductCode}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Descrição produto" SortMemberPath="ProductDescription">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding ProductDescription}" Classes="datagrid" ToolTip.Tip="{Binding TooltipProductDescription}"/>
+              <TextBlock Text="{Binding ProductDescription}" Classes="datagrid" ToolTip.Tip="{Binding ToolTipLine.ProductDescription}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Quantidade" SortMemberPath="Quantity">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Quantity}" Classes="number datagrid" ToolTip.Tip="{Binding TooltipQuantity}"/>
+              <TextBlock Text="{Binding Quantity}" Classes="number datagrid" ToolTip.Tip="{Binding ToolTipLine.Quantity}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Preço unitário" SortMemberPath="UnitPrice">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding UnitPrice}" Classes="number datagrid" ToolTip.Tip="{Binding TooltipUnitPrice}"/>
+              <TextBlock Text="{Binding UnitPrice}" Classes="number datagrid" ToolTip.Tip="{Binding ToolTipLine.UnitPrice}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Crédito" SortMemberPath="CreditAmount">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding CreditAmount}" Classes="number datagrid" ToolTip.Tip="{Binding TooltipCreditAmount}"/>
+              <TextBlock Text="{Binding CreditAmount}" Classes="number datagrid" ToolTip.Tip="{Binding ToolTipLine.CreditAmount}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Débito" SortMemberPath="DebitAmount">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding DebitAmount}" Classes="number datagrid" ToolTip.Tip="{Binding TooltipDebitAmount}"/>
+              <TextBlock Text="{Binding DebitAmount}" Classes="number datagrid" ToolTip.Tip="{Binding ToolTipLine.DebitAmount}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Desconto" SortMemberPath="SettlementAmount">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding SettlementAmount}" Classes="number datagrid" ToolTip.Tip="{Binding TooltipProductDescription}"/>
+              <TextBlock Text="{Binding SettlementAmount}" Classes="number datagrid" ToolTip.Tip="{Binding ToolTipLine.ProductDescription}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Imposto" SortMemberPath="Tax.TaxPercentage">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Tax.TaxPercentage}" Classes="number datagrid" ToolTip.Tip="{Binding TooltipSettlementAmount}"/>
+              <TextBlock Text="{Binding Tax.TaxPercentage}" Classes="number datagrid" ToolTip.Tip="{Binding ToolTipLine.SettlementAmount}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Isenção imposto" SortMemberPath="TaxExemptionReason">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding TaxExemptionReason}" Classes="datagrid" ToolTip.Tip="{Binding TooltipTaxExemptionReason}"/>
+              <TextBlock Text="{Binding TaxExemptionReason}" Classes="datagrid" ToolTip.Tip="{Binding ToolTipLine.TaxExemptionReason}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
@@ -330,7 +330,7 @@
         <DataGridTemplateColumn Header="Cód. Isenção" SortMemberPath="TaxExemptionCode">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding TaxExemptionCode}" Classes="datagrid" ToolTip.Tip="{Binding TooltipTaxExemptionCode}"/>
+              <TextBlock Text="{Binding TaxExemptionCode}" Classes="datagrid" ToolTip.Tip="{Binding ToolTipLine.TaxExemptionCode}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
@@ -340,14 +340,14 @@
         <DataGridTemplateColumn Header="Unidade medida" SortMemberPath="UnitOfMeasure">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding UnitOfMeasure}" Classes="datagrid" ToolTip.Tip="{Binding TooltipUnitOfMeasure}"/>
+              <TextBlock Text="{Binding UnitOfMeasure}" Classes="datagrid" ToolTip.Tip="{Binding ToolTipLine.UnitOfMeasure}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Data" SortMemberPath="TaxPointDate">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding TaxPointDate}" Classes="datagrid" ToolTip.Tip="{Binding TooltipTaxPointDate}"/>
+              <TextBlock Text="{Binding TaxPointDate}" Classes="datagrid" ToolTip.Tip="{Binding ToolTipLine.TaxPointDate}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
@@ -355,7 +355,7 @@
         <DataGridTemplateColumn Header="Descrição" SortMemberPath="Description">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Description}" Classes="datagrid" ToolTip.Tip="{Binding TooltipDescription}"/>
+              <TextBlock Text="{Binding Description}" Classes="datagrid" ToolTip.Tip="{Binding ToolTipLine.Description}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>

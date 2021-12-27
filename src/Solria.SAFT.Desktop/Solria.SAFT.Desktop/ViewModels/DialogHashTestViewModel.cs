@@ -3,6 +3,7 @@ using ReactiveUI;
 using Solria.SAFT.Desktop.Models;
 using Solria.SAFT.Desktop.Services;
 using Solria.SAFT.Parser.Models;
+using Solria.SAFT.Parser.Services;
 using Splat;
 using System;
 using System.Collections.Generic;
@@ -33,9 +34,20 @@ namespace Solria.SAFT.Desktop.ViewModels
         public void Init()
         {
             //load the keys
-            PemFiles = databaseService.GetPemFiles();
-            if (PemFiles != null && PemFiles.Count() > 0)
+            var pemFiles = databaseService.GetPemFiles();
+
+            if (pemFiles != null && pemFiles.Any())
+            {
+                PemFiles = pemFiles.Select(p => new Models.PemFile
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    PemText = p.PemText,
+                    PrivateKey = p.PrivateKey,
+                    RsaSettings = p.RsaSettings
+                });
                 PemFile = PemFiles.First();
+            }
 
             DocumentTypes = new string[] { "FT", "FS", "FR", "ND", "NC", "VD", "TV", "TD", "AA", "DA", "RP", "RE", "CS", "LD", "RA" };
         }
@@ -126,15 +138,15 @@ namespace Solria.SAFT.Desktop.ViewModels
 
         public string Title { get; set; } = "Testar assinaturas";
 
-        private PemFile pemFile;
-        public PemFile PemFile
+        private Models.PemFile pemFile;
+        public Models.PemFile PemFile
         {
             get => pemFile;
             set => this.RaiseAndSetIfChanged(ref pemFile, value);
         }
 
-        private IEnumerable<PemFile> pemFiles;
-        public IEnumerable<PemFile> PemFiles
+        private IEnumerable<Models.PemFile> pemFiles;
+        public IEnumerable<Models.PemFile> PemFiles
         {
             get => pemFiles;
             set => this.RaiseAndSetIfChanged(ref pemFiles, value);

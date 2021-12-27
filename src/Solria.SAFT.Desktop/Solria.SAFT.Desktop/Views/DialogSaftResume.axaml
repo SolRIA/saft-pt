@@ -6,6 +6,10 @@
         x:Class="Solria.SAFT.Desktop.Views.DialogSaftResume"
         Title="{Binding Title}" ShowInTaskbar="False" CanResize="False" WindowStartupLocation="CenterOwner"
         Classes="dialog"
+		xmlns:vm="clr-namespace:Solria.SAFT.Desktop.ViewModels"
+		xmlns:model="clr-namespace:Solria.SAFT.Parser.Models;assembly=Solria.SAFT.Parser"
+		x:DataType="vm:DialogSaftResumeViewModel"
+		x:CompileBindings="True"
         TransparencyLevelHint="AcrylicBlur"
         ExtendClientAreaToDecorationsHint="True"
         Background="Transparent">
@@ -31,9 +35,9 @@
             <TextBlock Text="Designação" Grid.Row="2" />
             <TextBlock Text="NIF" Grid.Row="3" />
 
-            <TextBlock Text="{Binding Header.CompanyName}" Grid.Row="1" Grid.Column="1" Margin="5,0"/>
-            <TextBlock Text="{Binding Header.BusinessName}" Grid.Row="2" Grid.Column="1" Margin="5,0"/>
-            <TextBlock Text="{Binding Header.TaxRegistrationNumber}" Grid.Row="3" Grid.Column="1" Margin="5,0"/>
+            <TextBlock Text="{CompiledBinding Header.CompanyName}" Grid.Row="1" Grid.Column="1" Margin="5,0"/>
+            <TextBlock Text="{CompiledBinding Header.BusinessName}" Grid.Row="2" Grid.Column="1" Margin="5,0"/>
+            <TextBlock Text="{CompiledBinding Header.TaxRegistrationNumber}" Grid.Row="3" Grid.Column="1" Margin="5,0"/>
           </Grid>
         </TabItem>
       </TabControl>
@@ -43,22 +47,22 @@
           <Grid ColumnDefinitions="*,100" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
 
             <TextBlock Text="Total erros:" Grid.Column="0" Grid.Row="0"/>
-            <Button Content="{Binding TotalErrors}" Command="{Binding OpenErrorsCommand}"
+            <Button Content="{CompiledBinding TotalErrors}" Command="{CompiledBinding OpenErrorsCommand}"
                     Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"/>
 
             <TextBlock Text="Erros cabeçalho:" Grid.Column="0" Grid.Row="1"/>
-            <Button Content="{Binding HeaderErrors}" Command="{Binding OpenHeaderCommand}"
+            <Button Content="{CompiledBinding HeaderErrors}" Command="{CompiledBinding OpenHeaderCommand}"
                     Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"/>
 
             <TextBlock Text="Erros Clientes:" Grid.Column="0" Grid.Row="2"/>
-            <Button Content="{Binding CustomersErrors}" Command="{Binding OpenCustomersCommand}"
+            <Button Content="{CompiledBinding CustomersErrors}" Command="{CompiledBinding OpenCustomersCommand}"
                     Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"/>
 
             <TextBlock Text="Assinaturas validadas:" Grid.Column="0" Grid.Row="3"/>
-            <TextBlock HorizontalAlignment="Right" Grid.Column="1" Grid.Row="3" Text="{Binding SaftHashValidationNumber}"/>
+            <TextBlock HorizontalAlignment="Right" Grid.Column="1" Grid.Row="3" Text="{CompiledBinding SaftHashValidationNumber}"/>
 
             <TextBlock Text="Assinaturas com erro:" Grid.Column="0" Grid.Row="4"/>
-            <TextBlock HorizontalAlignment="Right" Grid.Column="1" Grid.Row="4" Text="{Binding SaftHashValidationErrorNumber}"/>
+            <TextBlock HorizontalAlignment="Right" Grid.Column="1" Grid.Row="4" Text="{CompiledBinding SaftHashValidationErrorNumber}"/>
 
           </Grid>
         </TabItem>
@@ -66,9 +70,9 @@
 
       <Grid Grid.Row="2" HorizontalAlignment="Stretch" ColumnDefinitions="*,Auto,Auto">
         <Button Content="Doc. faturação" HorizontalContentAlignment="Center" Margin="5,5,0,5" Width="120" Grid.Column="1"
-                Command="{Binding OpenInvoicesCommand}" />
+                Command="{CompiledBinding OpenInvoicesCommand}" />
         <Button Content="Fechar" HorizontalContentAlignment="Center" Margin="5" Width="120" Grid.Column="2"
-                Command="{Binding CloseDialogCommand}" />
+                Command="{CompiledBinding CloseDialogCommand}" />
       </Grid>
     </Grid>
   </Panel>

@@ -47,6 +47,8 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             IsLoading = true;
 
+            ToolTip = new SourceDocumentsToolTipService();
+            ToolTipLine = new SourceDocumentsSalesInvoicesInvoiceLineToolTipService();
 
             header = saftValidator.SaftFile?.Header;
 
@@ -164,6 +166,20 @@ namespace Solria.SAFT.Desktop.ViewModels
 
         protected override void HandleDeactivation()
         {
+        }
+
+        private SourceDocumentsToolTipService toolTip;
+        public SourceDocumentsToolTipService ToolTip
+        {
+            get => toolTip;
+            set => this.RaiseAndSetIfChanged(ref toolTip, value);
+        }
+
+        private SourceDocumentsSalesInvoicesInvoiceLineToolTipService toolTipLine;
+        public SourceDocumentsSalesInvoicesInvoiceLineToolTipService ToolTipLine
+        {
+            get => toolTipLine;
+            set => this.RaiseAndSetIfChanged(ref toolTipLine, value);
         }
 
         SourceDocumentsSalesInvoicesInvoice currentInvoice;

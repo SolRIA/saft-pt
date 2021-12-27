@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace Solria.SAFT.Desktop.SQL
+namespace Solria.SAFT.Parser.SQL
 {
     /// <summary>
     /// This class manages the db update scripts for the diferent app versions

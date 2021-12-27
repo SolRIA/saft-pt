@@ -1,4 +1,4 @@
-﻿namespace Solria.SAFT.Desktop.SQL
+﻿namespace Solria.SAFT.Parser.SQL
 {
     /// <summary>
     /// Class that hold the data for the db update scripts

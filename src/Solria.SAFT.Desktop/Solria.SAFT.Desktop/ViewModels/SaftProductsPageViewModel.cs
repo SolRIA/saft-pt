@@ -35,6 +35,8 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             IsLoading = true;
 
+            ToolTip = new ProductToolTipService();
+
             var products = saftValidator.SaftFile.MasterFiles.Product ?? Array.Empty<Product>();
 
             //calculated fields
@@ -100,6 +102,13 @@ namespace Solria.SAFT.Desktop.ViewModels
         protected override void HandleDeactivation()
         {
 
+        }
+
+        private ProductToolTipService toolTip;
+        public ProductToolTipService ToolTip
+        {
+            get => toolTip;
+            set => this.RaiseAndSetIfChanged(ref toolTip, value);
         }
 
         public ReactiveCommand<Unit, Unit> DoPrintCommand { get; }

@@ -5,13 +5,14 @@ using Solria.SAFT.Desktop.Services;
 using Solria.SAFT.Desktop.Views;
 using Splat;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Solria.SAFT.Parser.Services;
+using Solria.SAFT.Desktop.Models;
 
 namespace Solria.SAFT.Desktop.ViewModels
 {
@@ -20,6 +21,8 @@ namespace Solria.SAFT.Desktop.ViewModels
         readonly IDialogManager dialogManager;
         readonly ISaftValidator saftValidator;
         readonly IDatabaseService databaseService;
+
+        private Preferences preferences;
 
         public RoutingState Router { get; }
         public ViewModelActivator Activator { get; }
@@ -72,9 +75,9 @@ namespace Solria.SAFT.Desktop.ViewModels
                 databaseService.InitDatabase();
                 dialogManager.AddMessage("");
 
-                var recentFiles = databaseService.GetRecentFiles();
+                preferences = Preferences.Load();
 
-                RecentFiles = new List<MenuItemViewModel>(recentFiles.Select(r => new MenuItemViewModel { Header = r, Command = OpenRecentFileCommand, CommandParameter = r }))
+                RecentFiles = new List<MenuItemViewModel>(preferences.RecentFiles.Select(r => new MenuItemViewModel { Header = r, Command = OpenRecentFileCommand, CommandParameter = r }))
                 {
                     new MenuItemViewModel { Header = "Limpar", Command = ClearRecentFilesCommand }
                 }.ToArray();
@@ -190,7 +193,9 @@ namespace Solria.SAFT.Desktop.ViewModels
             if (results != null && results.Length > 0)
             {
                 var saft_file = results.First();
-                databaseService.AddRecentFile(saft_file);
+                preferences.RecentFiles.Add(saft_file);
+                Preferences.Save(preferences);
+
                 await saftValidator.OpenSaftFile(saft_file);
 
                 dialogManager.SetFileName(saft_file);
@@ -308,7 +313,8 @@ namespace Solria.SAFT.Desktop.ViewModels
         private void OnClearRecentFiles()
         {
             RecentFiles = null;
-            databaseService.ClearRecentFiles();
+            preferences.RecentFiles.Clear();
+            Preferences.Save(preferences);
         }
         private async Task OnOpenPemDialog()
         {
