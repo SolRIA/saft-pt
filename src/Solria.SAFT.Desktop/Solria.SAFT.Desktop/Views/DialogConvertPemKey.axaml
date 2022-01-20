@@ -6,20 +6,10 @@
         x:Class="Solria.SAFT.Desktop.Views.DialogConvertPemKey"
         Title="{Binding Title}" ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
         Classes="dialog"
-        TransparencyLevelHint="AcrylicBlur"
-        ExtendClientAreaToDecorationsHint="True"
-        Background="Transparent" >
+        Background="#FF333333" 
+		Icon="avares://Solria.SAFT.Desktop/Assets/solria.ico">
 
   <Panel>
-    <ExperimentalAcrylicBorder IsHitTestVisible="False">
-      <ExperimentalAcrylicBorder.Material>
-        <ExperimentalAcrylicMaterial
-            BackgroundSource="Digger"
-            TintColor="Black"
-            TintOpacity="1"
-            MaterialOpacity="0.65" />
-      </ExperimentalAcrylicBorder.Material>
-    </ExperimentalAcrylicBorder>
 
     <Grid ColumnDefinitions="200,*" RowDefinitions="*,Auto" Margin="10,50,10,10">
 

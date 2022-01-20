@@ -100,7 +100,7 @@
 
     <!-- numeric up down -->
     <Style Selector="NumericUpDown">
-      <Setter Property="Padding" Value="0"/>
+      <!--<Setter Property="Padding" Value="0"/>-->
       <!--<Setter Property="Height" Value="{StaticResource MinHeightEntries}"/>-->
       <Setter Property="ShowButtonSpinner" Value="False"/>
       <!--<Setter Property="FontSize" Value="{StaticResource FontSizeLarge}"/>-->

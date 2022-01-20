@@ -9,26 +9,15 @@
         x:Class="Solria.SAFT.Desktop.Views.MainWindow"
 		x:DataType="vm:MainWindowViewModel"
 		x:CompileBindings="True"
+		Background="#FF333333"
         Icon="/Assets/solria.ico"
-        Title="SolRIA SAFT - Validador" WindowState="Maximized" WindowStartupLocation="CenterScreen"
-        TransparencyLevelHint="AcrylicBlur"
-        Background="Transparent"
-        ExtendClientAreaToDecorationsHint="True">
-
+        Title="SolRIA SAFT - Validador" WindowState="Maximized" WindowStartupLocation="CenterScreen">
+	
   <Design.DataContext>
     <vm:MainWindowViewModel/>
   </Design.DataContext>
 
   <Panel>
-    <ExperimentalAcrylicBorder IsHitTestVisible="False">
-      <ExperimentalAcrylicBorder.Material>
-        <ExperimentalAcrylicMaterial
-            BackgroundSource="Digger"
-            TintColor="Black"
-            TintOpacity="1"
-            MaterialOpacity="0.65" />
-      </ExperimentalAcrylicBorder.Material>
-    </ExperimentalAcrylicBorder>
 
     <Grid RowDefinitions="45,*" ColumnDefinitions="Auto,*">
 

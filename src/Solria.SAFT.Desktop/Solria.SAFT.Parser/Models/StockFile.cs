@@ -1,11 +1,17 @@
 ﻿namespace Solria.SAFT.Parser.Models
 {
+    [System.Xml.Serialization.XmlType(AnonymousType = true, Namespace = "urn:StockFile:PT_1_02")]
+    [System.Xml.Serialization.XmlRoot(Namespace = "urn:StockFile:PT_1_02", IsNullable = false)]
     public partial class StockFile
     {
         public StockHeader StockHeader { get; set; }
+
+        [System.Xml.Serialization.XmlElement("Stock")]
         public Stock[] Stock { get; set; }
     }
 
+    [System.Xml.Serialization.XmlType(AnonymousType = true, Namespace = "urn:StockFile:PT_1_02")]
+    [System.Xml.Serialization.XmlRoot(Namespace = "urn:StockFile:PT_1_02", IsNullable = false)]
     public partial class StockHeader
     {
         public string FileVersion { get; set; }
@@ -15,6 +21,8 @@
         public bool NoStock { get; set; }
     }
 
+    [System.Xml.Serialization.XmlType(AnonymousType = true, Namespace = "urn:StockFile:PT_1_02")]
+    [System.Xml.Serialization.XmlRoot(Namespace = "urn:StockFile:PT_1_02", IsNullable = false)]
     public partial class Stock
     {
         public ProductCategory ProductCategory { get; set; }

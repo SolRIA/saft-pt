@@ -10,20 +10,10 @@
 		xmlns:model="clr-namespace:Solria.SAFT.Parser.Models;assembly=Solria.SAFT.Parser"
 		x:DataType="vm:DialogSaftResumeViewModel"
 		x:CompileBindings="True"
-        TransparencyLevelHint="AcrylicBlur"
-        ExtendClientAreaToDecorationsHint="True"
-        Background="Transparent">
+        Background="#FF333333"
+		Icon="avares://Solria.SAFT.Desktop/Assets/solria.ico">
 
   <Panel>
-    <ExperimentalAcrylicBorder IsHitTestVisible="False">
-      <ExperimentalAcrylicBorder.Material>
-        <ExperimentalAcrylicMaterial
-            BackgroundSource="Digger"
-            TintColor="Black"
-            TintOpacity="1"
-            MaterialOpacity="0.65" />
-      </ExperimentalAcrylicBorder.Material>
-    </ExperimentalAcrylicBorder>
 
     <Grid RowDefinitions="Auto,*,Auto" Margin="10,50,10,10">
 

@@ -1,4 +1,5 @@
 ﻿using Solria.SAFT.Parser.Models;
+using Solria.SAFT.Parser.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,37 +29,40 @@ namespace Solria.SAFT.Parser
 
         private static async Task<(StockFile stockFile, List<ValidationError> validations)> ReadXml(string filename)
         {
-            stockFile = new StockFile
-            {
-                StockHeader = new StockHeader()
-            };
+            //TODO: replace with Xmlreader
+            stockFile = await Task.Run(() => XmlParserService.DeserializeXml<StockFile>(filename, Encoding.UTF8));
 
-            //register the Windows-1252 encoding
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            //stockFile = new StockFile
+            //{
+            //    StockHeader = new StockHeader()
+            //};
+
+            ////register the Windows-1252 encoding
+            //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
 
-            var settings = new XmlReaderSettings
-            {
-                Async = true,
-                IgnoreComments = true,
-                IgnoreWhitespace = true
-            };
+            //var settings = new XmlReaderSettings
+            //{
+            //    Async = true,
+            //    IgnoreComments = true,
+            //    IgnoreWhitespace = true
+            //};
 
-            using var reader = XmlReader.Create(filename, settings);
+            //using var reader = XmlReader.Create(filename, settings);
 
-            while (await reader.ReadAsync())
-            {
-                if (string.IsNullOrWhiteSpace(reader.Name))
-                    continue;
+            //while (await reader.ReadAsync())
+            //{
+            //    if (string.IsNullOrWhiteSpace(reader.Name))
+            //        continue;
 
-                if (reader.NodeType == XmlNodeType.Element)
-                {
-                    if (Parsers.StringEquals(reader.Name, "Header"))
-                    {
+            //    if (reader.NodeType == XmlNodeType.Element)
+            //    {
+            //        if (Parsers.StringEquals(reader.Name, "Header"))
+            //        {
 
-                    }
-                }
-            }
+            //        }
+            //    }
+            //}
 
             return (stockFile, Parsers.Validations);
         }

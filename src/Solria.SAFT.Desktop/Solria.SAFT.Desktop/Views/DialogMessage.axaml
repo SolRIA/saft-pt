@@ -7,20 +7,9 @@
         ShowInTaskbar="False" Width="400" SizeToContent="Height"
         WindowStartupLocation="CenterOwner" HasSystemDecorations="False"
         Classes="dialog"
-        TransparencyLevelHint="AcrylicBlur"
-        Background="Transparent"
-        ExtendClientAreaToDecorationsHint="True" >
+        Background="#FF333333" Icon="avares://Solria.SAFT.Desktop/Assets/solria.ico">
 
   <Panel>
-    <ExperimentalAcrylicBorder IsHitTestVisible="False">
-      <ExperimentalAcrylicBorder.Material>
-        <ExperimentalAcrylicMaterial
-            BackgroundSource="Digger"
-            TintColor="Black"
-            TintOpacity="1"
-            MaterialOpacity="0.65" />
-      </ExperimentalAcrylicBorder.Material>
-    </ExperimentalAcrylicBorder>
 
     <Grid RowDefinitions="50,*,50" Margin="10,50,10,10">
 

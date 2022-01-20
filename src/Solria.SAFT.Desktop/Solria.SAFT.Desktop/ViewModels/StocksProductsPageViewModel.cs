@@ -7,6 +7,7 @@ using Splat;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -86,6 +87,10 @@ namespace Solria.SAFT.Desktop.ViewModels
                     }
                 };
 
+                TotalQuantity = products.Sum(p => p.ClosingStockQuantity);
+                TotalValue = products.Sum(p => p.ClosingStockQuantity * p.ClosingStockValue);
+                NumberProducts = products.Count;
+
                 CollectionView.GroupDescriptions.Add(new DataGridPathGroupDescription("ProductCategory"));
 
                 IsLoading = false;
@@ -102,6 +107,28 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
 
         }
+
+        private decimal totalQuantity;
+        public decimal TotalQuantity
+        {
+            get => totalQuantity;
+            set => this.RaiseAndSetIfChanged(ref totalQuantity, value);
+        }
+
+        private decimal totalValue;
+        public decimal TotalValue
+        {
+            get => totalValue;
+            set => this.RaiseAndSetIfChanged(ref totalValue, value);
+        }
+
+        private decimal numberProducts;
+        public decimal NumberProducts
+        {
+            get => numberProducts;
+            set => this.RaiseAndSetIfChanged(ref numberProducts, value);
+        }
+
 
         public ReactiveCommand<Unit, Unit> DoPrintCommand { get; }
         public ReactiveCommand<string, Unit> SearchCommand { get; }
