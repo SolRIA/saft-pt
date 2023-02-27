@@ -29,6 +29,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             CleanFieldsCommand = ReactiveCommand.Create(OnCleanFields);
             TestHashCommand = ReactiveCommand.Create(OnTestHash, CanTestHash());
             CreateHashCommand = ReactiveCommand.Create(OnCreateHash, CanCreateHash());
+            CreateHashDatesCommand = ReactiveCommand.Create(OnCreateHashDates, CanCreateHashDates());
         }
 
         public void Init()
@@ -329,6 +330,53 @@ namespace Solria.SAFT.Desktop.ViewModels
                 (tipo, serie, numero, pemFile) => string.IsNullOrEmpty(tipo) == false && string.IsNullOrEmpty(serie) == false && numero > 0 && pemFile != null && pemFile.PrivateKey);
         }
 
+        public ReactiveCommand<Unit, Unit> CreateHashDatesCommand { get; }
+        private void OnCreateHashDates()
+        {
+            Message = "";
+
+            object hasher = SHA1.Create();
+
+            using var rsaCryptokey = new RSACryptoServiceProvider(1024);
+            try
+            {
+                rsaCryptokey.FromXmlString(PemFile.RsaSettings);
+            }
+            catch (Exception)
+            {
+                Message = "Houve um erro ao ler a chave privada.";
+                return;
+            }
+
+            decimal total = 0;
+            while (total < 20)
+            {
+                byte[] stringToHashBuffer = Encoding.UTF8.GetBytes(FormatStringToHash(total));
+                byte[] r = rsaCryptokey.SignData(stringToHashBuffer, hasher);
+
+                DocumentHash = Convert.ToBase64String(r);
+
+                if (string.IsNullOrEmpty(CurrentDocumentHash) == false && DocumentHash.IndexOf(CurrentDocumentHash, StringComparison.OrdinalIgnoreCase) < 0)
+                {
+
+                }
+                else
+                {
+                    Message = $"Ok {total}";
+                    break;
+                }
+
+                total += 0.01m;
+            }
+            
+            dialogManager.ShowNotification("Hash", "Verificação terminou", NotificationType.Success);
+        }
+        private IObservable<bool> CanCreateHashDates()
+        {
+            return this.WhenAnyValue(x => x.DocumenType, x => x.BillingNumber, x => x.DocumentNumber, x => x.PemFile,
+                (tipo, serie, numero, pemFile) => string.IsNullOrEmpty(tipo) == false && string.IsNullOrEmpty(serie) == false && numero > 0 && pemFile != null && pemFile.PrivateKey);
+        }
+
         string FormatStringToHash()
         {
             return string.Format(CultureInfo.InvariantCulture,
@@ -339,6 +387,19 @@ namespace Solria.SAFT.Desktop.ViewModels
                 , BillingNumber
                 , DocumentNumber
                 , DocumentTotal
+                , PreviousHash);
+        }
+
+        string FormatStringToHash(decimal total)
+        {
+            return string.Format(CultureInfo.InvariantCulture,
+                "{0:yyyy-MM-dd};{1:yyyy-MM-ddTHH:mm:ss};{2} {3}/{4};{5:0.00};{6}"
+                , DocumentDate
+                , SystemDate
+                , DocumenType
+                , BillingNumber
+                , DocumentNumber
+                , total
                 , PreviousHash);
         }
     }

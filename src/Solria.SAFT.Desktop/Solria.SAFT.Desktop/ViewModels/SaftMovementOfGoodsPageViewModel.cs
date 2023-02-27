@@ -166,9 +166,9 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                 if (currentDocument != null && string.IsNullOrEmpty(FilterLines))
                 {
-                    DocGrossTotal = currentDocument.Line.Sum(c => c.UnitPrice * (1 + c.Tax.TaxPercentage * 0.01m) * c.Quantity * Operation(currentDocument, c)).ToString("c");
+                    DocGrossTotal = currentDocument.Line.Sum(c => c.UnitPrice * (1 + (c.Tax?.TaxPercentage ?? 0) * 0.01m) * c.Quantity * Operation(currentDocument, c)).ToString("c");
                     DocNetTotal = currentDocument.Line.Sum(c => c.UnitPrice * c.Quantity * Operation(currentDocument, c)).ToString("c");
-                    DocTaxPayable = currentDocument.Line.Sum(c => c.UnitPrice * c.Tax.TaxPercentage * 0.01m * c.Quantity * Operation(currentDocument, c)).ToString("c");
+                    DocTaxPayable = currentDocument.Line.Sum(c => c.UnitPrice * (c.Tax?.TaxPercentage ?? 0) * 0.01m * c.Quantity * Operation(currentDocument, c)).ToString("c");
 
                     GrossTotal = currentDocument.DocumentTotals.GrossTotal.ToString("c");
                     NetTotal = currentDocument.DocumentTotals.NetTotal.ToString("c");
@@ -275,7 +275,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                 if (string.IsNullOrWhiteSpace(file) == false)
                 {
-                    using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                    using var workbook = new ClosedXML.Excel.XLWorkbook();
                     var sheet = workbook.Worksheets.Add("Documentos");
 
                     DocHeader(sheet, 1);
@@ -284,9 +284,9 @@ namespace Solria.SAFT.Desktop.ViewModels
                     foreach (var c in document)
                     {
                         sheet.Cell(rowIndex, 1).Value = c.ATCUD;
-                        sheet.Cell(rowIndex, 2).Value = c.MovementType;
+                        sheet.Cell(rowIndex, 2).Value = c.MovementType.ToString();
                         sheet.Cell(rowIndex, 3).Value = c.DocumentNumber;
-                        sheet.Cell(rowIndex, 4).Value = c.DocumentStatus.MovementStatus;
+                        sheet.Cell(rowIndex, 4).Value = c.DocumentStatus.MovementStatus.ToString();
                         sheet.Cell(rowIndex, 5).Value = c.MovementDate;
                         sheet.Cell(rowIndex, 6).Value = c.CustomerID;
                         sheet.Cell(rowIndex, 7).Value = c.DocumentTotals.NetTotal;
@@ -338,7 +338,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                 if (string.IsNullOrWhiteSpace(file) == false)
                 {
-                    using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                    using var workbook = new ClosedXML.Excel.XLWorkbook();
                     var sheet = workbook.Worksheets.Add("Impostos");
 
                     var taxes_selling_group = documents
@@ -411,7 +411,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
             if (string.IsNullOrWhiteSpace(file) == false)
             {
-                using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                using var workbook = new ClosedXML.Excel.XLWorkbook();
                 var sheet = workbook.Worksheets.Add("Documento");
 
                 DocHeader(sheet, 1);
@@ -419,9 +419,9 @@ namespace Solria.SAFT.Desktop.ViewModels
                 var rowIndex = 2;
 
                 sheet.Cell(rowIndex, 1).Value = CurrentDocument.ATCUD;
-                sheet.Cell(rowIndex, 2).Value = CurrentDocument.MovementType;
+                sheet.Cell(rowIndex, 2).Value = CurrentDocument.MovementType.ToString();
                 sheet.Cell(rowIndex, 3).Value = CurrentDocument.DocumentNumber;
-                sheet.Cell(rowIndex, 4).Value = CurrentDocument.DocumentStatus.MovementStatus;
+                sheet.Cell(rowIndex, 4).Value = CurrentDocument.DocumentStatus.MovementStatus.ToString();
                 sheet.Cell(rowIndex, 5).Value = CurrentDocument.MovementDate;
                 sheet.Cell(rowIndex, 6).Value = CurrentDocument.CustomerID;
                 sheet.Cell(rowIndex, 7).Value = CurrentDocument.DocumentTotals.NetTotal;
@@ -492,7 +492,7 @@ namespace Solria.SAFT.Desktop.ViewModels
             }
         }
 
-        private int Operation(SourceDocumentsMovementOfGoodsStockMovement i, SourceDocumentsMovementOfGoodsStockMovementLine l)
+        private static int Operation(SourceDocumentsMovementOfGoodsStockMovement i, SourceDocumentsMovementOfGoodsStockMovementLine l)
         {
             if (i.MovementType == MovementType.GR || i.MovementType == MovementType.GT || i.MovementType == MovementType.GA || i.MovementType == MovementType.GC)
                 return l.CreditAmount > 0 ? 1 : -1;

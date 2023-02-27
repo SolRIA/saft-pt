@@ -258,7 +258,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                 if (string.IsNullOrWhiteSpace(file) == false)
                 {
-                    using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                    using var workbook = new ClosedXML.Excel.XLWorkbook();
                     var sheet = workbook.Worksheets.Add("Documentos");
 
                     DocHeader(sheet, 1);
@@ -267,9 +267,9 @@ namespace Solria.SAFT.Desktop.ViewModels
                     foreach (var c in invoice)
                     {
                         sheet.Cell(rowIndex, 1).Value = c.ATCUD;
-                        sheet.Cell(rowIndex, 2).Value = c.PaymentType;
+                        sheet.Cell(rowIndex, 2).Value = c.PaymentType.ToString();
                         sheet.Cell(rowIndex, 3).Value = c.PaymentRefNo;
-                        sheet.Cell(rowIndex, 4).Value = c.DocumentStatus.PaymentStatus;
+                        sheet.Cell(rowIndex, 4).Value = c.DocumentStatus.PaymentStatus.ToString();
                         sheet.Cell(rowIndex, 5).Value = c.SystemEntryDate;
                         sheet.Cell(rowIndex, 6).Value = c.CustomerID;
                         sheet.Cell(rowIndex, 7).Value = c.DocumentTotals.NetTotal;
@@ -315,7 +315,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                 if (string.IsNullOrWhiteSpace(file) == false)
                 {
-                    using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                    using var workbook = new ClosedXML.Excel.XLWorkbook();
                     var sheet = workbook.Worksheets.Add("Impostos");
 
                     var taxes_selling_group = documents
@@ -389,7 +389,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
             if (string.IsNullOrWhiteSpace(file) == false)
             {
-                using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                using var workbook = new ClosedXML.Excel.XLWorkbook();
                 var sheet = workbook.Worksheets.Add("Documento");
 
                 DocHeader(sheet, 1);
@@ -397,9 +397,9 @@ namespace Solria.SAFT.Desktop.ViewModels
                 var rowIndex = 2;
 
                 sheet.Cell(rowIndex, 1).Value = CurrentPayment.ATCUD;
-                sheet.Cell(rowIndex, 2).Value = CurrentPayment.PaymentType;
+                sheet.Cell(rowIndex, 2).Value = CurrentPayment.PaymentType.ToString();
                 sheet.Cell(rowIndex, 3).Value = CurrentPayment.PaymentRefNo;
-                sheet.Cell(rowIndex, 4).Value = CurrentPayment.DocumentStatus.PaymentStatus;
+                sheet.Cell(rowIndex, 4).Value = CurrentPayment.DocumentStatus.PaymentStatus.ToString();
                 sheet.Cell(rowIndex, 5).Value = CurrentPayment.SystemEntryDate;
                 sheet.Cell(rowIndex, 6).Value = CurrentPayment.CustomerID;
                 sheet.Cell(rowIndex, 7).Value = CurrentPayment.DocumentTotals.NetTotal;

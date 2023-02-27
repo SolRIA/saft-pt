@@ -12,32 +12,25 @@
 		Background="#FF333333"
         Icon="/Assets/solria.ico"
         Title="SolRIA SAFT - Validador" WindowState="Maximized" WindowStartupLocation="CenterScreen">
-	
-  <Design.DataContext>
-    <vm:MainWindowViewModel/>
-  </Design.DataContext>
 
-  <Panel>
-
-    <Grid RowDefinitions="45,*" ColumnDefinitions="Auto,*">
+    <Grid RowDefinitions="45,*">
 
       <Menu Items="{CompiledBinding MenuItems}" FontSize="16" Grid.Row="0">
         <Menu.Styles>
           <Style Selector="MenuItem" x:DataType="vm:MenuItemViewModel">
-            <Setter Property="Header" Value="{CompiledBinding Header}"/>
-            <Setter Property="Items" Value="{CompiledBinding Items}"/>
-            <Setter Property="Command" Value="{CompiledBinding Command}"/>
-            <Setter Property="CommandParameter" Value="{CompiledBinding CommandParameter}"/>
+            <Setter Property="Header" Value="{Binding Header}"/>
+            <Setter Property="Items" Value="{Binding Items}"/>
+            <Setter Property="Command" Value="{Binding Command}"/>
+            <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
           </Style>
         </Menu.Styles>
       </Menu>
 
       <!-- current view -->
-      <rxui:RoutedViewHost Router="{CompiledBinding Router}" Grid.Row="1" Grid.ColumnSpan="2" Margin="2">
+      <rxui:RoutedViewHost Router="{Binding Router}" Grid.Row="1" Margin="2">
         <rxui:RoutedViewHost.DefaultContent>
           <views:MainMenuPageView />
         </rxui:RoutedViewHost.DefaultContent>
       </rxui:RoutedViewHost>
     </Grid>
-  </Panel>
 </Window>

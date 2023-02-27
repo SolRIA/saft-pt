@@ -34,7 +34,7 @@ namespace Solria.SAFT.Desktop.ViewModels
         {
             IsLoading = true;
 
-            CollectionView = new DataGridCollectionView(saftValidator.SaftFile?.MasterFiles?.Customer ?? new Customer[] { })
+            CollectionView = new DataGridCollectionView(saftValidator.SaftFile?.MasterFiles?.Customer ?? Array.Empty<Customer>())
             {
                 Filter = o =>
                 {

@@ -12,62 +12,63 @@
         Title="{CompiledBinding Title}" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" Icon="avares://Solria.SAFT.Desktop/Assets/solria.ico"
         Background="#FF333333">
 
-  <Panel>
-    <Grid RowDefinitions="*,Auto" Margin="20">
-      <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
+	<Panel>
+		<Grid RowDefinitions="*,Auto" Margin="20">
+			<ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+				<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*">
 
-          <TextBlock Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" TextWrapping="Wrap" Margin="3"
-                     Text="Esta ferramenta permite calcular a Hash com base nos valores individuais presentes na assinatura." />
+					<TextBlock Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" TextWrapping="Wrap" Margin="3"
+							   Text="Esta ferramenta permite calcular a Hash com base nos valores individuais presentes na assinatura." />
 
-          <TextBlock Text="Chave:" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
-          <TextBlock Text="Tipo:" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
-          <TextBlock Text="Série:" Grid.Column="0" Grid.Row="3" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
-          <TextBlock Text="Número:" Grid.Column="0" Grid.Row="4" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
-          <TextBlock Text="Total:" Grid.Column="0" Grid.Row="5" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
-          <TextBlock Text="Datas:" Grid.Column="0" Grid.Row="6" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
-          <TextBlock Text="Hash anterior:" Grid.Column="0" Grid.Row="7" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
-          <TextBlock Text="Hash:" Grid.Column="0" Grid.Row="8" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
-          <TextBlock Text="Hash actual:" Grid.Column="0" Grid.Row="9" HorizontalAlignment="Right" Margin="3" IsVisible="{CompiledBinding ValuesFromDocument}" VerticalAlignment="Center"/>
+					<TextBlock Text="Chave:" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
+					<TextBlock Text="Tipo:" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
+					<TextBlock Text="Série:" Grid.Column="0" Grid.Row="3" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
+					<TextBlock Text="Número:" Grid.Column="0" Grid.Row="4" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
+					<TextBlock Text="Total:" Grid.Column="0" Grid.Row="5" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
+					<TextBlock Text="Datas:" Grid.Column="0" Grid.Row="6" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
+					<TextBlock Text="Hash anterior:" Grid.Column="0" Grid.Row="7" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
+					<TextBlock Text="Hash:" Grid.Column="0" Grid.Row="8" HorizontalAlignment="Right" Margin="3" VerticalAlignment="Center"/>
+					<TextBlock Text="Hash actual:" Grid.Column="0" Grid.Row="9" HorizontalAlignment="Right" Margin="3" IsVisible="{CompiledBinding ValuesFromDocument}" VerticalAlignment="Center"/>
 
-          <ComboBox Items="{CompiledBinding PemFiles}"
-                    SelectedItem="{CompiledBinding PemFile, Mode=TwoWay}"
-                    Grid.Column="1" Grid.Row="1" Margin="3">
-            <ComboBox.ItemTemplate>
-              <DataTemplate x:DataType="model:PemFile">
-                <TextBlock Text="{CompiledBinding Name}" FontSize="14"/>
-              </DataTemplate>
-            </ComboBox.ItemTemplate>
-          </ComboBox>
+					<ComboBox Items="{CompiledBinding PemFiles}"
+							  SelectedItem="{CompiledBinding PemFile, Mode=TwoWay}"
+							  Grid.Column="1" Grid.Row="1" Margin="3">
+						<ComboBox.ItemTemplate>
+							<DataTemplate x:DataType="model:PemFile">
+								<TextBlock Text="{CompiledBinding Name}" FontSize="14"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
 
-          <AutoCompleteBox Items="{CompiledBinding DocumentTypes}" FontSize="14"
-                           Text="{CompiledBinding DocumenType, Mode=TwoWay}"
-                           Grid.Column="1" Grid.Row="2" Margin="3" />
+					<AutoCompleteBox Items="{CompiledBinding DocumentTypes}" FontSize="14"
+									 Text="{CompiledBinding DocumenType, Mode=TwoWay}"
+									 Grid.Column="1" Grid.Row="2" Margin="3" />
 
-          <TextBox Text="{CompiledBinding BillingNumber}" Grid.Column="1" Grid.Row="3" Margin="3" />
-          <NumericUpDown Value="{CompiledBinding DocumentNumber}" CultureInfo="pt-PT" Minimum="1" Grid.Column="1" Grid.Row="4" Margin="3" Watermark="Número" VerticalContentAlignment="Center"/>
-          <NumericUpDown Value="{CompiledBinding DocumentTotal}" CultureInfo="pt-PT" Minimum="0.01" Increment=".01" FormatString="c2" Grid.Column="1" Grid.Row="5" Margin="3" Watermark="Total" VerticalContentAlignment="Center"/>
-          
-          <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="6">
-            <TextBox Text="{CompiledBinding DocumentDate}" Margin="3" FontSize="16"/>
-            <TextBox Text="{CompiledBinding SystemDate}" Margin="3" FontSize="16" />
-          </StackPanel>
+					<TextBox Text="{CompiledBinding BillingNumber}" Grid.Column="1" Grid.Row="3" Margin="3" />
+					<NumericUpDown Value="{CompiledBinding DocumentNumber}" CultureInfo="pt-PT" Minimum="1" Grid.Column="1" Grid.Row="4" Margin="3" Watermark="Número" VerticalContentAlignment="Center"/>
+					<NumericUpDown Value="{CompiledBinding DocumentTotal}" CultureInfo="pt-PT" Minimum="0.01" Increment=".01" FormatString="c2" Grid.Column="1" Grid.Row="5" Margin="3" Watermark="Total" VerticalContentAlignment="Center"/>
 
-          <TextBox Text="{CompiledBinding PreviousHash}" Grid.Column="1" Grid.Row="7" Margin="3" />
-          <TextBox Text="{CompiledBinding DocumentHash}" Grid.Column="1" Grid.Row="8" Margin="3" />
-          <TextBox Text="{CompiledBinding CurrentDocumentHash}" Grid.Column="1" Grid.Row="9" Margin="3"
-                   IsVisible="{CompiledBinding ValuesFromDocument}" />
-          <TextBox Text="{CompiledBinding Message}" Grid.ColumnSpan="2" Grid.Row="10" Margin="3" />
-        </Grid>
-      </ScrollViewer>
+					<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="6">
+						<TextBox Text="{CompiledBinding DocumentDate}" Margin="3" FontSize="16"/>
+						<TextBox Text="{CompiledBinding SystemDate}" Margin="3" FontSize="16" />
+					</StackPanel>
 
-      <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-            ColumnDefinitions="*,Auto,Auto,Auto,Auto">
-        <Button Command="{CompiledBinding CleanFieldsCommand}" Content="Limpar" HorizontalContentAlignment="Center" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="1"/>
-        <Button Command="{CompiledBinding TestHashCommand}" Content="Testar Hash" HorizontalContentAlignment="Center" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="2" />
-        <Button Command="{CompiledBinding CreateHashCommand}" Content="Criar Hash" HorizontalContentAlignment="Center" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="3" />
-        <Button Command="{CompiledBinding CloseCommand}" Content="Fechar" HorizontalContentAlignment="Center" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="4" />
-      </Grid>
-    </Grid>
-  </Panel>
+					<TextBox Text="{CompiledBinding PreviousHash}" Grid.Column="1" Grid.Row="7" Margin="3" />
+					<TextBox Text="{CompiledBinding DocumentHash}" Grid.Column="1" Grid.Row="8" Margin="3" />
+					<TextBox Text="{CompiledBinding CurrentDocumentHash}" Grid.Column="1" Grid.Row="9" Margin="3"
+							 IsVisible="{CompiledBinding ValuesFromDocument}" />
+					<TextBox Text="{CompiledBinding Message}" Grid.ColumnSpan="2" Grid.Row="10" Margin="3" />
+				</Grid>
+			</ScrollViewer>
+
+			<Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+				  ColumnDefinitions="*,96,96,96,96,96">
+				<Button Command="{CompiledBinding CleanFieldsCommand}" Content="Limpar" HorizontalContentAlignment="Center" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="1"/>
+				<Button Command="{CompiledBinding TestHashCommand}" Content="Testar Hash" HorizontalContentAlignment="Center" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="2" />
+				<Button Command="{CompiledBinding CreateHashCommand}" Content="Criar Hash" HorizontalContentAlignment="Center" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="3" />
+				<Button Command="{CompiledBinding CreateHashDatesCommand}" Content="Variar datas" HorizontalContentAlignment="Center" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="4" />
+				<Button Command="{CompiledBinding CloseCommand}" Content="Fechar" HorizontalContentAlignment="Center" Height="30" Width="90" Padding="5" Margin="3" Grid.Column="5" />
+			</Grid>
+		</Grid>
+	</Panel>
 </Window>

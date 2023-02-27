@@ -272,7 +272,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                 if (string.IsNullOrWhiteSpace(file) == false)
                 {
-                    using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                    using var workbook = new ClosedXML.Excel.XLWorkbook();
                     var sheet = workbook.Worksheets.Add("Documentos");
 
                     DocHeader(sheet, 1);
@@ -281,9 +281,9 @@ namespace Solria.SAFT.Desktop.ViewModels
                     foreach (var c in documents)
                     {
                         sheet.Cell(rowIndex, 1).Value = c.ATCUD;
-                        sheet.Cell(rowIndex, 2).Value = c.WorkType;
+                        sheet.Cell(rowIndex, 2).Value = c.WorkType.ToString();
                         sheet.Cell(rowIndex, 3).Value = c.DocumentNumber;
-                        sheet.Cell(rowIndex, 4).Value = c.DocumentStatus.WorkStatus;
+                        sheet.Cell(rowIndex, 4).Value = c.DocumentStatus.WorkStatus.ToString();
                         sheet.Cell(rowIndex, 5).Value = c.WorkDate;
                         sheet.Cell(rowIndex, 6).Value = c.CustomerID;
                         sheet.Cell(rowIndex, 7).Value = c.DocumentTotals.NetTotal;
@@ -338,7 +338,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
                 if (string.IsNullOrWhiteSpace(file) == false)
                 {
-                    using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                    using var workbook = new ClosedXML.Excel.XLWorkbook();
                     var sheet = workbook.Worksheets.Add("Impostos");
 
                     var taxes_selling_group = documents
@@ -413,7 +413,7 @@ namespace Solria.SAFT.Desktop.ViewModels
 
             if (string.IsNullOrWhiteSpace(file) == false)
             {
-                using var workbook = new ClosedXML.Excel.XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+                using var workbook = new ClosedXML.Excel.XLWorkbook();
                 var sheet = workbook.Worksheets.Add("Documento");
 
                 DocHeader(sheet, 1);
@@ -421,9 +421,9 @@ namespace Solria.SAFT.Desktop.ViewModels
                 var rowIndex = 2;
 
                 sheet.Cell(rowIndex, 1).Value = CurrentDocument.ATCUD;
-                sheet.Cell(rowIndex, 2).Value = CurrentDocument.WorkType;
+                sheet.Cell(rowIndex, 2).Value = CurrentDocument.WorkType.ToString();
                 sheet.Cell(rowIndex, 3).Value = CurrentDocument.DocumentNumber;
-                sheet.Cell(rowIndex, 4).Value = CurrentDocument.DocumentStatus.WorkStatus;
+                sheet.Cell(rowIndex, 4).Value = CurrentDocument.DocumentStatus.WorkStatus.ToString();
                 sheet.Cell(rowIndex, 5).Value = CurrentDocument.WorkDate;
                 sheet.Cell(rowIndex, 6).Value = CurrentDocument.CustomerID;
                 sheet.Cell(rowIndex, 7).Value = CurrentDocument.DocumentTotals.NetTotal;
