@@ -2,63 +2,72 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Solria.SAFT.Desktop.Views.StocksProductsPageView">
-	<Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*,Auto,Auto,Auto">
+			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+			 xmlns:models="using:SolRIA.SAFT.Parser.Models"
+             x:Class="SolRIA.SAFT.Desktop.Views.StocksProductsPageView"
+			 x:DataType="vm:StocksProductsPageViewModel">
 
-		<TextBox Grid.Row="0" Grid.Column="0" Margin="2"
+	<Grid RowDefinitions="50,*,Auto" ColumnDefinitions="*,54,54">
+
+		<TextBox Margin="2"
 				 Text="{Binding Filter, Mode=TwoWay}"
-				 Watermark="Filtro por: Código ou Grupo ou Descrição ou Código barras ou Tipo">
+				 Watermark="Filtro">
+			<TextBox.InnerRightContent>
+				<Button Command="{Binding SearchCommand}"
+						Classes="Primary" Padding="4"
+						Theme="{DynamicResource BorderlessButton}"
+						Width="{Binding $self.Bounds.Height}"
+						Content="{icons:MaterialIconExt Search, Size=24}" />
+			</TextBox.InnerRightContent>
 			<TextBox.KeyBindings>
 				<KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
 			</TextBox.KeyBindings>
 		</TextBox>
 
-		<Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
-				  Command="{Binding SearchCommand}" >
-			<PathIcon Data="{StaticResource Material.FilterOutline}" HorizontalAlignment="Center" />
-		</Button>
-
-		<Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="2" VerticalAlignment="Center"
+		<Button Margin="2" Width="50" ToolTip.Tip="Limpar filtros"  Grid.Column="1"
 				Command="{Binding SearchClearCommand}" >
-			<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
+			<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
 		</Button>
 
-		<Button Grid.Column="3" Width="50" Height="35" Margin="2" ToolTip.Tip="Exportar para Excel"
+		<Button Grid.Column="2" Width="50" Margin="2" ToolTip.Tip="Exportar para Excel"
 				Command="{Binding DoPrintCommand}">
 			<PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
 		</Button>
 
-		<DataGrid Grid.Row="1" Grid.ColumnSpan="4"
-				  Items="{Binding CollectionView}">
+		<DataGrid ItemsSource="{Binding Products}"
+				  Grid.Row="1" Grid.ColumnSpan="3" IsReadOnly="True">
 			<DataGrid.Columns>
-				<DataGridTextColumn Header="Categoria" Binding="{Binding ProductCategory}"/>
-				<DataGridTextColumn Header="Código" Binding="{Binding ProductCode}"/>
-				<DataGridTextColumn Header="Código EAN" Binding="{Binding ProductNumberCode}" />
-				<DataGridTextColumn Header="Descrição" Binding="{Binding ProductDescription}" />
+				<DataGridTextColumn Header="Categoria" Binding="{ReflectionBinding ProductCategory}"/>
+				<DataGridTextColumn Header="Código" Binding="{ReflectionBinding ProductCode}"/>
+				<DataGridTextColumn Header="Código EAN" Binding="{ReflectionBinding ProductNumberCode}" />
+				<DataGridTextColumn Header="Descrição" Binding="{ReflectionBinding ProductDescription}" />
 				<DataGridTemplateColumn Header="Quantidade" SortMemberPath="ClosingStockQuantity">
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
-							<TextBlock Text="{Binding ClosingStockQuantity}" Classes="number" FontSize="16"/>
+							<TextBlock Text="{ReflectionBinding ClosingStockQuantity}" Classes="number"/>
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
-				<DataGridTextColumn Header="Unidade" Binding="{Binding UnitOfMeasure}" />
+				<DataGridTextColumn Header="Unidade" Binding="{ReflectionBinding UnitOfMeasure}" />
 				<DataGridTemplateColumn Header="Valor" SortMemberPath="ClosingStockValue">
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
-							<TextBlock Text="{Binding ClosingStockValue}" Classes="number" FontSize="16"/>
+							<TextBlock Text="{ReflectionBinding ClosingStockValue}" Classes="number"/>
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 			</DataGrid.Columns>
 		</DataGrid>
 
-		<StackPanel Grid.Row="2" Grid.ColumnSpan="4" Orientation="Horizontal">
-			<TextBlock Text="{Binding NumberProducts, StringFormat='#: {0}'}" />
-			<TextBlock Text="{Binding TotalQuantity, StringFormat='Quantidade: {0}'}" Margin="5,0"/>
-			<TextBlock Text="{Binding TotalValue, StringFormat='Total: {0}'}" />
-		</StackPanel>
-
+		<Border Classes="Hover" Theme="{StaticResource CardBorder}"
+				Grid.Row="2" Grid.ColumnSpan="3">
+			<StackPanel Orientation="Horizontal">
+				<TextBlock Text="{Binding NumberProducts, StringFormat='#: {0}'}" />
+				<TextBlock Text="{Binding TotalQuantity, StringFormat='Quantidade: {0}'}" Margin="5,0"/>
+				<TextBlock Text="{Binding TotalValue, StringFormat='Total: {0}'}" />
+			</StackPanel>
+		</Border>
 	</Grid>
 </UserControl>

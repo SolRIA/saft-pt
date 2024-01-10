@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Solria.SAFT.Parser.Models
+namespace SolRIA.SAFT.Parser.Models
 {
     public class ValidationError
 	{
@@ -12,10 +12,12 @@ namespace Solria.SAFT.Parser.Models
 
 		public string Value { get; set; }
 
-		/// <summary>
-		/// Unique ID, to identify the register with error
-		/// </summary>
-		public string FileID { get; set; }
+		public ValidationErrorType ValidationType { get; set; } = ValidationErrorType.LEGAL;
+
+        /// <summary>
+        /// Unique ID, to identify the register with error
+        /// </summary>
+        public string FileID { get; set; }
 		public string UID { get; set; }
 
 		public string SupUID { get; set; }

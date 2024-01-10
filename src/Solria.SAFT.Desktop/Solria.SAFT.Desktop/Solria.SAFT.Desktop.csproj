@@ -1,15 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
+	  <Nullable>disable</Nullable>
+	  <LangVersion>latest</LangVersion>
+	  <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+	  <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Update="**\*.xaml.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
-    </Compile>
-    <AvaloniaResource Include="**\*.xaml">
-      <SubType>Designer</SubType>
-    </AvaloniaResource>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
@@ -17,96 +15,33 @@
   </ItemGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="Assets\CommonValues.axaml" />
-    <AvaloniaXaml Remove="Views\DialogConvertPemKey.axaml" />
-    <AvaloniaXaml Remove="Views\DialogHashTest.axaml" />
-    <AvaloniaXaml Remove="Views\DialogMessage.axaml" />
-    <AvaloniaXaml Remove="Views\DialogSaftResume.axaml" />
-    <AvaloniaXaml Remove="Views\SaftCustomersPageView.axaml" />
-    <AvaloniaXaml Remove="Views\SaftErrorPageView.axaml" />
-    <AvaloniaXaml Remove="Views\SaftHeaderPageView.axaml" />
-    <AvaloniaXaml Remove="Views\SaftInvoicesPageView.axaml" />
-    <AvaloniaXaml Remove="Views\SaftMovementOfGoodsPageView.axaml" />
-    <AvaloniaXaml Remove="Views\SaftPaymentsPageView.axaml" />
-    <AvaloniaXaml Remove="Views\SaftProductsPageView.axaml" />
-    <AvaloniaXaml Remove="Views\SaftSuppliersPageView.axaml" />
-    <AvaloniaXaml Remove="Views\StocksHeaderPageView.axaml" />
-    <AvaloniaXaml Remove="Views\StocksProductsPageView.axaml" />
-    <AvaloniaXaml Remove="Views\TaxesPageView.axaml" />
-    <AvaloniaXaml Remove="Views\WorkingDocumentsPageView.axaml" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Assets\Sidebar.xaml" />
+    <PackageReference Include="Avalonia" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.6" />
+    <PackageReference Include="ClosedXML" Version="0.102.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Dapper" Version="2.1.28" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Riok.Mapperly" Version="3.3.0" />
+    <PackageReference Include="Semi.Avalonia" Version="11.0.1" />
+    <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.0.1.1" />
+    <PackageReference Include="Semi.Avalonia.TreeDataGrid" Version="11.0.1" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.18" />
-    <PackageReference Include="ClosedXML" Version="0.100.3" />
-    <PackageReference Include="Dapper" Version="2.0.123" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.2" />
-    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Assets\Sidebar.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Assets\CommonValues.axaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Assets\Icons.axaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <EmbeddedResource Include="Views\StocksHeaderPageView.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\StocksProductsPageView.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\SaftMovementOfGoodsPageView.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\WorkingDocumentsPageView.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\SaftPaymentsPageView.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\DialogMessage.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\DialogHashTest.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\DialogConvertPemKey.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\DialogSaftResume.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\SaftInvoicesPageView.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\SaftSuppliersPageView.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\TaxesPageView.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\SaftProductsPageView.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\SaftCustomersPageView.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\SaftHeaderPageView.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\SaftErrorPageView.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Views\DialogConvertPemKey.xaml.cs">
@@ -117,6 +52,9 @@
     </Compile>
     <Compile Update="Views\DialogMessage.xaml.cs">
       <DependentUpon>DialogMessage.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\DialogSaftDocumentDetail.axaml.cs">
+      <DependentUpon>DialogSaftDocumentDetail.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\SaftProductsPageView.xaml.cs">
       <DependentUpon>SaftProductsPageView.axaml</DependentUpon>
@@ -154,14 +92,14 @@
     <Compile Update="Views\StocksProductsPageView.xaml.cs">
       <DependentUpon>StocksProductsPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\TaxesPageView.xaml.cs">
-      <DependentUpon>TaxesPageView.axaml</DependentUpon>
+    <Compile Update="Views\SaftTaxesPageView.xaml.cs">
+      <DependentUpon>SaftTaxesPageView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\WorkingDocumentsPageView - Copy.xaml.cs">
       <DependentUpon>WorkingDocumentsPageView.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\WorkingDocumentsPageView.xaml.cs">
-      <DependentUpon>WorkingDocumentsPageView.axaml</DependentUpon>
+    <Compile Update="Views\SaftWorkingDocumentsPageView.xaml.cs">
+      <DependentUpon>SaftWorkingDocumentsPageView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -179,16 +117,65 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Behaviors\" />
     <Folder Include="Controls\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Solria.SAFT.Parser\Solria.SAFT.Parser.csproj" />
+    <ProjectReference Include="..\SolRIA.SAFT.Parser\SolRIA.SAFT.Parser.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaXaml Update="Views\DialogConvertPemKey.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\DialogHashTest.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\DialogMessage.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\DialogSaftResume.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
     <AvaloniaXaml Update="Views\MainMenuPageView.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\SaftCustomersPageView.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\SaftErrorPageView.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\SaftHeaderPageView.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\SaftInvoicesPageView.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\SaftMovementOfGoodsPageView.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\SaftPaymentsPageView.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\SaftProductsPageView.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\SaftSuppliersPageView.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\StocksHeaderPageView.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\StocksProductsPageView.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\SaftTaxesPageView.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Views\SaftWorkingDocumentsPageView.axaml">
       <Generator>MSBuild:Compile</Generator>
     </AvaloniaXaml>
   </ItemGroup>

@@ -1,0 +1,82 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+		xmlns:reporting="using:SolRIA.SAFT.Desktop.Models.Reporting"
+		xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+        x:Class="SolRIA.SAFT.Desktop.DialogDocumentReferences"
+		x:DataType="vm:DialogDocumentReferencesViewModel"
+        Title="DialogDocumentReferences">
+
+	<Grid RowDefinitions="130,130,*" ColumnDefinitions="*,*">
+		<Border Classes="Hover" Theme="{StaticResource CardBorder}" Grid.ColumnSpan="2">
+			<Grid RowDefinitions="*,*,*" ColumnDefinitions="*,*,*,Auto">
+				<StackPanel Orientation="Horizontal" Spacing="10">
+					<TextBlock Text="{Binding WorkDocument.Number}" Classes="H4" Theme="{StaticResource TitleTextBlock}"/>
+					<TextBlock Text="{Binding WorkDocument.ATCUD}" Classes="H4 Success" Theme="{StaticResource TitleTextBlock}"/>
+				</StackPanel>
+				<TextBlock Text="{Binding WorkDocument.Date}" Grid.Row="1" Grid.Column="0" />
+				<TextBlock Text="{Binding WorkDocument.SystemDate}" Grid.Row="1" Grid.Column="0" />
+
+				<TextBlock Text="Total" TextAlignment="Right" Grid.Row="0" Grid.Column="2" Margin="10,0"/>
+				<TextBlock Text="Incidência" TextAlignment="Right" Grid.Row="1" Grid.Column="2" Margin="10,0"/>
+				<TextBlock Text="IVA" TextAlignment="Right" Grid.Row="3" Grid.Column="2" Margin="10,0"/>
+
+				<TextBlock Text="{Binding WorkDocument.Total}" TextAlignment="Right" Grid.Row="0" Grid.Column="3"/>
+				<TextBlock Text="{Binding WorkDocument.NetTotal}" TextAlignment="Right" Grid.Row="1" Grid.Column="3"/>
+				<TextBlock Text="{Binding WorkDocument.VatTotal}" TextAlignment="Right" Grid.Row="3" Grid.Column="3"/>
+			</Grid>
+		</Border>
+
+		<Border Classes="Hover" Theme="{StaticResource CardBorder}"
+				Grid.Row="1" Grid.ColumnSpan="2">
+			<Grid RowDefinitions="*,*,*" ColumnDefinitions="*,*,*,Auto">
+				<StackPanel Orientation="Horizontal" Spacing="10">
+					<TextBlock Text="{Binding InvoiceDocument.Number}" Classes="H4" Theme="{StaticResource TitleTextBlock}"/>
+					<TextBlock Text="{Binding InvoiceDocument.ATCUD}" Classes="H4 Success" Theme="{StaticResource TitleTextBlock}"/>
+				</StackPanel>
+				<TextBlock Text="{Binding InvoiceDocument.Date}" Grid.Row="1" Grid.Column="0" />
+				<TextBlock Text="{Binding InvoiceDocument.SystemDate}" Grid.Row="1" Grid.Column="0" />
+
+				<TextBlock Text="Total" TextAlignment="Right" Grid.Row="0" Grid.Column="2" Margin="10,0"/>
+				<TextBlock Text="Incidência" TextAlignment="Right" Grid.Row="1" Grid.Column="2" Margin="10,0"/>
+				<TextBlock Text="IVA" TextAlignment="Right" Grid.Row="3" Grid.Column="2" Margin="10,0"/>
+
+				<TextBlock Text="{Binding InvoiceDocument.Total}" TextAlignment="Right" Grid.Row="0" Grid.Column="3"/>
+				<TextBlock Text="{Binding InvoiceDocument.NetTotal}" TextAlignment="Right" Grid.Row="1" Grid.Column="3"/>
+				<TextBlock Text="{Binding InvoiceDocument.VatTotal}" TextAlignment="Right" Grid.Row="3" Grid.Column="3"/>
+			</Grid>
+		</Border>
+
+		<Border Classes="Hover" Theme="{StaticResource CardBorder}"
+				Grid.Row="2">
+			<StackPanel>
+				<TextBlock Text="Teve origem neste documento" />
+				
+				<DataGrid ItemsSource="{Binding PreviousDocuments}">
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="Nº" Binding="{Binding Number}"/>
+						<DataGridTextColumn Header="Data" Binding="{Binding Date}"/>
+						<DataGridTextColumn Header="Total" Binding="{Binding Total}"/>
+					</DataGrid.Columns>
+				</DataGrid>
+			</StackPanel>
+		</Border>
+
+		<Border Classes="Hover" Theme="{StaticResource CardBorder}"
+				Grid.Row="2" Grid.Column="1">
+			<StackPanel>
+				<TextBlock Text="Deu origem a este documento" />
+				<DataGrid ItemsSource="{Binding AfterDocuments}">
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="Nº" Binding="{Binding Number}"/>
+						<DataGridTextColumn Header="Data" Binding="{Binding Date}"/>
+						<DataGridTextColumn Header="Total" Binding="{Binding Total}"/>
+					</DataGrid.Columns>
+				</DataGrid>
+			</StackPanel>
+		</Border>
+	</Grid>
+
+</Window>

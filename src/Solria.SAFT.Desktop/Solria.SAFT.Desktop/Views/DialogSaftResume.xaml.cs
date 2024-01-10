@@ -1,9 +1,8 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 
-namespace Solria.SAFT.Desktop.Views
+namespace SolRIA.SAFT.Desktop.Views
 {
-    public class DialogSaftResume : Window
+    public partial class DialogSaftResume : Window
     {
         public DialogSaftResume()
         {
@@ -11,11 +10,6 @@ namespace Solria.SAFT.Desktop.Views
 #if DEBUG
             //this.AttachDevTools();
 #endif
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
     }
 }

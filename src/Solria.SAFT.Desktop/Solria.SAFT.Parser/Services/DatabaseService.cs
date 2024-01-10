@@ -1,8 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.PlatformAbstractions;
-using Solria.SAFT.Parser.Models;
-using Solria.SAFT.Parser.SQL;
+using SolRIA.SAFT.Parser.Models;
+using SolRIA.SAFT.Parser.SQL;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,7 +9,7 @@ using System.Data.Common;
 using System.IO;
 using System.Linq;
 
-namespace Solria.SAFT.Parser.Services
+namespace SolRIA.SAFT.Parser.Services
 {
     public class DatabaseService : IDatabaseService
     {
@@ -19,7 +18,7 @@ namespace Solria.SAFT.Parser.Services
         public DatabaseService()
         {
             database_filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SolRIA SAFT", "solria_saft.sqlite");
-            app_version = PlatformServices.Default.Application.ApplicationVersion;
+            app_version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
 
         private DbConnection InitConnection()

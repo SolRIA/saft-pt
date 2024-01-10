@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Solria.SAFT.Desktop.Services
+namespace SolRIA.SAFT.Desktop.Services
 {
     public class RSAKeys
     {

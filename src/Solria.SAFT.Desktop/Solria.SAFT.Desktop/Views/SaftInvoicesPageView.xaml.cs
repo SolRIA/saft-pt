@@ -1,21 +1,25 @@
-﻿using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
-using Solria.SAFT.Desktop.ViewModels;
+﻿using Avalonia.Controls;
+using SolRIA.SAFT.Desktop.ViewModels;
 
-namespace Solria.SAFT.Desktop.Views
+namespace SolRIA.SAFT.Desktop.Views
 {
-    public class SaftInvoicesPageView : ReactiveUserControl<SaftInvoicesPageViewModel>
+    public static class DesignDataDialogSaftInvoices
+    {
+        public static SaftInvoicesPageViewModel ExampleViewModel { get; } =
+            new SaftInvoicesPageViewModel
+            {
+                
+            };
+    }
+
+    public partial class SaftInvoicesPageView : UserControl
     {
         public SaftInvoicesPageView()
         {
             InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
-            this.WhenActivated(disposables => { });
-            AvaloniaXamlLoader.Load(this);
+#if DEBUG
+            //this.AttachDevTools();
+#endif
         }
     }
 }

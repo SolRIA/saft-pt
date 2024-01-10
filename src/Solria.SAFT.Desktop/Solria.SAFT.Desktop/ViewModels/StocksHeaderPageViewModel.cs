@@ -1,42 +1,27 @@
-﻿using ReactiveUI;
-using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Models.Stock;
-using Solria.SAFT.Desktop.Services;
-using Splat;
-using System.Reactive.Disposables;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using SolRIA.SAFT.Desktop.Services;
+using SolRIA.SAFT.Parser.Models;
 
-namespace Solria.SAFT.Desktop.ViewModels
+namespace SolRIA.SAFT.Desktop.ViewModels;
+
+public partial class StocksHeaderPageViewModel : ViewModelBase
 {
-    public class StocksHeaderPageViewModel : ViewModelBase
+    readonly ISaftValidator saftValidator;
+
+    public StocksHeaderPageViewModel()
     {
-        readonly ISaftValidator saftValidator;
+        saftValidator = AppBootstrap.Resolve<ISaftValidator>();
 
-        public StocksHeaderPageViewModel(IScreen screen) : base(screen, MenuIds.STOCKS_HEADER_PAGE)
-        {
-            saftValidator = Locator.Current.GetService<ISaftValidator>();
-        }
+        if (saftValidator?.StockFile?.StockHeader == null) return;
 
-        protected override void HandleActivation(CompositeDisposable disposables)
-        {
-            if (saftValidator?.StockFile?.StockHeader != null)
-            {
-                var h = saftValidator.StockFile.StockHeader;
-                Header = new StockHeader
-                {
-                    EndDate = h.EndDate,
-                    FileVersion = h.FileVersion,
-                    FiscalYear = h.FiscalYear,
-                    NoStock = h.NoStock,
-                    TaxRegistrationNumber = h.TaxRegistrationNumber
-                };
-            }
-        }
-
-        private StockHeader header;
-        public StockHeader Header
-        {
-            get => header;
-            set => this.RaiseAndSetIfChanged(ref header, value);
-        }
+        Init();
     }
+
+    private void Init()
+    {
+        Header = saftValidator.StockFile.StockHeader;
+    }
+
+    [ObservableProperty]
+    private StockHeader header;
 }

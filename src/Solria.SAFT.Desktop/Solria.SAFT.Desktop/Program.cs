@@ -1,7 +1,6 @@
 ﻿using Avalonia;
-using Avalonia.ReactiveUI;
 
-namespace Solria.SAFT.Desktop
+namespace SolRIA.SAFT.Desktop
 {
     class Program
     {
@@ -15,7 +14,6 @@ namespace Solria.SAFT.Desktop
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .LogToTrace()
-                .UseReactiveUI();
+                .LogToTrace();
     }
 }

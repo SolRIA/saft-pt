@@ -3,42 +3,48 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			 xmlns:vm="clr-namespace:Solria.SAFT.Desktop.ViewModels"
-			 xmlns:model="clr-namespace:Solria.SAFT.Parser.Models;assembly=Solria.SAFT.Parser"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+			 xmlns:model="clr-namespace:SolRIA.SAFT.Parser.Models;assembly=SolRIA.SAFT.Parser"
 			 x:DataType="vm:SaftSuppliersPageViewModel"
-			 x:CompileBindings="True"
-             x:Class="Solria.SAFT.Desktop.Views.SaftSuppliersPageView">
-	<Grid RowDefinitions="Auto,Auto,*">
-		<Grid ColumnDefinitions="*,Auto,Auto,Auto">
-			<TextBox Grid.Column="0" Margin="2" Text="{Binding Filter, Mode=TwoWay}"
-				 Watermark="Filtro por: NIF, Nome, Código, Email, Telefone, Website ou Contacto"
-				 VerticalAlignment="Center">
-				<TextBox.KeyBindings>
-					<KeyBinding Command="{CompiledBinding SearchCommand}" Gesture="Enter"/>
-				</TextBox.KeyBindings>
-			</TextBox>
+             x:Class="SolRIA.SAFT.Desktop.Views.SaftSuppliersPageView">
 
-			<Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="1" VerticalAlignment="Center"
-					Command="{CompiledBinding SearchCommand}" >
-				<PathIcon Data="{StaticResource Material.FilterOutline}" HorizontalAlignment="Center" />
-			</Button>
+	<Grid RowDefinitions="40,35,*" ColumnDefinitions="*,54,54" Margin="5">
 
-			<Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar"  Grid.Column="2" VerticalAlignment="Center"
-					Command="{CompiledBinding SearchClearCommand}" >
-				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
-			</Button>
+		<TextBlock Text="Fornecedores" Classes="H2"
+				   Theme="{StaticResource TitleTextBlock}"/>
+		
+		<TextBox Text="{Binding Filter, Mode=TwoWay}"
+				 Watermark="Filtro" Grid.Row="1" Margin="0,0,2,0">
+			<TextBox.InnerRightContent>
+				<Button Command="{Binding SearchCommand}"
+						Classes="Primary" Padding="4"
+						Theme="{DynamicResource BorderlessButton}"
+						Width="{Binding $self.Bounds.Height}"
+						Content="{icons:MaterialIconExt Search, Size=24}" />
+			</TextBox.InnerRightContent>
+			<TextBox.KeyBindings>
+				<KeyBinding Command="{CompiledBinding SearchCommand}" Gesture="Enter"/>
+			</TextBox.KeyBindings>
+		</TextBox>
 
-			<Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Column="2" VerticalAlignment="Center"
-					Command="{CompiledBinding DoPrintCommand}">
-				<PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
-			</Button>
-		</Grid>
+		<Button ToolTip.Tip="Limpar filtraos"
+				Margin="2,0" Width="50" Grid.Row="1" Grid.Column="1" 
+				Command="{CompiledBinding SearchClearCommand}" >
+			<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
+		</Button>
+
+		<Button ToolTip.Tip="Exportar para Excel" 
+				Margin="2,0" Width="50" Grid.Row="1" Grid.Column="2" 
+				Command="{CompiledBinding DoPrintCommand}">
+			<PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
+		</Button>
 
 		<!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
                            Grid.Row="1" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>-->
 
-		<DataGrid Grid.Row="1" IsReadOnly="True" FontSize="16"
-				  Items="{CompiledBinding CollectionView}">
+		<DataGrid Grid.Row="2" Grid.ColumnSpan="3" IsReadOnly="True" FontSize="16"
+				  ItemsSource="{CompiledBinding Suppliers}">
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Código" Binding="{CompiledBinding SupplierID}" Width="*" x:DataType="model:Supplier"/>
 				<DataGridTextColumn Header="Nº conta" Binding="{CompiledBinding AccountID}" SortMemberPath="AccountID" x:DataType="model:Supplier"/>

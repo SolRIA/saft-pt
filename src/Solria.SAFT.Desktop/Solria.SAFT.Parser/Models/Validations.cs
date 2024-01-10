@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Solria.SAFT.Parser.Models
+namespace SolRIA.SAFT.Parser.Models
 {
     public static class Validations
 	{

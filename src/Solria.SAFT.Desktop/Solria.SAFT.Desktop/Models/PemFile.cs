@@ -1,16 +1,17 @@
-﻿using ReactiveUI;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Solria.SAFT.Desktop.Models
+namespace SolRIA.SAFT.Desktop.Models;
+
+public partial class PemFile : ObservableObject
 {
-    public class PemFile : ReactiveObject
-    {
-        private bool privateKey;
-        private string name, pemText, rsaSettings;
+    [ObservableProperty]
+    private bool privateKey;
+    [ObservableProperty]
+    private string name;
+    [ObservableProperty]
+    private string pemText;
+    [ObservableProperty]
+    private string rsaSettings;
 
-        public int Id { get; set; }
-        public bool PrivateKey { get => privateKey; set => this.RaiseAndSetIfChanged(ref privateKey, value); }
-        public string Name { get => name; set => this.RaiseAndSetIfChanged(ref name, value); }
-        public string PemText { get => pemText; set => this.RaiseAndSetIfChanged(ref pemText, value); }
-        public string RsaSettings { get => rsaSettings; set => this.RaiseAndSetIfChanged(ref rsaSettings, value); }
-    }
+    public int Id { get; set; }
 }

@@ -1,29 +1,28 @@
-﻿using Solria.SAFT.Parser.Models;
+﻿using SolRIA.SAFT.Parser.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Solria.SAFT.Desktop.Services
+namespace SolRIA.SAFT.Desktop.Services;
+
+public interface ISaftValidator
 {
-    public interface ISaftValidator
-    {
-        string SaftFileName { get; set; }
-        string StockFileName { get; set; }
+    string SaftFileName { get; set; }
+    string StockFileName { get; set; }
 
-        string PublicKeyFileName { get; set; }
-        string PrivateKeyFileName { get; set; }
+    string PublicKeyFileName { get; set; }
+    string PrivateKeyFileName { get; set; }
 
-        AuditFile SaftFile { get; set; }
+    AuditFile SaftFile { get; set; }
 
-        StockFile StockFile { get; set; }
+    StockFile StockFile { get; set; }
 
-        List<ValidationError> MensagensErro { get; set; }
+    List<ValidationError> MensagensErro { get; set; }
 
-        int SaftHashValidationNumber { get; set; }
-        int SaftHashValidationErrorNumber { get; set; }
+    int SaftHashValidationNumber { get; set; }
+    int SaftHashValidationErrorNumber { get; set; }
 
-        Task OpenSaftFile(string filename);
-        Task OpenStockFile(string filename);
+    Task OpenSaftFile(string filename);
+    Task OpenStockFile(string filename);
 
 
-    }
 }

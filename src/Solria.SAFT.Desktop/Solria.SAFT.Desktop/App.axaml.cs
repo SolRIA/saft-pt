@@ -1,22 +1,18 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using ReactiveUI;
-using Solria.SAFT.Desktop.Services;
-using Solria.SAFT.Desktop.ViewModels;
-using Solria.SAFT.Desktop.Views;
-using Solria.SAFT.Parser.Services;
-using Splat;
-using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
+using SolRIA.SAFT.Desktop.Services;
+using SolRIA.SAFT.Desktop.Views;
+using SolRIA.SAFT.Parser.Services;
 
-namespace Solria.SAFT.Desktop
+namespace SolRIA.SAFT.Desktop
 {
     public class App : Application
     {
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
-            Locator.CurrentMutable.RegisterViewsForViewModels(Assembly.GetExecutingAssembly());
         }
 
         public override void OnFrameworkInitializationCompleted()
@@ -25,21 +21,28 @@ namespace Solria.SAFT.Desktop
             {
                 var mainWindow = new MainWindow();
 
-                ISaftValidator saftValidator = new SaftValidator();
-                IDatabaseService databaseService = new DatabaseService();
-                IReportService reportService = mainWindow;
+                InitServices(mainWindow);
 
-                Locator.CurrentMutable.RegisterConstant(saftValidator, typeof(ISaftValidator));
-                Locator.CurrentMutable.RegisterConstant(databaseService, typeof(IDatabaseService));
-                Locator.CurrentMutable.RegisterConstant(mainWindow, typeof(IDialogManager));
-                Locator.CurrentMutable.RegisterConstant(reportService, typeof(IReportService));
-
-                mainWindow.DataContext = new MainWindowViewModel();
                 desktop.MainWindow = mainWindow;
 
+                mainWindow.NavigateToFirstPage();
             }
 
             base.OnFrameworkInitializationCompleted();
+        }
+
+        private static void InitServices(MainWindow mainWindow)
+        {
+            var services = new ServiceCollection();
+
+            services.AddSingleton<INavigationService>(new NavigationService());
+            services.AddSingleton<ISaftValidator, SaftValidator>();
+            services.AddSingleton<IDatabaseService, DatabaseService>();
+
+            services.AddSingleton<IDialogManager>(mainWindow);
+            services.AddSingleton<IReportService>(mainWindow);
+
+            AppBootstrap.ConfigureServices(services);
         }
     }
 }

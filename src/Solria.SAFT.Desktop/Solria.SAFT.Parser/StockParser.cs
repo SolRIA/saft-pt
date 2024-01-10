@@ -1,5 +1,5 @@
-﻿using Solria.SAFT.Parser.Models;
-using Solria.SAFT.Parser.Services;
+﻿using SolRIA.SAFT.Parser.Models;
+using SolRIA.SAFT.Parser.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Solria.SAFT.Parser
+namespace SolRIA.SAFT.Parser
 {
     public static class StockParser
     {

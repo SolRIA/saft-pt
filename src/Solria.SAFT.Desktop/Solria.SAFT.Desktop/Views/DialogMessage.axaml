@@ -2,72 +2,56 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="Solria.SAFT.Desktop.Views.DialogMessage"
+        mc:Ignorable="d"
+        xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+		x:Class="SolRIA.SAFT.Desktop.Views.DialogMessage"
+		x:DataType="vm:DialogMessageViewModel"
         ShowInTaskbar="False" Width="400" SizeToContent="Height"
-        WindowStartupLocation="CenterOwner" HasSystemDecorations="False"
-        Classes="dialog"
-        Background="#FF333333" Icon="avares://Solria.SAFT.Desktop/Assets/solria.ico">
+        WindowStartupLocation="CenterOwner" CornerRadius="5"
+		Icon="avares://SolRIA.SAFT.Desktop/Assets/solria.ico">
 
-  <Panel>
+	<Design.DataContext>
+		<vm:DialogMessageDesignViewModel />
+	</Design.DataContext>
 
-    <Grid RowDefinitions="50,*,50" Margin="10,50,10,10">
 
-      <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Background="{DynamicResource ThemeAccentBrush}">
-        <TextBlock Text="{Binding Title}" FontSize="18" Margin="20,12"
-                   HorizontalAlignment="Left" VerticalAlignment="Center"/>
-      </StackPanel>
+	<Grid RowDefinitions="50,*,50" Margin="20">
 
-      <StackPanel Orientation="Horizontal" Grid.Row="1" MinHeight="100">
-        <Path Width="50" Height="50" IsVisible="{Binding ShowIconInformation}"
-              VerticalAlignment="Center" Margin="15,0"
-              Data="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z"
-              Fill="#42A5F5"/>
+		<StackPanel Orientation="Horizontal">
 
-        <Path Width="50" Height="50" IsVisible="{Binding ShowIconWarning}"
-              VerticalAlignment="Center" Margin="15,0"
-              Data="M23,12L20.56,14.78L20.9,18.46L17.29,19.28L15.4,22.46L12,21L8.6,22.47L6.71,19.29L3.1,18.47L3.44,14.78L1,12L3.44,9.21L3.1,5.53L6.71,4.72L8.6,1.54L12,3L15.4,1.54L17.29,4.72L20.9,5.54L20.56,9.22L23,12M20.33,12L18.5,9.89L18.74,7.1L16,6.5L14.58,4.07L12,5.18L9.42,4.07L8,6.5L5.26,7.09L5.5,9.88L3.67,12L5.5,14.1L5.26,16.9L8,17.5L9.42,19.93L12,18.81L14.58,19.92L16,17.5L18.74,16.89L18.5,14.1L20.33,12M11,15H13V17H11V15M11,7H13V13H11V7"
-              Fill="#FDD835"/>
+			<icons:MaterialIcon Kind="{Binding Icon}" Width="44" Height="44"
+								Foreground="{Binding Color}"/>
 
-        <Path Width="50" Height="50" IsVisible="{Binding ShowIconError}"
-              VerticalAlignment="Center" Margin="15,0"
-              Data="M8.27,3L3,8.27V15.73L8.27,21H15.73C17.5,19.24 21,15.73 21,15.73V8.27L15.73,3M9.1,5H14.9L19,9.1V14.9L14.9,19H9.1L5,14.9V9.1M11,15H13V17H11V15M11,7H13V13H11V7"
-              Fill="#F4511E"/>
+			<TextBlock Text="{Binding Title}" FontSize="22" Margin="20,12"
+					   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+		</StackPanel>
 
-        <Path Width="50" Height="50" IsVisible="{Binding ShowIconQuestion}"
-              VerticalAlignment="Center" Margin="15,0"
-              Data="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z"
-              Fill="#FF9800"/>
 
-        <Path Width="50" Height="50" IsVisible="{Binding ShowIconSuccess}"
-              VerticalAlignment="Center" Margin="15,0"
-              Data="M20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4C12.76,4 13.5,4.11 14.2,4.31L15.77,2.74C14.61,2.26 13.34,2 12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12M7.91,10.08L6.5,11.5L11,16L21,6L19.59,4.58L11,13.17L7.91,10.08Z"
-              Fill="#43A047"/>
+		<TextBlock Text="{Binding Message}"
+				   TextWrapping="Wrap" FontSize="18" Margin="15"
+				   Grid.Row="1" VerticalAlignment="Center"/>
 
-        <TextBlock Text="{Binding Message}" TextWrapping="Wrap" FontSize="18" Margin="15,0"
-                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-      </StackPanel>
+		<Grid Grid.Row="2" ColumnDefinitions="*,*">
 
-      <Grid Grid.Row="2" HorizontalAlignment="Stretch"
-            Background="{DynamicResource ThemeAccentBrush}"
-            ColumnDefinitions="*,Auto,Auto">
+			<Button Command="{Binding OkCommand}" Grid.Column="0"
+					Margin="5" Width="140" IsDefault="True" HorizontalAlignment="Right"
+					Classes="Primary" Theme="{DynamicResource SolidButton}">
+				<StackPanel Orientation="Horizontal">
+					<PathIcon Data="{StaticResource Material.CheckBold}" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+					<TextBlock Text="Ok" FontSize="16" Margin="10,5"/>
+				</StackPanel>
+			</Button>
+			<Button Command="{Binding CancelCommand}" Grid.Column="1" HorizontalAlignment="Left"
+					Margin="0,5,5,5" FontSize="14" Width="140" IsCancel="True"
+					Classes="Tertiary" Theme="{DynamicResource Borderless}">
+				<StackPanel Orientation="Horizontal">
+					<icons:MaterialIcon Kind="CloseBold" Width="24" Height="24"/>
+					<TextBlock Text="Cancelar" FontSize="16" Margin="10,5"/>
+				</StackPanel>
+			</Button>
 
-        <Button Command="{Binding OkCommand}" Grid.Column="1"
-                Margin="5" Width="140" IsDefault="True">
-          <StackPanel Orientation="Horizontal">
-            <PathIcon Data="{StaticResource Material.CheckBold}" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <TextBlock Text="Ok" FontSize="16" Margin="10,5"/>
-          </StackPanel>
-        </Button>
-        <Button Command="{Binding CancelCommand}" Grid.Column="2"
-                Margin="0,5,5,5" FontSize="14" Width="140" IsCancel="True">
-          <StackPanel Orientation="Horizontal">
-            <PathIcon Data="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z"/>
-            <TextBlock Text="Cancelar" FontSize="16" Margin="10,5"/>
-          </StackPanel>
-        </Button>
+		</Grid>
+	</Grid>
 
-      </Grid>
-    </Grid>
-  </Panel>
 </Window>

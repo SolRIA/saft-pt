@@ -1,133 +1,108 @@
-﻿using Avalonia.Collections;
-using ReactiveUI;
-using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Services;
-using Solria.SAFT.Parser.Models;
-using Splat;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using SolRIA.SAFT.Desktop.Services;
+using SolRIA.SAFT.Parser.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reactive;
-using System.Reactive.Disposables;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Solria.SAFT.Desktop.ViewModels
+namespace SolRIA.SAFT.Desktop.ViewModels;
+
+public partial class SaftErrorPageViewModel : ViewModelBase
 {
-    public class SaftErrorPageViewModel : ViewModelBase
+    private readonly ISaftValidator saftValidator;
+    private readonly IDialogManager dialogManager;
+
+    public SaftErrorPageViewModel()
     {
-        private readonly ISaftValidator saftValidator;
-        private readonly IDialogManager dialogManager;
+        saftValidator = AppBootstrap.Resolve<ISaftValidator>();
+        dialogManager = AppBootstrap.Resolve<IDialogManager>();
 
-        public SaftErrorPageViewModel(IScreen screen) : base(screen, MenuIds.SAFT_ERRORS_PAGE)
+        Init();
+    }
+
+    private void Init()
+    {
+        Errors = new List<ValidationError>(saftValidator.MensagensErro);
+
+        if (saftValidator.MensagensErro.Count > 0)
+            NumErros = $"Foram encontrados {saftValidator.MensagensErro.Count} erro(s)";
+        else
+            NumErros = "Não foram encontrados erros";
+    }
+
+    [ObservableProperty]
+    private string numErros;
+
+    [ObservableProperty]
+    private IList<ValidationError> errors;
+
+    [ObservableProperty]
+    private ValidationError selectedError;
+
+    [RelayCommand]
+    private void OnOpenError()
+    {
+
+    }
+
+    [RelayCommand]
+    private async Task OnDoPrint()
+    {
+        if (Errors == null || Errors.Count == 0) return;
+
+        var file = await dialogManager.SaveFileDialog(
+            "Guardar erros",
+            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            initialFileName: "Erros.csv",
+            ".csv");
+
+        if (string.IsNullOrWhiteSpace(file) == false)
         {
-            saftValidator = Locator.Current.GetService<ISaftValidator>();
-            dialogManager = Locator.Current.GetService<IDialogManager>();
-
-            OpenErrorCommand = ReactiveCommand.Create(OnOpenError);
-            DoPrintCommand = ReactiveCommand.CreateFromTask(OnDoPrint);
-            SearchCommand = ReactiveCommand.Create<string>(OnSearch);
-            SearchClearCommand = ReactiveCommand.Create(OnSearchClear);
-        }
-
-        protected override void HandleActivation(CompositeDisposable disposables)
-        {
-            CollectionView = new DataGridCollectionView(saftValidator.MensagensErro)
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (var c in Errors)
             {
-                Filter = o =>
-                {
-                    if (string.IsNullOrWhiteSpace(Filter))
-                        return true;
-
-                    if (o is ValidationError error)
-                    {
-                        if (error.Description != null && error.Description.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                        if (error.DisplayName != null && error.DisplayName.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                        if (error.Field != null && error.Field.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                        if (error.Value != null && error.Value.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                        if (error.FileID != null && error.FileID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                    }
-
-                    return false;
-                }
-            };
-            //CollectionView.GroupDescriptions.Add(new DataGridPathGroupDescription("Code"));
-
-            if (saftValidator.MensagensErro.Count > 0)
-                NumErros = $"Foram encontrados {saftValidator.MensagensErro.Count} erro(s)";
-            else
-                NumErros = "Não foram encontrados erros";
-
-            this.WhenAnyValue(x => x.Filter)
-                .Throttle(TimeSpan.FromSeconds(1))
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .InvokeCommand(SearchCommand)
-                .DisposeWith(disposables);
-        }
-
-        protected override void HandleDeactivation()
-        {
-
-        }
-
-        private string numErros;
-        public string NumErros
-        {
-            get => numErros;
-            set => this.RaiseAndSetIfChanged(ref numErros, value);
-        }
-
-        private ValidationError selectedError;
-        public ValidationError SelectedError
-        {
-            get => selectedError;
-            set => this.RaiseAndSetIfChanged(ref selectedError, value);
-        }
-
-        public ReactiveCommand<Unit, Unit> OpenErrorCommand { get; }
-        public ReactiveCommand<Unit, Unit> DoPrintCommand { get; }
-        public ReactiveCommand<string, Unit> SearchCommand { get; }
-        public ReactiveCommand<Unit, Unit> SearchClearCommand { get; }
-
-        private void OnOpenError()
-        {
-
-        }
-        private async Task OnDoPrint()
-        {
-            if (CollectionView != null && CollectionView.SourceCollection != null && CollectionView.TotalItemCount > 0 && CollectionView.SourceCollection is IEnumerable<ValidationError> errors)
-            {
-                var file = await dialogManager.SaveFileDialog(
-                    "Guardar erros",
-                    directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                    initialFileName: "Erros.csv",
-                    ".csv");
-
-                if (string.IsNullOrWhiteSpace(file) == false)
-                {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    foreach (var c in errors)
-                    {
-                        stringBuilder.AppendLine($"{c.Field};{c.Value};{c.Description}");
-                    }
-
-                    File.WriteAllText(file, stringBuilder.ToString());
-                }
+                stringBuilder.AppendLine($"{c.Field};{c.Value};{c.Description}");
             }
+
+            File.WriteAllText(file, stringBuilder.ToString());
         }
-        private void OnSearch(string _)
+    }
+
+    [RelayCommand]
+    private void OnSearch()
+    {
+        if (string.IsNullOrWhiteSpace(Filter))
         {
-            CollectionView.Refresh();
+            Errors = new List<ValidationError>(saftValidator.MensagensErro);
+
+            return;
         }
-        private void OnSearchClear()
-        {
-            Filter = null;
-        }
+
+        Errors = saftValidator.MensagensErro
+            .Where(d => FilterEntries(d, Filter))
+            .ToArray();
+    }
+    private static bool FilterEntries(ValidationError entry, string filter)
+    {
+        if (string.IsNullOrWhiteSpace(entry.Description) == false && entry.Description.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.DisplayName) == false && entry.DisplayName.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.Field) == false && entry.Field.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.Value) == false && entry.Value.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.FileID) == false && entry.FileID.Contains(filter, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    [RelayCommand]
+    private void OnSearchClear()
+    {
+        Filter = null;
+        OnSearch();
     }
 }

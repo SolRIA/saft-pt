@@ -2,68 +2,92 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="Solria.SAFT.Desktop.Views.DialogSaftResume"
-        Title="{Binding Title}" ShowInTaskbar="False" CanResize="False" WindowStartupLocation="CenterOwner"
-        Classes="dialog"
-		xmlns:vm="clr-namespace:Solria.SAFT.Desktop.ViewModels"
-		xmlns:model="clr-namespace:Solria.SAFT.Parser.Models;assembly=Solria.SAFT.Parser"
+        mc:Ignorable="d" Width="800" Height="610"
+        x:Class="SolRIA.SAFT.Desktop.Views.DialogSaftResume"
+        Title="{Binding Title}"
+		ShowInTaskbar="False" CanResize="False" WindowStartupLocation="CenterOwner"
+		xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+		xmlns:model="clr-namespace:SolRIA.SAFT.Parser.Models;assembly=SolRIA.SAFT.Parser"
 		x:DataType="vm:DialogSaftResumeViewModel"
-		x:CompileBindings="True"
-        Background="#FF333333"
-		Icon="avares://Solria.SAFT.Desktop/Assets/solria.ico">
+		Icon="avares://SolRIA.SAFT.Desktop/Assets/solria.ico">
 
-  <Panel>
+	<Grid RowDefinitions="Auto,*,50" Margin="10">
 
-    <Grid RowDefinitions="Auto,*,Auto" Margin="10,50,10,10">
+		<!-- Organization heaer -->
+		<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+			<StackPanel Spacing="5">
+				<TextBlock Text="{Binding Header.CompanyName}" Classes="H2" Theme="{StaticResource TitleTextBlock}"/>
+				<TextBlock Text="{Binding Header.BusinessName}" Classes="Success" Theme="{StaticResource TitleTextBlock}"/>
+				<TextBlock Text="{Binding Header.TaxRegistrationNumber}" Classes="Secondary"/>
+			</StackPanel>
+		</Border>
 
-      <!-- Name -->
-      <TabControl Grid.Row="0" Margin="10,0">
-        <TabItem Header="Empresa">
-          <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnDefinitions="Auto,*">
-            <TextBlock Text="Nome" Grid.Row="1" />
-            <TextBlock Text="Designação" Grid.Row="2" />
-            <TextBlock Text="NIF" Grid.Row="3" />
+		<TabControl Grid.Row="1" Margin="10,0">
+			<TabItem Header="Validações">
+				<StackPanel>
 
-            <TextBlock Text="{CompiledBinding Header.CompanyName}" Grid.Row="1" Grid.Column="1" Margin="5,0"/>
-            <TextBlock Text="{CompiledBinding Header.BusinessName}" Grid.Row="2" Grid.Column="1" Margin="5,0"/>
-            <TextBlock Text="{CompiledBinding Header.TaxRegistrationNumber}" Grid.Row="3" Grid.Column="1" Margin="5,0"/>
-          </Grid>
-        </TabItem>
-      </TabControl>
+					<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+						<Grid ColumnDefinitions="*,100">
+							<TextBlock Text="Total erros:" />
+							<Button Content="{Binding TotalErrors}"
+									Command="{Binding OpenErrorsCommand}"
+									Grid.Column="1" Margin="0"
+									HorizontalContentAlignment="Right"
+									Classes="Primary"
+									Theme="{DynamicResource SolidButton}"/>
+						</Grid>
+					</Border>
 
-      <TabControl Grid.Row="1" Margin="10,0">
-        <TabItem Header="Validações">
-          <Grid ColumnDefinitions="*,100" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+					<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+						<Grid ColumnDefinitions="*,100">
+							<TextBlock Text="Erros cabeçalho:" />
+							<Button Content="{Binding HeaderErrors}"
+									Command="{Binding OpenHeaderCommand}"
+									Grid.Column="1" HorizontalContentAlignment="Right"
+									Classes="Primary"
+									Theme="{DynamicResource SolidButton}"/>
+						</Grid>
+					</Border>
 
-            <TextBlock Text="Total erros:" Grid.Column="0" Grid.Row="0"/>
-            <Button Content="{CompiledBinding TotalErrors}" Command="{CompiledBinding OpenErrorsCommand}"
-                    Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"/>
+					<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+						<Grid ColumnDefinitions="*,100">
+							<TextBlock Text="Erros Clientes:" />
+							<Button Content="{Binding CustomersErrors}"
+									Command="{Binding OpenCustomersCommand}"
+									Grid.Column="1" HorizontalContentAlignment="Right"
+									Classes="Primary"
+									Theme="{DynamicResource SolidButton}"/>
+						</Grid>
+					</Border>
 
-            <TextBlock Text="Erros cabeçalho:" Grid.Column="0" Grid.Row="1"/>
-            <Button Content="{CompiledBinding HeaderErrors}" Command="{CompiledBinding OpenHeaderCommand}"
-                    Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"/>
+					<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+						<Grid ColumnDefinitions="*,100">
+							<TextBlock Text="Assinaturas validadas:" />
+							<TextBlock HorizontalAlignment="Right" Grid.Column="1"
+									   Text="{Binding SaftHashValidationNumber}"/>
+						</Grid>
+					</Border>
 
-            <TextBlock Text="Erros Clientes:" Grid.Column="0" Grid.Row="2"/>
-            <Button Content="{CompiledBinding CustomersErrors}" Command="{CompiledBinding OpenCustomersCommand}"
-                    Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"/>
+					<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+						<Grid ColumnDefinitions="*,100">
+							<TextBlock Text="Assinaturas com erro:" />
+							<TextBlock HorizontalAlignment="Right" Grid.Column="1"
+									   Text="{Binding SaftHashValidationErrorNumber}"/>
+						</Grid>
+					</Border>
 
-            <TextBlock Text="Assinaturas validadas:" Grid.Column="0" Grid.Row="3"/>
-            <TextBlock HorizontalAlignment="Right" Grid.Column="1" Grid.Row="3" Text="{CompiledBinding SaftHashValidationNumber}"/>
+				</StackPanel>
+			</TabItem>
+		</TabControl>
 
-            <TextBlock Text="Assinaturas com erro:" Grid.Column="0" Grid.Row="4"/>
-            <TextBlock HorizontalAlignment="Right" Grid.Column="1" Grid.Row="4" Text="{CompiledBinding SaftHashValidationErrorNumber}"/>
+		<Grid Grid.Row="2" HorizontalAlignment="Stretch" ColumnDefinitions="*,Auto,Auto">
+			<Button Content="Doc. faturação" HorizontalContentAlignment="Center" Margin="5,5,0,5" Width="150" Grid.Column="1"
+					Command="{Binding OpenInvoicesCommand}"
+					Classes="Primary" Theme="{DynamicResource SolidButton}"/>
+			<Button Content="Fechar" HorizontalContentAlignment="Center" Margin="5" Width="150" Grid.Column="2"
+					Command="{Binding CloseDialogCommand}"
+					Classes="Primary"/>
+		</Grid>
+	</Grid>
 
-          </Grid>
-        </TabItem>
-      </TabControl>
-
-      <Grid Grid.Row="2" HorizontalAlignment="Stretch" ColumnDefinitions="*,Auto,Auto">
-        <Button Content="Doc. faturação" HorizontalContentAlignment="Center" Margin="5,5,0,5" Width="120" Grid.Column="1"
-                Command="{CompiledBinding OpenInvoicesCommand}" />
-        <Button Content="Fechar" HorizontalContentAlignment="Center" Margin="5" Width="120" Grid.Column="2"
-                Command="{CompiledBinding CloseDialogCommand}" />
-      </Grid>
-    </Grid>
-  </Panel>
 </Window>

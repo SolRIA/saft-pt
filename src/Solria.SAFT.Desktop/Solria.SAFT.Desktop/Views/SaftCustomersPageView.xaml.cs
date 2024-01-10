@@ -1,21 +1,15 @@
-﻿using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
-using Solria.SAFT.Desktop.ViewModels;
+﻿using Avalonia.Controls;
 
-namespace Solria.SAFT.Desktop.Views
+namespace SolRIA.SAFT.Desktop.Views
 {
-    public class SaftCustomersPageView : ReactiveUserControl<SaftCustomersPageViewModel>
+    public partial class SaftCustomersPageView : UserControl
     {
         public SaftCustomersPageView()
         {
             InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
-            this.WhenActivated(disposables => { });
-            AvaloniaXamlLoader.Load(this);
+#if DEBUG
+            //this.AttachDevTools();
+#endif
         }
     }
 }

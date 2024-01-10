@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace Solria.SAFT.Parser.Services
+namespace SolRIA.SAFT.Parser.Services
 {
     public class XmlParserService
     {

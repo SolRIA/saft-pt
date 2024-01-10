@@ -1,23 +1,21 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
-using Avalonia.Markup.Xaml;
-using Avalonia.Markup.Xaml.Styling;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
-using Solria.SAFT.Desktop.Services;
-using Solria.SAFT.Desktop.ViewModels;
+using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
+using Avalonia.Styling;
+using SolRIA.SAFT.Desktop.Models;
+using SolRIA.SAFT.Desktop.Services;
+using SolRIA.SAFT.Desktop.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Threading.Tasks;
 
-namespace Solria.SAFT.Desktop.Views
+namespace SolRIA.SAFT.Desktop.Views
 {
-    public class MainWindow : ReactiveWindow<MainWindowViewModel>, IDialogManager, IReportService
+    public partial class MainWindow : Window, IDialogManager, IReportService
     {
-        private readonly StyleInclude _lightTheme;
-        private readonly StyleInclude _darkTheme;
         readonly TextBlock txtMessage;
         private readonly WindowNotificationManager notificationManager;
 
@@ -34,40 +32,30 @@ namespace Solria.SAFT.Desktop.Views
                 MaxItems = 3
             };
 
-            var _themeSelector = this.Find<CheckBox>("themeSelector");
-            if (_themeSelector != null)
-            {
-                _themeSelector.Checked += (sender, e) =>
-                {
-                    Styles[0] = _darkTheme;
-                };
-                _themeSelector.Unchecked += (sender, e) =>
-                {
-                    Styles[0] = _lightTheme;
-                };
 
-                _lightTheme = new StyleInclude(new Uri("resm:Styles?assembly=Solria.SAFT.Desktop"))
-                {
-                    Source = new Uri("resm:Avalonia.Themes.Default.Accents.BaseLight.xaml?assembly=Avalonia.Themes.Default")
-                };
-                _darkTheme = new StyleInclude(new Uri("resm:Styles?assembly=Solria.SAFT.Desktop"))
-                {
-                    Source = new Uri("resm:Avalonia.Themes.Default.Accents.BaseDark.xaml?assembly=Avalonia.Themes.Default")
-                };
-                Styles.Add(_darkTheme);
-            }
-            txtMessage = this.Find<TextBlock>("messages");
-
-            this.WhenActivated(disposables =>
-            {
-                Disposable.Create(() => { })
-                .DisposeWith(disposables);
-            });
+            //txtMessage = this.Find<TextBlock>("messages");
         }
 
-        private void InitializeComponent()
+        private void ToggleButton_OnIsCheckedChanged(object sender, RoutedEventArgs e)
         {
-            AvaloniaXamlLoader.Load(this);
+            var app = Application.Current;
+            if (app is not null)
+            {
+                var theme = app.ActualThemeVariant;
+                app.RequestedThemeVariant = theme == ThemeVariant.Dark ? ThemeVariant.Light : ThemeVariant.Dark;
+            }
+        }
+
+        public void NavigateToFirstPage()
+        {
+            var vm = new MainWindowViewModel();
+            DataContext = vm;
+            var view = new MainMenuPageView { DataContext = vm };
+
+            var navService = AppBootstrap.Resolve<INavigationService>();
+            navService.InitNavigationcontrol(mainContentGrid);
+
+            navService.NavigateTo(view);
         }
 
         public void CloseApp()
@@ -77,7 +65,7 @@ namespace Solria.SAFT.Desktop.Views
 
         public void UpdateVersionInfo(string version)
         {
-            
+
         }
         public void SetTitle(string title)
         {
@@ -114,25 +102,36 @@ namespace Solria.SAFT.Desktop.Views
             notificationManager.Show(new Notification(title, message, type, expiration, onClick, onClose));
         }
 
-        public void ShowChildDialog(Window window)
+        public void ShowChildDialog<V>(V vm) where V : ViewModelBase
         {
-            //window.Owner = GetTopWindow();
-            window.Show(GetTopWindow());
+            var dialog = GetDialogView(vm);
+
+            if (dialog == null) return;
+
+            dialog.Show(GetTopWindow());
         }
 
-        private readonly List<Window> dialogs = new();
-        public async Task ShowChildDialogAsync(Window window)
+        private readonly List<Window> dialogs = [];
+        public async Task ShowChildDialogAsync<V>(V vm) where V : ViewModelBase
         {
             var top_window = GetTopWindow();
-            dialogs.Add(window);
-            await window.ShowDialog(top_window);
+            var dialog = GetDialogView(vm);
+
+            if (dialog == null) return;
+
+            dialogs.Add(dialog);
+            await dialog.ShowDialog(top_window);
         }
 
-        public async Task<T> ShowChildDialogAsync<T>(Window window)
+        public Task<bool> ShowMessageDialogAsync(string title, string message, MessageDialogType messageDialogType)
         {
             var top_window = GetTopWindow();
-            dialogs.Add(window);
-            return await window.ShowDialog<T>(top_window);
+
+            var vm = new DialogMessageViewModel(messageDialogType) { Title = title, Message = message };
+            var dialog = new DialogMessage { DataContext = vm };
+
+            dialogs.Add(dialog);
+            return dialog.ShowDialog<bool>(top_window);
         }
 
         public void CloseDialog(bool result = false)
@@ -144,6 +143,23 @@ namespace Solria.SAFT.Desktop.Views
                 dialogs.Remove(last);
             }
         }
+        private static Window GetDialogView<T>(T vm) where T : ViewModelBase
+        {
+            var vmType = typeof(T);
+
+            if (vmType == typeof(DialogConvertPemKeyViewModel))
+                return new DialogConvertPemKey { DataContext = vm };
+            if (vmType == typeof(DialogDocumentReferencesViewModel))
+                return new DialogDocumentReferences { DataContext = vm };
+            if (vmType == typeof(DialogHashTestViewModel))
+                return new DialogHashTest { DataContext = vm };
+            if (vmType == typeof(DialogSaftDocumentDetailViewModel))
+                return new DialogSaftDocumentDetail { DataContext = vm };
+            if (vmType == typeof(DialogSaftResumeViewModel))
+                return new DialogSaftResume { DataContext = vm };
+
+            return null;
+        }
         private Window GetTopWindow()
         {
             Window parent = this;
@@ -153,43 +169,44 @@ namespace Solria.SAFT.Desktop.Views
             return parent;
         }
 
-        public async Task<string[]> OpenFileDialog(string title, string directory = "", string initialFileName = "", bool allowMultiple = false, List<FileDialogFilter> filters = null)
+        public async Task<string[]> OpenFileDialog(string title, string initialFileName = "", bool allowMultiple = false, FilePickerFileType[] filters = null)
         {
-            var openFileDialog = new OpenFileDialog
+            var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = title,
                 AllowMultiple = allowMultiple,
-                Directory = directory,
-                InitialFileName = initialFileName,
-                Filters = filters
-            };
+                FileTypeFilter = filters,
+                SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(initialFileName)
+            });
 
-            return await openFileDialog.ShowAsync(this);
+            return result.Select(f => f.Path.LocalPath).ToArray();
         }
 
-        public async Task<string> SaveFileDialog(string title, string directory = "", string initialFileName = "", string defaultExtension = "", List<FileDialogFilter> filters = null)
+        public async Task<string> SaveFileDialog(string title, string directory = "", string initialFileName = "", string defaultExtension = "", FilePickerFileType[] filters = null)
         {
-            var saveFileDialog = new SaveFileDialog
+            var result = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 Title = title,
-                Directory = directory,
-                InitialFileName = initialFileName,
-                Filters = filters,
-                DefaultExtension = defaultExtension
-            };
+                DefaultExtension = defaultExtension,
+                ShowOverwritePrompt = true,
+                SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(directory),
+                SuggestedFileName = initialFileName,
+                FileTypeChoices = filters
+            });
 
-            return await saveFileDialog.ShowAsync(this);
+            return result?.Name;
         }
 
         public async Task<string> OpenFolderDialog(string title, string directory = "")
         {
-            var openFolderDialog = new OpenFolderDialog
+            var result = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
             {
                 Title = title,
-                Directory = directory
-            };
+                AllowMultiple = false,
+                SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(directory)
+            });
 
-            return await openFolderDialog.ShowAsync(this);
+            return result.Select(result => result.Name).FirstOrDefault();
         }
     }
 }

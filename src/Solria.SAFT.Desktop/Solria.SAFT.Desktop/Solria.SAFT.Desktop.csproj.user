@@ -4,6 +4,9 @@
     <_LastSelectedProfileId>E:\desktop\Repos\SolRIA\saft-pt\src\Solria.SAFT.Desktop\Solria.SAFT.Desktop\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
   </PropertyGroup>
   <ItemGroup>
+    <None Update="Models\Inventario_2_01.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Update="Models\SAFTPT1_03_01.xsd">
       <SubType>Designer</SubType>
     </None>

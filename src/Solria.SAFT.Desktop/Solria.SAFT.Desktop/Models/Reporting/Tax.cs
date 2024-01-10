@@ -1,4 +1,4 @@
-﻿namespace Solria.SAFT.Desktop.Models.Reporting
+﻿namespace SolRIA.SAFT.Desktop.Models.Reporting
 {
     public class Tax
     {

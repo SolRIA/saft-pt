@@ -2,39 +2,59 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+			 xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 x:DataType="vm:MainWindowViewModel"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Solria.SAFT.Desktop.Views.MainMenuPageView">
-  <Grid RowDefinitions="*,135,*" ColumnDefinitions="*,135,135,135,*">
+             x:Class="SolRIA.SAFT.Desktop.Views.MainMenuPageView">
 
-    <Button Command="{Binding OpenSaftCommand}" Margin="5" Grid.Row="1" Grid.Column="1">
-      <Grid Width="130" Height="130" RowDefinitions="*,40" HorizontalAlignment="Stretch">
-        <PathIcon Data="{StaticResource Material.FileCode}" Foreground="Orange" Grid.Row="0" Width="60" Height="60" HorizontalAlignment="Center"/>
+	<Grid RowDefinitions="*,155,*" ColumnDefinitions="*,155,155,155,*">
+		<Grid.Styles>
+			<Style Selector="Button">
+				<Setter Property="Margin" Value="5"/>
+				<Setter Property="Grid.Row" Value="1"/>
+				<Setter Property="Width" Value="150"/>
+				<Setter Property="Height" Value="150"/>
+			</Style>
+			<Style Selector="TextBlock">
+				<Setter Property="TextAlignment" Value="Center"/>
+				<Setter Property="FontSize" Value="20"/>
+				<Setter Property="Margin" Value="0,15"/>
+				<Setter Property="Grid.Row" Value="1"/>
+				<Setter Property="Foreground" Value="White"/>
+			</Style>
+			<Style Selector="icons|MaterialIcon">
+				<Setter Property="Width" Value="60"/>
+				<Setter Property="Height" Value="60"/>
+			</Style>
+		</Grid.Styles>
 
-        <Border Grid.Row="1">
-          <TextBlock Text="SAFT-PT" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
-        </Border>
-      </Grid>
-    </Button>
+		<Button Command="{Binding OpenSaftCommand}" Grid.Column="1"
+				Foreground="{StaticResource SemiBlue4}">
+			<Grid RowDefinitions="*,40" >
+				<icons:MaterialIcon Kind="FileCode" />
+				
+				<TextBlock Text="SAFT-PT" />
+			</Grid>
+		</Button>
 
-    <Button Command="{Binding OpenTransportCommand}" Margin="5" Grid.Row="1" Grid.Column="2">
-      <Grid Width="130" Height="130" RowDefinitions="*,40">
-        <PathIcon Data="{StaticResource Material.Truck}" Foreground="LightBlue" Grid.Row="0" Width="60" Height="60" HorizontalAlignment="Center"/>
+		<Button Command="{Binding OpenTransportCommand}" Grid.Column="2"
+				Foreground="{StaticResource SemiGreen4}">
+			<Grid RowDefinitions="*,40">
+				<icons:MaterialIcon Kind="TruckFastOutline" />
+				
+				<TextBlock Text="TRANSPORTE" FontSize="18"/>
+			</Grid>
+		</Button>
 
-        <Border Grid.Row="1">
-          <TextBlock Text="Transporte" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
-        </Border>
-      </Grid>
-    </Button>
+		<Button Command="{Binding OpenStocksCommand}" Grid.Column="3"
+				Foreground="{StaticResource SemiOrange4}">
+			<Grid RowDefinitions="*,40">
+				<icons:MaterialIcon Kind="BarcodeScan" />
+				
+				<TextBlock Text="STOCKS" />
+			</Grid>
+		</Button>
 
-    <Button Command="{Binding OpenStocksCommand}" Margin="5" Grid.Row="1" Grid.Column="3">
-      <Grid Width="130" Height="130" RowDefinitions="*,40">
-        <PathIcon Data="{StaticResource Material.BarcodeScan}" Foreground="LightGreen" Grid.Row="0" Width="60" Height="60" HorizontalAlignment="Center"/>
-
-        <Border Grid.Row="1">
-          <TextBlock Text="Stocks" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5"/>
-        </Border>
-      </Grid>
-    </Button>
-
-  </Grid>
+	</Grid>
 </UserControl>

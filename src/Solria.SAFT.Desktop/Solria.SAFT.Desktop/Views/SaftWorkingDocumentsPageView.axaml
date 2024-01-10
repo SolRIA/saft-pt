@@ -1,0 +1,280 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d"
+			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+             x:Class="SolRIA.SAFT.Desktop.Views.SaftWorkingDocumentsPageView"
+			 x:DataType="vm:SaftWorkingDocumentsPageViewModel">
+	<Grid RowDefinitions="55,*,7,55,*" ColumnDefinitions="*,7,Auto">
+
+		<!-- documents filter -->
+		<Grid ColumnDefinitions="*,Auto,Auto,54,54,54" Grid.Row="0" Grid.Column="0">
+			<TextBox Text="{Binding Filter, Mode=TwoWay}" Watermark="Filtro"
+					 Margin="5,2">
+				<TextBox.InnerRightContent>
+					<Button Command="{Binding SearchCommand}"
+							Classes="Primary" Padding="4"
+							Theme="{DynamicResource BorderlessButton}"
+							Width="{Binding $self.Bounds.Height}"
+							Content="{icons:MaterialIconExt Search, Size=24}" />
+				</TextBox.InnerRightContent>
+				<TextBox.KeyBindings>
+					<KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
+				</TextBox.KeyBindings>
+			</TextBox>
+
+			<DatePicker SelectedDate="{Binding FiltroDataInicio}" BorderThickness="0"
+						MinWidth="100" Grid.Column="1" Margin="2"
+						VerticalAlignment="Stretch"/>
+			<DatePicker SelectedDate="{Binding FiltroDataFim}" BorderThickness="0"
+						MinWidth="100" Grid.Column="2" Margin="2"
+						VerticalAlignment="Stretch"/>
+
+			<Button Margin="2" Width="50" ToolTip.Tip="Limpar Filtros" Grid.Column="3"
+					Command="{Binding SearchClearCommand}" >
+				<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+			</Button>
+
+			<Button Margin="2" Width="50" ToolTip.Tip="Exportar documentos para Excel" Grid.Column="4"
+					Command="{Binding DoPrintCommand}">
+				<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+			</Button>
+
+			<Button Margin="2" Width="50" ToolTip.Tip="Exportar impostos para Excel" Grid.Column="5"
+				   Command="{Binding DoPrintTaxesCommand}">
+				<icons:MaterialIcon Kind="PercentBox" Width="24" Height="24"/>
+			</Button>
+		</Grid>
+
+		<!-- documents list -->
+		<DataGrid x:Name="documentsDatagrid" IsReadOnly="True" Grid.Row="1" Grid.Column="0" FontSize="14"
+				  ItemsSource="{Binding Documents}"
+				  SelectedItem="{Binding CurrentDocument, Mode=TwoWay}">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Nº" Binding="{Binding DocumentNumber}" />
+				<DataGridTextColumn Header="ATCUD" Binding="{Binding ATCUD}" />
+				<DataGridTextColumn Header="Estado" Binding="{Binding DocumentStatus.WorkStatus}" />
+				<DataGridTextColumn Header="Data" Binding="{Binding WorkDate, StringFormat='{}{0:yyyy/MM/dd}'}" />
+				<DataGridTextColumn Header="Data sistema" Binding="{Binding SystemEntryDate}" />
+				<DataGridTemplateColumn Header="Total s/ IVA" SortMemberPath="DocumentTotals.NetTotal">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding DocumentTotals.NetTotal, StringFormat='N2'}" Classes="number"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Total" SortMemberPath="DocumentTotals.GrossTotal">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding DocumentTotals.GrossTotal, StringFormat='N2'}" Classes="number"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Total imposto" SortMemberPath="DocumentTotals.TaxPayable">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding DocumentTotals.TaxPayable, StringFormat='N2'}" Classes="number"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTextColumn Header="Cliente" Binding="{Binding CustomerID}" />
+				<DataGridTextColumn Header="Periodo" Binding="{Binding Period}"/>
+				<DataGridTextColumn Header="Transacção" Binding="{Binding TransactionID}" />
+				<DataGridTextColumn Header="Hash" Binding="{Binding Hash}" Width="100"/>
+				<DataGridTextColumn Header="Hash Test" Binding="{Binding HashTest}"/>
+				<DataGridTextColumn Header="Hash Control" Binding="{Binding HashControl}" />
+			</DataGrid.Columns>
+
+			<DataGrid.ContextMenu>
+				<ContextMenu>
+					<MenuItem Header="Mostrar Cliente" Command="{Binding ShowCustomerCommand}">
+						<MenuItem.Icon>
+							<PathIcon Data="{StaticResource Material.AccountCardDetailsOutline}" HorizontalAlignment="Center" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Mostrar Detalhes Documento" Command="{Binding ShowInvoiceDetailsCommand}">
+						<MenuItem.Icon>
+							<PathIcon Data="{StaticResource Material.FileDocument}" HorizontalAlignment="Center" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Mostrar Dependências" Command="{Binding ShowDependenciesCommand}">
+						<MenuItem.Icon>
+							<PathIcon Data="{StaticResource Material.FileDocument}" HorizontalAlignment="Center" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Abrir Documento Excel" Command="{Binding SaveExcelCommand}">
+						<MenuItem.Icon>
+							<PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem Header="Testar valores certificação" Command="{Binding TestHashCommand}">
+						<MenuItem.Icon>
+							<PathIcon Data="{StaticResource Material.ShieldKeyOutline}" HorizontalAlignment="Center" />
+						</MenuItem.Icon>
+					</MenuItem>
+				</ContextMenu>
+			</DataGrid.ContextMenu>
+		</DataGrid>
+
+		<GridSplitter Grid.Column="1" Grid.RowSpan="5" Width="5" Margin="1,5" />
+
+		<!-- documents resume -->
+		<Grid Grid.Column="2" Grid.Row="0" Grid.RowSpan="5" RowDefinitions="*,50" ColumnDefinitions="*,*">
+			<Border Classes="Hover" Theme="{StaticResource CardBorder}" Grid.ColumnSpan="2"
+					Margin="5">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<ScrollViewer.Styles>
+						<Style Selector="TextBlock">
+							<Setter Property="TextAlignment" Value="Right"/>
+							<Setter Property="FontSize" Value="14"/>
+							<Setter Property="Margin" Value="3"/>
+						</Style>
+					</ScrollViewer.Styles>
+					<Grid ColumnDefinitions="*,Auto" RowDefinitions="30,25,25,25,25,25,25,30,25,25,25,25,25,25,25">
+
+						<TextBlock Text="Totais SAFT" Grid.ColumnSpan="2" TextAlignment="Center" FontWeight="SemiBold" FontSize="20"/>
+
+						<TextBlock Text="Documentos:" Grid.Row="1" />
+						<TextBlock Text="Total crédito:" Grid.Row="2" />
+						<TextBlock Text="Total débito:" Grid.Row="3" />
+						<TextBlock Text="Total:" Grid.Row="4" />
+						<TextBlock Text="Total s/ IVA:" Grid.Row="5" />
+						<TextBlock Text="Total IVA:" Grid.Row="6" />
+
+						<TextBlock Text="{Binding NumberOfEntries}" Grid.Column="1" Grid.Row="1"/>
+						<TextBlock Text="{Binding TotalCredit}" Grid.Column="1" Grid.Row="2"/>
+						<TextBlock Text="{Binding TotalDebit}" Grid.Column="1" Grid.Row="3" />
+						<TextBlock Text="{Binding GrossTotal}" Grid.Column="1" Grid.Row="4" />
+						<TextBlock Text="{Binding NetTotal}" Grid.Column="1" Grid.Row="5" />
+						<TextBlock Text="{Binding TaxPayable}" Grid.Column="1" Grid.Row="6" />
+
+						<TextBlock Text="Totais calculados" Grid.Row="7" Grid.ColumnSpan="2" TextAlignment="Center" FontWeight="SemiBold" FontSize="20"/>
+
+						<TextBlock Text="Documentos:" Grid.Row="8" />
+						<TextBlock Text="Total crédito:" Grid.Row="9" />
+						<TextBlock Text="Total débito:" Grid.Row="10" />
+						<TextBlock Text="Total:" Grid.Row="11" />
+						<TextBlock Text="Total s/ IVA:" Grid.Row="12" />
+						<TextBlock Text="Total IVA:" Grid.Row="13" />
+
+						<TextBlock Text="{Binding DocNumberOfEntries}" Grid.Column="1" Grid.Row="8"/>
+						<TextBlock Text="{Binding DocTotalCredit}" Grid.Column="1" Grid.Row="9" />
+						<TextBlock Text="{Binding DocTotalDebit}" Grid.Column="1" Grid.Row="10" />
+						<TextBlock Text="{Binding DocGrossTotal}" Grid.Column="1" Grid.Row="11" />
+						<TextBlock Text="{Binding DocNetTotal}" Grid.Column="1" Grid.Row="12" />
+						<TextBlock Text="{Binding DocTaxPayable}" Grid.Column="1" Grid.Row="13" />
+
+					</Grid>
+				</ScrollViewer>
+			</Border>
+
+			<Button Height="50" ToolTip.Tip="Exportar para Excel"
+					Margin="5,0,2.5,5" Grid.Row="1" Grid.Column="0"
+					Command="{Binding SaveExcelCommand}">
+				<StackPanel Orientation="Horizontal">
+					<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+					<TextBlock Text="Documento" VerticalAlignment="Center" Margin="5,0"/>
+				</StackPanel>
+			</Button>
+			<Button Height="50" ToolTip.Tip="Mostrar detalhes do documento seleccionado"
+					Margin="2.5,0,5,5" Grid.Row="1" Grid.Column="1"
+					Command="{Binding ShowInvoiceDetailsCommand}">
+				<StackPanel Orientation="Horizontal">
+					<icons:MaterialIcon Kind="FileDocument" Width="24" Height="24"/>
+					<TextBlock Text="Detalhes" VerticalAlignment="Center" Margin="5,0"/>
+				</StackPanel>
+			</Button>
+		</Grid>
+
+		<GridSplitter Grid.Row="2" Height="5" Margin="5,1"  />
+
+		<!-- lines filter -->
+		<Grid ColumnDefinitions="*,Auto,54" Grid.Row="3">
+			<TextBox Margin="2" Text="{Binding FilterLines, Mode=TwoWay}"
+					 Watermark="Filtro">
+				<TextBox.InnerRightContent>
+					<Button Command="{Binding SearchDetailsCommand}"
+							Classes="Primary" Padding="4"
+							Theme="{DynamicResource BorderlessButton}"
+							Width="{Binding $self.Bounds.Height}"
+							Content="{icons:MaterialIconExt Search, Size=24}" />
+				</TextBox.InnerRightContent>
+				<TextBox.KeyBindings>
+					<KeyBinding Command="{Binding SearchDetailsCommand}" Gesture="Enter"/>
+				</TextBox.KeyBindings>
+			</TextBox>
+
+			<CheckBox Content="Mostrar todas as linhas" Grid.Column="1"
+					  ToolTip.Tip="Mostrar as linhas de todos os documentos" Margin="2"
+					  IsChecked="{Binding ShowAllLines, Mode=TwoWay}"
+					  Theme="{DynamicResource CardCheckBox}"/>
+
+			<Button Margin="2" Width="50" ToolTip.Tip="Apagar Filtros" Grid.Column="2"
+				  Command="{Binding SearchDetailsClearCommand}" >
+				<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+			</Button>
+		</Grid>
+
+		<DataGrid Grid.Row="4" IsReadOnly="True" FontSize="14"
+				  ItemsSource="{Binding Lines}">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Nº linha" Binding="{Binding LineNumber}" />
+				<DataGridTextColumn Header="Nº documento" Binding="{Binding DocNo}"/>
+				<DataGridTextColumn Header="Código produto" Binding="{Binding ProductCode}" />
+				<DataGridTextColumn Header="Descrição produto" Binding="{Binding ProductDescription}" />
+				<DataGridTemplateColumn Header="Quantidade" SortMemberPath="Quantity">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Quantity, StringFormat='N2'}" Classes="number"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Preço unitário" SortMemberPath="UnitPrice">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding UnitPrice, StringFormat='N2'}" Classes="number"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Crédito" SortMemberPath="CreditAmount">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding CreditAmount, StringFormat='N2'}" Classes="number"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Débito" SortMemberPath="DebitAmount">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding DebitAmount, StringFormat='N2'}" Classes="number"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Desconto" SortMemberPath="SettlementAmount">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding SettlementAmount, StringFormat='N2'}" Classes="number"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Imposto" SortMemberPath="Tax.TaxPercentage">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Tax.TaxPercentage, StringFormat='N2'}" Classes="number"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTextColumn Header="Isenção imposto" Binding="{Binding TaxExemptionReason}" />
+				<DataGridTextColumn Header="Cód. Isenção" Binding="{Binding TaxExemptionCode}" />
+				<!--<DataGridTextColumn Header="Referência" Binding="{Binding OrderReferences[0].OriginatingON}"/>-->
+				<!--<DataGridTextColumn Header="Razão" Binding="{Binding References[0].Reason}"/>-->
+				<DataGridTextColumn Header="Unidade medida" Binding="{Binding UnitOfMeasure}" />
+				<DataGridTextColumn Header="Data" Binding="{Binding TaxPointDate}" />
+				<DataGridTextColumn Header="Descrição" Binding="{Binding Description}" />
+			</DataGrid.Columns>
+		</DataGrid>
+
+	</Grid>
+</UserControl>

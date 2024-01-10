@@ -1,10 +1,8 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+﻿using Avalonia.Controls;
 
-namespace Solria.SAFT.Desktop.Views
+namespace SolRIA.SAFT.Desktop.Views
 {
-    public class DialogHashTest : Window
+    public partial class DialogHashTest : Window
     {
         public DialogHashTest()
         {
@@ -12,11 +10,6 @@ namespace Solria.SAFT.Desktop.Views
 #if DEBUG
             //this.AttachDevTools();
 #endif
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
     }
 }

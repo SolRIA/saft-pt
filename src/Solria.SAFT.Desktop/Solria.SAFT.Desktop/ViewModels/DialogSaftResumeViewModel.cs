@@ -1,127 +1,96 @@
-﻿using ReactiveUI;
-using Solria.SAFT.Desktop.Services;
-using Solria.SAFT.Parser.Models;
-using Splat;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using SolRIA.SAFT.Desktop.Services;
+using SolRIA.SAFT.Parser.Models;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 
-namespace Solria.SAFT.Desktop.ViewModels
+namespace SolRIA.SAFT.Desktop.ViewModels;
+
+public partial class DialogSaftResumeViewModel : ViewModelBase
 {
-    public class DialogSaftResumeViewModel : ReactiveObject
+    private readonly ISaftValidator saftValidator;
+    private readonly IDialogManager dialogManager;
+    private readonly INavigationService navigationService;
+
+    public DialogSaftResumeViewModel()
     {
-        private readonly ISaftValidator saftValidator;
-        private readonly IDialogManager dialogManager;
-        private readonly IScreen router;
+        saftValidator = AppBootstrap.Resolve<ISaftValidator>();
+        dialogManager = AppBootstrap.Resolve<IDialogManager>();
+        navigationService = AppBootstrap.Resolve<INavigationService>();
+    }
 
-        public DialogSaftResumeViewModel(IScreen router)
+    public void Init()
+    {
+        if (saftValidator.SaftFile != null)
         {
-            this.router = router;
-            saftValidator = Locator.Current.GetService<ISaftValidator>();
-            dialogManager = Locator.Current.GetService<IDialogManager>();
-
-            OpenErrorsCommand = ReactiveCommand.Create(OnOpenErrors);
-            OpenHeaderCommand = ReactiveCommand.Create(OnOpenHeader);
-            OpenCustomersCommand = ReactiveCommand.Create(OnOpenCustomers);
-            CloseDialogCommand = ReactiveCommand.Create(OnCloseDialog);
-            OpenInvoicesCommand = ReactiveCommand.Create(OnOpenInvoices);
-        }
-
-        public void Init()
-        {
-            if (saftValidator.SaftFile != null)
+            Header = new Header
             {
-                Header = new Header
-                {
-                    BusinessName = saftValidator.SaftFile.Header.BusinessName,
-                    CompanyName = saftValidator.SaftFile.Header.CompanyName,
-                    TaxRegistrationNumber = saftValidator.SaftFile.Header.TaxRegistrationNumber
-                };
+                BusinessName = saftValidator.SaftFile.Header.BusinessName,
+                CompanyName = saftValidator.SaftFile.Header.CompanyName,
+                TaxRegistrationNumber = saftValidator.SaftFile.Header.TaxRegistrationNumber
+            };
 
-                HeaderErrors = saftValidator.MensagensErro.Where(m => m.TypeofError == typeof(Models.SaftV4.Header)).Count();
-                CustomersErrors = saftValidator.MensagensErro.Where(m => m.TypeofError == typeof(Models.SaftV4.Customer)).Count();
-            }
-
-            TotalErrors = saftValidator.MensagensErro.Count;
-            SaftHashValidationNumber = saftValidator.SaftHashValidationNumber;
-            SaftHashValidationErrorNumber = saftValidator.SaftHashValidationErrorNumber;
+            HeaderErrors = saftValidator.MensagensErro.Where(m => m.TypeofError == typeof(Models.SaftV4.Header)).Count();
+            CustomersErrors = saftValidator.MensagensErro.Where(m => m.TypeofError == typeof(Models.SaftV4.Customer)).Count();
         }
 
-        public string Title { get; set; } = "Resumo";
+        TotalErrors = saftValidator.MensagensErro.Count;
+        SaftHashValidationNumber = saftValidator.SaftHashValidationNumber;
+        SaftHashValidationErrorNumber = saftValidator.SaftHashValidationErrorNumber;
+    }
 
-        private Header header;
-        public Header Header
-        {
-            get => header;
-            set => this.RaiseAndSetIfChanged(ref header, value);
-        }
+    public string Title { get; set; } = "Resumo";
 
-        private int totalerrors;
-        public int TotalErrors
-        {
-            get => totalerrors;
-            set => this.RaiseAndSetIfChanged(ref totalerrors, value);
-        }
+    [ObservableProperty]
+    private Header header;
+    
+    [ObservableProperty]
+    private int totalErrors;
+    
+    [ObservableProperty]
+    private int headerErrors;
+    
+    [ObservableProperty]
+    private int customersErrors;
+    
+    [ObservableProperty]
+    private int saftHashValidationNumber;
+    
+    [ObservableProperty]
+    private int saftHashValidationErrorNumber;
 
-        private int headerErrors;
-        public int HeaderErrors
-        {
-            get => headerErrors;
-            set => this.RaiseAndSetIfChanged(ref headerErrors, value);
-        }
-        private int customersErrors;
-        public int CustomersErrors
-        {
-            get => customersErrors;
-            set => this.RaiseAndSetIfChanged(ref customersErrors, value);
-        }
+    [RelayCommand]
+    private void OnOpenErrors()
+    {
+        navigationService.NavigateTo(new SaftErrorPageViewModel());
+        dialogManager.CloseDialog();
+    }
 
-        private int saftHashValidationNumber;
-        public int SaftHashValidationNumber
-        {
-            get => saftHashValidationNumber;
-            set => this.RaiseAndSetIfChanged(ref saftHashValidationNumber, value);
-        }
+    [RelayCommand]
+    private void OnOpenHeader()
+    {
+        navigationService.NavigateTo(new SaftHeaderPageViewModel());
+        dialogManager.CloseDialog();
+    }
 
-        private int saftHashValidationErrorNumber;
-        public int SaftHashValidationErrorNumber
-        {
-            get => saftHashValidationErrorNumber;
-            set => this.RaiseAndSetIfChanged(ref saftHashValidationErrorNumber, value);
-        }
+    [RelayCommand]
+    private void OnOpenCustomers()
+    {
+        navigationService.NavigateTo(new SaftCustomersPageViewModel());
+        dialogManager.CloseDialog();
+    }
 
-        public ReactiveCommand<Unit, Unit> OpenErrorsCommand { get; }
-        private void OnOpenErrors()
-        {
-            router.Router.NavigateAndReset.Execute(new SaftErrorPageViewModel(router));
-            dialogManager.CloseDialog();
-        }
+    [RelayCommand]
+    private void OnCloseDialog()
+    {
+        dialogManager.CloseDialog();
+    }
 
-        public ReactiveCommand<Unit, Unit> OpenHeaderCommand { get; }
-        private void OnOpenHeader()
-        {
-            router.Router.NavigateAndReset.Execute(new SaftHeaderPageViewModel(router));
-            dialogManager.CloseDialog();
-        }
-
-        public ReactiveCommand<Unit, Unit> OpenCustomersCommand { get; }
-        private void OnOpenCustomers()
-        {
-            router.Router.NavigateAndReset.Execute(new SaftCustomersPageViewModel(router));
-            dialogManager.CloseDialog();
-        }
-
-        public ReactiveCommand<Unit, Unit> CloseDialogCommand { get; }
-        private void OnCloseDialog()
-        {
-            dialogManager.CloseDialog();
-        }
-
-        public ReactiveCommand<Unit, Unit> OpenInvoicesCommand { get; }
-        private void OnOpenInvoices()
-        {
-            router.Router.NavigateAndReset.Execute(new SaftInvoicesPageViewModel(router));
-            dialogManager.CloseDialog();
-        }
+    [RelayCommand]
+    private void OnOpenInvoices()
+    {
+        navigationService.NavigateTo(new SaftInvoicesPageViewModel());
+        dialogManager.CloseDialog();
     }
 }

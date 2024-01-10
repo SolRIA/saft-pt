@@ -1,0 +1,78 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+		xmlns:models="clr-namespace:SolRIA.SAFT.Desktop.Models.Reporting"
+        mc:Ignorable="d" Width="800" Height="600"
+        x:Class="SolRIA.SAFT.Desktop.DialogSaftDocumentDetail"
+		x:DataType="vm:DialogSaftDocumentDetailViewModel"
+		xmlns:dd="clr-namespace:SolRIA.SAFT.Desktop"
+        d:DataContext="{x:Static dd:DesignDataDialogSaftDocumentDetail.ExampleViewModel}"
+        Title="InvoiceDetail">
+
+	<Grid RowDefinitions="130,*">
+
+		<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+			<Grid RowDefinitions="*,*,*" ColumnDefinitions="*,*,*,Auto">
+				<StackPanel Orientation="Horizontal" Spacing="10">
+					<TextBlock Text="{Binding Document.Number}" Classes="H4" Theme="{StaticResource TitleTextBlock}"/>
+					<TextBlock Text="{Binding Document.ATCUD}" Classes="H4 Success" Theme="{StaticResource TitleTextBlock}"/>
+				</StackPanel>
+				<TextBlock Text="{Binding Document.Date}" Classes="H1" Grid.Row="1" />
+				<TextBlock Text="{Binding Document.SystemDate}" Classes="H1" Grid.Row="1" />
+				
+				<TextBlock Text="Total" TextAlignment="Right" Classes="H1" Grid.Row="0" Grid.Column="2" Margin="10,0"/>
+				<TextBlock Text="Incidência" TextAlignment="Right" Classes="H4" Grid.Row="1" Grid.Column="2" Margin="10,0"/>
+				<TextBlock Text="IVA" TextAlignment="Right" Classes="H4" Grid.Row="3" Grid.Column="2" Margin="10,0"/>
+
+				<TextBlock Text="{Binding Document.Total}" TextAlignment="Right" Classes="H1" Grid.Row="0" Grid.Column="3"/>
+				<TextBlock Text="{Binding Document.NetTotal}" TextAlignment="Right" Classes="H4" Grid.Row="1" Grid.Column="3"/>
+				<TextBlock Text="{Binding Document.VatTotal}" TextAlignment="Right" Classes="H4" Grid.Row="3" Grid.Column="3"/>
+			</Grid>
+		</Border>
+
+
+		<Border Classes="Hover" Theme="{StaticResource CardBorder}"
+				Grid.Row="1">
+			<DataGrid ItemsSource="{Binding Document.Lines}">
+				<DataGrid.Columns>
+					<DataGridTextColumn
+						Width="*"
+						x:DataType="models:DocumentLine"
+						Binding="{Binding ProductCode}"
+						Header="Código" />
+
+					<DataGridTextColumn
+						Width="*"
+						x:DataType="models:DocumentLine"
+						Binding="{Binding ProductDescription}"
+						Header="Nome" />
+
+					<DataGridTemplateColumn Header="Qt" SortMemberPath="Quantity">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate x:DataType="models:DocumentLine">
+								<TextBlock Text="{Binding Quantity, StringFormat='N2'}" Classes="number"/>
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+
+					<DataGridTemplateColumn Header="Preço" SortMemberPath="UnitPrice">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate x:DataType="models:DocumentLine">
+								<TextBlock Text="{Binding UnitPrice, StringFormat='N3'}" Classes="number"/>
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+
+					<DataGridTextColumn
+						Width="*"
+						x:DataType="models:DocumentLine"
+						Binding="{Binding Reference}"
+						Header="Referência" />
+				</DataGrid.Columns>
+			</DataGrid>
+		</Border>
+
+	</Grid>
+</Window>

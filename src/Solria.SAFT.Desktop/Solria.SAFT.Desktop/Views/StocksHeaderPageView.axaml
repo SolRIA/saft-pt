@@ -1,34 +1,47 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="Solria.SAFT.Desktop.Views.StocksHeaderPageView">
-  <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
-    
-    <TextBlock Text="Versão:" Grid.Column="0" HorizontalAlignment="Right" Margin="3" Grid.Row="0"/>
-    <TextBox Grid.Column="1" Height="24" Margin="3" Grid.Row="0" IsReadOnly="True"
-             Text="{Binding Header.FileVersion, Mode=TwoWay}"
-             ToolTip.Tip="{Binding Header.Tooltip.FileVersion}"/>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+			 x:Class="SolRIA.SAFT.Desktop.Views.StocksHeaderPageView"
+			 x:DataType="vm:StocksHeaderPageViewModel">
 
-    <TextBlock Text="NIF:" Grid.Column="0" HorizontalAlignment="Right" Margin="3" Grid.Row="1" />
-    <TextBox Grid.Column="1" Height="23" Margin="3" Grid.Row="1" IsReadOnly="True"
-             Text="{Binding Header.TaxRegistrationNumber, Mode=TwoWay}"
-             ToolTip.Tip="{Binding Header.Tooltip.TaxRegistrationNumber}"/>
+	<Border Classes="Hover" Theme="{StaticResource CardBorder}"
+			Margin="10">
+		<Grid ColumnDefinitions="150,*" RowDefinitions="40,40,40,40,60">
+			<Grid.Styles>
+				<Style Selector="TextBlock">
+					<Setter Property="VerticalAlignment" Value="Center"/>
+					<Setter Property="TextAlignment" Value="Right"/>
+					<Setter Property="Margin" Value="10,0"/>
+				</Style>
+				<Style Selector="TextBox">
+					<Setter Property="Margin" Value="0,2"/>
+					<Setter Property="IsReadOnly" Value="True"/>
+					<Setter Property="Grid.Column" Value="1"/>
+				</Style>
+			</Grid.Styles>
 
-    <TextBlock Text="Ano fiscal:" Grid.Column="0" HorizontalAlignment="Right" Margin="3" Grid.Row="2" />
-    <TextBox Grid.Column="1" Height="23" Margin="3" Grid.Row="2" IsReadOnly="True"
-             Text="{Binding Header.FiscalYear, Mode=TwoWay}"
-             ToolTip.Tip="{Binding Header.Tooltip.FiscalYear}"/>
+			<TextBlock Text="Versão:" />
+			<TextBox Text="{Binding Header.FileVersion, Mode=OneTime}"/>
 
-    <TextBlock Text="Data de fim:" Grid.Column="0" HorizontalAlignment="Right" Margin="3" Grid.Row="3"  />
-    <TextBox Grid.Column="1" Height="23" Margin="3" Grid.Row="3" IsReadOnly="True"
-             Text="{Binding Header.EndDate, Mode=TwoWay}"
-             ToolTip.Tip="{Binding Header.Tooltip.EndDate}"/>
-    
-    <TextBlock Text="Sem Stock:" Grid.Column="0" HorizontalAlignment="Right" Margin="3" Grid.Row="4"  />
-    <CheckBox Grid.Column="1" Height="23" Margin="3" Grid.Row="4" IsEnabled="False"
-              IsChecked="{Binding Header.NoStock, Mode=TwoWay}"
-              ToolTip.Tip="{Binding Header.Tooltip.NoStock}"/>
-  </Grid>
+			<TextBlock Text="NIF:" Grid.Row="1" />
+			<TextBox Grid.Row="1" 
+					 Text="{Binding Header.TaxRegistrationNumber, Mode=OneTime}"/>
+
+			<TextBlock Text="Ano fiscal:" Grid.Row="2" />
+			<TextBox Grid.Row="2" 
+					 Text="{Binding Header.FiscalYear, Mode=OneTime}"/>
+
+			<TextBlock Text="Data de fim:" Grid.Row="3"  />
+			<TextBox Grid.Row="3" 
+					 Text="{Binding Header.EndDate, Mode=OneTime}"/>
+
+			<CheckBox Content="Mostrar todas as linhas" Grid.Row="4" Grid.Column="1"
+					  Margin="0" IsEnabled="False"
+					  IsChecked="{Binding Header.NoStock, Mode=OneTime}"
+					  Theme="{DynamicResource CardCheckBox}"/>
+		</Grid>
+	</Border>
 </UserControl>

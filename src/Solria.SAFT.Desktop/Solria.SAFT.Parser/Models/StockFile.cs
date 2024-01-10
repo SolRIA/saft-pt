@@ -1,4 +1,4 @@
-﻿namespace Solria.SAFT.Parser.Models
+﻿namespace SolRIA.SAFT.Parser.Models
 {
     [System.Xml.Serialization.XmlType(AnonymousType = true, Namespace = "urn:StockFile:PT_1_02")]
     [System.Xml.Serialization.XmlRoot(Namespace = "urn:StockFile:PT_1_02", IsNullable = false)]
@@ -30,8 +30,9 @@
         public string ProductDescription { get; set; }
         public string ProductNumberCode { get; set; }
         public decimal ClosingStockQuantity { get; set; }
+        public decimal ClosingStockValue { get; set; }
         public string UnitOfMeasure { get; set; }
     }
 
-    public enum ProductCategory { M, P, A, S, T }
+    public enum ProductCategory { M, P, A, S, T, B }
 }

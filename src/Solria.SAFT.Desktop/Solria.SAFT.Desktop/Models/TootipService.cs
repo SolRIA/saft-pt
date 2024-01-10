@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Solria.SAFT.Desktop.Models
+namespace SolRIA.SAFT.Desktop.Models
 {
 	public class HeaderToolTipService
 	{

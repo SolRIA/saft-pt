@@ -2,55 +2,63 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Solria.SAFT.Desktop.Views.SaftErrorPageView">
+			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+             x:Class="SolRIA.SAFT.Desktop.Views.SaftErrorPageView"
+			 x:DataType="vm:SaftErrorPageViewModel">
 
-  <Grid RowDefinitions="Auto,Auto,Auto,*" ColumnDefinitions="*,Auto,Auto,Auto" Margin="5">
+	<Grid RowDefinitions="40,35,30,*" ColumnDefinitions="*,54,54" Margin="5">
 
-    <TabControl Grid.Row="0" Grid.ColumnSpan="4">
-      <TabItem Header="Erros"/>
-    </TabControl>
+		<TextBlock Text="Erros" Classes="H2"
+				   Theme="{StaticResource TitleTextBlock}"/>
 
-    <TextBox Margin="2" Text="{Binding Filter, Mode=TwoWay}" Grid.Row="1"
-             Watermark="Filtro por: Descrição" VerticalAlignment="Center">
-      <TextBox.KeyBindings>
-        <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
-      </TextBox.KeyBindings>
-    </TextBox>
+		<TextBox Text="{Binding Filter, Mode=TwoWay}"
+				 Watermark="Filtro" Grid.Row="1" Margin="0,0,2,0">
+			<TextBox.InnerRightContent>
+				<Button Command="{Binding SearchCommand}"
+						Classes="Primary" Padding="4"
+						Theme="{DynamicResource BorderlessButton}"
+						Width="{Binding $self.Bounds.Height}"
+						Content="{icons:MaterialIconExt Search, Size=24}" />
+			</TextBox.InnerRightContent>
+			<TextBox.KeyBindings>
+				<KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
+			</TextBox.KeyBindings>
+		</TextBox>
 
-    <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
-            Command="{Binding SearchCommand}" >
-      <PathIcon Data="{StaticResource Material.FilterOutline}" HorizontalAlignment="Center" />
-    </Button>
+		<Button Margin="2,0" Width="50" 
+				ToolTip.Tip="Filtrar" Classes="Primary"
+				Grid.Row="1" Grid.Column="1" 
+				Command="{Binding SearchClearCommand}" >
+			<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+		</Button>
 
-    <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Filtrar" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"
-            Command="{Binding SearchClearCommand}" >
-      <PathIcon Data="{StaticResource Material.FilterRemoveOutline}" HorizontalAlignment="Center" />
-    </Button>
+		<Button Margin="2,0" Width="50" 
+				ToolTip.Tip="Exportar para Excel" Classes="Primary"
+				Grid.Row="1" Grid.Column="2" 
+				Command="{Binding DoPrintCommand}">
+			<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+		</Button>
 
-    <Button Margin="2" Width="50" Height="35" ToolTip.Tip="Exportar para Excel" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center"
-            Command="{Binding DoPrintCommand}">
-      <PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
-    </Button>
+		<TextBlock Grid.Row="2" Grid.ColumnSpan="3" Margin="5" Text="{Binding NumErros}"/>
 
-    <TextBlock Grid.Row="2" Grid.ColumnSpan="4" Margin="5" Text="{Binding NumErros}"/>
+		<DataGrid x:Name="datagrid" Grid.Row="3" Grid.ColumnSpan="3" IsReadOnly="True" FontSize="16"
+				  ItemsSource="{Binding Errors}" SelectionMode="Single"
+				  SelectedItem="{Binding SelectedError, Mode=TwoWay}">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="ID" Binding="{Binding FileID}" />
+				<DataGridTextColumn Header="Campo" Binding="{Binding Field}" />
+				<DataGridTextColumn Header="Valor" Binding="{Binding Value}" />
+				<DataGridTextColumn Header="Descrição" Binding="{Binding Description}"/>
+			</DataGrid.Columns>
 
-    <DataGrid x:Name="datagrid" Grid.Row="3" Grid.ColumnSpan="4" IsReadOnly="True" FontSize="16"
-              Items="{Binding CollectionView}" SelectionMode="Single" 
-              SelectedItem="{Binding SelectedError, Mode=TwoWay}">
-      <DataGrid.Columns>
-        <DataGridTextColumn Header="ID" Binding="{Binding FileID}" />
-        <DataGridTextColumn Header="Campo" Binding="{Binding Field}" />
-        <DataGridTextColumn Header="Valor" Binding="{Binding Value}" />
-        <DataGridTextColumn Header="Descrição" Binding="{Binding Description}"/>
-      </DataGrid.Columns>
-
-      <!--<i:Interaction.Behaviors>
+			<!--<i:Interaction.Behaviors>
         <core:EventTriggerBehavior EventName="DoubleTapped">
           <core:InvokeCommandAction Command="{Binding OpenErrorCommand}" />
         </core:EventTriggerBehavior>
       </i:Interaction.Behaviors>-->
-    </DataGrid>
+		</DataGrid>
 
-  </Grid>
+	</Grid>
 </UserControl>

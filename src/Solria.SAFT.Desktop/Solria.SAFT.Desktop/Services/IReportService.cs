@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Solria.SAFT.Desktop.Services
+namespace SolRIA.SAFT.Desktop.Services
 {
     public interface IReportService
     {

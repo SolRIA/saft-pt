@@ -1,36 +1,42 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:Solria.SAFT.Desktop.ViewModels;assembly=Solria.SAFT.Desktop"
-        xmlns:views="clr-namespace:Solria.SAFT.Desktop.Views;assembly=Solria.SAFT.Desktop"
-        xmlns:rxui="http://reactiveui.net"
+        xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+        xmlns:views="clr-namespace:SolRIA.SAFT.Desktop.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="Solria.SAFT.Desktop.Views.MainWindow"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="SolRIA.SAFT.Desktop.Views.MainWindow"
 		x:DataType="vm:MainWindowViewModel"
 		x:CompileBindings="True"
-		Background="#FF333333"
         Icon="/Assets/solria.ico"
-        Title="SolRIA SAFT - Validador" WindowState="Maximized" WindowStartupLocation="CenterScreen">
+        Title="SolRIA SAFT - Validador" 
+		WindowState="Maximized" WindowStartupLocation="CenterScreen">
 
-    <Grid RowDefinitions="45,*">
+	<Grid RowDefinitions="45,*">
 
-      <Menu Items="{CompiledBinding MenuItems}" FontSize="16" Grid.Row="0">
-        <Menu.Styles>
-          <Style Selector="MenuItem" x:DataType="vm:MenuItemViewModel">
-            <Setter Property="Header" Value="{Binding Header}"/>
-            <Setter Property="Items" Value="{Binding Items}"/>
-            <Setter Property="Command" Value="{Binding Command}"/>
-            <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-          </Style>
-        </Menu.Styles>
-      </Menu>
+		<Menu ItemsSource="{Binding MenuItems}" FontSize="16" Grid.Row="0"
+			  HorizontalAlignment="Stretch">
+			<Menu.Styles>
+				<Style Selector="MenuItem" x:DataType="vm:MenuItemViewModel">
+					<Setter Property="Header" Value="{Binding Header}"/>
+					<Setter Property="ItemsSource" Value="{Binding Items}"/>
+					<Setter Property="Command" Value="{Binding Command}"/>
+					<Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+				</Style>
+			</Menu.Styles>
+		</Menu>
 
-      <!-- current view -->
-      <rxui:RoutedViewHost Router="{Binding Router}" Grid.Row="1" Margin="2">
-        <rxui:RoutedViewHost.DefaultContent>
-          <views:MainMenuPageView />
-        </rxui:RoutedViewHost.DefaultContent>
-      </rxui:RoutedViewHost>
-    </Grid>
+		<!--<MenuItem Header="_Ficheiro">
+			<MenuItem Header="Abrir _SAFT" Command="{CompiledBinding OpenSaftCommand}"/>
+			<MenuItem Header="Abrir _Transporte" Command="{CompiledBinding OpenTransportCommand}"/>
+			<MenuItem Header="Abrir _Stocks" Command="{CompiledBinding OpenStocksCommand}"/>
+			<MenuItem Header="Recentes" Command="{CompiledBinding RecentFiles}"/>
+			<MenuItem Header="_Sair" Command="{CompiledBinding ExitCommand}"/>
+		</MenuItem>-->
+
+		<!-- current view -->
+		<Grid x:Name="mainContentGrid" Grid.Row="1">
+			<views:MainMenuPageView />
+		</Grid>
+	</Grid>
 </Window>

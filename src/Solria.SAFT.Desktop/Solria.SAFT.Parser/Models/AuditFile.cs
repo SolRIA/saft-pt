@@ -1,4 +1,4 @@
-﻿namespace Solria.SAFT.Parser.Models
+﻿namespace SolRIA.SAFT.Parser.Models
 {
     public partial class AuditFile
     {

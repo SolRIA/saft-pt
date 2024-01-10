@@ -1,0 +1,70 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+             x:Class="SolRIA.SAFT.Desktop.Views.SaftTaxesPageView"
+			 x:DataType="vm:SaftTaxesPageViewModel">
+
+	<Grid RowDefinitions="40,35,*" ColumnDefinitions="*,54,54" Margin="5">
+
+		<TextBlock Text="Impostos" Classes="H2"
+				   Theme="{StaticResource TitleTextBlock}"/>
+		
+		<TextBox Text="{Binding Filter, Mode=TwoWay}"
+				 Watermark="Filtro" Grid.Row="1" Margin="0,0,2,0">
+			<TextBox.InnerRightContent>
+				<Button Command="{Binding SearchCommand}"
+						Classes="Primary" Padding="4"
+						Theme="{DynamicResource BorderlessButton}"
+						Width="{Binding $self.Bounds.Height}"
+						Content="{icons:MaterialIconExt Search, Size=24}" />
+			</TextBox.InnerRightContent>
+			<TextBox.KeyBindings>
+				<KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
+			</TextBox.KeyBindings>
+		</TextBox>
+
+		<Button Margin="2,0" Width="50" ToolTip.Tip="Remover filtros"
+				Grid.Row="1" Grid.Column="1" 
+				Command="{Binding SearchClearCommand}" >
+			<icons:MaterialIcon Kind="FilterRemoveOutline" Width="20" Height="20"/>
+		</Button>
+
+		<Button Margin="2,0" Width="50" ToolTip.Tip="Exportar para Excel" 
+				Grid.Row="1" Grid.Column="2" 
+				Command="{Binding DoPrintCommand}">
+			<icons:MaterialIcon Kind="MicrosoftExcel" Width="20" Height="20"/>
+		</Button>
+
+		<!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
+                           Grid.Row="1" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>-->
+
+		<DataGrid Grid.Row="2" Grid.ColumnSpan="3" IsReadOnly="True" FontSize="16"
+				  ItemsSource="{Binding Taxes}">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="País ou região imposto" Binding="{Binding TaxCountryRegion}" />
+				<DataGridTextColumn Header="Código" Binding="{Binding TaxCode}" />
+				<DataGridTextColumn Header="Descrição" Binding="{Binding Description}" Width="*"/>
+				<DataGridTextColumn Header="Data fim" Binding="{Binding TaxExpirationDate}" />
+				<DataGridTemplateColumn Header="Valor">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding TaxAmount}" FontSize="16" Classes="number"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Percentagem">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding TaxPercentage}" FontSize="16" Classes="number"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>
+		</DataGrid>
+
+	</Grid>
+</UserControl>

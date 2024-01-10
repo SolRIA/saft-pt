@@ -1,154 +1,135 @@
-﻿using DynamicData;
-using ReactiveUI;
-using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Services;
-using Solria.SAFT.Desktop.Views;
-using Solria.SAFT.Parser.Services;
-using Splat;
-using System;
-using System.Collections.Generic;
+﻿using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using SolRIA.SAFT.Desktop.Models;
+using SolRIA.SAFT.Desktop.Services;
+using SolRIA.SAFT.Parser.Services;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Solria.SAFT.Desktop.ViewModels
+namespace SolRIA.SAFT.Desktop.ViewModels;
+
+public partial class DialogConvertPemKeyViewModel : ViewModelBase
 {
-    public class DialogConvertPemKeyViewModel : ReactiveObject
+    private readonly IDialogManager dialogManager;
+    private readonly IDatabaseService databaseService;
+
+    public DialogConvertPemKeyViewModel()
     {
-        private readonly IDialogManager dialogManager;
-        private readonly IDatabaseService databaseService;
+        dialogManager = AppBootstrap.Resolve<IDialogManager>();
+        databaseService = AppBootstrap.Resolve<IDatabaseService>();
+    }
 
-        public DialogConvertPemKeyViewModel()
+    public void Init()
+    {
+        //load the saved pem keys
+        PemFiles = [];
+        var pem_files = databaseService.GetPemFiles();
+
+        if (pem_files != null && pem_files.Any())
         {
-            dialogManager = Locator.Current.GetService<IDialogManager>();
-            databaseService = Locator.Current.GetService<IDatabaseService>();
-
-            OpenPemFileCommand = ReactiveCommand.CreateFromTask(OnOpenPemFile);
-            SaveCloseCommand = ReactiveCommand.Create(OnSaveClose);
-            CloseCommand = ReactiveCommand.Create(OnClose);
-            DeleteKeyCommand = ReactiveCommand.CreateFromTask(OnDeleteKey, CanDeleteKey());
-        }
-
-        public void Init()
-        {
-            //load the saved pem keys
-            PemFiles = new ObservableCollection<PemFile>();
-            var pem_files = databaseService.GetPemFiles();
-
-            if (pem_files != null && pem_files.Any())
+            foreach (var p in pem_files)
             {
-                PemFiles.AddRange(pem_files.Select(p => new PemFile
+                PemFiles.Add(new PemFile
                 {
                     Name = p.Name,
                     Id = p.Id,
                     PemText = p.PemText,
                     PrivateKey = p.PrivateKey,
                     RsaSettings = p.RsaSettings
-                }));
-                PemFile = PemFiles.First();
+                });
             }
+            PemFile = PemFiles.First();
         }
+    }
 
-        public string Title { get; set; } = "Ficheiros Pem";
+    public string Title { get; set; } = "Ficheiros Pem";
 
-        private ObservableCollection<PemFile> pemFiles;
-        public ObservableCollection<PemFile> PemFiles
-        {
-            get => pemFiles;
-            set => this.RaiseAndSetIfChanged(ref pemFiles, value);
-        }
-        private PemFile pemFile;
-        public PemFile PemFile
-        {
-            get => pemFile;
-            set => this.RaiseAndSetIfChanged(ref pemFile, value);
-        }
+    [ObservableProperty]
+    private ObservableCollection<PemFile> pemFiles;
 
-        string pemFileName;
-        public string PemFileName
-        {
-            get => pemFileName;
-            set => this.RaiseAndSetIfChanged(ref pemFileName, value);
-        }
+    [ObservableProperty]
+    private PemFile pemFile;
 
-        public ReactiveCommand<Unit, Unit> OpenPemFileCommand { get; }
-        private async Task OnOpenPemFile()
+    [ObservableProperty]
+    private string pemFileName;
+
+    [RelayCommand]
+    private async Task OnOpenPemFile()
+    {
+        var filters = new FilePickerFileType[]
         {
-            var filters = new List<Avalonia.Controls.FileDialogFilter>
+            new("PEM files")
             {
-                new Avalonia.Controls.FileDialogFilter
-                {
-                    Extensions = new List<string> { "pem" },
-                    Name = "Pem Files"
-                }
-            };
-
-            var files = await dialogManager.OpenFileDialog("Pem Files", filters: filters);
-
-            if (files != null && files.Length == 1)
-            {
-                PemFileName = files.First();
-                pemFile = new PemFile();
-                PemFiles.Add(pemFile);
-
-                ConvertPemFile();
+                Patterns = new[] { "*.pem" },
+                MimeTypes = new[] { "application/pdf" }
             }
-        }
+        };
 
-        public ReactiveCommand<Unit, Unit> SaveCloseCommand { get; }
-        private void OnSaveClose()
+        var files = await dialogManager.OpenFileDialog("Pem Files", filters: filters);
+
+        if (files != null && files.Length == 1)
         {
-            databaseService.UpdatePemFiles(PemFiles.Select(p => new Parser.Models.PemFile
-            {
-                Id = p.Id,
-                Name = p.Name,
-                PemText = p.PemText,
-                PrivateKey = p.PrivateKey,
-                RsaSettings = p.RsaSettings
-            }));
-            dialogManager.CloseDialog();
-        }
+            PemFileName = files.First();
+            PemFile = new PemFile();
+            PemFiles.Add(PemFile);
 
-        public ReactiveCommand<Unit, Unit> CloseCommand { get; }
-        private void OnClose()
+            ConvertPemFile();
+        }
+    }
+
+    [RelayCommand]
+    private void OnSaveClose()
+    {
+        databaseService.UpdatePemFiles(PemFiles.Select(p => new Parser.Models.PemFile
         {
-            dialogManager.CloseDialog();
-        }
+            Id = p.Id,
+            Name = p.Name,
+            PemText = p.PemText,
+            PrivateKey = p.PrivateKey,
+            RsaSettings = p.RsaSettings
+        }));
+        dialogManager.CloseDialog();
+    }
 
-        public ReactiveCommand<Unit, Unit> DeleteKeyCommand { get; }
-        private IObservable<bool> CanDeleteKey()
-        {
-            return this.WhenAnyValue(x => x.PemFile,
-                (pemFile) => pemFile != null && pemFile.Id > 0);
-        }
-        private async Task OnDeleteKey()
-        {
-            var result = await DialogMessage.Show("Apagar", "Quer apagar o registo atual?", MessageDialogType.None);
+    [RelayCommand]
+    private void OnClose()
+    {
+        dialogManager.CloseDialog();
+    }
 
-            if (result)
-                databaseService.DeletePemFile(PemFile.Id);
-        }
+    [RelayCommand(CanExecute = nameof(CanDeleteKey))]
+    private async Task OnDeleteKey()
+    {
+        var result = await dialogManager.ShowMessageDialogAsync("Apagar", "Quer apagar o registo atual?", MessageDialogType.None);
 
-        private void ConvertPemFile()
-        {
-            if (File.Exists(PemFileName))
-            {
-                pemFile.PemText = File.ReadAllText(PemFileName);
+        if (result == false) return;
 
-                RSAKeys rsa = new RSAKeys();
-                rsa.DecodePEMKey(pemFile.PemText);
+        databaseService.DeletePemFile(PemFile.Id);
+    }
+    private bool CanDeleteKey()
+    {
+        return PemFile != null && PemFile.Id > 0;
+    }
 
-                string key = string.IsNullOrWhiteSpace(rsa.PublicKey) ? rsa.PrivateKey : rsa.PublicKey;
+    private void ConvertPemFile()
+    {
+        if (File.Exists(PemFileName) == false) return;
 
-                //use XDocument to format the xml
-                XDocument xmlDoc = XDocument.Parse(key);
+        PemFile.PemText = File.ReadAllText(PemFileName);
 
-                pemFile.RsaSettings = xmlDoc.ToString();
-                pemFile.PrivateKey = string.IsNullOrWhiteSpace(rsa.PrivateKey) == false;
-            }
-        }
+        RSAKeys rsa = new RSAKeys();
+        rsa.DecodePEMKey(PemFile.PemText);
+
+        string key = string.IsNullOrWhiteSpace(rsa.PublicKey) ? rsa.PrivateKey : rsa.PublicKey;
+
+        //use XDocument to format the xml
+        XDocument xmlDoc = XDocument.Parse(key);
+
+        PemFile.RsaSettings = xmlDoc.ToString();
+        PemFile.PrivateKey = string.IsNullOrWhiteSpace(rsa.PrivateKey) == false;
     }
 }

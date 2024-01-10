@@ -1,135 +1,111 @@
-﻿using Avalonia.Collections;
-using ReactiveUI;
-using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Services;
-using Solria.SAFT.Parser.Models;
-using Splat;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using SolRIA.SAFT.Desktop.Models;
+using SolRIA.SAFT.Desktop.Services;
+using SolRIA.SAFT.Parser.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reactive;
-using System.Reactive.Disposables;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Solria.SAFT.Desktop.ViewModels
+namespace SolRIA.SAFT.Desktop.ViewModels;
+
+public partial class SaftSuppliersPageViewModel : ViewModelBase
 {
-    public class SaftSuppliersPageViewModel : ViewModelBase
+    private readonly ISaftValidator saftValidator;
+    private readonly IDialogManager dialogManager;
+
+    public SaftSuppliersPageViewModel()
     {
-        private readonly ISaftValidator saftValidator;
-        private readonly IDialogManager dialogManager;
+        saftValidator = AppBootstrap.Resolve<ISaftValidator>();
+        dialogManager = AppBootstrap.Resolve<IDialogManager>();
 
-        public SaftSuppliersPageViewModel(IScreen screen) : base(screen, MenuIds.SAFT_SUPPLIERS_PAGE)
+        Init();
+    }
+
+    private void Init()
+    {
+        ToolTip = new SupplierToolTipService();
+
+        Suppliers = saftValidator?.SaftFile?.MasterFiles?.Supplier ?? [];
+    }
+
+    [ObservableProperty]
+    private SupplierToolTipService toolTip;
+
+    [ObservableProperty]
+    private Supplier[] suppliers;
+
+    [RelayCommand]
+    private async Task OnDoPrint()
+    {
+        if (Suppliers == null || Suppliers.Length == 0) return;
+
+        var file = await dialogManager.SaveFileDialog(
+            "Guardar fornecedores",
+            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            initialFileName: "Fornecedores.csv",
+            ".csv");
+
+        if (string.IsNullOrWhiteSpace(file) == false)
         {
-            saftValidator = Locator.Current.GetService<ISaftValidator>();
-            dialogManager = Locator.Current.GetService<IDialogManager>();
-
-            DoPrintCommand = ReactiveCommand.CreateFromTask(OnDoPrint);
-            SearchCommand = ReactiveCommand.Create<string>(OnSearch);
-            SearchClearCommand = ReactiveCommand.Create(OnSearchClear);
-        }
-
-        protected override void HandleActivation(CompositeDisposable disposables)
-        {
-            ToolTip = new SupplierToolTipService();
-
-            CollectionView = new DataGridCollectionView(saftValidator?.SaftFile?.MasterFiles?.Supplier ?? Array.Empty<Supplier>())
+            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder moradas = new StringBuilder();
+            foreach (var c in Suppliers)
             {
-                Filter = o =>
+                moradas.Clear();
+                if (c.BillingAddress != null)
                 {
-                    if (string.IsNullOrWhiteSpace(Filter))
-                        return true;
-
-                    if (o is Supplier supplier)
-                    {
-                        if (supplier.AccountID != null && supplier.AccountID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                        if (supplier.CompanyName != null && supplier.CompanyName.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                        if (supplier.Contact != null && supplier.Contact.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                        if (supplier.SupplierID != null && supplier.SupplierID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                        if (supplier.SupplierTaxID != null && supplier.SupplierTaxID.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                        if (supplier.Email != null && supplier.Email.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                        if (supplier.Fax != null && supplier.Fax.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                        if (supplier.Telephone != null && supplier.Telephone.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                        if (supplier.Website != null && supplier.Website.Contains(Filter, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                    }
-
-                    return false;
+                    moradas.Append(
+                        c.BillingAddress.AddressDetail ??
+                        c.BillingAddress.StreetName + " " + c.BillingAddress.BuildingNumber + " " + c.BillingAddress.PostalCode);
                 }
-            };
 
-            CollectionView.GroupDescriptions.Add(new DataGridPathGroupDescription("AccountID"));
-
-            this.WhenAnyValue(x => x.Filter)
-                .Throttle(TimeSpan.FromSeconds(1))
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .InvokeCommand(SearchCommand)
-                .DisposeWith(disposables);
-        }
-
-        protected override void HandleDeactivation()
-        {
-        }
-
-        private SupplierToolTipService toolTip;
-        public SupplierToolTipService ToolTip
-        {
-            get => toolTip;
-            set => this.RaiseAndSetIfChanged(ref toolTip, value);
-        }
-
-        public ReactiveCommand<Unit, Unit> DoPrintCommand { get; }
-        public ReactiveCommand<string, Unit> SearchCommand { get; }
-        public ReactiveCommand<Unit, Unit> SearchClearCommand { get; }
-
-        private async Task OnDoPrint()
-        {
-            if (CollectionView != null && CollectionView.SourceCollection != null && CollectionView.TotalItemCount > 0 && CollectionView.SourceCollection is IEnumerable<Supplier> suppliers)
-            {
-                var file = await dialogManager.SaveFileDialog(
-                    "Guardar fornecedores",
-                    directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                    initialFileName: "Fornecedores.csv",
-                    ".csv");
-
-                if (string.IsNullOrWhiteSpace(file) == false)
-                {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    StringBuilder moradas = new StringBuilder();
-                    foreach (var c in suppliers)
-                    {
-                        moradas.Clear();
-                        if (c.BillingAddress != null)
-                        {
-                            moradas.Append(
-                                c.BillingAddress.AddressDetail ??
-                                c.BillingAddress.StreetName + " " + c.BillingAddress.BuildingNumber + " " + c.BillingAddress.PostalCode);
-                        }
-
-                        stringBuilder.AppendLine($"{c.SupplierTaxID};{c.CompanyName};{c.SupplierID};{moradas};{c.Telephone};;{c.Fax};{c.Email}");
-                    }
-
-                    File.WriteAllText(file, stringBuilder.ToString());
-                }
+                stringBuilder.AppendLine($"{c.SupplierTaxID};{c.CompanyName};{c.SupplierID};{moradas};{c.Telephone};;{c.Fax};{c.Email}");
             }
+
+            File.WriteAllText(file, stringBuilder.ToString());
+        }
+    }
+
+    [RelayCommand]
+    private void OnSearch()
+    {
+        var suppliers = saftValidator?.SaftFile?.MasterFiles?.Supplier ?? [];
+
+        if (string.IsNullOrWhiteSpace(Filter))
+        {
+            Suppliers = suppliers;
+
+            return;
         }
 
-        private void OnSearch(string _)
-        {
-            CollectionView.Refresh();
-        }
-        private void OnSearchClear()
-        {
-            Filter = null;
-        }
+        Suppliers = suppliers
+            .Where(d => FilterEntries(d, Filter))
+            .ToArray();
+    }
+    private static bool FilterEntries(Supplier entry, string filter)
+    {
+        if (string.IsNullOrWhiteSpace(entry.AccountID) == false && entry.AccountID.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.CompanyName) == false && entry.CompanyName.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.Contact) == false && entry.Contact.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.SupplierID) == false && entry.SupplierID.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.SupplierTaxID) == false && entry.SupplierTaxID.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.Email) == false && entry.Email.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.Fax) == false && entry.Fax.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.Telephone) == false && entry.Telephone.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.Website) == false && entry.Website.Contains(filter, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    [RelayCommand]
+    private void OnSearchClear()
+    {
+        Filter = null;
+        OnSearch();
     }
 }

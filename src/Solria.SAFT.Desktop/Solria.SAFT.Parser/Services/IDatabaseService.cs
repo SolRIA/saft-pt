@@ -1,8 +1,8 @@
-﻿using Solria.SAFT.Parser.Models;
+﻿using SolRIA.SAFT.Parser.Models;
 using System;
 using System.Collections.Generic;
 
-namespace Solria.SAFT.Parser.Services
+namespace SolRIA.SAFT.Parser.Services
 {
     public interface IDatabaseService
     {

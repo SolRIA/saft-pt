@@ -1,40 +1,30 @@
-﻿using ReactiveUI;
-using Solria.SAFT.Desktop.Models;
-using Solria.SAFT.Desktop.Services;
-using Solria.SAFT.Parser.Models;
-using Splat;
-using System.Reactive.Disposables;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using SolRIA.SAFT.Desktop.Models;
+using SolRIA.SAFT.Desktop.Services;
+using SolRIA.SAFT.Parser.Models;
 
-namespace Solria.SAFT.Desktop.ViewModels
+namespace SolRIA.SAFT.Desktop.ViewModels;
+
+public partial class SaftHeaderPageViewModel : ViewModelBase
 {
-    public class SaftHeaderPageViewModel : ViewModelBase
+    readonly ISaftValidator saftValidator;
+
+    public SaftHeaderPageViewModel()
     {
-        readonly ISaftValidator saftValidator;
-
-        public SaftHeaderPageViewModel(IScreen screen) : base(screen, MenuIds.SAFT_HEADER_PAGE)
-        {
-            saftValidator = Locator.Current.GetService<ISaftValidator>();
-        }
-
-        protected override void HandleActivation(CompositeDisposable disposables)
-        {
-            Header = saftValidator?.SaftFile?.Header ?? new Header();
-
-            ToolTip = new HeaderToolTipService();
-        }
-
-        private Header header;
-        public Header Header
-        {
-            get => header;
-            set => this.RaiseAndSetIfChanged(ref header, value);
-        }
-
-        private HeaderToolTipService toolTip;
-        public HeaderToolTipService ToolTip
-        {
-            get => toolTip;
-            set => this.RaiseAndSetIfChanged(ref toolTip, value);
-        }
+        saftValidator = AppBootstrap.Resolve<ISaftValidator>();
+        Init();
     }
+
+    private void Init()
+    {
+        Header = saftValidator?.SaftFile?.Header ?? new Header();
+
+        ToolTip = new HeaderToolTipService();
+    }
+
+    [ObservableProperty]
+    private Header header;
+    
+    [ObservableProperty]
+    private HeaderToolTipService toolTip;
 }
