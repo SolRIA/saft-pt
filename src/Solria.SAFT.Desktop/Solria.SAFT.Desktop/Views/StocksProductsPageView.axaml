@@ -39,22 +39,22 @@
 		<DataGrid ItemsSource="{Binding Products}"
 				  Grid.Row="1" Grid.ColumnSpan="3" IsReadOnly="True">
 			<DataGrid.Columns>
-				<DataGridTextColumn Header="Categoria" Binding="{ReflectionBinding ProductCategory}"/>
-				<DataGridTextColumn Header="Código" Binding="{ReflectionBinding ProductCode}"/>
-				<DataGridTextColumn Header="Código EAN" Binding="{ReflectionBinding ProductNumberCode}" />
-				<DataGridTextColumn Header="Descrição" Binding="{ReflectionBinding ProductDescription}" />
+				<DataGridTextColumn Header="Categoria" Binding="{Binding ProductCategory}" x:DataType="models:Stock"/>
+				<DataGridTextColumn Header="Código" Binding="{Binding ProductCode}" x:DataType="models:Stock"/>
+				<DataGridTextColumn Header="Código EAN" Binding="{Binding ProductNumberCode}" x:DataType="models:Stock"/>
+				<DataGridTextColumn Header="Descrição" Binding="{Binding ProductDescription}" x:DataType="models:Stock"/>
 				<DataGridTemplateColumn Header="Quantidade" SortMemberPath="ClosingStockQuantity">
 					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate>
-							<TextBlock Text="{ReflectionBinding ClosingStockQuantity}" Classes="number"/>
+						<DataTemplate x:DataType="models:Stock">
+							<TextBlock Text="{Binding ClosingStockQuantity}" Classes="number"/>
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
-				<DataGridTextColumn Header="Unidade" Binding="{ReflectionBinding UnitOfMeasure}" />
+				<DataGridTextColumn Header="Unidade" Binding="{Binding UnitOfMeasure}" x:DataType="models:Stock"/>
 				<DataGridTemplateColumn Header="Valor" SortMemberPath="ClosingStockValue">
 					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate>
-							<TextBlock Text="{ReflectionBinding ClosingStockValue}" Classes="number"/>
+						<DataTemplate x:DataType="models:Stock">
+							<TextBlock Text="{Binding ClosingStockValue}" Classes="number"/>
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>

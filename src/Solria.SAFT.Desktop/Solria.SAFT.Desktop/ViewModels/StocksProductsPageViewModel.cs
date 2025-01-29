@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Collections;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Parser.Models;
@@ -32,7 +33,7 @@ public partial class StocksProductsPageViewModel : ViewModelBase
 
         Products = saftValidator.StockFile.Stock ?? [];
 
-        if (Products.Any() == false) return;
+        if (Products.Length == 0) return;
 
         TotalQuantity = Products.Sum(p => p.ClosingStockQuantity);
         TotalValue = Products.Sum(p => p.ClosingStockQuantity * p.ClosingStockValue);

@@ -9,7 +9,9 @@
 
 	<Application.Styles>
 		<FluentTheme />
+		
 		<semi:SemiTheme Locale="pt-PT" />
+		<StyleInclude Source="avares://Semi.Avalonia.DataGrid/Index.axaml" />
 
 		<icons:MaterialIconStyles />
 
