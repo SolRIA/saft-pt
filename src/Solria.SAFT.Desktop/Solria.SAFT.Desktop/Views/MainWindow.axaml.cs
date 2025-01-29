@@ -157,6 +157,8 @@ namespace SolRIA.SAFT.Desktop.Views
                 return new DialogSaftDocumentDetail { DataContext = vm };
             if (vmType == typeof(DialogSaftResumeViewModel))
                 return new DialogSaftResume { DataContext = vm };
+            if (vmType == typeof(DialogReadInvoicesATViewModel))
+                return new DialogReadInvoicesAT { DataContext = vm };
 
             return null;
         }

@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+		xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="SolRIA.SAFT.Desktop.DialogReadInvoicesAT"
+		x:DataType="vm:DialogReadInvoicesATViewModel"
+		Title="{Binding Title}" ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+
+	<Grid RowDefinitions="40,35,*,35" ColumnDefinitions="*,54,54" Margin="5">
+
+		<TextBlock Text="Documentos" Classes="H2" Grid.ColumnSpan="3"
+				   Theme="{StaticResource TitleTextBlock}"/>
+
+		<TextBox Text="{Binding Filter, Mode=TwoWay}" Watermark="Filtro"
+				 Margin="0,0,2,0" Grid.Row="1">
+			<TextBox.InnerRightContent>
+				<Button Command="{Binding SearchCommand}"
+						Classes="Primary" Padding="4"
+						Theme="{DynamicResource BorderlessButton}"
+						Width="{Binding $self.Bounds.Height}"
+						Content="{icons:MaterialIconExt Search, Size=24}" />
+			</TextBox.InnerRightContent>
+			<TextBox.KeyBindings>
+				<KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
+			</TextBox.KeyBindings>
+		</TextBox>
+
+		<Button Margin="2,0" ToolTip.Tip="Remover filtros" Grid.Row="1" Grid.Column="1"
+				Command="{Binding SearchClearCommand}" >
+			<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+		</Button>
+
+		<Button Margin="2,0" ToolTip.Tip="Exportar para Excel" Grid.Row="1" Grid.Column="2"
+				Command="{Binding PrintCommand}">
+			<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+		</Button>
+
+		<!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
+                           Grid.Row="1" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>-->
+
+		<DataGrid Grid.Row="2" IsReadOnly="True" Grid.ColumnSpan="3"
+				  ItemsSource="{Binding Linhas, Mode=OneWay}">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="NIF" Binding="{Binding NifAdquirente}"/>
+				<DataGridTextColumn Header="ATCUD" Binding="{Binding ATCUD}" Width="*"/>
+				<DataGridTextColumn Header="Doc" Binding="{Binding NumeroDocumento}" Width="*"/>
+				<DataGridTextColumn Header="Data" Binding="{Binding DataEmissaoDocumento}"/>
+				<DataGridTemplateColumn Header="Total" SortMemberPath="Total">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Total, StringFormat=N2}" Classes="number"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>
+		</DataGrid>
+
+		<TextBlock Text="{Binding Resume}" Classes="H2" 
+				   Grid.ColumnSpan="3" Grid.Row="3"
+				   VerticalAlignment="Center"/>
+	</Grid>
+
+</Window>

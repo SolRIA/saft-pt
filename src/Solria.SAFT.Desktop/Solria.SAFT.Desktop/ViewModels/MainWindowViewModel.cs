@@ -148,8 +148,8 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             new("Ficheiro SAFT-PT")
             {
-                Patterns = new[] { "*.xml", "*.csv" },
-                MimeTypes = new[] { "application/xml", "application/csv" }
+                Patterns = ["*.xml", "*.csv"],
+                MimeTypes = ["application/xml", "application/csv"]
             }
         };
         var results = await dialogManager.OpenFileDialog("Ficheiro Existências", filters: filters);
@@ -220,22 +220,21 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task OnOpenRecentSaftFile(string saft_file)
     {
-        if (File.Exists(saft_file) == true)
-        {
-            await saftValidator.OpenSaftFile(saft_file);
+        if (File.Exists(saft_file) == false) return;
 
-            dialogManager.SetFileName(saft_file);
-            dialogManager.SetTitle(saftValidator.SaftFile?.Header?.CompanyName);
+        await saftValidator.OpenSaftFile(saft_file);
 
-            //show resume
-            var vm = new DialogSaftResumeViewModel();
-            vm.Init();
+        dialogManager.SetFileName(saft_file);
+        dialogManager.SetTitle(saftValidator.SaftFile?.Header?.CompanyName);
 
-            await dialogManager.ShowChildDialogAsync(vm);
+        //show resume
+        var vm = new DialogSaftResumeViewModel();
+        vm.Init();
 
-            ShowMenu = true;
-            IsSaft = true;
-        }
+        await dialogManager.ShowChildDialogAsync(vm);
+
+        ShowMenu = true;
+        IsSaft = true;
     }
 
     [RelayCommand]
@@ -273,6 +272,30 @@ public partial class MainWindowViewModel : ViewModelBase
         await dialogManager.ShowChildDialogAsync(vm);
     }
 
+    [RelayCommand]
+    private async Task OnOpenDocumentsAT()
+    {
+        var filters = new FilePickerFileType[]
+        {
+            new("Documentos AT")
+            {
+                Patterns = ["*.json"],
+                MimeTypes = ["application/json"]
+            }
+        };
+
+        var results = await dialogManager.OpenFileDialog("Documents AT", filters: filters);
+
+        if (results == null || results.Length == 0) return;
+
+        var selectedfile = results.First();
+
+        var vm = new DialogReadInvoicesATViewModel();
+        vm.Init(selectedfile);
+
+        await dialogManager.ShowChildDialogAsync(vm);
+    }
+
     private void BuildMenu()
     {
         MenuItems =
@@ -280,20 +303,21 @@ public partial class MainWindowViewModel : ViewModelBase
             new MenuItemViewModel
             {
                 Header = "_Ficheiro",
-                Items = new MenuItemViewModel[]
-                {
+                Items =
+                [
                     new() { Header = "Abrir _SAFT", Command = OpenSaftCommand },
                     new() { Header = "Abrir _Transporte", Command = OpenTransportCommand },
                     new() { Header = "Abrir _Stocks", Command = OpenStocksCommand },
+                    new() { Header = "Abrir documentos AT", Command = OpenDocumentsATCommand },
                     new() { Header = "Recentes", Items = RecentFiles },
                     new() { Header = "_Sair", Command = ExitCommand },
-                }
+                ]
             },
             new MenuItemViewModel
             {
                 Header = "_SAFT",
-                Items = new MenuItemViewModel[]
-                {
+                Items =
+                [
                     new() { Header = "Erros", Command = OpenMenuSaftCommand, CommandParameter = "Erros" },
                     new() { Header = "Cabeçalho", Command = OpenMenuSaftCommand, CommandParameter = "Cabeçalho" },
                     new() { Header = "Clientes", Command = OpenMenuSaftCommand, CommandParameter = "Clientes" },
@@ -304,31 +328,31 @@ public partial class MainWindowViewModel : ViewModelBase
                     new() { Header = "Pagamentos", Command = OpenMenuSaftCommand, CommandParameter = "Pagamentos" },
                     new() { Header = "Documentos Conferência", Command = OpenMenuSaftCommand, CommandParameter = "Documentos Conferência" },
                     new() { Header = "Documentos Movimentação", Command = OpenMenuSaftCommand, CommandParameter = "Documentos Movimentação" }
-                }
+                ]
             },
             new MenuItemViewModel
             {
                 Header = "_Stocks",
-                Items = new MenuItemViewModel[]
-                {
+                Items =
+                [
                     new() { Header = "Erros", Command = OpenMenuStocksCommand, CommandParameter = "Erros" },
                     new() { Header = "Cabeçalho", Command = OpenMenuStocksCommand, CommandParameter = "Cabeçalho" },
                     new() { Header = "Produtos", Command = OpenMenuStocksCommand, CommandParameter = "Produtos" }
-                }
+                ]
             },
             new MenuItemViewModel
             {
                 Header = "_Transporte",
-                Items = System.Array.Empty<MenuItemViewModel>()
+                Items = []
             },
             new MenuItemViewModel
             {
                 Header = "_Ferramentas",
-                Items = new MenuItemViewModel[]
-                {
+                Items =
+                [
                     new() { Header = "Ler .pem", Command = OpenPemDialogCommand },
                     new() { Header = "Testar Hash", Command = OpenHashDialogCommand }
-                }
+                ]
             }
         ];
     }
