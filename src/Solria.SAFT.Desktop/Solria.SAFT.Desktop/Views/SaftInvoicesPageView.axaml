@@ -2,51 +2,61 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+             xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
 			 xmlns:models="clr-namespace:SolRIA.SAFT.Desktop.Models.SaftV4"
              mc:Ignorable="d"
              x:Class="SolRIA.SAFT.Desktop.Views.SaftInvoicesPageView"
 			 x:DataType="vm:SaftInvoicesPageViewModel">
-	
+
 	<Grid RowDefinitions="55,*,7,55,*" ColumnDefinitions="*,7,Auto">
 
 		<!-- documents filter -->
 		<Grid ColumnDefinitions="*,Auto,Auto,54,54,54" Grid.Row="0" Grid.Column="0">
-			<TextBox Text="{Binding Filter, Mode=TwoWay}" Watermark="Filtro"
+			<TextBox Text="{Binding Filter, Mode=TwoWay}" 
+					 Watermark="Filtro"
+					 VerticalAlignment="Stretch"
 					 Margin="5,2">
 				<TextBox.InnerRightContent>
 					<Button Command="{Binding SearchCommand}"
 							Classes="Primary" Padding="4"
 							Theme="{DynamicResource BorderlessButton}"
-							Width="{Binding $self.Bounds.Height}"
-							Content="{icons:MaterialIconExt Search, Size=24}" />
+							Width="{Binding $self.Bounds.Height}">
+						<PathIcon Data="{StaticResource Material.Magnify}" />
+					</Button>
 				</TextBox.InnerRightContent>
 				<TextBox.KeyBindings>
 					<KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
 				</TextBox.KeyBindings>
 			</TextBox>
 
-			<DatePicker SelectedDate="{Binding FiltroDataInicio}" BorderThickness="0"
+			<DatePicker SelectedDate="{Binding FiltroDataInicio}" 
+						BorderThickness="0"
 						MinWidth="100" Grid.Column="1" Margin="2"
 						VerticalAlignment="Stretch"/>
-			<DatePicker SelectedDate="{Binding FiltroDataFim}" BorderThickness="0"
+			<DatePicker SelectedDate="{Binding FiltroDataFim}" 
+						BorderThickness="0"
 						MinWidth="100" Grid.Column="2" Margin="2"
 						VerticalAlignment="Stretch"/>
 
-			<Button Margin="2" Width="50" ToolTip.Tip="Limpar Filtros" Grid.Column="3"
+			<Button Margin="2" Width="50" 
+					ToolTip.Tip="Limpar Filtros" Grid.Column="3"
+					VerticalAlignment="Stretch"
 					Command="{Binding SearchClearCommand}" >
-				<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
 			</Button>
 
-			<Button Margin="2" Width="50" ToolTip.Tip="Exportar documentos para Excel" Grid.Column="4" 
+			<Button Margin="2" Width="50" 
+					ToolTip.Tip="Exportar documentos para Excel" Grid.Column="4"
+					VerticalAlignment="Stretch"
 					Command="{Binding DoPrintCommand}">
-				<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+				<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
 			</Button>
 
-			<Button Margin="2" Width="50" ToolTip.Tip="Exportar impostos para Excel" Grid.Column="5" 
-				   Command="{Binding DoPrintTaxesCommand}">
-				<icons:MaterialIcon Kind="PercentBox" Width="24" Height="24"/>
+			<Button Margin="2" Width="50" 
+					ToolTip.Tip="Exportar impostos para Excel" Grid.Column="5"
+					VerticalAlignment="Stretch"
+					Command="{Binding DoPrintTaxesCommand}">
+				<PathIcon Data="{StaticResource Material.FilePercent}" Width="24" Height="24"/>
 			</Button>
 		</Grid>
 
@@ -208,7 +218,7 @@
 					Margin="5,0,2.5,5" Grid.Row="1" Grid.Column="0"
 					Command="{Binding SaveExcelCommand}">
 				<StackPanel Orientation="Horizontal">
-					<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+					<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
 					<TextBlock Text="Documento" VerticalAlignment="Center" Margin="5,0"/>
 				</StackPanel>
 			</Button>
@@ -216,7 +226,7 @@
 					Margin="2.5,0,5,5" Grid.Row="1" Grid.Column="1"
 					Command="{Binding ShowInvoiceDetailsCommand}">
 				<StackPanel Orientation="Horizontal">
-					<icons:MaterialIcon Kind="FileDocument" Width="24" Height="24"/>
+					<PathIcon Data="{StaticResource Material.FileDocument}" Width="24" Height="24"/>
 					<TextBlock Text="Detalhes" VerticalAlignment="Center" Margin="5,0"/>
 				</StackPanel>
 			</Button>
@@ -232,8 +242,9 @@
 					<Button Command="{Binding SearchDetailsCommand}"
 							Classes="Primary" Padding="4"
 							Theme="{DynamicResource BorderlessButton}"
-							Width="{Binding $self.Bounds.Height}"
-							Content="{icons:MaterialIconExt Search, Size=24}" />
+							Width="{Binding $self.Bounds.Height}">
+						<PathIcon Data="{StaticResource Material.Magnify}" />
+					</Button>
 				</TextBox.InnerRightContent>
 				<TextBox.KeyBindings>
 					<KeyBinding Command="{Binding SearchDetailsCommand}" Gesture="Enter"/>
@@ -247,7 +258,7 @@
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Apagar Filtros" Grid.Column="2"
 				  Command="{Binding SearchDetailsClearCommand}" >
-				<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
 			</Button>
 		</Grid>
 

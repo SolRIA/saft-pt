@@ -181,7 +181,7 @@ namespace SolRIA.SAFT.Desktop.Views
                 SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(initialFileName)
             });
 
-            return result.Select(f => f.Path.LocalPath).ToArray();
+            return [.. result.Select(f => f.Path.LocalPath)];
         }
 
         public async Task<string> SaveFileDialog(string title, string directory = "", string initialFileName = "", string defaultExtension = "", FilePickerFileType[] filters = null)
@@ -196,7 +196,7 @@ namespace SolRIA.SAFT.Desktop.Views
                 FileTypeChoices = filters
             });
 
-            return result?.Name;
+            return result?.Path.AbsolutePath;
         }
 
         public async Task<string> OpenFolderDialog(string title, string directory = "")

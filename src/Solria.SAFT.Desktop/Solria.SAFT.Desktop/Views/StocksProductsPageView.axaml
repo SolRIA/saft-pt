@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
 			 xmlns:models="using:SolRIA.SAFT.Parser.Models"
@@ -18,8 +17,9 @@
 				<Button Command="{Binding SearchCommand}"
 						Classes="Primary" Padding="4"
 						Theme="{DynamicResource BorderlessButton}"
-						Width="{Binding $self.Bounds.Height}"
-						Content="{icons:MaterialIconExt Search, Size=24}" />
+						Width="{Binding $self.Bounds.Height}">
+					<PathIcon Data="{StaticResource Material.Magnify}" />
+				</Button>
 			</TextBox.InnerRightContent>
 			<TextBox.KeyBindings>
 				<KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
@@ -28,7 +28,7 @@
 
 		<Button Margin="2" Width="50" ToolTip.Tip="Limpar filtros"  Grid.Column="1"
 				Command="{Binding SearchClearCommand}" >
-			<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+			<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
 		</Button>
 
 		<Button Grid.Column="2" Width="50" Margin="2" ToolTip.Tip="Exportar para Excel"

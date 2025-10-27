@@ -3,7 +3,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
-		xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SolRIA.SAFT.Desktop.DialogReadInvoicesAT"
 		x:DataType="vm:DialogReadInvoicesATViewModel"
@@ -20,8 +19,9 @@
 				<Button Command="{Binding SearchCommand}"
 						Classes="Primary" Padding="4"
 						Theme="{DynamicResource BorderlessButton}"
-						Width="{Binding $self.Bounds.Height}"
-						Content="{icons:MaterialIconExt Search, Size=24}" />
+						Width="{Binding $self.Bounds.Height}">
+					<PathIcon Data="{StaticResource Material.Magnify}" />
+				</Button>
 			</TextBox.InnerRightContent>
 			<TextBox.KeyBindings>
 				<KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
@@ -30,12 +30,12 @@
 
 		<Button Margin="2,0" ToolTip.Tip="Remover filtros" Grid.Row="1" Grid.Column="1"
 				Command="{Binding SearchClearCommand}" >
-			<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+			<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
 		</Button>
 
 		<Button Margin="2,0" ToolTip.Tip="Exportar para Excel" Grid.Row="1" Grid.Column="2"
 				Command="{Binding PrintCommand}">
-			<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+			<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
 		</Button>
 
 		<!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
@@ -58,7 +58,7 @@
 			</DataGrid.Columns>
 		</DataGrid>
 
-		<TextBlock Text="{Binding Resume}" Classes="H2" 
+		<TextBlock Text="{Binding Resume}" Classes="H2"
 				   Grid.ColumnSpan="3" Grid.Row="3"
 				   VerticalAlignment="Center"/>
 	</Grid>

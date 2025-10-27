@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
              x:Class="SolRIA.SAFT.Desktop.Views.SaftTaxesPageView"
@@ -12,15 +11,16 @@
 
 		<TextBlock Text="Impostos" Classes="H2"
 				   Theme="{StaticResource TitleTextBlock}"/>
-		
+
 		<TextBox Text="{Binding Filter, Mode=TwoWay}"
 				 Watermark="Filtro" Grid.Row="1" Margin="0,0,2,0">
 			<TextBox.InnerRightContent>
 				<Button Command="{Binding SearchCommand}"
 						Classes="Primary" Padding="4"
 						Theme="{DynamicResource BorderlessButton}"
-						Width="{Binding $self.Bounds.Height}"
-						Content="{icons:MaterialIconExt Search, Size=24}" />
+						Width="{Binding $self.Bounds.Height}">
+					<PathIcon Data="{StaticResource Material.Magnify}" />
+				</Button>
 			</TextBox.InnerRightContent>
 			<TextBox.KeyBindings>
 				<KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
@@ -28,15 +28,15 @@
 		</TextBox>
 
 		<Button Margin="2,0" Width="50" ToolTip.Tip="Remover filtros"
-				Grid.Row="1" Grid.Column="1" 
+				Grid.Row="1" Grid.Column="1"
 				Command="{Binding SearchClearCommand}" >
-			<icons:MaterialIcon Kind="FilterRemoveOutline" Width="20" Height="20"/>
+			<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="20" Height="20"/>
 		</Button>
 
-		<Button Margin="2,0" Width="50" ToolTip.Tip="Exportar para Excel" 
-				Grid.Row="1" Grid.Column="2" 
+		<Button Margin="2,0" Width="50" ToolTip.Tip="Exportar para Excel"
+				Grid.Row="1" Grid.Column="2"
 				Command="{Binding DoPrintCommand}">
-			<icons:MaterialIcon Kind="MicrosoftExcel" Width="20" Height="20"/>
+			<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="20" Height="20"/>
 		</Button>
 
 		<!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"

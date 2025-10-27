@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d"
 			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
              x:Class="SolRIA.SAFT.Desktop.Views.SaftWorkingDocumentsPageView"
@@ -17,8 +16,9 @@
 					<Button Command="{Binding SearchCommand}"
 							Classes="Primary" Padding="4"
 							Theme="{DynamicResource BorderlessButton}"
-							Width="{Binding $self.Bounds.Height}"
-							Content="{icons:MaterialIconExt Search, Size=24}" />
+							Width="{Binding $self.Bounds.Height}">
+						<PathIcon Data="{StaticResource Material.Magnify}" />
+					</Button>
 				</TextBox.InnerRightContent>
 				<TextBox.KeyBindings>
 					<KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
@@ -34,17 +34,17 @@
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Limpar Filtros" Grid.Column="3"
 					Command="{Binding SearchClearCommand}" >
-				<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
 			</Button>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Exportar documentos para Excel" Grid.Column="4"
 					Command="{Binding DoPrintCommand}">
-				<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+				<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
 			</Button>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Exportar impostos para Excel" Grid.Column="5"
 				   Command="{Binding DoPrintTaxesCommand}">
-				<icons:MaterialIcon Kind="PercentBox" Width="24" Height="24"/>
+				<PathIcon Data="{StaticResource Material.FilePercent}" Width="24" Height="24"/>
 			</Button>
 		</Grid>
 
@@ -174,7 +174,7 @@
 					Margin="5,0,2.5,5" Grid.Row="1" Grid.Column="0"
 					Command="{Binding SaveExcelCommand}">
 				<StackPanel Orientation="Horizontal">
-					<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+					<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
 					<TextBlock Text="Documento" VerticalAlignment="Center" Margin="5,0"/>
 				</StackPanel>
 			</Button>
@@ -182,7 +182,7 @@
 					Margin="2.5,0,5,5" Grid.Row="1" Grid.Column="1"
 					Command="{Binding ShowInvoiceDetailsCommand}">
 				<StackPanel Orientation="Horizontal">
-					<icons:MaterialIcon Kind="FileDocument" Width="24" Height="24"/>
+					<PathIcon Data="{StaticResource Material.FileDocument}" Width="24" Height="24"/>
 					<TextBlock Text="Detalhes" VerticalAlignment="Center" Margin="5,0"/>
 				</StackPanel>
 			</Button>
@@ -198,8 +198,9 @@
 					<Button Command="{Binding SearchDetailsCommand}"
 							Classes="Primary" Padding="4"
 							Theme="{DynamicResource BorderlessButton}"
-							Width="{Binding $self.Bounds.Height}"
-							Content="{icons:MaterialIconExt Search, Size=24}" />
+							Width="{Binding $self.Bounds.Height}">
+						<PathIcon Data="{StaticResource Material.Magnify}" />
+					</Button>
 				</TextBox.InnerRightContent>
 				<TextBox.KeyBindings>
 					<KeyBinding Command="{Binding SearchDetailsCommand}" Gesture="Enter"/>
@@ -213,7 +214,7 @@
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Apagar Filtros" Grid.Column="2"
 				  Command="{Binding SearchDetailsClearCommand}" >
-				<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
 			</Button>
 		</Grid>
 

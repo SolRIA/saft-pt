@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
 	  <Nullable>disable</Nullable>
 	  <LangVersion>latest</LangVersion>
 	  <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
 	  <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+	  <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
@@ -17,26 +18,22 @@
     <AvaloniaXaml Remove="Assets\CommonValues.axaml" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="ViewModels\DialogReadInvoicesATViewModel.cs~RFb11559e.TMP" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.2.3" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.3" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.2.3" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.2.0.8" />
-    <PackageReference Include="ClosedXML" Version="0.104.2" />
+    <PackageReference Include="Avalonia" Version="11.3.3" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.3" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.3" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.3" />
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Dapper" Version="2.1.35" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
-    <PackageReference Include="Riok.Mapperly" Version="4.1.1" />
-    <PackageReference Include="Semi.Avalonia" Version="11.2.1.4" />
-    <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.4" />
-    <PackageReference Include="Semi.Avalonia.TreeDataGrid" Version="11.0.10.1" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.1" />
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
+    <PackageReference Include="Riok.Mapperly" Version="4.2.1" />
+    <PackageReference Include="Semi.Avalonia" Version="11.2.1.9" />
+    <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.2.1.9" />
+    <PackageReference Include="Semi.Avalonia.TreeDataGrid" Version="11.0.10.4" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.8" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Assets\CommonValues.axaml">
@@ -47,61 +44,58 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Views\DialogConvertPemKey.xaml.cs">
-      <DependentUpon>DialogConvertPemKey.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\DialogHashTest.xaml.cs">
+    <Compile Update="Views\DialogHashTest.axaml.cs">
       <DependentUpon>DialogHashTest.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\DialogMessage.xaml.cs">
+    <Compile Update="Views\DialogMessage.axaml.cs">
       <DependentUpon>DialogMessage.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\DialogSaftDocumentDetail.axaml.cs">
       <DependentUpon>DialogSaftDocumentDetail.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SaftProductsPageView.xaml.cs">
+    <Compile Update="Views\SaftProductsPageView.axaml.cs">
       <DependentUpon>SaftProductsPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SaftPaymentsPageView.xaml.cs">
+    <Compile Update="Views\SaftPaymentsPageView.axaml.cs">
       <DependentUpon>SaftPaymentsPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SaftMovementOfGoodsPageView.xaml.cs">
+    <Compile Update="Views\SaftMovementOfGoodsPageView.axaml.cs">
       <DependentUpon>SaftMovementOfGoodsPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SaftInvoicesPageView.xaml.cs">
+    <Compile Update="Views\SaftInvoicesPageView.axaml.cs">
       <DependentUpon>SaftInvoicesPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SaftHeaderPageView.xaml.cs">
+    <Compile Update="Views\SaftHeaderPageView.axaml.cs">
       <DependentUpon>SaftHeaderPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\DialogSaftResume.xaml.cs">
+    <Compile Update="Views\DialogSaftResume.axaml.cs">
       <DependentUpon>DialogSaftResume.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SaftCustomersPageView.xaml.cs">
+    <Compile Update="Views\SaftCustomersPageView.axaml.cs">
       <DependentUpon>SaftCustomersPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\ErrorPageView - Copy.xaml.cs">
+    <Compile Update="Views\ErrorPageView - Copy.axaml.cs">
       <DependentUpon>ErrorPageView.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SaftErrorPageView.xaml.cs">
+    <Compile Update="Views\SaftErrorPageView.axaml.cs">
       <DependentUpon>SaftErrorPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\StocksHeaderPageView.xaml.cs">
+    <Compile Update="Views\StocksHeaderPageView.axaml.cs">
       <DependentUpon>StocksHeaderPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SaftSuppliersPageView.xaml.cs">
+    <Compile Update="Views\SaftSuppliersPageView.axaml.cs">
       <DependentUpon>SaftSuppliersPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\StocksProductsPageView.xaml.cs">
+    <Compile Update="Views\StocksProductsPageView.axaml.cs">
       <DependentUpon>StocksProductsPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SaftTaxesPageView.xaml.cs">
+    <Compile Update="Views\SaftTaxesPageView.axaml.cs">
       <DependentUpon>SaftTaxesPageView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\WorkingDocumentsPageView - Copy.xaml.cs">
+    <Compile Update="Views\WorkingDocumentsPageView - Copy.axaml.cs">
       <DependentUpon>WorkingDocumentsPageView.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\SaftWorkingDocumentsPageView.xaml.cs">
+    <Compile Update="Views\SaftWorkingDocumentsPageView.axaml.cs">
       <DependentUpon>SaftWorkingDocumentsPageView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>

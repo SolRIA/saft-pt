@@ -18,7 +18,7 @@ public class SaftXmlParser
         if (File.Exists(xmlFileName) == false)
             return default;
 
-        TextReader tw = null;
+        StreamReader tw = null;
         try
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

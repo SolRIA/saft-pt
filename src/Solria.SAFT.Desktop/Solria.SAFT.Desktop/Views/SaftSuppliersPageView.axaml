@@ -3,8 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+             xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
 			 xmlns:model="clr-namespace:SolRIA.SAFT.Parser.Models;assembly=SolRIA.SAFT.Parser"
 			 x:DataType="vm:SaftSuppliersPageViewModel"
              x:Class="SolRIA.SAFT.Desktop.Views.SaftSuppliersPageView">
@@ -20,8 +19,9 @@
 				<Button Command="{Binding SearchCommand}"
 						Classes="Primary" Padding="4"
 						Theme="{DynamicResource BorderlessButton}"
-						Width="{Binding $self.Bounds.Height}"
-						Content="{icons:MaterialIconExt Search, Size=24}" />
+						Width="{Binding $self.Bounds.Height}">
+					<PathIcon Data="{StaticResource Material.Magnify}" />
+				</Button>
 			</TextBox.InnerRightContent>
 			<TextBox.KeyBindings>
 				<KeyBinding Command="{CompiledBinding SearchCommand}" Gesture="Enter"/>

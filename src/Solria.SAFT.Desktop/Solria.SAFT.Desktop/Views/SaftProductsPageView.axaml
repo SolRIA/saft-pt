@@ -2,26 +2,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
 			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
 			 xmlns:model="clr-namespace:SolRIA.SAFT.Parser.Models;assembly=SolRIA.SAFT.Parser"
 			 x:DataType="vm:SaftProductsPageViewModel"
              x:Class="SolRIA.SAFT.Desktop.Views.SaftProductsPageView">
 	
-	<Grid RowDefinitions="40,35,*" ColumnDefinitions="*,54,54" Margin="5">
+	<Grid RowDefinitions="40,35,Auto,*" RowSpacing="5"
+		  ColumnDefinitions="*,54,54,54" 
+		  Margin="5">
 
 		<TextBlock Text="Produtos" Classes="H2"
 				   Theme="{StaticResource TitleTextBlock}"/>
 
 		<TextBox Text="{Binding Filter, Mode=TwoWay}"
-				 Watermark="Filtro" Grid.Row="1" Margin="0,0,2,0">
+				 Watermark="Filtro" 
+				 VerticalAlignment="Stretch"
+				 Grid.Row="1" Margin="0,0,2,0">
 			<TextBox.InnerRightContent>
 				<Button Command="{Binding SearchCommand}"
-						Classes="Primary" Padding="4"
-						Theme="{DynamicResource BorderlessButton}"
-						Width="{Binding $self.Bounds.Height}"
-						Content="{icons:MaterialIconExt Search, Size=24}" />
+						Classes="Primary" Padding="4,0"
+						Theme="{DynamicResource BorderlessButton}">
+					<PathIcon Data="{StaticResource Material.Magnify}" />
+				</Button>
 			</TextBox.InnerRightContent>
 			<TextBox.KeyBindings>
 				<KeyBinding Command="{CompiledBinding SearchCommand}" Gesture="Enter"/>
@@ -30,22 +33,36 @@
 
 		<Button Margin="2,0" Width="50"
 				ToolTip.Tip="Filtrar" Classes="Primary"
+				 VerticalAlignment="Stretch"
 				Grid.Row="1" Grid.Column="1"
 				Command="{Binding SearchClearCommand}" >
-			<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+			<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
 		</Button>
 
 		<Button Margin="2,0" Width="50"
 				ToolTip.Tip="Exportar para Excel" Classes="Primary"
+				 VerticalAlignment="Stretch"
 				Grid.Row="1" Grid.Column="2"
 				Command="{Binding DoPrintCommand}">
-			<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+			<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
 		</Button>
 
-		<!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
-                           Grid.Row="1" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>-->
+		<Button Margin="2,0" Width="50"
+				ToolTip.Tip="Gerar a tabela com base nas linhas dos documentos" Classes="Primary"
+				VerticalAlignment="Stretch"
+				Grid.Row="1" Grid.Column="3"
+				Command="{Binding GenerateProductsFromDocumentLinesCommand}">
+			<PathIcon Data="{StaticResource Material.Refresh}" Width="24" Height="24"/>
+		</Button>
 
-		<DataGrid Grid.Row="2" Grid.ColumnSpan="3" IsReadOnly="True" FontSize="16"
+		<ProgressBar Grid.Row="2" Grid.ColumnSpan="4"
+					 IsIndeterminate="True"
+					 IsVisible="{Binding IsLoading}"/>
+
+		<DataGrid Grid.Row="3" 
+				  Grid.ColumnSpan="4" 
+				  IsReadOnly="True" 
+				  FontSize="16"
 				  ItemsSource="{Binding Products}" >
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Grupo" Binding="{Binding ProductGroup}" SortMemberPath="ProductGroup" x:DataType="model:Product"/>
