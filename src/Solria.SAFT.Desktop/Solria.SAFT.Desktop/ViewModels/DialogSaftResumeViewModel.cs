@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Parser.Models;
 using System.Linq;
-using System.Reactive.Linq;
 
 namespace SolRIA.SAFT.Desktop.ViewModels;
 

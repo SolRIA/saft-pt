@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -65,10 +64,11 @@ public partial class SaftProductsPageViewModel : ViewModelBase
     {
         if (Products == null || Products.Count == 0) return;
 
-        var fileCsv = await dialogManager.SaveFileDialog("Guardar produtos excel",
+        var fileCsv = await dialogManager.SaveFileDialog(
+            title: "Guardar produtos excel",
             directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             initialFileName: "Produtos.csv",
-            ".csv");
+            defaultExtension: ".csv");
 
         if (string.IsNullOrWhiteSpace(fileCsv)) return;
 

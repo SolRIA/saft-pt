@@ -5,7 +5,6 @@ using SolRIA.SAFT.Parser.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace SolRIA.SAFT.Desktop.ViewModels;
@@ -29,10 +28,10 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
 
         var documents = saftValidator?.SaftFile?.SourceDocuments?.MovementOfGoods?.StockMovement ?? [];
 
-        if (documents.Any() == false) return;
+        if (documents.Length == 0) return;
 
-        Documents = new List<SourceDocumentsMovementOfGoodsStockMovement>(documents);
-        Lines = new List<SourceDocumentsMovementOfGoodsStockMovementLine>();
+        Documents = [.. documents];
+        Lines = [];
 
         DocNumberOfEntries = documents.Length;
         DocTotalCredit = documents
@@ -240,10 +239,9 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
             return;
         }
 
-        Documents = documents
+        Documents = [.. documents
             .Where(d => FilterEntries(d, Filter))
-            .Where(d => FilterEntriesByDate(d, FiltroDataInicio, FiltroDataFim))
-            .ToArray();
+            .Where(d => FilterEntriesByDate(d, FiltroDataInicio, FiltroDataFim))];
     }
     private static bool FilterEntries(SourceDocumentsMovementOfGoodsStockMovement entry, string filter)
     {
@@ -283,11 +281,11 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
 
         if (string.IsNullOrWhiteSpace(FilterLines))
         {
-            Lines = allLines.ToArray();
+            Lines = [.. allLines];
             return;
         }
 
-        Lines = allLines.Where(l => FilterDetails(l, FilterLines)).ToArray();
+        Lines = [.. allLines.Where(l => FilterDetails(l, FilterLines))];
     }
     private static bool FilterDetails(SourceDocumentsMovementOfGoodsStockMovementLine line, string filter)
     {
@@ -397,7 +395,7 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
             {
                 //found a valid number, try to find the previous document
                 var previousDocument = Documents
-                    .Where(i => i.DocumentNumber.IndexOf(string.Format("{0}/{1}", docNo[0], num), StringComparison.OrdinalIgnoreCase) == 0)
+                    .Where(i => i.DocumentNumber.StartsWith(string.Format("{0}/{1}", docNo[0], num), StringComparison.OrdinalIgnoreCase))
                     .FirstOrDefault();
 
                 //encontramos um documento, vamos obter a hash

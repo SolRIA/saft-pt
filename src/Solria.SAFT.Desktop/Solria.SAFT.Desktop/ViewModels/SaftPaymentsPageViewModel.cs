@@ -5,7 +5,6 @@ using SolRIA.SAFT.Parser.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace SolRIA.SAFT.Desktop.ViewModels;
@@ -29,10 +28,10 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
 
         var payments = saftValidator.SaftFile?.SourceDocuments?.Payments?.Payment ?? [];
 
-        if (payments.Any() == false) return;
+        if (payments.Length == 0) return;
 
-        Documents = new List<SourceDocumentsPaymentsPayment>(payments);
-        Lines = new List<SourceDocumentsPaymentsPaymentLine>();
+        Documents = [.. payments];
+        Lines = [];
 
         DocNumberOfEntries = payments.Length;
         DocTotalCredit = payments
