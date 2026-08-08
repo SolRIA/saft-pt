@@ -16,7 +16,6 @@ public interface ISaftValidator
 
     StockFile StockFile { get; set; }
 
-    List<ValidationError> MensagensErro { get; set; }
 
     int SaftHashValidationNumber { get; set; }
     int SaftHashValidationErrorNumber { get; set; }
@@ -24,5 +23,5 @@ public interface ISaftValidator
     Task OpenSaftFile(string filename);
     Task OpenStockFile(string filename);
 
-
+    IList<ValidationError> GetErrors();
 }

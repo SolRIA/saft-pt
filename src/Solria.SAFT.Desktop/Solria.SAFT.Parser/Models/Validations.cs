@@ -1,45 +1,44 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace SolRIA.SAFT.Parser.Models
+namespace SolRIA.SAFT.Parser.Models;
+
+public static partial class Validations
 {
-    public static class Validations
-	{
-		public static bool CheckTaxRegistrationNumber(string taxRegistrationNumber)
-		{
-			if (string.IsNullOrEmpty(taxRegistrationNumber))
-				return false;
+    public static bool CheckTaxRegistrationNumber(string taxRegistrationNumber)
+    {
+        if (string.IsNullOrEmpty(taxRegistrationNumber))
+            return false;
 
-			int checkDigit;
-			char firstNumber;
+        if (IsNumeric(taxRegistrationNumber) == false || taxRegistrationNumber.Length != 9) return false;
 
-			if (IsNumeric(taxRegistrationNumber) && taxRegistrationNumber.Length == 9)
-			{
-				firstNumber = taxRegistrationNumber[0];
+        int firstDigit = taxRegistrationNumber[0];
+        if (char.IsDigit(taxRegistrationNumber[0]) == false)
+            return false;
 
-				if (firstNumber.Equals('1') || firstNumber.Equals('2') || firstNumber.Equals('5') || firstNumber.Equals('6') || firstNumber.Equals('8') || firstNumber.Equals('9'))
-				{
-					checkDigit = (Convert.ToInt16(firstNumber.ToString()) * 9);
-					for (int i = 2; i <= 8; i++)
-					{
-						checkDigit += Convert.ToInt16(taxRegistrationNumber[i - 1].ToString()) * (10 - i);
-					}
-					checkDigit = 11 - (checkDigit % 11);
+        var checkDigit = firstDigit * 9;
+        for (var i = 2; i <= 8; i++)
+        {
+            if (char.IsDigit(taxRegistrationNumber[i]) == false)
+                return false;
 
-					if (checkDigit >= 10)
-						checkDigit = 0;
+            checkDigit += taxRegistrationNumber[i - 1] * (10 - i);
+        }
+        checkDigit = 11 - checkDigit % 11;
 
-					if (checkDigit.ToString() == taxRegistrationNumber[8].ToString())
-						return true;
-				}
-			}
+        if (checkDigit >= 10)
+            checkDigit = 0;
 
-			return false;
-		}
+        if (checkDigit == char.GetNumericValue(taxRegistrationNumber[8]))
+            return true;
 
-		public static bool IsNumeric(string inputString)
-		{
-			return Regex.IsMatch(inputString, "^[0-9]+$");
-		}
-	}
+        return false;
+    }
+
+    public static bool IsNumeric(string inputString)
+    {
+        return IsNumericRegex().IsMatch(inputString);
+    }
+
+    [GeneratedRegex("^[0-9]+$")]
+    private static partial Regex IsNumericRegex();
 }

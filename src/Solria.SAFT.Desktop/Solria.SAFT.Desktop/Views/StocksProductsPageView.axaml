@@ -12,7 +12,7 @@
 
 		<TextBox Margin="2"
 				 Text="{Binding Filter, Mode=TwoWay}"
-				 Watermark="Filtro">
+				 PlaceholderText="Filtro">
 			<TextBox.InnerRightContent>
 				<Button Command="{Binding SearchCommand}"
 						Classes="Primary" Padding="4"

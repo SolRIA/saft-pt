@@ -21,6 +21,8 @@ public partial class DialogSaftResumeViewModel : ViewModelBase
 
     public void Init()
     {
+        var erros = saftValidator.GetErrors();
+
         if (saftValidator.SaftFile != null)
         {
             Header = new Header
@@ -30,11 +32,11 @@ public partial class DialogSaftResumeViewModel : ViewModelBase
                 TaxRegistrationNumber = saftValidator.SaftFile.Header.TaxRegistrationNumber
             };
 
-            HeaderErrors = saftValidator.MensagensErro.Where(m => m.TypeofError == typeof(Models.SaftV4.Header)).Count();
-            CustomersErrors = saftValidator.MensagensErro.Where(m => m.TypeofError == typeof(Models.SaftV4.Customer)).Count();
+            HeaderErrors = erros.Count(m => m.TypeofError == typeof(Models.SaftV4.Header));
+            CustomersErrors = erros.Count(m => m.TypeofError == typeof(Models.SaftV4.Customer));
         }
 
-        TotalErrors = saftValidator.MensagensErro.Count;
+        TotalErrors = erros.Count;
         SaftHashValidationNumber = saftValidator.SaftHashValidationNumber;
         SaftHashValidationErrorNumber = saftValidator.SaftHashValidationErrorNumber;
     }
@@ -42,22 +44,22 @@ public partial class DialogSaftResumeViewModel : ViewModelBase
     public string Title { get; set; } = "Resumo";
 
     [ObservableProperty]
-    private Header header;
+    public partial Header Header { get; set; }
     
     [ObservableProperty]
-    private int totalErrors;
+    public partial int TotalErrors { get; set; }
     
     [ObservableProperty]
-    private int headerErrors;
+    public partial int HeaderErrors {get; set; }
     
     [ObservableProperty]
-    private int customersErrors;
+    public partial int CustomersErrors {get; set; }
     
     [ObservableProperty]
-    private int saftHashValidationNumber;
+    public partial int SaftHashValidationNumber {get; set; }
     
     [ObservableProperty]
-    private int saftHashValidationErrorNumber;
+    public partial int SaftHashValidationErrorNumber {get; set; }
 
     [RelayCommand]
     private void OnOpenErrors()

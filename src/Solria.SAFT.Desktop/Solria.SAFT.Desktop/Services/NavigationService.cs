@@ -46,5 +46,7 @@ public class NavigationService : INavigationService
             NavigateTo(new Views.SaftTaxesPageView { DataContext = vm });
         else if (vmType == typeof(SaftWorkingDocumentsPageViewModel))
             NavigateTo(new Views.SaftWorkingDocumentsPageView { DataContext = vm });
+        else if (vmType == typeof(SaftGeneralLedgerEntriesPageViewModel))
+            NavigateTo(new Views.SaftGeneralLedgerEntriesPageView { DataContext = vm });
     }
 }

@@ -7,7 +7,7 @@ namespace SolRIA.SAFT.Parser;
 
 public static class Parsers
 {
-    public static List<ValidationError> Validations { get; private set; } = new List<ValidationError>();
+    public static List<ValidationError> Validations { get; private set; } = [];
 
     public static bool StringEquals(string str1, string str2)
     {

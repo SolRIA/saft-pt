@@ -1,0 +1,163 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 mc:Ignorable="d"
+			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+			 x:Class="SolRIA.SAFT.Desktop.Views.SaftGeneralLedgerEntriesPageView"
+			 x:DataType="vm:SaftGeneralLedgerEntriesPageViewModel">
+
+	<Grid RowDefinitions="55,*,7,55,*" ColumnDefinitions="*,7,Auto">
+
+		<!-- documents filter -->
+		<Grid ColumnDefinitions="*,Auto,Auto,54,54,54" Grid.Row="0" Grid.Column="0">
+			<TextBox Text="{Binding Filter, Mode=TwoWay}" PlaceholderText="Filtro"
+					 Margin="5,2"
+					 VerticalAlignment="Stretch">
+				<TextBox.InnerRightContent>
+					<Button Command="{Binding SearchCommand}"
+							Classes="Primary" Padding="4"
+							Theme="{DynamicResource BorderlessButton}"
+							Width="{Binding $self.Bounds.Height}">
+						<PathIcon Data="{StaticResource Material.Magnify}"/>
+					</Button>
+				</TextBox.InnerRightContent>
+				<TextBox.KeyBindings>
+					<KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
+				</TextBox.KeyBindings>
+			</TextBox>
+
+			<DatePicker SelectedDate="{Binding FiltroDataInicio}" BorderThickness="0"
+						MinWidth="100" Grid.Column="1" Margin="2"
+						VerticalAlignment="Stretch"/>
+			<DatePicker SelectedDate="{Binding FiltroDataFim}" BorderThickness="0"
+						MinWidth="100" Grid.Column="2" Margin="2"
+						VerticalAlignment="Stretch"/>
+
+			<Button Margin="2" Width="50" ToolTip.Tip="Limpar Filtros" Grid.Column="3"
+					Command="{Binding SearchClearCommand}"
+					VerticalAlignment="Stretch">
+
+				<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+
+			</Button>
+
+			<Button Margin="2" Width="50" ToolTip.Tip="Exportar documentos para Excel" Grid.Column="4"
+					Command="{Binding SaveExcelCommand}"
+					VerticalAlignment="Stretch">
+				<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+			</Button>
+		</Grid>
+
+		<!-- documents list -->
+		<DataGrid IsReadOnly="True" Grid.Row="1" Grid.Column="0" FontSize="14"
+				  ItemsSource="{Binding Documents, Mode=OneWay}"
+				  SelectedItem="{Binding CurrentDocument, Mode=TwoWay}">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="ID" Binding="{Binding JournalID}" />
+				<DataGridTextColumn Header="Descrição" Binding="{Binding Description}" />
+			</DataGrid.Columns>
+		</DataGrid>
+
+		<GridSplitter Grid.Column="1" Grid.RowSpan="5" Width="5" Margin="1,5" />
+
+		<!-- documents resume -->
+		<Grid Grid.Column="2" Grid.Row="0" Grid.RowSpan="5" RowDefinitions="*,50" ColumnDefinitions="*,*">
+			<Border Classes="Hover" Theme="{StaticResource CardBorder}" Grid.ColumnSpan="2"
+					Margin="5">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<ScrollViewer.Styles>
+						<Style Selector="TextBlock">
+							<Setter Property="TextAlignment" Value="Right"/>
+							<Setter Property="FontSize" Value="14"/>
+							<Setter Property="Margin" Value="3"/>
+						</Style>
+					</ScrollViewer.Styles>
+					<Grid ColumnDefinitions="*,Auto" RowDefinitions="30,25,25,25,30,25,25,25">
+
+						<TextBlock Text="Totais SAFT" Grid.ColumnSpan="2"
+								   TextAlignment="Center" FontWeight="SemiBold" FontSize="20"/>
+
+						<TextBlock Text="Documentos:" Grid.Row="1" />
+						<TextBlock Text="Total dos débitos:" Grid.Row="2" />
+						<TextBlock Text="Total dos créditos:" Grid.Row="3" />
+
+						<TextBlock Text="{Binding NumberOfEntries}" Grid.Column="1" Grid.Row="1"/>
+						<TextBlock Text="{Binding TotalDebit}" Grid.Column="1" Grid.Row="2" />
+						<TextBlock Text="{Binding TotalCredit}" Grid.Column="1" Grid.Row="3" />
+
+						<TextBlock Text="Totais calculados" Grid.Row="4" Grid.ColumnSpan="2"
+								   TextAlignment="Center" FontWeight="SemiBold" FontSize="20"/>
+
+						<TextBlock Text="Documentos:" Grid.Row="5" />
+						<TextBlock Text="Total dos débitos:" Grid.Row="6" />
+						<TextBlock Text="Total dos créditos:" Grid.Row="7" />
+
+						<TextBlock Text="{Binding NumberOfEntriesCalc}" Grid.Column="1" Grid.Row="5"/>
+						<TextBlock Text="{Binding TotalDebitCalc}" Grid.Column="1" Grid.Row="6" />
+						<TextBlock Text="{Binding TotalCreditCalc}" Grid.Column="1" Grid.Row="7" />
+
+					</Grid>
+				</ScrollViewer>
+			</Border>
+
+			<Button Height="50" ToolTip.Tip="Exportar para Excel"
+					Margin="5,0,2.5,5" Grid.Row="1" Grid.Column="0"
+					Command="{Binding SaveExcelCommand}">
+				<StackPanel Orientation="Horizontal">
+					<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>			
+					
+					<TextBlock Text="Documento" VerticalAlignment="Center" Margin="5,0"/>
+				</StackPanel>
+			</Button>
+			<Button Height="50" ToolTip.Tip="Mostrar detalhes do documento seleccionado"
+					Margin="2.5,0,5,5" Grid.Row="1" Grid.Column="1">
+				<StackPanel Orientation="Horizontal">
+					<icons:MaterialIcon Kind="FileDocument" Width="24" Height="24"/>
+					<TextBlock Text="Detalhes" VerticalAlignment="Center" Margin="5,0"/>
+				</StackPanel>
+			</Button>
+		</Grid>
+
+		<GridSplitter Grid.Row="2" Height="5" Margin="5,1"  />
+
+		<!-- lines filter -->
+		<Grid ColumnDefinitions="*,54" Grid.Row="3">
+			<TextBox Margin="2" Text="{Binding FilterLines, Mode=TwoWay}"
+					 PlaceholderText="Filtro"
+					 VerticalAlignment="Stretch">
+				<TextBox.InnerRightContent>
+					<Button Command="{Binding SearchDetailsCommand}"
+							Classes="Primary" Padding="4"
+							Theme="{DynamicResource BorderlessButton}"
+							Width="{Binding $self.Bounds.Height}">
+						<PathIcon Data="{StaticResource Material.Magnify}" />
+				</Button>
+				</TextBox.InnerRightContent>
+				<TextBox.KeyBindings>
+					<KeyBinding Command="{Binding SearchDetailsCommand}" Gesture="Enter"/>
+				</TextBox.KeyBindings>
+			</TextBox>
+
+			<Button Margin="2" Width="50" ToolTip.Tip="Apagar Filtros" Grid.Column="1"
+					Command="{Binding SearchDetailsClearCommand}"
+					VerticalAlignment="Stretch">
+					<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
+			</Button>
+		</Grid>
+
+		<DataGrid Grid.Row="4" IsReadOnly="True" FontSize="14"
+				  ItemsSource="{Binding Lines}">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="ID" Binding="{Binding TransactionID}" />
+				<DataGridTextColumn Header="Período" Binding="{Binding Period}"/>
+				<DataGridTextColumn Header="Data" Binding="{Binding TransactionDate}" />
+				<DataGridTextColumn Header="Utilizador" Binding="{Binding SourceID}" />
+				<DataGridTextColumn Header="Número de arquivo" Binding="{Binding DocArchivalNumber}" />
+				<DataGridTextColumn Header="Tipificação" Binding="{Binding TransactionType}" />
+				<DataGridTextColumn Header="Data" Binding="{Binding GLPostingDate}" />
+			</DataGrid.Columns>
+		</DataGrid>
+	</Grid>
+</UserControl>

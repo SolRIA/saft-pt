@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SolRIA.SAFT.Desktop.Infrastructure;
 using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Parser.Models;
 using System;
@@ -37,22 +38,21 @@ public partial class SaftTaxesPageViewModel : ViewModelBase
     {
         if (Taxes == null || Taxes.Count == 0) return;
 
-        var file = await dialogManager.SaveFileDialog(
+        var (_, stream) = await dialogManager.SaveFileDialog(
             "Guardar Impostos",
             directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             initialFileName: "Impostos.csv",
             ".csv");
 
-        if (string.IsNullOrWhiteSpace(file) == false)
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            foreach (var c in Taxes)
-            {
-                stringBuilder.AppendLine($"{c.TaxType};{c.Description};{c.TaxCode};{c.TaxCountryRegion};{c.TaxAmount};{c.TaxPercentage};{c.TaxExpirationDate}");
-            }
+        if (stream == null) return;
 
-            File.WriteAllText(file, stringBuilder.ToString());
+        StringBuilder stringBuilder = new StringBuilder();
+        foreach (var c in Taxes)
+        {
+            stringBuilder.AppendLine($"{c.TaxType};{c.Description};{c.TaxCode};{c.TaxCountryRegion};{c.TaxAmount};{c.TaxPercentage};{c.TaxExpirationDate}");
         }
+
+        await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);
     }
 
     [RelayCommand]
@@ -74,10 +74,10 @@ public partial class SaftTaxesPageViewModel : ViewModelBase
     private static bool FilterEntries(TaxTableEntry entry, string filter)
     {
         if (string.IsNullOrWhiteSpace(entry.Description) == false && entry.Description.Contains(filter, StringComparison.OrdinalIgnoreCase)
-            || string.IsNullOrWhiteSpace(entry.TaxCode) == false && entry.TaxCode.Contains(filter, StringComparison.OrdinalIgnoreCase) 
-            || string.IsNullOrWhiteSpace(entry.TaxCountryRegion) == false && entry.TaxCountryRegion.Contains(filter, StringComparison.OrdinalIgnoreCase) 
-            || entry.TaxType.ToString().Contains(filter, StringComparison.OrdinalIgnoreCase) 
-            || entry.TaxAmount != null && entry.TaxAmount.ToString().Contains(filter, StringComparison.OrdinalIgnoreCase) 
+            || string.IsNullOrWhiteSpace(entry.TaxCode) == false && entry.TaxCode.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrWhiteSpace(entry.TaxCountryRegion) == false && entry.TaxCountryRegion.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || entry.TaxType.ToString().Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || entry.TaxAmount != null && entry.TaxAmount.ToString().Contains(filter, StringComparison.OrdinalIgnoreCase)
             || entry.TaxPercentage != null && entry.TaxPercentage.ToString().Contains(filter, StringComparison.OrdinalIgnoreCase))
             return true;
 

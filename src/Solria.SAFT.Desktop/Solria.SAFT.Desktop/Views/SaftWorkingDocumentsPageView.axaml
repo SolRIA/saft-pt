@@ -10,8 +10,9 @@
 
 		<!-- documents filter -->
 		<Grid ColumnDefinitions="*,Auto,Auto,54,54,54" Grid.Row="0" Grid.Column="0">
-			<TextBox Text="{Binding Filter, Mode=TwoWay}" Watermark="Filtro"
-					 Margin="5,2">
+			<TextBox Text="{Binding Filter, Mode=TwoWay}" PlaceholderText="Filtro"
+					 Margin="5,2"
+					 VerticalAlignment="Stretch">
 				<TextBox.InnerRightContent>
 					<Button Command="{Binding SearchCommand}"
 							Classes="Primary" Padding="4"
@@ -33,17 +34,20 @@
 						VerticalAlignment="Stretch"/>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Limpar Filtros" Grid.Column="3"
-					Command="{Binding SearchClearCommand}" >
+					Command="{Binding SearchClearCommand}" 
+					VerticalAlignment="Stretch">
 				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
 			</Button>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Exportar documentos para Excel" Grid.Column="4"
-					Command="{Binding DoPrintCommand}">
+					Command="{Binding DoPrintCommand}"
+					VerticalAlignment="Stretch">
 				<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
 			</Button>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Exportar impostos para Excel" Grid.Column="5"
-				   Command="{Binding DoPrintTaxesCommand}">
+				   Command="{Binding DoPrintTaxesCommand}"
+				   VerticalAlignment="Stretch">
 				<PathIcon Data="{StaticResource Material.FilePercent}" Width="24" Height="24"/>
 			</Button>
 		</Grid>
@@ -193,7 +197,8 @@
 		<!-- lines filter -->
 		<Grid ColumnDefinitions="*,Auto,54" Grid.Row="3">
 			<TextBox Margin="2" Text="{Binding FilterLines, Mode=TwoWay}"
-					 Watermark="Filtro">
+					 PlaceholderText="Filtro"
+					 VerticalAlignment="Stretch">
 				<TextBox.InnerRightContent>
 					<Button Command="{Binding SearchDetailsCommand}"
 							Classes="Primary" Padding="4"
@@ -213,7 +218,8 @@
 					  Theme="{DynamicResource CardCheckBox}"/>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Apagar Filtros" Grid.Column="2"
-				  Command="{Binding SearchDetailsClearCommand}" >
+				  Command="{Binding SearchDetailsClearCommand}"
+				  VerticalAlignment="Stretch">
 				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
 			</Button>
 		</Grid>

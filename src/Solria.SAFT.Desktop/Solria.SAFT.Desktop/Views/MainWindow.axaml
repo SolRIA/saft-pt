@@ -12,7 +12,7 @@
         Title="SolRIA SAFT - Validador" 
 		WindowState="Maximized" WindowStartupLocation="CenterScreen">
 
-	<Grid RowDefinitions="45,*">
+	<Grid RowDefinitions="45,*,40">
 
 		<Menu ItemsSource="{Binding MenuItems}" FontSize="16" Grid.Row="0"
 			  HorizontalAlignment="Stretch">
@@ -37,6 +37,10 @@
 		<!-- current view -->
 		<Grid x:Name="mainContentGrid" Grid.Row="1">
 			<views:MainMenuPageView />
+		</Grid>
+
+		<Grid Grid.Row="2" Margin="0" Background="{StaticResource SemiGrey0}">
+			<TextBlock x:Name="FileNameTxt" VerticalAlignment="Center" Margin="10,0"/>
 		</Grid>
 	</Grid>
 </Window>

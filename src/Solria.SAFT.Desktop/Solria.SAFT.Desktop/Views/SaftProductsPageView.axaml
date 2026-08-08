@@ -16,7 +16,7 @@
 				   Theme="{StaticResource TitleTextBlock}"/>
 
 		<TextBox Text="{Binding Filter, Mode=TwoWay}"
-				 Watermark="Filtro" 
+				 PlaceholderText="Filtro" 
 				 VerticalAlignment="Stretch"
 				 Grid.Row="1" Margin="0,0,2,0">
 			<TextBox.InnerRightContent>

@@ -44,8 +44,8 @@
 								 Grid.Column="1" Grid.Row="2" Margin="3" />
 
 				<TextBox Text="{Binding BillingNumber}" Grid.Column="1" Grid.Row="3" Margin="3" />
-				<NumericUpDown Value="{Binding DocumentNumber}" Minimum="1" Grid.Column="1" Grid.Row="4" Margin="3" Watermark="Número" VerticalContentAlignment="Center"/>
-				<NumericUpDown Value="{Binding DocumentTotal}" Minimum="0.01" Increment=".01" FormatString="c2" Grid.Column="1" Grid.Row="5" Margin="3" Watermark="Total" VerticalContentAlignment="Center"/>
+				<NumericUpDown Value="{Binding DocumentNumber}" Minimum="1" Grid.Column="1" Grid.Row="4" Margin="3" PlaceholderText="Número" VerticalContentAlignment="Center"/>
+				<NumericUpDown Value="{Binding DocumentTotal}" Minimum="0.01" Increment=".01" FormatString="c2" Grid.Column="1" Grid.Row="5" Margin="3" PlaceholderText="Total" VerticalContentAlignment="Center"/>
 
 				<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="6">
 					<TextBox Text="{Binding DocumentDate}" Margin="3" FontSize="16"/>

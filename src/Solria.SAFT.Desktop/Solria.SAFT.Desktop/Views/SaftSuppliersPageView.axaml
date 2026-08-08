@@ -14,7 +14,7 @@
 				   Theme="{StaticResource TitleTextBlock}"/>
 		
 		<TextBox Text="{Binding Filter, Mode=TwoWay}"
-				 Watermark="Filtro" Grid.Row="1" Margin="0,0,2,0">
+				 PlaceholderText="Filtro" Grid.Row="1" Margin="0,0,2,0">
 			<TextBox.InnerRightContent>
 				<Button Command="{Binding SearchCommand}"
 						Classes="Primary" Padding="4"

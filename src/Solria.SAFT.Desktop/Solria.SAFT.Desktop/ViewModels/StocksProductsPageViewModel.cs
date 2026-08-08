@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SolRIA.SAFT.Desktop.Infrastructure;
 using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Parser.Models;
 using System;
@@ -55,22 +56,21 @@ public partial class StocksProductsPageViewModel : ViewModelBase
     {
         if (Products == null || Products.Length == 0) return;
 
-        var file = await dialogManager.SaveFileDialog(
+        var (_, stream) = await dialogManager.SaveFileDialog(
             "Guardar produtos",
             directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             initialFileName: "Produtos.csv",
             ".csv");
 
-        if (string.IsNullOrWhiteSpace(file) == false)
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            foreach (var c in Products)
-            {
-                stringBuilder.AppendLine($"{c.ProductCode};{c.ProductDescription};{c.ProductNumberCode};{c.ProductCategory};{c.UnitOfMeasure};{c.ClosingStockQuantity}");
-            }
+        if (stream == null) return;
 
-            File.WriteAllText(file, stringBuilder.ToString());
+        StringBuilder stringBuilder = new StringBuilder();
+        foreach (var c in Products)
+        {
+            stringBuilder.AppendLine($"{c.ProductCode};{c.ProductDescription};{c.ProductNumberCode};{c.ProductCategory};{c.UnitOfMeasure};{c.ClosingStockQuantity}");
         }
+
+        await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);
     }
 
     [RelayCommand]

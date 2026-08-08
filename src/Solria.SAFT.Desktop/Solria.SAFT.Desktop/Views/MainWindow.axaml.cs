@@ -9,6 +9,7 @@ using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Desktop.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,18 +23,12 @@ namespace SolRIA.SAFT.Desktop.Views
         public MainWindow()
         {
             InitializeComponent();
-#if DEBUG
-            //this.AttachDevTools();
-#endif
 
             notificationManager = new WindowNotificationManager(this)
             {
                 Position = NotificationPosition.TopRight,
                 MaxItems = 3
             };
-
-
-            //txtMessage = this.Find<TextBlock>("messages");
         }
 
         private void ToggleButton_OnIsCheckedChanged(object sender, RoutedEventArgs e)
@@ -74,7 +69,7 @@ namespace SolRIA.SAFT.Desktop.Views
         }
         public void SetFileName(string file)
         {
-            this.Title = file;
+            FileNameTxt.Text = file;
         }
         public void AddMessage(string message)
         {
@@ -184,7 +179,7 @@ namespace SolRIA.SAFT.Desktop.Views
             return [.. result.Select(f => f.Path.LocalPath)];
         }
 
-        public async Task<string> SaveFileDialog(string title, string directory = "", string initialFileName = "", string defaultExtension = "", FilePickerFileType[] filters = null)
+        public async Task<(string filename, Stream stream)> SaveFileDialog(string title, string directory = "", string initialFileName = "", string defaultExtension = "", FilePickerFileType[] filters = null)
         {
             var result = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
@@ -196,7 +191,9 @@ namespace SolRIA.SAFT.Desktop.Views
                 FileTypeChoices = filters
             });
 
-            return result?.Path.AbsolutePath;
+            if (result == null) return (null, null);
+
+            return (result.Path.AbsolutePath, await result.OpenWriteAsync().ConfigureAwait(false));
         }
 
         public async Task<string> OpenFolderDialog(string title, string directory = "")

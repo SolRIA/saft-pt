@@ -179,6 +179,8 @@ public partial class SourceDocumentsPaymentsPaymentLine : BaseData
     /// </summary>
     public string DocNo { get; set; }
 
+    public string OriginatingON { get; set; }
+
     public ValidationError ValidateLineNumber(string SupPk)
     {
         ValidationError erro = null;
@@ -354,7 +356,7 @@ public partial class SourceDocumentsMovementOfGoodsStockMovement : BaseData
     {
         ValidationError erro = null;
 
-        if (MovementEndTime == DateTime.MinValue || MovementEndTime > DateTime.Now)
+        if (MovementEndTimeSpecified && (MovementEndTime == DateTime.MinValue || MovementEndTime > DateTime.Now))
         {
             erro = new ValidationError { Description = string.Format("Data e hora de fim de transporte do documento {0} incorrecta.", DocumentNumber), Field = "StockMovement/MovementEndTime", FileID = DocumentNumber, Value = MovementEndTime.ToString(), UID = Pk };
         }
@@ -365,7 +367,7 @@ public partial class SourceDocumentsMovementOfGoodsStockMovement : BaseData
     {
         ValidationError erro = null;
 
-        if (MovementStartTime > DateTime.Now)
+        if (MovementStartTimeSpecified && (MovementStartTime == DateTime.MinValue || MovementStartTime > DateTime.Now))
         {
             erro = new ValidationError { Description = string.Format("Data e hora de início de transporte do documento {0} incorrecta.", DocumentNumber), Field = "StockMovement/MovementStartTime", FileID = DocumentNumber, Value = MovementStartTime.ToString(), UID = Pk };
         }
@@ -822,7 +824,7 @@ public partial class SourceDocumentsSalesInvoicesInvoice : BaseData
         }
         else if (ATCUD != "0")
         {
-            string[] parts = ATCUD.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = ATCUD.Split(['-'], StringSplitOptions.RemoveEmptyEntries);
             if (parts == null || parts.Length != 2)
             {
                 erro = new ValidationError { Description = "ATCUD deveria ser formado pela concatenação dos campos «CodigodeValidação-NumeroSequencial».", Field = "Invoice/ATCUD", Value = ATCUD, UID = Pk };
@@ -938,7 +940,7 @@ public partial class SourceDocumentsSalesInvoicesInvoice : BaseData
 
         if (string.IsNullOrEmpty(SourceID) || SourceID.Length > 30)
         {
-            erro = new ValidationError { Description = string.Format("Utilizador que gerou o documento {0} incorrecto.", InvoiceNo), Field = "Invoice/SourceID", Value = CustomerID, UID = Pk };
+            erro = new ValidationError { Description = string.Format("Utilizador que gerou o documento {0} incorrecto.", InvoiceNo), Field = "Invoice/SourceID", Value = SourceID, UID = Pk };
         }
 
         return erro;
@@ -947,7 +949,7 @@ public partial class SourceDocumentsSalesInvoicesInvoice : BaseData
     {
         ValidationError erro = null;
 
-        if (MovementEndTime == DateTime.MinValue || MovementEndTime > DateTime.Now)
+        if (MovementEndTimeSpecified && MovementEndTime == DateTime.MinValue || MovementEndTime > DateTime.Now)
         {
             erro = new ValidationError { Description = string.Format("Data e hora de fim de transporte do documento {0} incorrecta.", InvoiceNo), Field = "Invoice/MovementEndTime", Value = MovementEndTime.ToString(), UID = Pk };
         }
@@ -958,7 +960,7 @@ public partial class SourceDocumentsSalesInvoicesInvoice : BaseData
     {
         ValidationError erro = null;
 
-        if (MovementStartTime == DateTime.MinValue || MovementStartTime > DateTime.Now)
+        if (MovementStartTimeSpecified && MovementStartTime == DateTime.MinValue || MovementStartTime > DateTime.Now)
         {
             erro = new ValidationError { Description = string.Format("Data e hora de início de transporte do documento {0} incorrecta.", InvoiceNo), Field = "Invoice/MovementStartTime", Value = MovementStartTime.ToString(), UID = Pk };
         }
@@ -1082,7 +1084,7 @@ public partial class SourceDocumentsSalesInvoicesInvoice : BaseData
                 listError.Add(new ValidationError { Description = string.Format("Valor do imposto a pagar do documento {0} incorrecto.", InvoiceNo), Field = "Invoice/DocumentTotals/TaxPayable", FileID = InvoiceNo, Value = DocumentTotals.TaxPayable.ToString(), UID = Pk });
         }
 
-        return listError.ToArray();
+        return [.. listError];
     }
 }
 
@@ -1125,7 +1127,7 @@ public partial class SourceDocumentsSalesInvoicesInvoiceLine : BaseData
     public ValidationError ValidateQuantity(string SupPk)
     {
         ValidationError erro = null;
-        if (Quantity <= 0)
+        if (Quantity < 0)
         {
             erro = new ValidationError { Description = string.Format("Quantidade incorrecta, linha nº {0}.", LineNumber), Field = "Invoice/Line/Quantity", FileID = InvoiceNo, Value = Quantity.ToString(), UID = Pk, SupUID = SupPk };
         }
@@ -1143,7 +1145,7 @@ public partial class SourceDocumentsSalesInvoicesInvoiceLine : BaseData
     public ValidationError ValidateUnitPrice(string SupPk)
     {
         ValidationError erro = null;
-        if (UnitPrice == 0)
+        if (UnitPrice < 0)
         {
             erro = new ValidationError { Description = string.Format("Preço unitário incorrecto, linha nº {0}.", LineNumber), Field = "Invoice/Line/UnitPrice", FileID = InvoiceNo, Value = UnitPrice.ToString(), UID = Pk, SupUID = SupPk };
         }

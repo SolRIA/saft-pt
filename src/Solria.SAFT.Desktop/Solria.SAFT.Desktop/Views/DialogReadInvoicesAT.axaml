@@ -13,7 +13,7 @@
 		<TextBlock Text="Documentos" Classes="H2" Grid.ColumnSpan="3"
 				   Theme="{StaticResource TitleTextBlock}"/>
 
-		<TextBox Text="{Binding Filter, Mode=TwoWay}" Watermark="Filtro"
+		<TextBox Text="{Binding Filter, Mode=TwoWay}" PlaceholderText="Filtro"
 				 Margin="0,0,2,0" Grid.Row="1">
 			<TextBox.InnerRightContent>
 				<Button Command="{Binding SearchCommand}"

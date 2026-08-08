@@ -2,7 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d"
+             mc:Ignorable="d"			 
+			 xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
              x:Class="SolRIA.SAFT.Desktop.Views.SaftMovementOfGoodsPageView"
 			 x:DataType="vm:SaftMovementOfGoodsPageViewModel">
@@ -11,14 +12,15 @@
 
 		<!-- documents filter -->
 		<Grid ColumnDefinitions="*,Auto,Auto,54,54,54" Grid.Row="0" Grid.Column="0">
-			<TextBox Text="{Binding Filter, Mode=TwoWay}" Watermark="Filtro"
-					 Margin="5,2">
+			<TextBox Text="{Binding Filter, Mode=TwoWay}" PlaceholderText="Filtro"
+					 Margin="5,2"
+					 VerticalAlignment="Stretch">
 				<TextBox.InnerRightContent>
 					<Button Command="{Binding SearchCommand}"
 							Classes="Primary" Padding="4"
 							Theme="{DynamicResource BorderlessButton}"
 							Width="{Binding $self.Bounds.Height}">
-						<PathIcon Data="{StaticResource Material.Magnify}"/>
+						<icons:MaterialIcon Kind="Magnify" Width="24" Height="24"/>
 					</Button>
 				</TextBox.InnerRightContent>
 				<TextBox.KeyBindings>
@@ -34,18 +36,21 @@
 						VerticalAlignment="Stretch"/>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Limpar Filtros" Grid.Column="3"
-					Command="{Binding SearchClearCommand}" >
-				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
+					Command="{Binding SearchClearCommand}" 
+					VerticalAlignment="Stretch">
+				<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
 			</Button>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Exportar documentos para Excel" Grid.Column="4"
-					Command="{Binding SaveExcelCommand}">
-				<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
+					Command="{Binding SaveExcelCommand}"
+					VerticalAlignment="Stretch">
+				<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
 			</Button>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Exportar impostos para Excel" Grid.Column="5"
-				   Command="{Binding DoPrintTaxesCommand}">
-				<PathIcon Data="{StaticResource Material.FilePercent}" Width="24" Height="24"/>
+				   Command="{Binding DoPrintTaxesCommand}"
+				   VerticalAlignment="Stretch">
+				<icons:MaterialIcon Kind="FilePercent" Width="24" Height="24"/>
 			</Button>
 		</Grid>
 
@@ -83,7 +88,14 @@
 				<DataGridTextColumn Header="Cliente" Binding="{Binding CustomerID}" />
 				<DataGridTextColumn Header="Periodo" Binding="{Binding Period}"/>
 				<DataGridTextColumn Header="Transacção" Binding="{Binding TransactionID}" />
-				<DataGridTextColumn Header="Hash" Binding="{Binding Hash}" Width="100"/>
+				<DataGridTemplateColumn Header="Hash" SortMemberPath="Hash" Width="100">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Hash}" Margin="3,0"
+									   VerticalAlignment="Center"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
 				<DataGridTextColumn Header="Hash Test" Binding="{Binding HashTest}"/>
 				<DataGridTextColumn Header="Hash Control" Binding="{Binding HashControl}" />
 			</DataGrid.Columns>
@@ -92,22 +104,22 @@
 				<ContextMenu>
 					<MenuItem Header="Mostrar Cliente" Command="{Binding ShowCustomerCommand}">
 						<MenuItem.Icon>
-							<PathIcon Data="{StaticResource Material.AccountCardDetailsOutline}" HorizontalAlignment="Center" />
+							<icons:MaterialIcon Kind="AccountCard" Width="24" Height="24" HorizontalAlignment="Center" />
 						</MenuItem.Icon>
 					</MenuItem>
 					<MenuItem Header="Mostrar Detalhes Documento" Command="{Binding ShowInvoiceDetailsCommand}">
 						<MenuItem.Icon>
-							<PathIcon Data="{StaticResource Material.FileDocument}" HorizontalAlignment="Center" />
+							<icons:MaterialIcon Kind="FileDocument" Width="24" Height="24" HorizontalAlignment="Center" />
 						</MenuItem.Icon>
 					</MenuItem>
 					<MenuItem Header="Abrir Documento Excel" Command="{Binding OpenExcelCommand}">
 						<MenuItem.Icon>
-							<PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center" />
+							<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24" HorizontalAlignment="Center" />
 						</MenuItem.Icon>
 					</MenuItem>
 					<MenuItem Header="Testar valores certificação" Command="{Binding TestHashCommand}">
 						<MenuItem.Icon>
-							<PathIcon Data="{StaticResource Material.ShieldKeyOutline}" HorizontalAlignment="Center" />
+							<icons:MaterialIcon Kind="ShieldKeyOutline" Width="24" Height="24" HorizontalAlignment="Center" />
 						</MenuItem.Icon>
 					</MenuItem>
 				</ContextMenu>
@@ -162,14 +174,14 @@
 					Margin="5,0,2.5,5" Grid.Row="1" Grid.Column="0"
 					Command="{Binding SaveExcelCommand}">
 				<StackPanel Orientation="Horizontal">
-					<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
+					<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
 					<TextBlock Text="Documento" VerticalAlignment="Center" Margin="5,0"/>
 				</StackPanel>
 			</Button>
 			<Button Height="50" ToolTip.Tip="Mostrar detalhes do documento seleccionado"
 					Margin="2.5,0,5,5" Grid.Row="1" Grid.Column="1">
 				<StackPanel Orientation="Horizontal">
-					<PathIcon Data="{StaticResource Material.FileDocument}" Width="24" Height="24"/>
+					<icons:MaterialIcon Kind="FileDocument" Width="24" Height="24"/>
 					<TextBlock Text="Detalhes" VerticalAlignment="Center" Margin="5,0"/>
 				</StackPanel>
 			</Button>
@@ -180,13 +192,14 @@
 		<!-- lines filter -->
 		<Grid ColumnDefinitions="*,Auto,54" Grid.Row="3">
 			<TextBox Margin="2" Text="{Binding FilterLines, Mode=TwoWay}"
-					 Watermark="Filtro">
+					 PlaceholderText="Filtro"
+					 VerticalAlignment="Stretch">
 				<TextBox.InnerRightContent>
 					<Button Command="{Binding SearchDetailsCommand}"
 							Classes="Primary" Padding="4"
 							Theme="{DynamicResource BorderlessButton}"
 							Width="{Binding $self.Bounds.Height}">
-						<PathIcon Data="{StaticResource Material.Magnify}" /> 
+						<icons:MaterialIcon Kind="Magnify" Width="24" Height="24" /> 
 					</Button>
 				</TextBox.InnerRightContent>
 				<TextBox.KeyBindings>
@@ -200,8 +213,9 @@
 					  Theme="{DynamicResource CardCheckBox}"/>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Apagar Filtros" Grid.Column="2"
-				  Command="{Binding SearchDetailsClearCommand}" >
-				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
+				  Command="{Binding SearchDetailsClearCommand}"
+				  VerticalAlignment="Stretch">
+				<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
 			</Button>
 		</Grid>
 

@@ -15,6 +15,9 @@ public sealed class Document
     public string Date { get; set; }
     public string SystemDate { get; set; }
 
+    public string CustomerTaxID { get; set; }
+    public string CustomerName { get; set; }
+
     public IEnumerable<DocumentLine> Lines { get; set; }
     public IEnumerable<Tax> Taxes { get; set; }
 }

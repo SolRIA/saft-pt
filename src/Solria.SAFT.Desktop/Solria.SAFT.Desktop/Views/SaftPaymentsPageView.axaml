@@ -11,8 +11,9 @@
 
 		<!-- documents filter -->
 		<Grid ColumnDefinitions="*,Auto,Auto,54,54,54" Grid.Row="0" Grid.Column="0">
-			<TextBox Text="{Binding Filter, Mode=TwoWay}" Watermark="Filtro"
-					 Margin="5,2">
+			<TextBox Text="{Binding Filter, Mode=TwoWay}" PlaceholderText="Filtro"
+					 Margin="5,2"
+					 VerticalAlignment="Stretch">
 				<TextBox.InnerRightContent>
 					<Button Command="{Binding SearchCommand}"
 							Classes="Primary" Padding="4"
@@ -34,17 +35,20 @@
 						VerticalAlignment="Stretch"/>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Limpar Filtros" Grid.Column="3"
-					Command="{Binding SearchClearCommand}" >
+					Command="{Binding SearchClearCommand}" 
+					VerticalAlignment="Stretch">
 				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
 			</Button>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Exportar documentos para Excel" Grid.Column="4"
-					Command="{Binding DoPrintCommand}">
+					Command="{Binding DoPrintCommand}"
+					VerticalAlignment="Stretch">
 				<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
 			</Button>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Exportar impostos para Excel" Grid.Column="5"
-				   Command="{Binding DoPrintTaxesCommand}">
+				   Command="{Binding DoPrintTaxesCommand}"
+				   VerticalAlignment="Stretch">
 				<PathIcon Data="{StaticResource Material.FilePercent}" Width="24" Height="24"/>
 			</Button>
 		</Grid>
@@ -80,6 +84,8 @@
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>
 				<DataGridTextColumn Header="Cliente" Binding="{Binding CustomerID}" />
+				<DataGridTextColumn Header="NIF" Binding="{Binding Customer.CustomerTaxID}" />
+				<DataGridTextColumn Header="Nome" Binding="{Binding Customer.CompanyName}" />
 				<DataGridTextColumn Header="Periodo" Binding="{Binding Period}"/>
 				<DataGridTextColumn Header="Transacção" Binding="{Binding TransactionID}" />
 			</DataGrid.Columns>
@@ -178,9 +184,10 @@
 		<GridSplitter Grid.Row="2" Height="5" Margin="5,1"  />
 
 		<!-- lines filter -->
-		<Grid ColumnDefinitions="*,Auto,54" Grid.Row="3">
+		<Grid ColumnDefinitions="*,Auto,54, 54" Grid.Row="3">
 			<TextBox Margin="2" Text="{Binding FilterLines, Mode=TwoWay}"
-					 Watermark="Filtro">
+					 PlaceholderText="Filtro"
+					 VerticalAlignment="Stretch">
 				<TextBox.InnerRightContent>
 					<Button Command="{Binding SearchDetailsCommand}"
 							Classes="Primary" Padding="4"
@@ -200,8 +207,14 @@
 					  Theme="{DynamicResource CardCheckBox}"/>
 
 			<Button Margin="2" Width="50" ToolTip.Tip="Apagar Filtros" Grid.Column="2"
-				  Command="{Binding SearchDetailsClearCommand}" >
+				  Command="{Binding SearchDetailsClearCommand}" 
+				  VerticalAlignment="Stretch">
 				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
+			</Button>
+			<Button Margin="2" Width="50" ToolTip.Tip="Exportar linhas excel" Grid.Column="3"
+				  Command="{Binding ExportLinesExcelCommand}" 
+				  VerticalAlignment="Stretch">
+				<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
 			</Button>
 		</Grid>
 
@@ -240,9 +253,7 @@
 				</DataGridTemplateColumn>
 				<DataGridTextColumn Header="Isenção imposto" Binding="{Binding TaxExemptionReason}" />
 				<DataGridTextColumn Header="Cód. Isenção" Binding="{Binding TaxExemptionCode}" />
-				<!--<DataGridTextColumn Header="Origem" Binding="{Binding SourceDocumentID[0].OriginatingON}"/>
-          <DataGridTextColumn Header="Data Origem" Binding="{Binding SourceDocumentID[0].InvoiceDate}"/>
-          <DataGridTextColumn Header="Origem Descrição" Binding="{Binding SourceDocumentID[0].Description}"/>-->
+				<DataGridTextColumn Header="Origem" Binding="{Binding OriginatingON}" />
 			</DataGrid.Columns>
 		</DataGrid>
 

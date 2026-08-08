@@ -102,8 +102,8 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 new("Ficheiro SAFT-PT")
                 {
-                    Patterns = new[] { "*.xml" },
-                    MimeTypes = new[] { "application/xml" }
+                    Patterns = ["*.xml"],
+                    MimeTypes = ["application/xml"]
                 }
             };
             var results = await dialogManager.OpenFileDialog("Ficheiro SAFT-PT", filters: filters);
@@ -195,6 +195,8 @@ public partial class MainWindowViewModel : ViewModelBase
             navigationService.NavigateTo(new SaftWorkingDocumentsPageViewModel());
         else if (menu.Equals("Documentos Movimentação", StringComparison.OrdinalIgnoreCase))
             navigationService.NavigateTo(new SaftMovementOfGoodsPageViewModel());
+        else if (menu.Equals("Movimentos contabilísticos", StringComparison.OrdinalIgnoreCase))
+            navigationService.NavigateTo(new SaftGeneralLedgerEntriesPageViewModel());
     }
 
     [RelayCommand]
@@ -326,7 +328,8 @@ public partial class MainWindowViewModel : ViewModelBase
                     new() { Header = "Documentos Faturação", Command = OpenMenuSaftCommand, CommandParameter = "Documentos Faturação" },
                     new() { Header = "Pagamentos", Command = OpenMenuSaftCommand, CommandParameter = "Pagamentos" },
                     new() { Header = "Documentos Conferência", Command = OpenMenuSaftCommand, CommandParameter = "Documentos Conferência" },
-                    new() { Header = "Documentos Movimentação", Command = OpenMenuSaftCommand, CommandParameter = "Documentos Movimentação" }
+                    new() { Header = "Documentos Movimentação", Command = OpenMenuSaftCommand, CommandParameter = "Documentos Movimentação" },
+                    new() { Header = "Movimentos contabilísticos", Command = OpenMenuSaftCommand, CommandParameter = "Movimentos contabilísticos" }
                 ]
             },
             new MenuItemViewModel

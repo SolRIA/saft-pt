@@ -1,5 +1,5 @@
-﻿using Solria.SAFT.Parser;
-using Solria.SAFT.Parser.Models;
+﻿using SolRIA.SAFT.Parser;
+using SolRIA.SAFT.Parser.Models;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using System;
@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConsoleApp
@@ -60,7 +61,21 @@ namespace ConsoleApp
             public bool PrintAll { get; init; }
         }
 
-        public override ValidationResult Validate(CommandContext context, Settings settings)
+        protected override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
+        {
+            string filename = settings.FileName;
+#if DEBUG
+            if (string.IsNullOrWhiteSpace(filename))
+                filename = """C:\Users\frede\Downloads\SAFT_518381986_2026_maio_.xml""";
+#endif
+            var (saftFile, errors) = await SaftParser.ReadFile(filename);
+
+            Print(saftFile, errors, settings);
+
+            return 0;
+        }
+
+        protected override ValidationResult Validate(CommandContext context, Settings settings)
         {
             if (string.IsNullOrWhiteSpace(settings.FileName) == false && File.Exists(settings.FileName) == false)
                 return ValidationResult.Error("O ficheiro não existe");
@@ -74,20 +89,6 @@ namespace ConsoleApp
                 return ValidationResult.Error("Tipo de ficheiro incorreto --tipo (saft|stock|transporte)");
 
             return ValidationResult.Success();
-        }
-
-        public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
-        {
-            string filename = settings.FileName;
-#if DEBUG
-            if (string.IsNullOrWhiteSpace(filename))
-                filename = @"C:\Users\frede\Desktop\SAFT_157878147_janeiro_2000_setembro_2021.xml";
-#endif
-            var (saftFile, errors) = await SaftParser.ReadFile(filename);
-
-            Print(saftFile, errors, settings);
-
-            return 0;
         }
 
         private static void Print(AuditFile auditFile, IEnumerable<ValidationError> errors, Settings settings)

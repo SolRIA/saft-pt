@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+			 xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="SolRIA.SAFT.Desktop.Views.SaftErrorPageView"
 			 x:DataType="vm:SaftErrorPageViewModel">
 
@@ -13,13 +14,13 @@
 				   Theme="{StaticResource TitleTextBlock}"/>
 
 		<TextBox Text="{Binding Filter, Mode=TwoWay}"
-				 Watermark="Filtro" Grid.Row="1" Margin="0,0,2,0">
+				 PlaceholderText="Filtro" Grid.Row="1" Margin="0,0,2,0">
 			<TextBox.InnerRightContent>
 				<Button Command="{Binding SearchCommand}"
 						Classes="Primary" Padding="4"
 						Theme="{DynamicResource BorderlessButton}"
 						Width="{Binding $self.Bounds.Height}">
-					<PathIcon Data="{StaticResource Material.Magnify}" />
+					<icons:MaterialIcon Kind="Magnify" Width="24" Height="24"/>
 				</Button>
 			</TextBox.InnerRightContent>
 			<TextBox.KeyBindings>
@@ -30,15 +31,17 @@
 		<Button Margin="2,0" Width="50"
 				ToolTip.Tip="Filtrar" Classes="Primary"
 				Grid.Row="1" Grid.Column="1"
+				VerticalAlignment="Stretch"
 				Command="{Binding SearchClearCommand}" >
-			<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
+			<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
 		</Button>
 
 		<Button Margin="2,0" Width="50"
 				ToolTip.Tip="Exportar para Excel" Classes="Primary"
 				Grid.Row="1" Grid.Column="2"
+				VerticalAlignment="Stretch"
 				Command="{Binding DoPrintCommand}">
-			<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
+			<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
 		</Button>
 
 		<TextBlock Grid.Row="2" Grid.ColumnSpan="3" Margin="5" Text="{Binding NumErros}"/>

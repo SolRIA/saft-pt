@@ -3,6 +3,7 @@ using Avalonia.Platform.Storage;
 using SolRIA.SAFT.Desktop.Models;
 using SolRIA.SAFT.Desktop.ViewModels;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace SolRIA.SAFT.Desktop.Services;
@@ -20,6 +21,6 @@ public interface IDialogManager
     Task<bool> ShowMessageDialogAsync(string title, string message, MessageDialogType messageDialogType);
     void CloseDialog(bool result = false);
     Task<string[]> OpenFileDialog(string title, string initialFileName = "", bool allowMultiple = false, FilePickerFileType[] filters = null);
-    Task<string> SaveFileDialog(string title, string directory = "", string initialFileName = "", string defaultExtension = "", FilePickerFileType[] filters = null);
+    Task<(string filename, Stream stream)> SaveFileDialog(string title, string directory = "", string initialFileName = "", string defaultExtension = "", FilePickerFileType[] filters = null);
     Task<string> OpenFolderDialog(string title, string directory = "");
 }

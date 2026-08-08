@@ -19,28 +19,27 @@
 			<Style Selector="TextBlock">
 				<Setter Property="TextAlignment" Value="Center"/>
 				<Setter Property="FontSize" Value="20"/>
-				<Setter Property="Margin" Value="0,15"/>
 				<Setter Property="Grid.Row" Value="1"/>
 				<Setter Property="Foreground" Value="White"/>
 			</Style>
 			<Style Selector="icons|MaterialIcon">
-				<Setter Property="Width" Value="60"/>
-				<Setter Property="Height" Value="60"/>
+				<Setter Property="Width" Value="50"/>
+				<Setter Property="Height" Value="50"/>
 			</Style>
 		</Grid.Styles>
 
 		<Button Command="{Binding OpenSaftCommand}" Grid.Column="1"
 				Foreground="{StaticResource SemiBlue4}">
-			<Grid RowDefinitions="*,40" >
+			<Grid RowDefinitions="*,40" ColumnSpacing="5">
 				<icons:MaterialIcon Kind="FileCode" />
-				
+
 				<TextBlock Text="SAFT-PT" />
 			</Grid>
 		</Button>
 
 		<Button Command="{Binding OpenTransportCommand}" Grid.Column="2"
 				Foreground="{StaticResource SemiGreen4}">
-			<Grid RowDefinitions="*,40">
+			<Grid RowDefinitions="*,40" ColumnSpacing="5">
 				<icons:MaterialIcon Kind="TruckFastOutline" />
 				
 				<TextBlock Text="TRANSPORTE" FontSize="18"/>
@@ -49,7 +48,7 @@
 
 		<Button Command="{Binding OpenStocksCommand}" Grid.Column="3"
 				Foreground="{StaticResource SemiOrange4}">
-			<Grid RowDefinitions="*,40">
+			<Grid RowDefinitions="*,40" ColumnSpacing="5">
 				<icons:MaterialIcon Kind="BarcodeScan" />
 				
 				<TextBlock Text="STOCKS" />

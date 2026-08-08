@@ -57,7 +57,7 @@ public partial class DialogMessageViewModel : ViewModelBase
     private Material.Icons.MaterialIconKind icon;
 
     [ObservableProperty]
-    private Color color;
+    private IBrush color;
 
     [RelayCommand]
     private void OnOk()

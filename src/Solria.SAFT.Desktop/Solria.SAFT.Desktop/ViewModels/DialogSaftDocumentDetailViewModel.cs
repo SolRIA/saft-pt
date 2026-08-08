@@ -7,8 +7,13 @@ public sealed partial class DialogSaftDocumentDetailViewModel : ViewModelBase
     public DialogSaftDocumentDetailViewModel(Models.Reporting.Document doc)
     {
         Document = doc;
+
+        Title = doc.Number;
     }
 
     [ObservableProperty]
-    private Models.Reporting.Document document;
+    private Models.Reporting.Document _document;
+
+    [ObservableProperty]
+    private string _title;
 }

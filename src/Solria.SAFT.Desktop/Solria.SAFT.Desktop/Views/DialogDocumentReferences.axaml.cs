@@ -1,7 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Controls.Models.TreeDataGrid;
-using SolRIA.SAFT.Desktop.ViewModels;
-using System.Collections.Generic;
 
 namespace SolRIA.SAFT.Desktop;
 

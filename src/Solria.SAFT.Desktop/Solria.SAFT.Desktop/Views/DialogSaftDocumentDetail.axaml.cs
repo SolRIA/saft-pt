@@ -15,7 +15,9 @@ public static class DesignDataDialogSaftDocumentDetail
                 Date = "2024/01/01",
                 SystemDate = "2024/01/01 10:23:59",
                 Number = "FT A24/1234",
-                ATCUD = "AAAAAAAA-1234"
+                ATCUD = "AAAAAAAA-1234",
+                CustomerTaxID = "999999990",
+                CustomerName = "Cliente Final",
             });
 }
 

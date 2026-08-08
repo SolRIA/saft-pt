@@ -50,8 +50,15 @@
         public TaxType TaxType { get; set; }
         public string TaxCountryRegion { get; set; }
         public string TaxCode { get; set; }
-        public decimal? TaxAmount { get; set; }
-        public decimal? TaxPercentage { get; set; }
+
+        public decimal? TaxAmount { get => ItemElementName == ItemChoiceType1.TaxAmount ? Item : 0; }
+        public decimal? TaxPercentage { get => ItemElementName == ItemChoiceType1.TaxPercentage ? Item : 0; }
+
+        [System.Xml.Serialization.XmlElement("TaxAmount", typeof(decimal))]
+        [System.Xml.Serialization.XmlElement("TaxPercentage", typeof(decimal))]
+        [System.Xml.Serialization.XmlChoiceIdentifier("ItemElementName")]
+        public decimal Item { get; set; }
+        [System.Xml.Serialization.XmlIgnore()]
         public ItemChoiceType1 ItemElementName { get; set; }
     }
 
@@ -98,6 +105,11 @@
         public string TaxCode { get; set; }
         public decimal? TaxAmount { get; set; }
         public decimal? TaxPercentage { get; set; }
+        [System.Xml.Serialization.XmlElement("TaxAmount", typeof(decimal))]
+        [System.Xml.Serialization.XmlElement("TaxPercentage", typeof(decimal))]
+        [System.Xml.Serialization.XmlChoiceIdentifier("ItemElementName")]
+        public decimal Item { get; set; }
+        [System.Xml.Serialization.XmlIgnore()]
         public ItemChoiceType ItemElementName { get; set; }
     }
 
@@ -243,6 +255,11 @@
         public System.DateTime TaxExpirationDate { get; set; }
         public decimal? TaxAmount { get; set; }
         public decimal? TaxPercentage { get; set; }
+        [System.Xml.Serialization.XmlElement("TaxAmount", typeof(decimal))]
+        [System.Xml.Serialization.XmlElement("TaxPercentage", typeof(decimal))]
+        [System.Xml.Serialization.XmlChoiceIdentifier("ItemElementName")]
+        public decimal Item { get; set; }
+        [System.Xml.Serialization.XmlIgnore()]
         public ItemChoiceType2 ItemElementName { get; set; }
     }
 
@@ -342,11 +359,17 @@
         public string CustomerID { get; set; }
         public ShippingPointStructure ShipTo { get; set; }
         public ShippingPointStructure ShipFrom { get; set; }
-        public System.DateTime? MovementEndTime { get; set; }
-        public System.DateTime? MovementStartTime { get; set; }
+        public System.DateTime MovementEndTime { get; set; }
+        public System.DateTime MovementStartTime { get; set; }
         public SourceDocumentsSalesInvoicesInvoiceLine[] Line { get; set; }
         public SourceDocumentsSalesInvoicesInvoiceDocumentTotals DocumentTotals { get; set; }
         public WithholdingTax[] WithholdingTax { get; set; }
+
+        [System.Xml.Serialization.XmlIgnore()]
+        public bool MovementEndTimeSpecified { get; set; }
+
+        [System.Xml.Serialization.XmlIgnore()]
+        public bool MovementStartTimeSpecified { get; set; }
     }
 
     public partial class SourceDocumentsSalesInvoicesInvoiceDocumentStatus
@@ -389,6 +412,11 @@
         public string[] ProductSerialNumber { get; set; }
         public decimal? CreditAmount { get; set; }
         public decimal? DebitAmount { get; set; }
+        [System.Xml.Serialization.XmlElement("CreditAmount", typeof(decimal))]
+        [System.Xml.Serialization.XmlElement("DebitAmount", typeof(decimal))]
+        [System.Xml.Serialization.XmlChoiceIdentifier("ItemElementName")]
+        public decimal Item { get; set; }
+        [System.Xml.Serialization.XmlIgnore()]
         public ItemChoiceType4 ItemElementName { get; set; }
         public Tax Tax { get; set; }
         public string TaxExemptionReason { get; set; }
@@ -440,6 +468,12 @@
         public string ATDocCodeID { get; set; }
         public SourceDocumentsMovementOfGoodsStockMovementLine[] Line { get; set; }
         public SourceDocumentsMovementOfGoodsStockMovementDocumentTotals DocumentTotals { get; set; }
+
+        [System.Xml.Serialization.XmlIgnore()]
+        public bool MovementStartTimeSpecified { get; set; }
+
+        [System.Xml.Serialization.XmlIgnore()]
+        public bool MovementEndTimeSpecified { get; set; }
     }
 
     public partial class SourceDocumentsMovementOfGoodsStockMovementDocumentStatus
@@ -470,6 +504,11 @@
         public string[] ProductSerialNumber { get; set; }
         public decimal? CreditAmount { get; set; }
         public decimal? DebitAmount { get; set; }
+        [System.Xml.Serialization.XmlElement("CreditAmount", typeof(decimal))]
+        [System.Xml.Serialization.XmlElement("DebitAmount", typeof(decimal))]
+        [System.Xml.Serialization.XmlChoiceIdentifier("ItemElementName")]
+        public decimal Item { get; set; }
+        [System.Xml.Serialization.XmlIgnore()]
         public ItemChoiceType6 ItemElementName { get; set; }
         public MovementTax Tax { get; set; }
         public string TaxExemptionReason { get; set; }
@@ -544,6 +583,11 @@
         public string[] ProductSerialNumber { get; set; }
         public decimal? CreditAmount { get; set; }
         public decimal? DebitAmount { get; set; }
+        [System.Xml.Serialization.XmlElement("CreditAmount", typeof(decimal))]
+        [System.Xml.Serialization.XmlElement("DebitAmount", typeof(decimal))]
+        [System.Xml.Serialization.XmlChoiceIdentifier("ItemElementName")]
+        public decimal Item { get; set; }
+        [System.Xml.Serialization.XmlIgnore()]
         public ItemChoiceType7 ItemElementName { get; set; }
         public Tax Tax { get; set; }
         public string TaxExemptionReason { get; set; }
@@ -588,6 +632,8 @@
         public SourceDocumentsPaymentsPaymentLine[] Line { get; set; }
         public SourceDocumentsPaymentsPaymentDocumentTotals DocumentTotals { get; set; }
         public WithholdingTax[] WithholdingTax { get; set; }
+
+        public Customer Customer { get; set; }
     }
 
     public enum SAFTPTPaymentType { RC, RG, INVALIDO }
@@ -612,6 +658,11 @@
         public decimal SettlementAmount { get; set; }
         public decimal? CreditAmount { get; set; }
         public decimal? DebitAmount { get; set; }
+
+        [System.Xml.Serialization.XmlElement("CreditAmount", typeof(decimal))]
+        [System.Xml.Serialization.XmlElement("DebitAmount", typeof(decimal))]
+        [System.Xml.Serialization.XmlChoiceIdentifier("ItemElementName")]
+        public decimal Item { get; set; }
         public ItemChoiceType8 ItemElementName { get; set; }
         public PaymentTax Tax { get; set; }
         public string TaxExemptionReason { get; set; }

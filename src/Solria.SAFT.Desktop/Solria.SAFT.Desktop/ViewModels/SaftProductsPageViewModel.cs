@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SolRIA.SAFT.Desktop.Infrastructure;
 using SolRIA.SAFT.Desktop.Models;
 using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Parser;
@@ -64,13 +65,13 @@ public partial class SaftProductsPageViewModel : ViewModelBase
     {
         if (Products == null || Products.Count == 0) return;
 
-        var fileCsv = await dialogManager.SaveFileDialog(
+        var (file, stream) = await dialogManager.SaveFileDialog(
             title: "Guardar produtos excel",
             directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             initialFileName: "Produtos.csv",
             defaultExtension: ".csv");
 
-        if (string.IsNullOrWhiteSpace(fileCsv)) return;
+        if (stream is null) return;
 
         StringBuilder stringBuilder = new StringBuilder();
         foreach (var c in Products)
@@ -78,9 +79,9 @@ public partial class SaftProductsPageViewModel : ViewModelBase
             stringBuilder.AppendLine($"{c.ProductCode};{c.ProductDescription};;{c.Prices};{c.ProductNumberCode};{c.ProductGroup};{c.Taxes}");
         }
 
-        File.WriteAllText(fileCsv, stringBuilder.ToString());
+        await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);
 
-        await SaftXmlParser.SerializeXml(allProducts, fileCsv.Replace(".csv", ".xml"), new System.Xml.XmlWriterSettings
+        await SaftXmlParser.SerializeXml(allProducts, file.Replace(".csv", ".xml"), new System.Xml.XmlWriterSettings
         {
             Encoding = Encoding.UTF8,
             Indent = true,

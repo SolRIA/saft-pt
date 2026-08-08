@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SolRIA.SAFT.Desktop.Infrastructure;
 using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Parser.Models;
 using System;
@@ -37,31 +38,32 @@ public partial class SaftCustomersPageViewModel : ViewModelBase
     {
         if (List == null || List.Count == 0) return;
 
-        var file = await dialogManager.SaveFileDialog(
+        var (_, stream) = await dialogManager.SaveFileDialog(
             "Guardar clientes",
             directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             initialFileName: "Clientes.csv",
             ".csv");
 
-        if (string.IsNullOrWhiteSpace(file) == false)
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            StringBuilder moradas = new StringBuilder();
-            foreach (var c in List)
-            {
-                moradas.Clear();
-                if (c.BillingAddress != null)
-                {
-                    moradas.Append(
-                        c.BillingAddress.AddressDetail ??
-                        c.BillingAddress.StreetName + " " + c.BillingAddress.BuildingNumber + " " + c.BillingAddress.PostalCode);
-                }
+        if (stream == null) return;
 
-                stringBuilder.AppendLine($"{c.CustomerTaxID};{c.CompanyName};{c.CustomerID};{moradas};{c.Telephone};;{c.Fax};{c.Email}");
+
+        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder moradas = new StringBuilder();
+        foreach (var c in List)
+        {
+            moradas.Clear();
+            if (c.BillingAddress != null)
+            {
+                moradas.Append(
+                    c.BillingAddress.AddressDetail ??
+                    c.BillingAddress.StreetName + " " + c.BillingAddress.BuildingNumber + " " + c.BillingAddress.PostalCode);
             }
 
-            File.WriteAllText(file, stringBuilder.ToString());
+            stringBuilder.AppendLine($"{c.CustomerTaxID};{c.CompanyName};{c.CustomerID};{moradas};{c.Telephone};;{c.Fax};{c.Email}");
         }
+
+        // save the csv to the file stream
+        await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);
     }
 
     [RelayCommand]
@@ -71,7 +73,7 @@ public partial class SaftCustomersPageViewModel : ViewModelBase
 
         if (string.IsNullOrWhiteSpace(Filter))
         {
-            List = new List<Customer>(customers);
+            List = [.. customers];
 
             return;
         }
@@ -82,14 +84,14 @@ public partial class SaftCustomersPageViewModel : ViewModelBase
     }
     private static bool FilterEntries(Customer entry, string filter)
     {
-        if (string.IsNullOrWhiteSpace(entry.AccountID) == false && entry.AccountID.Contains(filter, StringComparison.OrdinalIgnoreCase) 
-            || string.IsNullOrWhiteSpace(entry.CompanyName) == false && entry.CompanyName.Contains(filter, StringComparison.OrdinalIgnoreCase) 
-            || string.IsNullOrWhiteSpace(entry.Contact) == false && entry.Contact.Contains(filter, StringComparison.OrdinalIgnoreCase) 
-            || string.IsNullOrWhiteSpace(entry.CustomerID) == false && entry.CustomerID.Contains(filter, StringComparison.OrdinalIgnoreCase) 
-            || string.IsNullOrWhiteSpace(entry.CustomerTaxID) == false && entry.CustomerTaxID.Contains(filter, StringComparison.OrdinalIgnoreCase) 
-            || string.IsNullOrWhiteSpace(entry.Email) == false && entry.Email.Contains(filter, StringComparison.OrdinalIgnoreCase) 
-            || string.IsNullOrWhiteSpace(entry.Fax) == false && entry.Fax.Contains(filter, StringComparison.OrdinalIgnoreCase) 
-            || string.IsNullOrWhiteSpace(entry.Telephone) == false && entry.Telephone.Contains(filter, StringComparison.OrdinalIgnoreCase) 
+        if (string.IsNullOrWhiteSpace(entry.AccountID) == false && entry.AccountID.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrWhiteSpace(entry.CompanyName) == false && entry.CompanyName.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrWhiteSpace(entry.Contact) == false && entry.Contact.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrWhiteSpace(entry.CustomerID) == false && entry.CustomerID.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrWhiteSpace(entry.CustomerTaxID) == false && entry.CustomerTaxID.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrWhiteSpace(entry.Email) == false && entry.Email.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrWhiteSpace(entry.Fax) == false && entry.Fax.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrWhiteSpace(entry.Telephone) == false && entry.Telephone.Contains(filter, StringComparison.OrdinalIgnoreCase)
             || string.IsNullOrWhiteSpace(entry.Website) == false && entry.Website.Contains(filter, StringComparison.OrdinalIgnoreCase))
             return true;
 

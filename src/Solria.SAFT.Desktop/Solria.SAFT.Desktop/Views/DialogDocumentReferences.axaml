@@ -21,11 +21,11 @@
 
 				<TextBlock Text="Total" TextAlignment="Right" Grid.Row="0" Grid.Column="2" Margin="10,0"/>
 				<TextBlock Text="Incidência" TextAlignment="Right" Grid.Row="1" Grid.Column="2" Margin="10,0"/>
-				<TextBlock Text="IVA" TextAlignment="Right" Grid.Row="3" Grid.Column="2" Margin="10,0"/>
+				<TextBlock Text="IVA" TextAlignment="Right" Grid.Row="2" Grid.Column="2" Margin="10,0"/>
 
 				<TextBlock Text="{Binding WorkDocument.Total}" TextAlignment="Right" Grid.Row="0" Grid.Column="3"/>
 				<TextBlock Text="{Binding WorkDocument.NetTotal}" TextAlignment="Right" Grid.Row="1" Grid.Column="3"/>
-				<TextBlock Text="{Binding WorkDocument.VatTotal}" TextAlignment="Right" Grid.Row="3" Grid.Column="3"/>
+				<TextBlock Text="{Binding WorkDocument.VatTotal}" TextAlignment="Right" Grid.Row="2" Grid.Column="3"/>
 			</Grid>
 		</Border>
 
@@ -41,11 +41,11 @@
 
 				<TextBlock Text="Total" TextAlignment="Right" Grid.Row="0" Grid.Column="2" Margin="10,0"/>
 				<TextBlock Text="Incidência" TextAlignment="Right" Grid.Row="1" Grid.Column="2" Margin="10,0"/>
-				<TextBlock Text="IVA" TextAlignment="Right" Grid.Row="3" Grid.Column="2" Margin="10,0"/>
+				<TextBlock Text="IVA" TextAlignment="Right" Grid.Row="2" Grid.Column="2" Margin="10,0"/>
 
 				<TextBlock Text="{Binding InvoiceDocument.Total}" TextAlignment="Right" Grid.Row="0" Grid.Column="3"/>
 				<TextBlock Text="{Binding InvoiceDocument.NetTotal}" TextAlignment="Right" Grid.Row="1" Grid.Column="3"/>
-				<TextBlock Text="{Binding InvoiceDocument.VatTotal}" TextAlignment="Right" Grid.Row="3" Grid.Column="3"/>
+				<TextBlock Text="{Binding InvoiceDocument.VatTotal}" TextAlignment="Right" Grid.Row="2" Grid.Column="3"/>
 			</Grid>
 		</Border>
 

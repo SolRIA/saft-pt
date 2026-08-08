@@ -9,26 +9,33 @@
 		x:DataType="vm:DialogSaftDocumentDetailViewModel"
 		xmlns:dd="clr-namespace:SolRIA.SAFT.Desktop"
         d:DataContext="{x:Static dd:DesignDataDialogSaftDocumentDetail.ExampleViewModel}"
-        Title="InvoiceDetail">
+        Title="{Binding Title}"
+		WindowStartupLocation="CenterOwner">
 
-	<Grid RowDefinitions="130,*">
+	<Grid RowDefinitions="140,*">
 
 		<Border Classes="Hover" Theme="{StaticResource CardBorder}">
 			<Grid RowDefinitions="*,*,*" ColumnDefinitions="*,*,*,Auto">
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBlock Text="{Binding Document.Number}" Classes="H4" Theme="{StaticResource TitleTextBlock}"/>
-					<TextBlock Text="{Binding Document.ATCUD}" Classes="H4 Success" Theme="{StaticResource TitleTextBlock}"/>
+					<SelectableTextBlock Text="{Binding Document.Number}" Classes="H4 Success" Theme="{StaticResource TitleSelectableTextBlock}"/>
+					<SelectableTextBlock Text="{Binding Document.ATCUD}" Classes="H5" Theme="{StaticResource TitleSelectableTextBlock}"/>
 				</StackPanel>
+
+				<StackPanel Orientation="Horizontal" Spacing="10" Grid.Row="2">
+					<SelectableTextBlock Text="{Binding Document.CustomerTaxID}" Classes="H5 Success"/>
+					<SelectableTextBlock Text="{Binding Document.CustomerName}" Classes="H5"/>
+				</StackPanel>
+
 				<TextBlock Text="{Binding Document.Date}" Classes="H1" Grid.Row="1" />
 				<TextBlock Text="{Binding Document.SystemDate}" Classes="H1" Grid.Row="1" />
 				
-				<TextBlock Text="Total" TextAlignment="Right" Classes="H1" Grid.Row="0" Grid.Column="2" Margin="10,0"/>
-				<TextBlock Text="Incidência" TextAlignment="Right" Classes="H4" Grid.Row="1" Grid.Column="2" Margin="10,0"/>
+				<TextBlock Text="Total" TextAlignment="Right" Classes="H3" FontWeight="Bold" Grid.Row="0" Grid.Column="2" Margin="10,0" Theme="{StaticResource TitleTextBlock}"/>
+				<TextBlock Text="Incidência" TextAlignment="Right" VerticalAlignment="Bottom" Classes="H4" Grid.Row="1" Grid.Column="2" Margin="10,0"/>
 				<TextBlock Text="IVA" TextAlignment="Right" Classes="H4" Grid.Row="3" Grid.Column="2" Margin="10,0"/>
 
-				<TextBlock Text="{Binding Document.Total}" TextAlignment="Right" Classes="H1" Grid.Row="0" Grid.Column="3"/>
-				<TextBlock Text="{Binding Document.NetTotal}" TextAlignment="Right" Classes="H4" Grid.Row="1" Grid.Column="3"/>
-				<TextBlock Text="{Binding Document.VatTotal}" TextAlignment="Right" Classes="H4" Grid.Row="3" Grid.Column="3"/>
+				<SelectableTextBlock Text="{Binding Document.Total}" TextAlignment="Right" Classes="H3" FontWeight="Bold" Grid.Row="0" Grid.Column="3" Theme="{StaticResource TitleSelectableTextBlock}"/>
+				<SelectableTextBlock Text="{Binding Document.NetTotal}" TextAlignment="Right" VerticalAlignment="Bottom" Classes="H4" Grid.Row="1" Grid.Column="3"/>
+				<SelectableTextBlock Text="{Binding Document.VatTotal}" TextAlignment="Right" Classes="H4" Grid.Row="3" Grid.Column="3"/>
 			</Grid>
 		</Border>
 

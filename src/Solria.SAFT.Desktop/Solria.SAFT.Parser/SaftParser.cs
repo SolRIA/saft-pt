@@ -1992,13 +1992,13 @@ public static class SaftParser
                 if (Parsers.StringEquals(reader.Name, "TaxPercentage"))
                 {
                     tax.ItemElementName = ItemChoiceType1.TaxPercentage;
-                    tax.TaxPercentage = Parsers.ParseDecimal(reader.ReadElementContentAsString(), linePk, id, "TaxPercentage", type, supPk: supPk);
+                    tax.Item = Parsers.ParseDecimal(reader.ReadElementContentAsString(), linePk, id, "TaxPercentage", type, supPk: supPk);
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "TaxAmount"))
                 {
                     tax.ItemElementName = ItemChoiceType1.TaxAmount;
-                    tax.TaxAmount = Parsers.ParseDecimal(reader.ReadElementContentAsString(), linePk, id, "TaxAmount", type, supPk: supPk);
+                    tax.Item = Parsers.ParseDecimal(reader.ReadElementContentAsString(), linePk, id, "TaxAmount", type, supPk: supPk);
                     continue;
                 }
 

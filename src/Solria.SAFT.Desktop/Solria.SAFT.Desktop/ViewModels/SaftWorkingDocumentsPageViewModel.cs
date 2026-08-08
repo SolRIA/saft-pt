@@ -28,10 +28,10 @@ public partial class SaftWorkingDocumentsPageViewModel : ViewModelBase
 
         var documents = saftValidator.SaftFile?.SourceDocuments?.WorkingDocuments?.WorkDocument ?? [];
 
-        if (documents.Any() == false) return;
+        if (documents.Length == 0) return;
 
-        Documents = new List<SourceDocumentsWorkingDocumentsWorkDocument>(documents);
-        Lines = new List<SourceDocumentsWorkingDocumentsWorkDocumentLine>();
+        Documents = [.. documents];
+        Lines = [];
 
         DocNumberOfEntries = documents.Length;
         DocTotalCredit = documents
@@ -143,66 +143,67 @@ public partial class SaftWorkingDocumentsPageViewModel : ViewModelBase
     {
         if (Documents == null || Documents.Count == 0) return;
 
-        var file = await dialogManager.SaveFileDialog(
+        var (_, stream) = await dialogManager.SaveFileDialog(
             "Guardar Documentos Conferência",
             directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             initialFileName: "Documentos Conferência.xlsx",
             ".xlsx");
 
-        if (string.IsNullOrWhiteSpace(file) == false)
+        if (stream == null) return;
+
+        using var workbook = new ClosedXML.Excel.XLWorkbook();
+        var sheet = workbook.Worksheets.Add("Documentos");
+
+        DocHeader(sheet, 1);
+
+        var rowIndex = 2;
+        foreach (var c in Documents)
         {
-            using var workbook = new ClosedXML.Excel.XLWorkbook();
-            var sheet = workbook.Worksheets.Add("Documentos");
+            sheet.Cell(rowIndex, 1).Value = c.ATCUD;
+            sheet.Cell(rowIndex, 2).Value = c.WorkType.ToString();
+            sheet.Cell(rowIndex, 3).Value = c.DocumentNumber;
+            sheet.Cell(rowIndex, 4).Value = c.DocumentStatus.WorkStatus.ToString();
+            sheet.Cell(rowIndex, 5).Value = c.WorkDate;
+            sheet.Cell(rowIndex, 6).Value = c.CustomerID;
+            sheet.Cell(rowIndex, 7).Value = c.DocumentTotals.NetTotal;
+            sheet.Cell(rowIndex, 8).Value = c.DocumentTotals.TaxPayable;
+            sheet.Cell(rowIndex, 9).Value = c.DocumentTotals.GrossTotal;
 
-            DocHeader(sheet, 1);
+            rowIndex += 2;
 
-            var rowIndex = 2;
-            foreach (var c in Documents)
+            //create lines header
+            LineHeader(sheet, rowIndex);
+
+            foreach (var l in c.Line)
             {
-                sheet.Cell(rowIndex, 1).Value = c.ATCUD;
-                sheet.Cell(rowIndex, 2).Value = c.WorkType.ToString();
-                sheet.Cell(rowIndex, 3).Value = c.DocumentNumber;
-                sheet.Cell(rowIndex, 4).Value = c.DocumentStatus.WorkStatus.ToString();
-                sheet.Cell(rowIndex, 5).Value = c.WorkDate;
-                sheet.Cell(rowIndex, 6).Value = c.CustomerID;
-                sheet.Cell(rowIndex, 7).Value = c.DocumentTotals.NetTotal;
-                sheet.Cell(rowIndex, 8).Value = c.DocumentTotals.TaxPayable;
-                sheet.Cell(rowIndex, 9).Value = c.DocumentTotals.GrossTotal;
+                rowIndex++;
 
-                rowIndex += 2;
-
-                //create lines header
-                LineHeader(sheet, rowIndex);
-
-                foreach (var l in c.Line)
-                {
-                    rowIndex++;
-
-                    sheet.Cell(rowIndex, 2).Value = l.LineNumber;
-                    sheet.Cell(rowIndex, 3).Value = l.ProductCode;
-                    sheet.Cell(rowIndex, 4).Value = l.ProductDescription;
-                    sheet.Cell(rowIndex, 5).Value = l.Quantity;
-                    sheet.Cell(rowIndex, 6).Value = l.UnitPrice;
-                    sheet.Cell(rowIndex, 7).Value = l.CreditAmount;
-                    sheet.Cell(rowIndex, 8).Value = l.DebitAmount;
-                    sheet.Cell(rowIndex, 9).Value = l.SettlementAmount;
-                    sheet.Cell(rowIndex, 10).Value = l.Tax.TaxPercentage;
-                    sheet.Cell(rowIndex, 11).Value = l.TaxExemptionReason;
-                    sheet.Cell(rowIndex, 12).Value = l.TaxExemptionCode;
-                    sheet.Cell(rowIndex, 13).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reference : string.Empty;
-                    sheet.Cell(rowIndex, 14).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reason : string.Empty;
-                    sheet.Cell(rowIndex, 15).Value = l.UnitOfMeasure;
-                    sheet.Cell(rowIndex, 16).Value = l.TaxPointDate;
-                    sheet.Cell(rowIndex, 17).Value = l.Description;
-                }
-
-                rowIndex += 2;
+                sheet.Cell(rowIndex, 2).Value = l.LineNumber;
+                sheet.Cell(rowIndex, 3).Value = l.ProductCode;
+                sheet.Cell(rowIndex, 4).Value = l.ProductDescription;
+                sheet.Cell(rowIndex, 5).Value = l.Quantity;
+                sheet.Cell(rowIndex, 6).Value = l.UnitPrice;
+                sheet.Cell(rowIndex, 7).Value = l.CreditAmount;
+                sheet.Cell(rowIndex, 8).Value = l.DebitAmount;
+                sheet.Cell(rowIndex, 9).Value = l.SettlementAmount;
+                sheet.Cell(rowIndex, 10).Value = l.Tax.TaxPercentage;
+                sheet.Cell(rowIndex, 11).Value = l.TaxExemptionReason;
+                sheet.Cell(rowIndex, 12).Value = l.TaxExemptionCode;
+                sheet.Cell(rowIndex, 13).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reference : string.Empty;
+                sheet.Cell(rowIndex, 14).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reason : string.Empty;
+                sheet.Cell(rowIndex, 15).Value = l.UnitOfMeasure;
+                sheet.Cell(rowIndex, 16).Value = l.TaxPointDate;
+                sheet.Cell(rowIndex, 17).Value = l.Description;
             }
 
-            sheet.Columns().AdjustToContents();
-
-            workbook.SaveAs(file);
+            rowIndex += 2;
         }
+
+        sheet.Columns().AdjustToContents();
+
+        workbook.SaveAs(stream);
+        stream.Close();
+        await stream.DisposeAsync().ConfigureAwait(false);
     }
 
     [RelayCommand]
@@ -210,49 +211,50 @@ public partial class SaftWorkingDocumentsPageViewModel : ViewModelBase
     {
         if (Documents == null || Documents.Count == 0) return;
 
-        var file = await dialogManager.SaveFileDialog(
+        var (_, stream) = await dialogManager.SaveFileDialog(
             "Guardar Documentos Conferência",
             directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             initialFileName: "Documentos Conferência - Impostos.xlsx",
             ".xlsx");
 
-        if (string.IsNullOrWhiteSpace(file) == false)
+        if (stream == null) return;
+
+        using var workbook = new ClosedXML.Excel.XLWorkbook();
+        var sheet = workbook.Worksheets.Add("Impostos");
+
+        var taxes_selling_group = Documents
+            .SelectMany(i => i.Line)
+            .Where(c => c.CreditAmount > 0)
+            .GroupBy(l => new { l.DocNo, l.Tax.TaxPercentage })
+            .Select(g => new { g.Key.DocNo, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.Quantity * l.UnitPrice) })
+            .OrderBy(g => g.DocNo)
+            .ThenBy(g => g.Tax);
+
+        var rowIndex = 1;
+
+        sheet.Cell(rowIndex, 1).Value = "Documento";
+        sheet.Cell(rowIndex, 2).Value = "Imposto";
+        sheet.Cell(rowIndex, 3).Value = "Incidência";
+        sheet.Cell(rowIndex, 4).Value = "Total";
+
+        rowIndex++;
+        foreach (var tax in taxes_selling_group)
         {
-            using var workbook = new ClosedXML.Excel.XLWorkbook();
-            var sheet = workbook.Worksheets.Add("Impostos");
-
-            var taxes_selling_group = Documents
-                .SelectMany(i => i.Line)
-                .Where(c => c.CreditAmount > 0)
-                .GroupBy(l => new { l.DocNo, l.Tax.TaxPercentage })
-                .Select(g => new { g.Key.DocNo, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.Quantity * l.UnitPrice) })
-                .OrderBy(g => g.DocNo)
-                .ThenBy(g => g.Tax);
-
-            var rowIndex = 1;
-
-            sheet.Cell(rowIndex, 1).Value = "Documento";
-            sheet.Cell(rowIndex, 2).Value = "Imposto";
-            sheet.Cell(rowIndex, 3).Value = "Incidência";
-            sheet.Cell(rowIndex, 4).Value = "Total";
+            sheet.Cell(rowIndex, 1).Value = tax.DocNo;
+            sheet.Cell(rowIndex, 2).Value = tax.Tax;
+            sheet.Cell(rowIndex, 3).Value = tax.NetTotal;
+            sheet.Cell(rowIndex, 4).Value = Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax.GetValueOrDefault(0) * 0.01m, 2, MidpointRounding.AwayFromZero);
 
             rowIndex++;
-            foreach (var tax in taxes_selling_group)
-            {
-                sheet.Cell(rowIndex, 1).Value = tax.DocNo;
-                sheet.Cell(rowIndex, 2).Value = tax.Tax;
-                sheet.Cell(rowIndex, 3).Value = tax.NetTotal;
-                sheet.Cell(rowIndex, 4).Value = Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax.GetValueOrDefault(0) * 0.01m, 2, MidpointRounding.AwayFromZero);
-
-                rowIndex++;
-            }
-
-            sheet.Cell(rowIndex, 4).FormulaA1 = $"=SUM(D2:D{rowIndex - 1})";
-
-            sheet.Columns().AdjustToContents();
-
-            workbook.SaveAs(file);
         }
+
+        sheet.Cell(rowIndex, 4).FormulaA1 = $"=SUM(D2:D{rowIndex - 1})";
+
+        sheet.Columns().AdjustToContents();
+
+        workbook.SaveAs(stream);
+        stream.Close();
+        await stream.DisposeAsync().ConfigureAwait(false);
     }
 
     [RelayCommand]
@@ -440,62 +442,63 @@ public partial class SaftWorkingDocumentsPageViewModel : ViewModelBase
         if (CurrentDocument == null)
             return;
 
-        var file = await dialogManager.SaveFileDialog(
+        var (_, stream) = await dialogManager.SaveFileDialog(
                 "Guardar Documento Faturação",
                 directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
                 initialFileName: "Documento Faturação.xlsx",
                 "xlsx");
 
-        if (string.IsNullOrWhiteSpace(file) == false)
+        if (stream == null) return;
+
+        using var workbook = new ClosedXML.Excel.XLWorkbook();
+        var sheet = workbook.Worksheets.Add("Documento");
+
+        DocHeader(sheet, 1);
+
+        var rowIndex = 2;
+
+        sheet.Cell(rowIndex, 1).Value = CurrentDocument.ATCUD;
+        sheet.Cell(rowIndex, 2).Value = CurrentDocument.WorkType.ToString();
+        sheet.Cell(rowIndex, 3).Value = CurrentDocument.DocumentNumber;
+        sheet.Cell(rowIndex, 4).Value = CurrentDocument.DocumentStatus.WorkStatus.ToString();
+        sheet.Cell(rowIndex, 5).Value = CurrentDocument.WorkDate;
+        sheet.Cell(rowIndex, 6).Value = CurrentDocument.CustomerID;
+        sheet.Cell(rowIndex, 7).Value = CurrentDocument.DocumentTotals.NetTotal;
+        sheet.Cell(rowIndex, 8).Value = CurrentDocument.DocumentTotals.TaxPayable;
+        sheet.Cell(rowIndex, 9).Value = CurrentDocument.DocumentTotals.GrossTotal;
+
+        rowIndex += 2;
+
+        //create lines header
+        LineHeader(sheet, rowIndex);
+
+        foreach (var l in CurrentDocument.Line)
         {
-            using var workbook = new ClosedXML.Excel.XLWorkbook();
-            var sheet = workbook.Worksheets.Add("Documento");
+            rowIndex++;
 
-            DocHeader(sheet, 1);
-
-            var rowIndex = 2;
-
-            sheet.Cell(rowIndex, 1).Value = CurrentDocument.ATCUD;
-            sheet.Cell(rowIndex, 2).Value = CurrentDocument.WorkType.ToString();
-            sheet.Cell(rowIndex, 3).Value = CurrentDocument.DocumentNumber;
-            sheet.Cell(rowIndex, 4).Value = CurrentDocument.DocumentStatus.WorkStatus.ToString();
-            sheet.Cell(rowIndex, 5).Value = CurrentDocument.WorkDate;
-            sheet.Cell(rowIndex, 6).Value = CurrentDocument.CustomerID;
-            sheet.Cell(rowIndex, 7).Value = CurrentDocument.DocumentTotals.NetTotal;
-            sheet.Cell(rowIndex, 8).Value = CurrentDocument.DocumentTotals.TaxPayable;
-            sheet.Cell(rowIndex, 9).Value = CurrentDocument.DocumentTotals.GrossTotal;
-
-            rowIndex += 2;
-
-            //create lines header
-            LineHeader(sheet, rowIndex);
-
-            foreach (var l in CurrentDocument.Line)
-            {
-                rowIndex++;
-
-                sheet.Cell(rowIndex, 2).Value = l.LineNumber;
-                sheet.Cell(rowIndex, 3).Value = l.ProductCode;
-                sheet.Cell(rowIndex, 4).Value = l.ProductDescription;
-                sheet.Cell(rowIndex, 5).Value = l.Quantity;
-                sheet.Cell(rowIndex, 6).Value = l.UnitPrice;
-                sheet.Cell(rowIndex, 7).Value = l.CreditAmount;
-                sheet.Cell(rowIndex, 8).Value = l.DebitAmount;
-                sheet.Cell(rowIndex, 9).Value = l.SettlementAmount;
-                sheet.Cell(rowIndex, 10).Value = l.Tax.TaxPercentage;
-                sheet.Cell(rowIndex, 11).Value = l.TaxExemptionReason;
-                sheet.Cell(rowIndex, 12).Value = l.TaxExemptionCode;
-                sheet.Cell(rowIndex, 13).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reference : string.Empty;
-                sheet.Cell(rowIndex, 14).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reason : string.Empty;
-                sheet.Cell(rowIndex, 15).Value = l.UnitOfMeasure;
-                sheet.Cell(rowIndex, 16).Value = l.TaxPointDate;
-                sheet.Cell(rowIndex, 17).Value = l.Description;
-            }
-
-            sheet.Columns().AdjustToContents();
-
-            workbook.SaveAs(file);
+            sheet.Cell(rowIndex, 2).Value = l.LineNumber;
+            sheet.Cell(rowIndex, 3).Value = l.ProductCode;
+            sheet.Cell(rowIndex, 4).Value = l.ProductDescription;
+            sheet.Cell(rowIndex, 5).Value = l.Quantity;
+            sheet.Cell(rowIndex, 6).Value = l.UnitPrice;
+            sheet.Cell(rowIndex, 7).Value = l.CreditAmount;
+            sheet.Cell(rowIndex, 8).Value = l.DebitAmount;
+            sheet.Cell(rowIndex, 9).Value = l.SettlementAmount;
+            sheet.Cell(rowIndex, 10).Value = l.Tax.TaxPercentage;
+            sheet.Cell(rowIndex, 11).Value = l.TaxExemptionReason;
+            sheet.Cell(rowIndex, 12).Value = l.TaxExemptionCode;
+            sheet.Cell(rowIndex, 13).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reference : string.Empty;
+            sheet.Cell(rowIndex, 14).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reason : string.Empty;
+            sheet.Cell(rowIndex, 15).Value = l.UnitOfMeasure;
+            sheet.Cell(rowIndex, 16).Value = l.TaxPointDate;
+            sheet.Cell(rowIndex, 17).Value = l.Description;
         }
+
+        sheet.Columns().AdjustToContents();
+
+        workbook.SaveAs(stream);
+        stream.Close();
+        await stream.DisposeAsync().ConfigureAwait(false);
     }
 
     [RelayCommand]

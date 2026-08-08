@@ -1,19 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>disable</Nullable>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Spectre.Console" Version="0.46.0" />
-    <PackageReference Include="Spectre.Console.Cli" Version="0.46.0" />
-    <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Spectre.Console" Version="0.57.2" />
+		<PackageReference Include="Spectre.Console.Cli" Version="0.55.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Solria.SAFT.Parser\Solria.SAFT.Parser.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Solria.SAFT.Parser\Solria.SAFT.Parser.csproj" />
+	</ItemGroup>
 
 </Project>

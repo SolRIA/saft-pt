@@ -6,6 +6,7 @@ using SolRIA.SAFT.Parser.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,17 +17,11 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
 {
     private readonly ISaftValidator saftValidator;
     private readonly IDialogManager dialogManager;
-    private readonly IReportService reportService;
-    private readonly INavigationService navigationService;
-
-    private Header header;
 
     public SaftInvoicesPageViewModel()
     {
         saftValidator = AppBootstrap.Resolve<ISaftValidator>();
         dialogManager = AppBootstrap.Resolve<IDialogManager>();
-        reportService = AppBootstrap.Resolve<IReportService>();
-        navigationService = AppBootstrap.Resolve<INavigationService>();
 
         if (saftValidator == null) return;
 
@@ -40,15 +35,25 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
         ToolTip = new SourceDocumentsToolTipService();
         ToolTipLine = new SourceDocumentsSalesInvoicesInvoiceLineToolTipService();
 
-        header = saftValidator.SaftFile?.Header;
-
         var invoices = saftValidator.SaftFile?.SourceDocuments?.SalesInvoices?.Invoice ?? [];
 
-        if (invoices.Any() == false) return;
+        if (invoices.Length == 0) return;
 
-        Documents = new List<SourceDocumentsSalesInvoicesInvoice>(invoices);
-        Lines = new List<SourceDocumentsSalesInvoicesInvoiceLine>();
+        Documents = [.. invoices];
+        Lines = Array.Empty<SourceDocumentsSalesInvoicesInvoiceLine>();
 
+        // customer
+        foreach (var invoice in invoices)
+        {
+            if (string.IsNullOrWhiteSpace(invoice.CustomerID)) continue;
+
+            var c = saftValidator.SaftFile?.MasterFiles?.Customer?.FirstOrDefault(c => c.CustomerID == invoice.CustomerID);
+            if (c == null) continue;
+
+            invoice.Customer = c;
+        }
+
+        // totals
         DocNumberOfEntries = invoices.Length;
         DocTotalCredit = invoices
             .Where(i => i.DocumentStatus.InvoiceStatus != InvoiceStatus.A && i.DocumentStatus.InvoiceStatus != InvoiceStatus.F)
@@ -161,122 +166,6 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task OnDoPrint()
-    {
-        if (Documents == null || Documents.Count == 0) return;
-
-        var file = await dialogManager.SaveFileDialog(
-            "Guardar Documentos Faturação",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Documentos Faturação.xlsx",
-            ".xlsx");
-
-        if (string.IsNullOrWhiteSpace(file) == false)
-        {
-            using var workbook = new ClosedXML.Excel.XLWorkbook();
-            var sheet = workbook.Worksheets.Add("Documentos");
-
-            DocHeader(sheet, 1);
-
-            var rowIndex = 2;
-            foreach (var c in Documents)
-            {
-                sheet.Cell(rowIndex, 1).Value = c.ATCUD;
-                sheet.Cell(rowIndex, 2).Value = c.InvoiceType.ToString();
-                sheet.Cell(rowIndex, 3).Value = c.InvoiceNo;
-                sheet.Cell(rowIndex, 4).Value = c.DocumentStatus.InvoiceStatus.ToString();
-                sheet.Cell(rowIndex, 5).Value = c.InvoiceDate;
-                sheet.Cell(rowIndex, 6).Value = c.CustomerID;
-                sheet.Cell(rowIndex, 7).Value = c.DocumentTotals.NetTotal;
-                sheet.Cell(rowIndex, 8).Value = c.DocumentTotals.TaxPayable;
-                sheet.Cell(rowIndex, 9).Value = c.DocumentTotals.GrossTotal;
-
-                rowIndex += 2;
-
-                //create lines header
-                LineHeader(sheet, rowIndex);
-
-                foreach (var l in c.Line)
-                {
-                    rowIndex++;
-
-                    sheet.Cell(rowIndex, 1).Value = l.LineNumber;
-                    sheet.Cell(rowIndex, 2).Value = l.ProductCode;
-                    sheet.Cell(rowIndex, 3).Value = l.ProductDescription;
-                    sheet.Cell(rowIndex, 4).Value = l.Quantity;
-                    sheet.Cell(rowIndex, 5).Value = l.UnitPrice;
-                    sheet.Cell(rowIndex, 6).Value = l.CreditAmount;
-                    sheet.Cell(rowIndex, 7).Value = l.DebitAmount;
-                    sheet.Cell(rowIndex, 8).Value = l.SettlementAmount;
-                    sheet.Cell(rowIndex, 9).Value = l.Tax.TaxPercentage;
-                    sheet.Cell(rowIndex, 10).Value = l.TaxExemptionReason;
-                    sheet.Cell(rowIndex, 11).Value = l.TaxExemptionCode;
-                    sheet.Cell(rowIndex, 12).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reference : string.Empty;
-                    sheet.Cell(rowIndex, 13).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reason : string.Empty;
-                    sheet.Cell(rowIndex, 14).Value = l.UnitOfMeasure;
-                    sheet.Cell(rowIndex, 15).Value = l.Description;
-                }
-
-                rowIndex += 2;
-            }
-
-            sheet.Columns().AdjustToContents();
-
-            workbook.SaveAs(file);
-        }
-    }
-
-    [RelayCommand]
-    private async Task OnDoPrintTaxes()
-    {
-        if (Documents == null || Documents.Count == 0) return;
-
-        var file = await dialogManager.SaveFileDialog(
-            "Guardar Documentos Faturação",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Documentos Faturação - Impostos.xlsx",
-            ".xlsx");
-
-        if (string.IsNullOrWhiteSpace(file) == false)
-        {
-            using var workbook = new ClosedXML.Excel.XLWorkbook();
-            var sheet = workbook.Worksheets.Add("Impostos");
-
-            var taxes_selling_group = Documents
-                .SelectMany(i => i.Line)
-                .Where(c => c.CreditAmount > 0)
-                .GroupBy(l => new { l.InvoiceNo, l.Tax.TaxPercentage })
-                .Select(g => new { g.Key.InvoiceNo, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.Quantity * l.UnitPrice) })
-                .OrderBy(g => g.InvoiceNo)
-                .ThenBy(g => g.Tax);
-
-            var rowIndex = 1;
-
-            sheet.Cell(rowIndex, 1).Value = "Documento";
-            sheet.Cell(rowIndex, 2).Value = "Imposto";
-            sheet.Cell(rowIndex, 3).Value = "Incidência";
-            sheet.Cell(rowIndex, 4).Value = "Total";
-
-            rowIndex++;
-            foreach (var tax in taxes_selling_group)
-            {
-                sheet.Cell(rowIndex, 1).Value = tax.InvoiceNo;
-                sheet.Cell(rowIndex, 2).Value = tax.Tax;
-                sheet.Cell(rowIndex, 3).Value = tax.NetTotal;
-                sheet.Cell(rowIndex, 4).Value = Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax.GetValueOrDefault(0) * 0.01m, 2, MidpointRounding.AwayFromZero);
-
-                rowIndex++;
-            }
-
-            sheet.Cell(rowIndex, 4).FormulaA1 = $"=SUM(D2:D{rowIndex - 1})";
-
-            sheet.Columns().AdjustToContents();
-
-            workbook.SaveAs(file);
-        }
-    }
-
-    [RelayCommand]
     private void OnSearch()
     {
         var docs = saftValidator.SaftFile?.SourceDocuments?.SalesInvoices?.Invoice ?? [];
@@ -329,15 +218,17 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
     [RelayCommand]
     private void OnSearchDetails()
     {
-        var allLines = ShowAllLines ? saftValidator.SaftFile?.SourceDocuments?.SalesInvoices?.Invoice?.SelectMany(i => i.Line) ?? [] : CurrentInvoice?.Line ?? [];
+        if (saftValidator?.SaftFile?.SourceDocuments?.SalesInvoices?.Invoice == null) return;
+
+        var allLines = ShowAllLines ? saftValidator.SaftFile.SourceDocuments.SalesInvoices.Invoice.SelectMany(i => i.Line) ?? [] : CurrentInvoice?.Line ?? [];
 
         if (string.IsNullOrWhiteSpace(FilterLines))
         {
-            Lines = allLines.ToArray();
+            Lines = [.. allLines];
             return;
         }
 
-        Lines = allLines.Where(l => FilterDocumentLines(l, FilterLines)).ToArray();
+        Lines = [.. allLines.Where(l => FilterDocumentLines(l, FilterLines))];
     }
     private static bool FilterDocumentLines(SourceDocumentsSalesInvoicesInvoiceLine line, string filter)
     {
@@ -389,8 +280,7 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
         foreach (var l in CurrentInvoice.Line)
         {
             var existing = taxes
-                .Where(t => t.TaxType == l.Tax.TaxType.ToString() && t.TaxCountryRegion == l.Tax.TaxCountryRegion && t.TaxPercentage == l.Tax.TaxPercentage)
-                .FirstOrDefault();
+                .FirstOrDefault(t => t.TaxType == l.Tax.TaxType.ToString() && t.TaxCountryRegion == l.Tax.TaxCountryRegion && t.TaxPercentage == l.Tax.TaxPercentage);
 
             if (existing != null)
             {
@@ -409,8 +299,11 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
                 taxes.Add(existing);
             }
         }
+
         var document = new Models.Reporting.Document
         {
+            CustomerTaxID = CurrentInvoice.Customer?.CustomerTaxID,
+            CustomerName = CurrentInvoice.Customer?.CompanyName,
             Number = CurrentInvoice.InvoiceNo,
             ATCUD = CurrentInvoice.ATCUD,
             Date = CurrentInvoice.InvoiceDate.ToLongDateString(),
@@ -418,7 +311,7 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
             Total = CurrentInvoice.DocumentTotals.GrossTotal.ToString("C"),
             NetTotal = CurrentInvoice.DocumentTotals.NetTotal.ToString("C"),
             VatTotal = CurrentInvoice.DocumentTotals.TaxPayable.ToString("C"),
-            Taxes = taxes.ToArray(),
+            Taxes = [.. taxes],
             Lines = lines
         };
 
@@ -430,66 +323,145 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private async Task OnDoPrintTaxes()
+    {
+        if (Documents == null || Documents.Count == 0) return;
+
+        var (_, stream) = await dialogManager.SaveFileDialog(
+            "Guardar Documentos Faturação",
+            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            initialFileName: "Documentos_Faturação-Impostos.xlsx",
+            ".xlsx");
+
+        if (stream == null) return;
+
+        using var workbook = new ClosedXML.Excel.XLWorkbook();
+        var sheet = workbook.Worksheets.Add("Impostos");
+
+        var taxes_selling_group = Documents
+            .SelectMany(i => i.Line)
+            .Where(c => c.CreditAmount > 0)
+            .GroupBy(l => new { l.InvoiceNo, l.Tax.TaxPercentage })
+            .Select(g => new { g.Key.InvoiceNo, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.Quantity * l.UnitPrice) })
+            .OrderBy(g => g.InvoiceNo)
+            .ThenBy(g => g.Tax);
+
+        var rowIndex = 1;
+
+        sheet.Cell(rowIndex, 1).Value = "Documento";
+        sheet.Cell(rowIndex, 2).Value = "Imposto";
+        sheet.Cell(rowIndex, 3).Value = "Incidência";
+        sheet.Cell(rowIndex, 4).Value = "Total";
+
+        rowIndex++;
+        foreach (var tax in taxes_selling_group)
+        {
+            sheet.Cell(rowIndex, 1).Value = tax.InvoiceNo;
+            sheet.Cell(rowIndex, 2).Value = tax.Tax;
+            sheet.Cell(rowIndex, 3).Value = tax.NetTotal;
+            sheet.Cell(rowIndex, 4).Value = Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax.GetValueOrDefault(0) * 0.01m, 2, MidpointRounding.AwayFromZero);
+
+            rowIndex++;
+        }
+
+        sheet.Cell(rowIndex, 4).FormulaA1 = $"=SUM(D2:D{rowIndex - 1})";
+
+        sheet.Columns().AdjustToContents();
+
+        workbook.SaveAs(stream);
+        stream.Close();
+        await stream.DisposeAsync().ConfigureAwait(false);
+    }
+
+    [RelayCommand]
+    private async Task OnDoPrint()
+    {
+        if (Documents == null || Documents.Count == 0) return;
+
+        var (_, stream) = await dialogManager.SaveFileDialog(
+            "Guardar Documentos Faturação",
+            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            initialFileName: "Documentos_Faturação.xlsx",
+            ".xlsx");
+
+        if (stream == null) return;
+
+        using var workbook = new ClosedXML.Excel.XLWorkbook();
+        var sheetDocuments = workbook.Worksheets.Add("Documentos");
+        var sheetDetail = workbook.Worksheets.Add("Detalhes");
+
+        DocHeader(sheetDocuments, 1);
+
+        var rowIndex = 2;
+        var rowIndexDetail = 2;
+        foreach (var c in Documents)
+        {
+            AddDocumentToWorksheet(sheetDocuments, rowIndex, c);
+            AddDocumentToWorksheet(sheetDetail, rowIndexDetail, c);
+
+            rowIndex++;
+            rowIndexDetail += 2;
+
+            //create lines header
+            LineHeader(sheetDetail, rowIndex);
+
+            foreach (var l in c.Line)
+            {
+                rowIndexDetail++;
+
+                AddLineToWorksheet(sheetDetail, rowIndexDetail, l);
+            }
+
+            rowIndexDetail += 2;
+        }
+
+        sheetDocuments.Columns().AdjustToContents();
+
+        workbook.SaveAs(stream);
+        stream.Close();
+        await stream.DisposeAsync().ConfigureAwait(false);
+    }
+
+    [RelayCommand]
     private async Task OnSaveExcel()
     {
         if (CurrentInvoice == null)
             return;
 
-        var file = await dialogManager.SaveFileDialog(
+        var (_, stream) = await dialogManager.SaveFileDialog(
                 "Guardar Documento Faturação",
                 directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                initialFileName: "Documento Faturação.xlsx",
+                initialFileName: "Documento_Faturação.xlsx",
                 "xlsx");
 
-        if (string.IsNullOrWhiteSpace(file) == false)
+        if (stream == null) return;
+
+        using var workbook = new ClosedXML.Excel.XLWorkbook();
+        var sheet = workbook.Worksheets.Add("Documento");
+
+        DocHeader(sheet, 1);
+
+        var rowIndex = 2;
+
+        AddDocumentToWorksheet(sheet, rowIndex, CurrentInvoice);
+
+        rowIndex += 2;
+
+        //create lines header
+        LineHeader(sheet, rowIndex);
+
+        foreach (var l in CurrentInvoice.Line)
         {
-            using var workbook = new ClosedXML.Excel.XLWorkbook();
-            var sheet = workbook.Worksheets.Add("Documento");
+            rowIndex++;
 
-            DocHeader(sheet, 1);
-
-            var rowIndex = 2;
-
-            sheet.Cell(rowIndex, 1).Value = CurrentInvoice.ATCUD;
-            sheet.Cell(rowIndex, 2).Value = CurrentInvoice.InvoiceType.ToString();
-            sheet.Cell(rowIndex, 3).Value = CurrentInvoice.InvoiceNo;
-            sheet.Cell(rowIndex, 4).Value = CurrentInvoice.DocumentStatus.InvoiceStatus.ToString();
-            sheet.Cell(rowIndex, 5).Value = CurrentInvoice.InvoiceDate;
-            sheet.Cell(rowIndex, 6).Value = CurrentInvoice.CustomerID;
-            sheet.Cell(rowIndex, 7).Value = CurrentInvoice.DocumentTotals.NetTotal;
-            sheet.Cell(rowIndex, 8).Value = CurrentInvoice.DocumentTotals.TaxPayable;
-            sheet.Cell(rowIndex, 9).Value = CurrentInvoice.DocumentTotals.GrossTotal;
-
-            rowIndex += 2;
-
-            //create lines header
-            LineHeader(sheet, rowIndex);
-
-            foreach (var l in CurrentInvoice.Line)
-            {
-                rowIndex++;
-
-                sheet.Cell(rowIndex, 1).Value = l.LineNumber;
-                sheet.Cell(rowIndex, 2).Value = l.ProductCode;
-                sheet.Cell(rowIndex, 3).Value = l.ProductDescription;
-                sheet.Cell(rowIndex, 4).Value = l.Quantity;
-                sheet.Cell(rowIndex, 5).Value = l.UnitPrice;
-                sheet.Cell(rowIndex, 6).Value = l.CreditAmount;
-                sheet.Cell(rowIndex, 7).Value = l.DebitAmount;
-                sheet.Cell(rowIndex, 8).Value = l.SettlementAmount;
-                sheet.Cell(rowIndex, 9).Value = l.Tax.TaxPercentage;
-                sheet.Cell(rowIndex, 10).Value = l.TaxExemptionReason;
-                sheet.Cell(rowIndex, 11).Value = l.TaxExemptionCode;
-                sheet.Cell(rowIndex, 12).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reference : string.Empty;
-                sheet.Cell(rowIndex, 13).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reason : string.Empty;
-                sheet.Cell(rowIndex, 14).Value = l.UnitOfMeasure;
-                sheet.Cell(rowIndex, 15).Value = l.Description;
-            }
-
-            sheet.Columns().AdjustToContents();
-
-            workbook.SaveAs(file);
+            AddLineToWorksheet(sheet, rowIndex, l);
         }
+
+        sheet.Columns().AdjustToContents();
+
+        workbook.SaveAs(stream);
+        stream.Close();
+        await stream.DisposeAsync().ConfigureAwait(false);
     }
 
     [RelayCommand]
@@ -505,8 +477,7 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
 
             //found a valid number, try to find the previous document
             var previousDocument = Documents
-                .Where(i => i.InvoiceNo.IndexOf(string.Format("{0}/{1}", invoiceNo[0], num - 1), StringComparison.OrdinalIgnoreCase) == 0)
-                .FirstOrDefault();
+                .FirstOrDefault(i => i.InvoiceNo.StartsWith(string.Format("{0}/{1}", invoiceNo[0], num - 1), StringComparison.OrdinalIgnoreCase));
 
             //encontramos um documento, vamos obter a hash
             if (previousDocument != null || num == 1)
@@ -534,6 +505,40 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
         return 1;
     }
 
+    private static void AddDocumentToWorksheet(ClosedXML.Excel.IXLWorksheet sheetDocuments, int rowIndex, SourceDocumentsSalesInvoicesInvoice c)
+    {
+        sheetDocuments.Cell(rowIndex, 1).Value = c.ATCUD;
+        sheetDocuments.Cell(rowIndex, 2).Value = c.InvoiceType.ToString();
+        sheetDocuments.Cell(rowIndex, 3).Value = c.InvoiceNo;
+        sheetDocuments.Cell(rowIndex, 4).Value = c.DocumentStatus.InvoiceStatus.ToString();
+        sheetDocuments.Cell(rowIndex, 5).Value = c.InvoiceDate;
+        sheetDocuments.Cell(rowIndex, 6).Value = c.CustomerID;
+        sheetDocuments.Cell(rowIndex, 7).Value = c.Customer.CustomerTaxID;
+        sheetDocuments.Cell(rowIndex, 8).Value = c.Customer.CompanyName;
+        sheetDocuments.Cell(rowIndex, 9).Value = c.DocumentTotals.NetTotal;
+        sheetDocuments.Cell(rowIndex, 10).Value = c.DocumentTotals.TaxPayable;
+        sheetDocuments.Cell(rowIndex, 11).Value = c.DocumentTotals.GrossTotal;
+    }
+
+    private static void AddLineToWorksheet(ClosedXML.Excel.IXLWorksheet sheet, int rowIndex, SourceDocumentsSalesInvoicesInvoiceLine l)
+    {
+        sheet.Cell(rowIndex, 1).Value = l.LineNumber;
+        sheet.Cell(rowIndex, 2).Value = l.ProductCode;
+        sheet.Cell(rowIndex, 3).Value = l.ProductDescription;
+        sheet.Cell(rowIndex, 4).Value = l.Quantity;
+        sheet.Cell(rowIndex, 5).Value = l.UnitPrice;
+        sheet.Cell(rowIndex, 6).Value = l.CreditAmount;
+        sheet.Cell(rowIndex, 7).Value = l.DebitAmount;
+        sheet.Cell(rowIndex, 8).Value = l.SettlementAmount;
+        sheet.Cell(rowIndex, 9).Value = l.Tax.TaxPercentage;
+        sheet.Cell(rowIndex, 10).Value = l.TaxExemptionReason;
+        sheet.Cell(rowIndex, 11).Value = l.TaxExemptionCode;
+        sheet.Cell(rowIndex, 12).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reference : string.Empty;
+        sheet.Cell(rowIndex, 13).Value = l.References != null && l.References.Length > 0 ? l.References[0].Reason : string.Empty;
+        sheet.Cell(rowIndex, 14).Value = l.UnitOfMeasure;
+        sheet.Cell(rowIndex, 15).Value = l.Description;
+    }
+
     private static void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
     {
         sheet.Cell(row, 1).Value = "ATCUD";
@@ -542,9 +547,11 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
         sheet.Cell(row, 4).Value = "Estado";
         sheet.Cell(row, 5).Value = "Data";
         sheet.Cell(row, 6).Value = "Cliente";
-        sheet.Cell(row, 7).Value = "Incidência";
-        sheet.Cell(row, 8).Value = "IVA";
-        sheet.Cell(row, 9).Value = "Total";
+        sheet.Cell(row, 7).Value = "NIF";
+        sheet.Cell(row, 8).Value = "Nome";
+        sheet.Cell(row, 9).Value = "Incidência";
+        sheet.Cell(row, 10).Value = "IVA";
+        sheet.Cell(row, 11).Value = "Total";
     }
 
     private static void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
@@ -566,7 +573,7 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
         sheet.Cell(row, 15).Value = "Descrição";
     }
 
-    public static string GetATQrCode(Header header, Customer customer, SourceDocumentsSalesInvoicesInvoice invoice)
+    public static string GetATQrCode(Models.SaftV3.Header header, Customer customer, SourceDocumentsSalesInvoicesInvoice invoice)
     {
         var taxes = invoice.Line.Select(l => l.Tax).ToArray();
 

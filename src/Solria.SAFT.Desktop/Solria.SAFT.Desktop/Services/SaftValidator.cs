@@ -23,9 +23,11 @@ public partial class AuditFileMapper
 public class SaftValidator : ISaftValidator
 {
     readonly CultureInfo enCulture = new("en-US");
+    private readonly List<ValidationError> _mensagensErro;
 
     public SaftValidator()
     {
+        _mensagensErro = [];
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
     }
 
@@ -39,19 +41,27 @@ public class SaftValidator : ISaftValidator
 
     public StockFile StockFile { get; set; }
 
-    List<ValidationError> mensagensErro;
-    public List<ValidationError> MensagensErro
-    {
-        get
-        {
-            mensagensErro ??= [];
-            return mensagensErro;
-        }
-        set { mensagensErro = value; }
-    }
-
     public int SaftHashValidationNumber { get; set; }
     public int SaftHashValidationErrorNumber { get; set; }
+
+    private void AddError(params ValidationError[] error)
+    {
+        if (error is null) return;
+
+        foreach (ValidationError e in error)
+        {
+            if (e is null) continue;
+
+            if (string.IsNullOrWhiteSpace(e.Description)) continue;
+
+            _mensagensErro.Add(e);
+        }
+    }
+
+    public IList<ValidationError> GetErrors()
+    {
+        return _mensagensErro;
+    }
 
     /// <summary>
     /// Loads the SAFT file
@@ -62,7 +72,7 @@ public class SaftValidator : ISaftValidator
             return;
 
         SaftFileName = filename;
-        MensagensErro.Clear();
+        _mensagensErro.Clear();
 
         //deserialize the saft file
         //var (saftFile, errors) = await SaftParser.ReadFile(SaftFileName);
@@ -70,7 +80,7 @@ public class SaftValidator : ISaftValidator
         //SaftFile = saftFile;
 
         //load the existing validations errors
-        //MensagensErro.AddRange(errors);
+        //AddErro(errors);
 
         var saftFileV4 = await Task.Run(() => SaftXmlParser.DeserializeXml<Models.SaftV4.AuditFile>(SaftFileName, Encoding.GetEncoding(1252)));
 
@@ -80,7 +90,7 @@ public class SaftValidator : ISaftValidator
         if (SaftFile == null)
         {
             //show error open file
-            MensagensErro.Add(new ValidationError { Description = "Erro ao abrir o ficheiro" });
+            AddError(new ValidationError { Description = "Erro ao abrir o ficheiro" });
             return;
         }
         if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.SalesInvoices != null && SaftFile.SourceDocuments.SalesInvoices.Invoice != null)
@@ -91,6 +101,11 @@ public class SaftValidator : ISaftValidator
                 foreach (var line in invoice.Line)
                 {
                     line.InvoiceNo = invoice.InvoiceNo;
+
+                    if (line.ItemElementName == ItemChoiceType4.CreditAmount)
+                        line.CreditAmount = line.Item;
+                    if (line.ItemElementName == ItemChoiceType4.DebitAmount)
+                        line.DebitAmount = line.Item;
                 }
             }
         }
@@ -103,6 +118,11 @@ public class SaftValidator : ISaftValidator
                 foreach (var line in doc.Line)
                 {
                     line.DocNo = doc.DocumentNumber;
+
+                    if (line.ItemElementName == ItemChoiceType6.CreditAmount)
+                        line.CreditAmount = line.Item;
+                    if (line.ItemElementName == ItemChoiceType6.DebitAmount)
+                        line.DebitAmount = line.Item;
                 }
             }
         }
@@ -115,6 +135,11 @@ public class SaftValidator : ISaftValidator
                 foreach (var line in payment.Line)
                 {
                     line.DocNo = payment.PaymentRefNo;
+
+                    if (line.ItemElementName == ItemChoiceType8.CreditAmount)
+                        line.CreditAmount = line.Item;
+                    if (line.ItemElementName == ItemChoiceType8.DebitAmount)
+                        line.DebitAmount = line.Item;
                 }
             }
         }
@@ -127,6 +152,11 @@ public class SaftValidator : ISaftValidator
                 foreach (var line in doc.Line)
                 {
                     line.DocNo = doc.DocumentNumber;
+
+                    if (line.ItemElementName == ItemChoiceType7.CreditAmount)
+                        line.CreditAmount = line.Item;
+                    if (line.ItemElementName == ItemChoiceType7.DebitAmount)
+                        line.DebitAmount = line.Item;
                 }
             }
         }
@@ -158,9 +188,6 @@ public class SaftValidator : ISaftValidator
         SaftHashValidationErrorNumber = 0;
         if (SaftFile.Header.SoftwareCertificateNumber == "2340")
             SolRiaValidateSaftHash(SaftFile);
-
-        //remove empty messages
-        MensagensErro.RemoveAll(c => c == null || string.IsNullOrWhiteSpace(c.Description));
     }
 
     public async Task OpenStockFile(string filename)
@@ -170,7 +197,7 @@ public class SaftValidator : ISaftValidator
 
         StockFileName = filename;
 
-        MensagensErro.Clear();
+        _mensagensErro.Clear();
 
 
         var (stockFile, errors) = await StockParser.ReadFile(StockFileName);
@@ -178,7 +205,7 @@ public class SaftValidator : ISaftValidator
         StockFile = stockFile;
 
         //load the existing validations errors
-        MensagensErro.AddRange(errors);
+        AddError(errors);
     }
 
     private void SolRiaValidateSaftHash(AuditFile auditFile)
@@ -273,7 +300,7 @@ public class SaftValidator : ISaftValidator
     {
         if (string.IsNullOrEmpty(hash))
         {
-            MensagensErro.Add(new ValidationError { Description = string.Format("Erro dados: A assinatura do documento {0} não existe.", documentNo) });
+            AddError(new ValidationError { Description = string.Format("Erro dados: A assinatura do documento {0} não existe.", documentNo) });
 
             return false;
         }
@@ -305,7 +332,7 @@ public class SaftValidator : ISaftValidator
         //add error message if the document hash is incorrect
         if (isHashCorrect == false)
         {
-            MensagensErro.Add(new ValidationError { Description = string.Format("Erro dados: A assinatura do documento {0} é inválida.", documentNo) });
+            AddError(new ValidationError { Description = string.Format("Erro dados: A assinatura do documento {0} é inválida.", documentNo) });
 
             SaftHashValidationErrorNumber++;
             return false;
@@ -607,7 +634,7 @@ public class SaftValidator : ISaftValidator
         }
         catch (Exception ex)
         {
-            MensagensErro.Add(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message) });
+            AddError(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message) });
             return;
         }
 
@@ -630,7 +657,7 @@ public class SaftValidator : ISaftValidator
             byte[] hashBuffer = Convert.FromBase64String(invoice.Hash);
 
             if (rsaCryptokey.VerifyData(stringToHashBuffer, hasher, hashBuffer) == false)
-                MensagensErro.Add(new ValidationError { Value = invoice.InvoiceNo, TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Field = "Hash", Description = string.Format("A assinatura do documento {0} é inválida.{1}", invoice.InvoiceNo, Environment.NewLine) });
+                AddError(new ValidationError { Value = invoice.InvoiceNo, TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Field = "Hash", Description = string.Format("A assinatura do documento {0} é inválida.{1}", invoice.InvoiceNo, Environment.NewLine) });
         }
     }
     void ValidateSaftHashWD(AuditFile auditFile)
@@ -649,7 +676,7 @@ public class SaftValidator : ISaftValidator
         }
         catch (Exception ex)
         {
-            MensagensErro.Add(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message) });
+            AddError(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message) });
             return;
         }
 
@@ -672,7 +699,7 @@ public class SaftValidator : ISaftValidator
             byte[] hashBuffer = Convert.FromBase64String(doc.Hash);
 
             if (rsaCryptokey.VerifyData(stringToHashBuffer, hasher, hashBuffer) == false)
-                MensagensErro.Add(new ValidationError { Value = doc.DocumentNumber, TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Field = "Hash", Description = string.Format("A assinatura do documento {0} é inválida.{1}", doc.DocumentNumber, Environment.NewLine) });
+                AddError(new ValidationError { Value = doc.DocumentNumber, TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Field = "Hash", Description = string.Format("A assinatura do documento {0} é inválida.{1}", doc.DocumentNumber, Environment.NewLine) });
         }
     }
     void ValidateSaftHashMG(AuditFile auditFile)
@@ -691,7 +718,7 @@ public class SaftValidator : ISaftValidator
         }
         catch (Exception ex)
         {
-            MensagensErro.Add(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message) });
+            AddError(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message) });
             return;
         }
 
@@ -714,7 +741,7 @@ public class SaftValidator : ISaftValidator
             byte[] hashBuffer = Convert.FromBase64String(doc.Hash);
 
             if (rsaCryptokey.VerifyData(stringToHashBuffer, hasher, hashBuffer) == false)
-                MensagensErro.Add(new ValidationError { Value = doc.DocumentNumber, TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovement), Field = "Hash", Description = string.Format("A assinatura do documento {0} é inválida.{1}", doc.DocumentNumber, Environment.NewLine) });
+                AddError(new ValidationError { Value = doc.DocumentNumber, TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovement), Field = "Hash", Description = string.Format("A assinatura do documento {0} é inválida.{1}", doc.DocumentNumber, Environment.NewLine) });
         }
     }
 
@@ -747,147 +774,143 @@ public class SaftValidator : ISaftValidator
         catch (Exception error)
         {
             // XML Validation failed
-            MensagensErro.Add(new ValidationError { Description = string.Format("Mensagem de erro: {0}", error.Message) });
+            AddError(new ValidationError { Description = string.Format("Mensagem de erro: {0}", error.Message) });
         }
     }
 
     void ValidationEventHandler(object sender, ValidationEventArgs e)
     {
-        MensagensErro.Add(new ValidationError { Description = e.Message, ValidationType = ValidationErrorType.SCHEMA });
+        AddError(new ValidationError { Description = e.Message, ValidationType = ValidationErrorType.SCHEMA });
     }
 
     void ValidateHeader(Header header)
     {
-        MensagensErro.Add(header.ValidateTaxRegistrationNumber());
-        MensagensErro.Add(header.ValidateAuditFileVersion());
-        MensagensErro.Add(header.ValidateBusinessName());
-        MensagensErro.Add(header.ValidateEmail());
-        MensagensErro.Add(header.ValidateAddressDetail());
-        MensagensErro.Add(header.ValidateBuildingNumber());
-        MensagensErro.Add(header.ValidateCity());
-        MensagensErro.Add(header.ValidateCountry());
-        MensagensErro.Add(header.ValidatePostalCode());
-        MensagensErro.Add(header.ValidateRegion());
-        MensagensErro.Add(header.ValidateStreetName());
-        MensagensErro.Add(header.ValidateCompanyID());
-        MensagensErro.Add(header.ValidateCompanyName());
-        MensagensErro.Add(header.ValidateCurrencyCode());
-        MensagensErro.Add(header.ValidateDateCreated());
-        MensagensErro.Add(header.ValidateEndDate());
-        MensagensErro.Add(header.ValidateFax());
-        MensagensErro.Add(header.ValidateFiscalYear());
-        MensagensErro.Add(header.ValidateHeaderComment());
-        MensagensErro.Add(header.ValidateProductCompanyTaxID());
-        MensagensErro.Add(header.ValidateProductID());
-        MensagensErro.Add(header.ValidateProductVersion());
-        MensagensErro.Add(header.ValidateSoftwareCertificateNumber());
-        MensagensErro.Add(header.ValidateTaxAccountingBasis());
-        MensagensErro.Add(header.ValidateTaxEntity());
-        MensagensErro.Add(header.ValidateTelephone());
-        MensagensErro.Add(header.ValidateWebsite());
+        AddError(header.ValidateTaxRegistrationNumber());
+        AddError(header.ValidateAuditFileVersion());
+        AddError(header.ValidateBusinessName());
+        AddError(header.ValidateEmail());
+        AddError(header.ValidateAddressDetail());
+        AddError(header.ValidateBuildingNumber());
+        AddError(header.ValidateCity());
+        AddError(header.ValidateCountry());
+        AddError(header.ValidatePostalCode());
+        AddError(header.ValidateRegion());
+        AddError(header.ValidateStreetName());
+        AddError(header.ValidateCompanyID());
+        AddError(header.ValidateCompanyName());
+        AddError(header.ValidateCurrencyCode());
+        AddError(header.ValidateDateCreated());
+        AddError(header.ValidateEndDate());
+        AddError(header.ValidateFax());
+        AddError(header.ValidateFiscalYear());
+        AddError(header.ValidateHeaderComment());
+        AddError(header.ValidateProductCompanyTaxID());
+        AddError(header.ValidateProductID());
+        AddError(header.ValidateProductVersion());
+        AddError(header.ValidateSoftwareCertificateNumber());
+        AddError(header.ValidateTaxAccountingBasis());
+        AddError(header.ValidateTaxEntity());
+        AddError(header.ValidateTelephone());
+        AddError(header.ValidateWebsite());
     }
 
     void ValidateCustomers(Customer[] customers)
     {
-        if (customers != null && customers.Length > 0)
+        if (customers is null || customers.Length == 0) return;
+
+        var duplicated = from p in customers
+                         group p by p.CustomerID into ci
+                         where ci.Count() > 1
+                         select new { codigo = ci.Key, quantidade = ci.Count() };
+
+        foreach (var d in duplicated)
         {
-            var duplicated = from p in customers
-                             group p by p.CustomerID into ci
-                             where ci.Count() > 1
-                             select new { codigo = ci.Key, quantidade = ci.Count() };
+            string pk = (from p in customers where p.CustomerID.Contains(d.codigo, StringComparison.OrdinalIgnoreCase) select p.Pk).FirstOrDefault();
+            AddError(new ValidationError { Value = d.codigo, Field = "CustomerID", Description = string.Format("O código {0} está repetido {1} vezes.", d.codigo, d.quantidade), TypeofError = typeof(Customer), UID = pk });
+        }
 
-            foreach (var d in duplicated)
-            {
-                string pk = (from p in customers where p.CustomerID.Contains(d.codigo, StringComparison.OrdinalIgnoreCase) select p.Pk).FirstOrDefault();
-                MensagensErro.Add(new ValidationError { Value = d.codigo, Field = "CustomerID", Description = string.Format("O código {0} está repetido {1} vezes.", d.codigo, d.quantidade), TypeofError = typeof(Customer), UID = pk });
-            }
-
-            foreach (var customer in customers)
-            {
-                MensagensErro.Add(customer.ValidateAccountID());
-                MensagensErro.Add(customer.ValidateCompanyName());
-                MensagensErro.Add(customer.ValidateContact());
-                MensagensErro.Add(customer.ValidateCustomerID());
-                MensagensErro.Add(customer.ValidateCustomerTaxID());
-                MensagensErro.Add(customer.ValidateEmail());
-                MensagensErro.Add(customer.ValidateFax());
-                MensagensErro.Add(customer.ValidateSelfBillingIndicator());
-                MensagensErro.Add(customer.ValidateTelephone());
-                MensagensErro.Add(customer.ValidateWebsite());
-                MensagensErro.AddRange(customer.ValidateBillingAddress());
-                MensagensErro.AddRange(customer.ValidateShipToAddress());
-            }
+        foreach (var customer in customers)
+        {
+            AddError(customer.ValidateAccountID());
+            AddError(customer.ValidateCompanyName());
+            AddError(customer.ValidateContact());
+            AddError(customer.ValidateCustomerID());
+            AddError(customer.ValidateCustomerTaxID());
+            AddError(customer.ValidateEmail());
+            AddError(customer.ValidateFax());
+            AddError(customer.ValidateSelfBillingIndicator());
+            AddError(customer.ValidateTelephone());
+            AddError(customer.ValidateWebsite());
+            AddError(customer.ValidateBillingAddress());
+            AddError(customer.ValidateShipToAddress());
         }
     }
 
     void ValidateProducts(Product[] products)
     {
-        if (products != null && products.Length > 0)
+        if (products is null || products.Length == 0) return;
+
+        var duplicated = from p in products
+                         group p by p.ProductCode into pc
+                         where pc.Count() > 1
+                         select new { codigo = pc.Key, quantidade = pc.Count() };
+
+        foreach (var d in duplicated)
         {
-            var duplicated = from p in products
-                             group p by p.ProductCode into pc
-                             where pc.Count() > 1
-                             select new { codigo = pc.Key, quantidade = pc.Count() };
+            string pk = (from p in products where string.IsNullOrWhiteSpace(p.ProductCode) == false && p.ProductCode.Contains(d.codigo, StringComparison.OrdinalIgnoreCase) select p.Pk).FirstOrDefault();
 
-            foreach (var d in duplicated)
-            {
-                string pk = (from p in products where string.IsNullOrWhiteSpace(p.ProductCode) == false && p.ProductCode.Contains(d.codigo, StringComparison.OrdinalIgnoreCase) select p.Pk).FirstOrDefault();
+            AddError(new ValidationError { Value = d.codigo, Field = "ProductCode", Description = string.Format("O código {0} está repetido {1} vezes.", d.codigo, d.quantidade), TypeofError = typeof(Product), UID = pk });
+        }
 
-                MensagensErro.Add(new ValidationError { Value = d.codigo, Field = "ProductCode", Description = string.Format("O código {0} está repetido {1} vezes.", d.codigo, d.quantidade), TypeofError = typeof(Product), UID = pk });
-            }
-
-            foreach (var product in products)
-            {
-                MensagensErro.Add(product.ValidateProductCode());
-                MensagensErro.Add(product.ValidateProductDescription());
-                MensagensErro.Add(product.ValidateProductGroup());
-                MensagensErro.Add(product.ValidateProductNumberCode());
-            }
+        foreach (var product in products)
+        {
+            AddError(product.ValidateProductCode());
+            AddError(product.ValidateProductDescription());
+            AddError(product.ValidateProductGroup());
+            AddError(product.ValidateProductNumberCode());
         }
     }
 
     void ValidateTax(TaxTableEntry[] taxs)
     {
-        if (taxs != null && taxs.Length > 0)
+        if (taxs is null || taxs.Length == 0) return;
+
+        foreach (var tax in taxs)
         {
-            foreach (var tax in taxs)
-            {
-                MensagensErro.Add(tax.ValidateTaxCode());
-                MensagensErro.Add(tax.ValidateTaxCountryRegion());
-            }
+            AddError(tax.ValidateTaxCode());
+            AddError(tax.ValidateTaxCountryRegion());
         }
     }
 
     void ValidateSupplier(Supplier[] suppliers)
     {
-        if (suppliers != null && suppliers.Length > 0)
+        if (suppliers is null || suppliers.Length == 0) return;
+
+        var duplicated = from p in suppliers
+                         group p by p.SupplierID into ci
+                         where ci.Count() > 1
+                         select new { codigo = ci.Key, quantidade = ci.Count() };
+
+        foreach (var d in duplicated)
         {
-            var duplicated = from p in suppliers
-                             group p by p.SupplierID into ci
-                             where ci.Count() > 1
-                             select new { codigo = ci.Key, quantidade = ci.Count() };
+            string pk = (from p in suppliers where p.SupplierID.Contains(d.codigo, StringComparison.OrdinalIgnoreCase) select p.Pk).FirstOrDefault();
+            AddError(new ValidationError { Value = d.codigo, Field = "SupplierID", Description = string.Format("O código {0} está repetido {1} vezes.", d.codigo, d.quantidade), TypeofError = typeof(Supplier), UID = pk });
+        }
 
-            foreach (var d in duplicated)
-            {
-                string pk = (from p in suppliers where p.SupplierID.Contains(d.codigo, StringComparison.OrdinalIgnoreCase) select p.Pk).FirstOrDefault();
-                MensagensErro.Add(new ValidationError { Value = d.codigo, Field = "SupplierID", Description = string.Format("O código {0} está repetido {1} vezes.", d.codigo, d.quantidade), TypeofError = typeof(Supplier), UID = pk });
-            }
-
-            foreach (var supplier in suppliers)
-            {
-                MensagensErro.Add(supplier.ValidateAccountID());
-                MensagensErro.Add(supplier.ValidateCompanyName());
-                MensagensErro.Add(supplier.ValidateContact());
-                MensagensErro.Add(supplier.ValidateCustomerID());
-                MensagensErro.Add(supplier.ValidateSupplierTaxID());
-                MensagensErro.Add(supplier.ValidateEmail());
-                MensagensErro.Add(supplier.ValidateFax());
-                MensagensErro.Add(supplier.ValidateSelfBillingIndicator());
-                MensagensErro.Add(supplier.ValidateTelephone());
-                MensagensErro.Add(supplier.ValidateWebsite());
-                MensagensErro.AddRange(supplier.ValidateBillingAddress());
-                MensagensErro.AddRange(supplier.ValidateShipFromAddress());
-            }
+        foreach (var supplier in suppliers)
+        {
+            AddError(supplier.ValidateAccountID());
+            AddError(supplier.ValidateCompanyName());
+            AddError(supplier.ValidateContact());
+            AddError(supplier.ValidateCustomerID());
+            AddError(supplier.ValidateSupplierTaxID());
+            AddError(supplier.ValidateEmail());
+            AddError(supplier.ValidateFax());
+            AddError(supplier.ValidateSelfBillingIndicator());
+            AddError(supplier.ValidateTelephone());
+            AddError(supplier.ValidateWebsite());
+            AddError(supplier.ValidateBillingAddress());
+            AddError(supplier.ValidateShipFromAddress());
         }
     }
 
@@ -895,41 +918,47 @@ public class SaftValidator : ISaftValidator
     {
         int numberOfLines = workDocuments.WorkDocument.Length;
         if (Convert.ToInt32(workDocuments.NumberOfEntries) != numberOfLines)
-            MensagensErro.Add(new ValidationError { Value = workDocuments.NumberOfEntries, Field = "WorkingDocuments", TypeofError = typeof(SourceDocumentsWorkingDocuments), Description = string.Format("Nº de registos incorrecto. Documento: {0}, esperado: {1}", workDocuments.NumberOfEntries, numberOfLines) });
+            AddError(new ValidationError { Value = workDocuments.NumberOfEntries, Field = "WorkingDocuments", TypeofError = typeof(SourceDocumentsWorkingDocuments), Description = string.Format("Nº de registos incorrecto. Documento: {0}, esperado: {1}", workDocuments.NumberOfEntries, numberOfLines) });
 
         foreach (var workDocument in workDocuments.WorkDocument)
         {
-            MensagensErro.Add(workDocument.ValidateDocumentNumber());
-            MensagensErro.Add(workDocument.ValidateHash());
-            MensagensErro.Add(workDocument.ValidateHashControl());
-            MensagensErro.Add(workDocument.ValidatePeriod());
-            MensagensErro.Add(workDocument.ValidateSystemEntryDate());
-            MensagensErro.Add(workDocument.ValidateWorkDate());
-            MensagensErro.AddRange(workDocument.ValidateDocumentStatus());
-            MensagensErro.AddRange(workDocument.ValidateDocumentTotals());
+            AddError(workDocument.ValidateDocumentNumber());
+            AddError(workDocument.ValidateHash());
+            AddError(workDocument.ValidateHashControl());
+            AddError(workDocument.ValidatePeriod());
+            AddError(workDocument.ValidateSystemEntryDate());
+            AddError(workDocument.ValidateWorkDate());
+            AddError(workDocument.ValidateDocumentStatus());
+            AddError(workDocument.ValidateDocumentTotals());
 
             //verificar os totais do documento
             decimal netTotal, grossTotal, taxPayable;
             netTotal = workDocument.Line.Sum(l => l.CreditAmount ?? l.DebitAmount ?? 0);
-            grossTotal = workDocument.Line.Where(l => l.Tax != null && l.Tax.ItemElementName == ItemChoiceType1.TaxPercentage)
-                                    .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) * (1 + l.Tax.TaxPercentage.GetValueOrDefault(0) * 0.01m));
-            taxPayable = workDocument.Line.Where(l => l.Tax != null && l.Tax.ItemElementName == ItemChoiceType1.TaxPercentage)
-                                    .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) * l.Tax.TaxPercentage.GetValueOrDefault(0) * 0.01m);
-            grossTotal += workDocument.Line.Where(l => l.Tax != null && l.Tax.ItemElementName == ItemChoiceType1.TaxAmount)
-                                    .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) + l.Tax.TaxPercentage.GetValueOrDefault(0));
-            taxPayable += workDocument.Line.Where(l => l.Tax != null && l.Tax.ItemElementName == ItemChoiceType1.TaxAmount)
-                                    .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) + l.Tax.TaxPercentage.GetValueOrDefault(0));
-            grossTotal += workDocument.Line.Where(l => l.Tax == null)
-                                    .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0));
-            taxPayable += workDocument.Line.Where(l => l.Tax == null)
-                                    .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0));
+            grossTotal = workDocument.Line
+                .Where(l => l.Tax != null && l.Tax.ItemElementName == ItemChoiceType1.TaxPercentage)
+                .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) * (1 + l.Tax.TaxPercentage.GetValueOrDefault(0) * 0.01m));
+            taxPayable = workDocument.Line
+                .Where(l => l.Tax != null && l.Tax.ItemElementName == ItemChoiceType1.TaxPercentage)
+                .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) * l.Tax.TaxPercentage.GetValueOrDefault(0) * 0.01m);
+            grossTotal += workDocument.Line
+                .Where(l => l.Tax != null && l.Tax.ItemElementName == ItemChoiceType1.TaxAmount)
+                .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) + l.Tax.TaxPercentage.GetValueOrDefault(0));
+            taxPayable += workDocument.Line
+                .Where(l => l.Tax != null && l.Tax.ItemElementName == ItemChoiceType1.TaxAmount)
+                .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) + l.Tax.TaxPercentage.GetValueOrDefault(0));
+            grossTotal += workDocument.Line
+                .Where(l => l.Tax == null)
+                .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0));
+            taxPayable += workDocument.Line
+                .Where(l => l.Tax == null)
+                .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0));
 
             if (Math.Abs(netTotal - workDocument.DocumentTotals.NetTotal) > 0.01m)
-                MensagensErro.Add(new ValidationError { Value = workDocument.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Total de incidência incorrecto. Documento: {0}, esperado: {1}", workDocument.DocumentTotals.NetTotal, netTotal) });
+                AddError(new ValidationError { Value = workDocument.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Total de incidência incorrecto. Documento: {0}, esperado: {1}", workDocument.DocumentTotals.NetTotal, netTotal) });
             if (Math.Abs(grossTotal - workDocument.DocumentTotals.GrossTotal) > 0.01m)
-                MensagensErro.Add(new ValidationError { Value = workDocument.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Total incorrecto. Documento: {0}, esperado: {1}", workDocument.DocumentTotals.GrossTotal, grossTotal) });
+                AddError(new ValidationError { Value = workDocument.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Total incorrecto. Documento: {0}, esperado: {1}", workDocument.DocumentTotals.GrossTotal, grossTotal) });
             if (Math.Abs(taxPayable - workDocument.DocumentTotals.TaxPayable) > 0.01m)
-                MensagensErro.Add(new ValidationError { Value = workDocument.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Total de imposto incorrecto. Documento: {0}, esperado: {1}", workDocument.DocumentTotals.TaxPayable, taxPayable) });
+                AddError(new ValidationError { Value = workDocument.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Total de imposto incorrecto. Documento: {0}, esperado: {1}", workDocument.DocumentTotals.TaxPayable, taxPayable) });
 
             foreach (var line in workDocument.Line)
             {
@@ -940,44 +969,44 @@ public class SaftValidator : ISaftValidator
 
     void ValidateWorkDocumentLine(SourceDocumentsWorkingDocumentsWorkDocumentLine line, SourceDocumentsWorkingDocumentsWorkDocument workDocument)
     {
-        MensagensErro.Add(line.ValidateLineNumber(workDocument.Pk));
-        MensagensErro.Add(line.ValidateProductCode(workDocument.Pk));
-        MensagensErro.Add(line.ValidateProductDescription(workDocument.Pk));
-        MensagensErro.Add(line.ValidateQuantity(workDocument.Pk));
-        MensagensErro.Add(line.ValidateTaxPointDate(workDocument.Pk));
-        MensagensErro.Add(line.ValidateUnitOfMeasure(workDocument.Pk));
-        MensagensErro.Add(line.ValidateUnitPrice(workDocument.Pk));
-        MensagensErro.AddRange(line.ValidateOrderReferences(workDocument.Pk));
-        MensagensErro.AddRange(line.ValidateTax(workDocument.Pk));
+        AddError(line.ValidateLineNumber(workDocument.Pk));
+        AddError(line.ValidateProductCode(workDocument.Pk));
+        AddError(line.ValidateProductDescription(workDocument.Pk));
+        AddError(line.ValidateQuantity(workDocument.Pk));
+        AddError(line.ValidateTaxPointDate(workDocument.Pk));
+        AddError(line.ValidateUnitOfMeasure(workDocument.Pk));
+        AddError(line.ValidateUnitPrice(workDocument.Pk));
+        AddError(line.ValidateOrderReferences(workDocument.Pk));
+        AddError(line.ValidateTax(workDocument.Pk));
 
         int numCasasDecimais = 6;// Workspace.Instance.Config.NumCasasDecimaisValidacoes;
 
         if (line.UnitPrice * line.Quantity != line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0) && Math.Round(line.UnitPrice * line.Quantity, numCasasDecimais, MidpointRounding.AwayFromZero) != Math.Round(line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), numCasasDecimais, MidpointRounding.AwayFromZero))
-            MensagensErro.Add(new ValidationError { Value = line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0).ToString(), Field = "Item", TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovementLine), Description = string.Format("Valor da linha incorrecto. Valor: {0}, esperado: {1}", line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), line.UnitPrice * line.Quantity), UID = line.Pk, SupUID = workDocument.Pk });
+            AddError(new ValidationError { Value = line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0).ToString(), Field = "Item", TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovementLine), Description = string.Format("Valor da linha incorrecto. Valor: {0}, esperado: {1}", line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), line.UnitPrice * line.Quantity), UID = line.Pk, SupUID = workDocument.Pk });
     }
 
     void ValidateMovementOfGoods(SourceDocumentsMovementOfGoods movements)
     {
         int numberOfLines = movements.StockMovement.Sum(m => m.Line.Length);
         if (Convert.ToInt32(movements.NumberOfMovementLines) != numberOfLines)
-            MensagensErro.Add(new ValidationError { Value = movements.NumberOfMovementLines, Field = "MovementOfGoods", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Nº de registos incorrecto. Documento: {0}, esperado: {1}", movements.NumberOfMovementLines, numberOfLines) });
+            AddError(new ValidationError { Value = movements.NumberOfMovementLines, Field = "MovementOfGoods", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Nº de registos incorrecto. Documento: {0}, esperado: {1}", movements.NumberOfMovementLines, numberOfLines) });
 
         decimal quantity = 0;
         foreach (var movement in movements.StockMovement)
         {
-            MensagensErro.Add(movement.ValidateDocumentNumber());
-            MensagensErro.Add(movement.ValidateHash());
-            MensagensErro.Add(movement.ValidateHashControl());
-            MensagensErro.Add(movement.ValidatePeriod());
-            MensagensErro.Add(movement.ValidateSystemEntryDate());
-            MensagensErro.Add(movement.ValidateMovementDate());
-            MensagensErro.Add(movement.ValidateMovementEndTime());
-            MensagensErro.Add(movement.ValidateMovementStartTime());
-            MensagensErro.Add(movement.ValidateTransactionID());
-            MensagensErro.AddRange(movement.ValidateDocumentStatus());
-            MensagensErro.AddRange(movement.ValidateDocumentTotals());
-            MensagensErro.AddRange(movement.ValidateShipFrom());
-            MensagensErro.AddRange(movement.ValidateShipTo());
+            AddError(movement.ValidateDocumentNumber());
+            AddError(movement.ValidateHash());
+            AddError(movement.ValidateHashControl());
+            AddError(movement.ValidatePeriod());
+            AddError(movement.ValidateSystemEntryDate());
+            AddError(movement.ValidateMovementDate());
+            AddError(movement.ValidateMovementEndTime());
+            AddError(movement.ValidateMovementStartTime());
+            AddError(movement.ValidateTransactionID());
+            AddError(movement.ValidateDocumentStatus());
+            AddError(movement.ValidateDocumentTotals());
+            AddError(movement.ValidateShipFrom());
+            AddError(movement.ValidateShipTo());
 
             //verificar a quantidade
             quantity += movement.Line.Sum(l => l.Quantity);
@@ -990,11 +1019,11 @@ public class SaftValidator : ISaftValidator
                 decimal taxPayable = movement.Line.Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) * (l.Tax != null ? l.Tax.TaxPercentage : 0) * 0.01m);
 
                 if (Math.Abs(netTotal - movement.DocumentTotals.NetTotal) > 0.01m)
-                    MensagensErro.Add(new ValidationError { Value = movement.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total de incidência incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.NetTotal, netTotal) });
+                    AddError(new ValidationError { Value = movement.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total de incidência incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.NetTotal, netTotal) });
                 if (Math.Abs(grossTotal - movement.DocumentTotals.GrossTotal) > 0.01m)
-                    MensagensErro.Add(new ValidationError { Value = movement.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.GrossTotal, grossTotal) });
+                    AddError(new ValidationError { Value = movement.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.GrossTotal, grossTotal) });
                 if (Math.Abs(taxPayable - movement.DocumentTotals.TaxPayable) > 0.01m)
-                    MensagensErro.Add(new ValidationError { Value = movement.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total de imposto incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.TaxPayable, taxPayable) });
+                    AddError(new ValidationError { Value = movement.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total de imposto incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.TaxPayable, taxPayable) });
             }
 
             //verificar as linhas
@@ -1005,50 +1034,52 @@ public class SaftValidator : ISaftValidator
         }
 
         if (quantity != movements.TotalQuantityIssued)
-            MensagensErro.Add(new ValidationError { Value = movements.TotalQuantityIssued.ToString(), Field = "MovementOfGoods", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total da quantidade incorrecto. Documento: {0}, esperado: {1}", movements.TotalQuantityIssued, quantity) });
+            AddError(new ValidationError { Value = movements.TotalQuantityIssued.ToString(), Field = "MovementOfGoods", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total da quantidade incorrecto. Documento: {0}, esperado: {1}", movements.TotalQuantityIssued, quantity) });
     }
 
     void ValidateMovementOfGoodsStockMovementLine(SourceDocumentsMovementOfGoodsStockMovementLine line, SourceDocumentsMovementOfGoodsStockMovement movement)
     {
-        MensagensErro.Add(line.ValidateLineNumber(movement.Pk));
-        MensagensErro.Add(line.ValidateProductCode(movement.Pk));
-        MensagensErro.Add(line.ValidateProductDescription(movement.Pk));
-        MensagensErro.Add(line.ValidateQuantity(movement.Pk));
-        MensagensErro.Add(line.ValidateUnitOfMeasure(movement.Pk));
-        MensagensErro.Add(line.ValidateUnitPrice(movement.Pk));
-        MensagensErro.AddRange(line.ValidateOrderReferences(movement.Pk));
-        MensagensErro.AddRange(line.ValidateTax(movement.Pk));
+        AddError(line.ValidateLineNumber(movement.Pk));
+        AddError(line.ValidateProductCode(movement.Pk));
+        AddError(line.ValidateProductDescription(movement.Pk));
+        AddError(line.ValidateQuantity(movement.Pk));
+        AddError(line.ValidateUnitOfMeasure(movement.Pk));
+        AddError(line.ValidateUnitPrice(movement.Pk));
+        AddError(line.ValidateOrderReferences(movement.Pk));
+        AddError(line.ValidateTax(movement.Pk));
 
-        int numCasasDecimais = 6;// Workspace.Instance.Config.NumCasasDecimaisValidacoes;
+        var value = line.UnitPrice * line.Quantity;
+        var amount = line.CreditAmount ?? line.DebitAmount ?? 0;
+        var difference = Math.Abs(value - amount);
 
-        if (line.UnitPrice * line.Quantity != line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0) && Math.Round(line.UnitPrice * line.Quantity, numCasasDecimais, MidpointRounding.AwayFromZero) != Math.Round(line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), numCasasDecimais, MidpointRounding.AwayFromZero))
-            MensagensErro.Add(new ValidationError { Value = line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0).ToString(), Field = "Item", TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovementLine), Description = string.Format("Valor da linha incorrecto. Valor: {0}, esperado: {1}", line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), line.UnitPrice * line.Quantity), UID = line.Pk, SupUID = movement.Pk });
+        if (value != amount && difference > 0.01m)
+            AddError(new ValidationError { Value = amount.ToString(), Field = "Item", TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovementLine), Description = string.Format("Valor da linha incorrecto. Valor: {0}, esperado: {1}, diferença: {2}", amount, value, difference), UID = line.Pk, SupUID = movement.Pk });
     }
 
     void ValidateInvoices(SourceDocumentsSalesInvoices invoices)
     {
         if (Convert.ToInt32(invoices.NumberOfEntries) != invoices.Invoice.Length)
-            MensagensErro.Add(new ValidationError { Value = invoices.NumberOfEntries, Field = "SalesInvoices", TypeofError = typeof(SourceDocumentsSalesInvoices), Description = string.Format("Nº de registos de documentos comerciais incorrecto. Documento: {0}, esperado: {1}", invoices.NumberOfEntries, invoices.Invoice.Length) });
+            AddError(new ValidationError { Value = invoices.NumberOfEntries, Field = "SalesInvoices", TypeofError = typeof(SourceDocumentsSalesInvoices), Description = string.Format("Nº de registos de documentos comerciais incorrecto. Documento: {0}, esperado: {1}", invoices.NumberOfEntries, invoices.Invoice.Length) });
 
         foreach (var invoice in invoices.Invoice)
         {
-            MensagensErro.Add(invoice.ValidateInvoiceNo());
-            MensagensErro.Add(invoice.ValidateATCUD());
-            MensagensErro.Add(invoice.ValidateHash());
-            MensagensErro.Add(invoice.ValidateHashControl());
-            MensagensErro.Add(invoice.ValidatePeriod());
-            MensagensErro.Add(invoice.ValidateInvoiceDate());
-            MensagensErro.Add(invoice.ValidateSystemEntryDate());
-            MensagensErro.Add(invoice.ValidateTransactionID());
-            MensagensErro.Add(invoice.ValidateCustomerID());
-            MensagensErro.Add(invoice.ValidateSourceID());
-            MensagensErro.Add(invoice.ValidateMovementEndTime());
-            MensagensErro.Add(invoice.ValidateMovementStartTime());
-            MensagensErro.AddRange(invoice.ValidateSpecialRegimes());
-            MensagensErro.AddRange(invoice.ValidateDocumentStatus());
-            MensagensErro.AddRange(invoice.ValidateShipTo());
-            MensagensErro.AddRange(invoice.ValidateShipFrom());
-            MensagensErro.AddRange(invoice.ValidateDocumentTotals());
+            AddError(invoice.ValidateInvoiceNo());
+            AddError(invoice.ValidateATCUD());
+            AddError(invoice.ValidateHash());
+            AddError(invoice.ValidateHashControl());
+            AddError(invoice.ValidatePeriod());
+            AddError(invoice.ValidateInvoiceDate());
+            AddError(invoice.ValidateSystemEntryDate());
+            AddError(invoice.ValidateTransactionID());
+            AddError(invoice.ValidateCustomerID());
+            AddError(invoice.ValidateSourceID());
+            AddError(invoice.ValidateMovementEndTime());
+            AddError(invoice.ValidateMovementStartTime());
+            AddError(invoice.ValidateSpecialRegimes());
+            AddError(invoice.ValidateDocumentStatus());
+            AddError(invoice.ValidateShipTo());
+            AddError(invoice.ValidateShipFrom());
+            AddError(invoice.ValidateDocumentTotals());
 
             decimal total = 0, incidencia = 0, iva = 0;
             int numLinha = 1, num = -1;
@@ -1058,15 +1089,15 @@ public class SaftValidator : ISaftValidator
                     int.TryParse(line.LineNumber, out num);
 
                 if (numLinha != num)
-                    mensagensErro.Add(new ValidationError { Value = line.LineNumber, Field = "LineNumber", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine), Description = string.Format("Número de linha incorrecto, Documento: {0}, esperado: {1}, valor: {2}", invoice.InvoiceNo, numLinha, line.LineNumber), UID = line.Pk, SupUID = invoice.Pk });
+                    AddError(new ValidationError { Value = line.LineNumber, Field = "LineNumber", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine), Description = string.Format("Número de linha incorrecto, Documento: {0}, esperado: {1}, valor: {2}", invoice.InvoiceNo, numLinha, line.LineNumber), UID = line.Pk, SupUID = invoice.Pk });
                 numLinha++;
 
                 ValidateInvoiceLine(line, invoice.Pk);
 
                 if (string.IsNullOrEmpty(line.UnitOfMeasure))
-                    MensagensErro.Add(new ValidationError { Value = invoice.InvoiceNo, Field = "UnitOfMeasure", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine), Description = string.Format("Unidade de medida não preenchida. Documento: {0}, linha nº: {1}", invoice.InvoiceNo, line.LineNumber), UID = invoice.Pk });
+                    AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "UnitOfMeasure", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine), Description = string.Format("Unidade de medida não preenchida. Documento: {0}, linha nº: {1}", invoice.InvoiceNo, line.LineNumber), UID = invoice.Pk });
                 if (line.Tax.TaxPercentage == 0 && string.IsNullOrEmpty(line.TaxExemptionReason))
-                    MensagensErro.Add(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxExemptionReason", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine), Description = string.Format("Motivo de isenção do imposto não preenchido. Documento: {0}, linha nº: {1}", invoice.InvoiceNo, line.LineNumber), UID = invoice.Pk });
+                    AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxExemptionReason", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine), Description = string.Format("Motivo de isenção do imposto não preenchido. Documento: {0}, linha nº: {1}", invoice.InvoiceNo, line.LineNumber), UID = invoice.Pk });
 
                 total += line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0) * (1 + line.Tax.TaxPercentage.GetValueOrDefault(0) * 0.01m) * Operation(invoice, line);
                 incidencia += line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0) * Operation(invoice, line);
@@ -1078,36 +1109,36 @@ public class SaftValidator : ISaftValidator
             total = Math.Round(total, 2, MidpointRounding.AwayFromZero);
 
             if (Math.Abs(total - invoice.DocumentTotals.GrossTotal) > 0.01m)
-                MensagensErro.Add(new ValidationError { Value = invoice.InvoiceNo, Field = "GrossTotal", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Total errado. Documento: {0}, total: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.GrossTotal, total), UID = invoice.Pk });
+                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "GrossTotal", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Total errado. Documento: {0}, total: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.GrossTotal, total), UID = invoice.Pk });
             if (Math.Abs(incidencia - invoice.DocumentTotals.NetTotal) > 0.01m)
-                MensagensErro.Add(new ValidationError { Value = invoice.InvoiceNo, Field = "NetTotal", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Incidencia errada. Documento {0}, incidencia:{1} esperado:{2}", invoice.InvoiceNo, invoice.DocumentTotals.NetTotal, incidencia), UID = invoice.Pk });
+                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "NetTotal", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Incidencia errada. Documento {0}, incidencia:{1} esperado:{2}", invoice.InvoiceNo, invoice.DocumentTotals.NetTotal, incidencia), UID = invoice.Pk });
             if (Math.Abs(iva - invoice.DocumentTotals.TaxPayable) > 0.01m)
-                MensagensErro.Add(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxPayable", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Iva errado. Documento: {0}, iva: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.TaxPayable, iva), UID = invoice.Pk });
+                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxPayable", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Iva errado. Documento: {0}, iva: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.TaxPayable, iva), UID = invoice.Pk });
             if (Math.Abs(invoice.DocumentTotals.TaxPayable - (invoice.DocumentTotals.GrossTotal - invoice.DocumentTotals.NetTotal)) > 0.01m)
-                MensagensErro.Add(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxPayable", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Iva errado. Documento: {0}, iva: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.TaxPayable, invoice.DocumentTotals.GrossTotal - invoice.DocumentTotals.NetTotal), UID = invoice.Pk });
+                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxPayable", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Iva errado. Documento: {0}, iva: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.TaxPayable, invoice.DocumentTotals.GrossTotal - invoice.DocumentTotals.NetTotal), UID = invoice.Pk });
             if (Math.Abs(invoice.DocumentTotals.GrossTotal - (invoice.DocumentTotals.NetTotal + invoice.DocumentTotals.TaxPayable)) > 0.01m)
-                MensagensErro.Add(new ValidationError { Value = invoice.InvoiceNo, Field = "DocumentTotals", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Total errado. Documento: {0}, NetTotal + TaxPayable = {1} != GrossTotal {2}", invoice.InvoiceNo, invoice.DocumentTotals.NetTotal + invoice.DocumentTotals.TaxPayable, invoice.DocumentTotals.GrossTotal), UID = invoice.Pk });
+                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "DocumentTotals", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Total errado. Documento: {0}, NetTotal + TaxPayable = {1} != GrossTotal {2}", invoice.InvoiceNo, invoice.DocumentTotals.NetTotal + invoice.DocumentTotals.TaxPayable, invoice.DocumentTotals.GrossTotal), UID = invoice.Pk });
         }
     }
 
     void ValidateInvoiceLine(SourceDocumentsSalesInvoicesInvoiceLine line, string supPk)
     {
-        MensagensErro.Add(line.ValidateLineNumber(supPk));
-        MensagensErro.Add(line.ValidateProductCode(supPk));
-        MensagensErro.Add(line.ValidateProductDescription(supPk));
-        MensagensErro.Add(line.ValidateQuantity(supPk));
-        MensagensErro.Add(line.ValidateTaxPointDate(supPk));
-        MensagensErro.Add(line.ValidateUnitOfMeasure(supPk));
-        MensagensErro.Add(line.ValidateUnitPrice(supPk));
-        MensagensErro.AddRange(line.ValidateOrderReferences(supPk));
-        MensagensErro.AddRange(line.ValidateReferences(supPk));
-        MensagensErro.AddRange(line.ValidateTax(supPk));
+        AddError(line.ValidateLineNumber(supPk));
+        AddError(line.ValidateProductCode(supPk));
+        AddError(line.ValidateProductDescription(supPk));
+        AddError(line.ValidateQuantity(supPk));
+        AddError(line.ValidateTaxPointDate(supPk));
+        AddError(line.ValidateUnitOfMeasure(supPk));
+        AddError(line.ValidateUnitPrice(supPk));
+        AddError(line.ValidateOrderReferences(supPk));
+        AddError(line.ValidateReferences(supPk));
+        AddError(line.ValidateTax(supPk));
 
         int numCasasDecimais = 6;// Workspace.Instance.Config.NumCasasDecimaisValidacoes;
         bool incidendia = Math.Abs(Math.Round(line.UnitPrice * line.Quantity, numCasasDecimais, MidpointRounding.AwayFromZero) - Math.Round(line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), numCasasDecimais, MidpointRounding.AwayFromZero)) > 0.01m;
         if (incidendia == true)
         {
-            MensagensErro.Add(new ValidationError
+            AddError(new ValidationError
             {
                 Value = line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0).ToString(),
                 Field = line.ItemElementName.ToString(),
@@ -1122,25 +1153,25 @@ public class SaftValidator : ISaftValidator
     private void ValidatePayments(SourceDocumentsPayments payments)
     {
         if (Convert.ToInt32(payments.NumberOfEntries) != (payments.Payment?.Length ?? 0))
-            MensagensErro.Add(new ValidationError { Value = payments.NumberOfEntries, Field = "Payments/NumberOfEntries", TypeofError = typeof(SourceDocumentsPayments), Description = string.Format("Nº de registos dos recibos incorrecto. Documento: {0}, esperado: {1}", payments.NumberOfEntries, payments.Payment?.Length ?? 0) });
+            AddError(new ValidationError { Value = payments.NumberOfEntries, Field = "Payments/NumberOfEntries", TypeofError = typeof(SourceDocumentsPayments), Description = string.Format("Nº de registos dos recibos incorrecto. Documento: {0}, esperado: {1}", payments.NumberOfEntries, payments.Payment?.Length ?? 0) });
 
         if (payments.Payment != null)
         {
             foreach (var payment in payments.Payment)
             {
-                MensagensErro.Add(payment.ValidateCustomerID());
-                MensagensErro.Add(payment.ValidateDescription());
-                MensagensErro.Add(payment.ValidateDocumentStatusSourceID());
-                MensagensErro.Add(payment.ValidatePaymentRefNo());
-                MensagensErro.Add(payment.ValidatePaymentStatusDate());
-                MensagensErro.Add(payment.ValidatePeriod());
-                MensagensErro.Add(payment.ValidateReason());
-                MensagensErro.Add(payment.ValidateSourceID());
-                MensagensErro.Add(payment.ValidateSystemEntryDate());
-                MensagensErro.Add(payment.ValidateSystemID());
-                MensagensErro.Add(payment.ValidateTransactionDate());
-                MensagensErro.Add(payment.ValidateTransactionID());
-                MensagensErro.AddRange(payment.ValidatePaymentMethod());
+                AddError(payment.ValidateCustomerID());
+                AddError(payment.ValidateDescription());
+                AddError(payment.ValidateDocumentStatusSourceID());
+                AddError(payment.ValidatePaymentRefNo());
+                AddError(payment.ValidatePaymentStatusDate());
+                AddError(payment.ValidatePeriod());
+                AddError(payment.ValidateReason());
+                AddError(payment.ValidateSourceID());
+                AddError(payment.ValidateSystemEntryDate());
+                AddError(payment.ValidateSystemID());
+                AddError(payment.ValidateTransactionDate());
+                AddError(payment.ValidateTransactionID());
+                AddError(payment.ValidatePaymentMethod());
 
                 int numLinha = 1, num = -1;
                 foreach (var line in payment.Line)
@@ -1149,7 +1180,7 @@ public class SaftValidator : ISaftValidator
                         int.TryParse(line.LineNumber, out num);
 
                     if (numLinha != num)
-                        mensagensErro.Add(new ValidationError { Value = line.LineNumber, Field = "Payments/Line/LineNumber", TypeofError = typeof(SourceDocumentsPaymentsPaymentLine), Description = string.Format("Número de linha incorrecto, Documento: {0}, esperado: {1}, valor: {2}", payment.PaymentRefNo, numLinha, line.LineNumber), UID = line.Pk, SupUID = payment.Pk });
+                        AddError(new ValidationError { Value = line.LineNumber, Field = "Payments/Line/LineNumber", TypeofError = typeof(SourceDocumentsPaymentsPaymentLine), Description = string.Format("Número de linha incorrecto, Documento: {0}, esperado: {1}, valor: {2}", payment.PaymentRefNo, numLinha, line.LineNumber), UID = line.Pk, SupUID = payment.Pk });
                     numLinha++;
 
                     ValidatePaymentLine(line, payment.Pk);
@@ -1160,19 +1191,20 @@ public class SaftValidator : ISaftValidator
 
     private void ValidatePaymentLine(SourceDocumentsPaymentsPaymentLine line, string supPk)
     {
-        MensagensErro.Add(line.ValidateItem(supPk));
-        MensagensErro.Add(line.ValidateLineNumber(supPk));
-        MensagensErro.Add(line.ValidateSettlementAmount(supPk));
-        MensagensErro.Add(line.ValidateTaxExemptionReason(supPk));
-        MensagensErro.AddRange(line.ValidateSourceDocumentID(supPk));
-        MensagensErro.AddRange(line.ValidateTax(supPk));
+        AddError(line.ValidateItem(supPk));
+        AddError(line.ValidateLineNumber(supPk));
+        AddError(line.ValidateSettlementAmount(supPk));
+        AddError(line.ValidateTaxExemptionReason(supPk));
+        AddError(line.ValidateSourceDocumentID(supPk));
+        AddError(line.ValidateTax(supPk));
     }
 
     public static int Operation(SourceDocumentsSalesInvoicesInvoice i, SourceDocumentsSalesInvoicesInvoiceLine l)
     {
         if (i.InvoiceType == InvoiceType.FT || i.InvoiceType == InvoiceType.VD || i.InvoiceType == InvoiceType.ND || i.InvoiceType == InvoiceType.FR || i.InvoiceType == InvoiceType.FS || i.InvoiceType == InvoiceType.TV || i.InvoiceType == InvoiceType.AA)
             return l.ItemElementName == ItemChoiceType4.CreditAmount ? 1 : -1;
-        else if (i.InvoiceType == InvoiceType.NC || i.InvoiceType == InvoiceType.TD || i.InvoiceType == InvoiceType.DA || i.InvoiceType == InvoiceType.RE)
+        
+        if (i.InvoiceType == InvoiceType.NC || i.InvoiceType == InvoiceType.TD || i.InvoiceType == InvoiceType.DA || i.InvoiceType == InvoiceType.RE)
             return l.ItemElementName == ItemChoiceType4.DebitAmount ? 1 : -1;
 
         return 1;
