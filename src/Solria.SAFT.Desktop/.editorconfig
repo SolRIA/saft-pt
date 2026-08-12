@@ -1,7 +1,17 @@
-﻿[*.cs]
+[*.cs]
 
 # IDE0008: Use explicit type
 csharp_style_var_when_type_is_apparent = true
 
 # CA1806: Do not ignore method results
 dotnet_diagnostic.CA1806.severity = none
+
+# Riok.Mapperly - by-design divergence between the XML-deserialized SaftV4 models
+# and the richer Parser models (INVALIDO enum fallbacks and computed/navigation
+# members populated manually after mapping in SaftValidator).
+# RMG012: target member not found on source
+# RMG020: source member not mapped to target
+# RMG037: enum source has no matching member for a target enum member
+dotnet_diagnostic.RMG012.severity = none
+dotnet_diagnostic.RMG020.severity = none
+dotnet_diagnostic.RMG037.severity = none

@@ -17,7 +17,6 @@ namespace SolRIA.SAFT.Desktop.Views
 {
     public partial class MainWindow : Window, IDialogManager, IReportService
     {
-        readonly TextBlock txtMessage;
         private readonly WindowNotificationManager notificationManager;
 
         public MainWindow()

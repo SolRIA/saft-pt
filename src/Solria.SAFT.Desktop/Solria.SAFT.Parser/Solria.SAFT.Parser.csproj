@@ -9,6 +9,8 @@
 	<ItemGroup>
 		<PackageReference Include="Dapper" Version="2.1.79" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.10" />
+		<!-- Override transitive SQLitePCLRaw.lib.e_sqlite3 2.1.11 (GHSA-2m69-gcr7-jv3q) with patched 2.1.12 -->
+		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.12" />
 		<PackageReference Include="Riok.Mapperly" Version="4.3.1" />
 	</ItemGroup>
 
