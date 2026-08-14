@@ -24,23 +24,23 @@ public partial class DialogMessageViewModel : ViewModelBase
                 break;
             case MessageDialogType.Information:
                 Icon = Material.Icons.MaterialIconKind.Information;
-                Color = Color.Parse("#42A5F5");
+                Color = Brush.Parse("#42A5F5");
                 break;
             case MessageDialogType.Warning:
                 Icon = Material.Icons.MaterialIconKind.Warning;
-                Color = Color.Parse("#FDD835");
+                Color = Brush.Parse("#FDD835");
                 break;
             case MessageDialogType.Error:
                 Icon = Material.Icons.MaterialIconKind.Error;
-                Color = Color.Parse("#F4511E");
+                Color = Brush.Parse("#F4511E");
                 break;
             case MessageDialogType.Question:
                 Icon = Material.Icons.MaterialIconKind.QuestionMark;
-                Color = Color.Parse("#FF9800");
+                Color = Brush.Parse("#FF9800");
                 break;
             case MessageDialogType.Success:
                 Icon = Material.Icons.MaterialIconKind.CheckboxMarked;
-                Color = Color.Parse("#43A047");
+                Color = Brush.Parse("#43A047");
                 break;
             default:
                 break;
@@ -48,16 +48,16 @@ public partial class DialogMessageViewModel : ViewModelBase
     }
 
     [ObservableProperty]
-    private string message;
+    public partial string Message { get; set; }
 
     [ObservableProperty]
-    private string title;
+    public partial string Title { get; set; }
 
     [ObservableProperty]
-    private Material.Icons.MaterialIconKind icon;
+    public partial Material.Icons.MaterialIconKind Icon { get; set; }
 
     [ObservableProperty]
-    private IBrush color;
+    public partial IBrush Color { get; set; }
 
     [RelayCommand]
     private void OnOk()
