@@ -1,4 +1,4 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -14,10 +14,10 @@
 	<Grid RowDefinitions="Auto,*,50" Margin="10">
 
 		<!-- Organization heaer -->
-		<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+		<Border Classes="Hover" Theme="{DynamicResource CardBorder}">
 			<StackPanel Spacing="5">
-				<TextBlock Text="{Binding Header.CompanyName}" Classes="H2" Theme="{StaticResource TitleTextBlock}"/>
-				<TextBlock Text="{Binding Header.BusinessName}" Classes="Success" Theme="{StaticResource TitleTextBlock}"/>
+				<TextBlock Text="{Binding Header.CompanyName}" Classes="H2" Theme="{DynamicResource TitleTextBlock}"/>
+				<TextBlock Text="{Binding Header.BusinessName}" Classes="Success" Theme="{DynamicResource TitleTextBlock}"/>
 				<TextBlock Text="{Binding Header.TaxRegistrationNumber}" Classes="Secondary"/>
 			</StackPanel>
 		</Border>
@@ -26,7 +26,7 @@
 			<TabItem Header="Validações">
 				<StackPanel>
 
-					<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+					<Border Classes="Hover" Theme="{DynamicResource CardBorder}">
 						<Grid ColumnDefinitions="*,100">
 							<TextBlock Text="Total erros:" />
 							<Button Content="{Binding TotalErrors}"
@@ -38,7 +38,7 @@
 						</Grid>
 					</Border>
 
-					<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+					<Border Classes="Hover" Theme="{DynamicResource CardBorder}">
 						<Grid ColumnDefinitions="*,100">
 							<TextBlock Text="Erros cabeçalho:" />
 							<Button Content="{Binding HeaderErrors}"
@@ -49,7 +49,7 @@
 						</Grid>
 					</Border>
 
-					<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+					<Border Classes="Hover" Theme="{DynamicResource CardBorder}">
 						<Grid ColumnDefinitions="*,100">
 							<TextBlock Text="Erros Clientes:" />
 							<Button Content="{Binding CustomersErrors}"
@@ -60,7 +60,7 @@
 						</Grid>
 					</Border>
 
-					<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+					<Border Classes="Hover" Theme="{DynamicResource CardBorder}">
 						<Grid ColumnDefinitions="*,100">
 							<TextBlock Text="Assinaturas validadas:" />
 							<TextBlock HorizontalAlignment="Right" Grid.Column="1"
@@ -68,7 +68,7 @@
 						</Grid>
 					</Border>
 
-					<Border Classes="Hover" Theme="{StaticResource CardBorder}">
+					<Border Classes="Hover" Theme="{DynamicResource CardBorder}">
 						<Grid ColumnDefinitions="*,100">
 							<TextBlock Text="Assinaturas com erro:" />
 							<TextBlock HorizontalAlignment="Right" Grid.Column="1"

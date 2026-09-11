@@ -11,7 +11,7 @@
 	<Grid RowDefinitions="40,35,*,35" ColumnDefinitions="*,54,54" Margin="5">
 
 		<TextBlock Text="Documentos" Classes="H2" Grid.ColumnSpan="3"
-				   Theme="{StaticResource TitleTextBlock}"/>
+				   Theme="{DynamicResource TitleTextBlock}"/>
 
 		<TextBox Text="{Binding Filter, Mode=TwoWay}" PlaceholderText="Filtro"
 				 Margin="0,0,2,0" Grid.Row="1">

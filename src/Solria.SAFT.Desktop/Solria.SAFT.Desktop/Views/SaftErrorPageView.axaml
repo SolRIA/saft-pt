@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -11,7 +11,7 @@
 	<Grid RowDefinitions="40,35,30,*" ColumnDefinitions="*,54,54" Margin="5">
 
 		<TextBlock Text="Erros" Classes="H2"
-				   Theme="{StaticResource TitleTextBlock}"/>
+				   Theme="{DynamicResource TitleTextBlock}"/>
 
 		<TextBox Text="{Binding Filter, Mode=TwoWay}"
 				 PlaceholderText="Filtro" Grid.Row="1" Margin="0,0,2,0">

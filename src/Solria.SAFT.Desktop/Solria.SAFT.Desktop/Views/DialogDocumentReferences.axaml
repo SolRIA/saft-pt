@@ -10,11 +10,11 @@
         Title="DialogDocumentReferences">
 
 	<Grid RowDefinitions="130,130,*" ColumnDefinitions="*,*">
-		<Border Classes="Hover" Theme="{StaticResource CardBorder}" Grid.ColumnSpan="2">
+		<Border Classes="Hover" Theme="{DynamicResource CardBorder}" Grid.ColumnSpan="2">
 			<Grid RowDefinitions="*,*,*" ColumnDefinitions="*,*,*,Auto">
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBlock Text="{Binding WorkDocument.Number}" Classes="H4" Theme="{StaticResource TitleTextBlock}"/>
-					<TextBlock Text="{Binding WorkDocument.ATCUD}" Classes="H4 Success" Theme="{StaticResource TitleTextBlock}"/>
+					<TextBlock Text="{Binding WorkDocument.Number}" Classes="H4" Theme="{DynamicResource TitleTextBlock}"/>
+					<TextBlock Text="{Binding WorkDocument.ATCUD}" Classes="H4 Success" Theme="{DynamicResource TitleTextBlock}"/>
 				</StackPanel>
 				<TextBlock Text="{Binding WorkDocument.Date}" Grid.Row="1" Grid.Column="0" />
 				<TextBlock Text="{Binding WorkDocument.SystemDate}" Grid.Row="1" Grid.Column="0" />
@@ -29,12 +29,12 @@
 			</Grid>
 		</Border>
 
-		<Border Classes="Hover" Theme="{StaticResource CardBorder}"
+		<Border Classes="Hover" Theme="{DynamicResource CardBorder}"
 				Grid.Row="1" Grid.ColumnSpan="2">
 			<Grid RowDefinitions="*,*,*" ColumnDefinitions="*,*,*,Auto">
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBlock Text="{Binding InvoiceDocument.Number}" Classes="H4" Theme="{StaticResource TitleTextBlock}"/>
-					<TextBlock Text="{Binding InvoiceDocument.ATCUD}" Classes="H4 Success" Theme="{StaticResource TitleTextBlock}"/>
+					<TextBlock Text="{Binding InvoiceDocument.Number}" Classes="H4" Theme="{DynamicResource TitleTextBlock}"/>
+					<TextBlock Text="{Binding InvoiceDocument.ATCUD}" Classes="H4 Success" Theme="{DynamicResource TitleTextBlock}"/>
 				</StackPanel>
 				<TextBlock Text="{Binding InvoiceDocument.Date}" Grid.Row="1" Grid.Column="0" />
 				<TextBlock Text="{Binding InvoiceDocument.SystemDate}" Grid.Row="1" Grid.Column="0" />
@@ -49,7 +49,7 @@
 			</Grid>
 		</Border>
 
-		<Border Classes="Hover" Theme="{StaticResource CardBorder}"
+		<Border Classes="Hover" Theme="{DynamicResource CardBorder}"
 				Grid.Row="2">
 			<StackPanel>
 				<TextBlock Text="Teve origem neste documento" />
@@ -64,7 +64,7 @@
 			</StackPanel>
 		</Border>
 
-		<Border Classes="Hover" Theme="{StaticResource CardBorder}"
+		<Border Classes="Hover" Theme="{DynamicResource CardBorder}"
 				Grid.Row="2" Grid.Column="1">
 			<StackPanel>
 				<TextBlock Text="Deu origem a este documento" />

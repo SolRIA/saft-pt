@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,12 +10,16 @@ namespace SolRIA.SAFT.Desktop
 {
     public class App : Application
     {
+        private IThemeService _themeService;
+
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
 #if DEBUG
             this.AttachDeveloperTools();
 #endif
+            _themeService = new ThemeService();
+            _themeService.ApplySavedTheme();
         }
 
         public override void OnFrameworkInitializationCompleted()
@@ -34,10 +38,11 @@ namespace SolRIA.SAFT.Desktop
             base.OnFrameworkInitializationCompleted();
         }
 
-        private static void InitServices(MainWindow mainWindow)
+        private void InitServices(MainWindow mainWindow)
         {
             var services = new ServiceCollection();
 
+            services.AddSingleton<IThemeService>(_themeService ?? new ThemeService());
             services.AddSingleton<INavigationService>(new NavigationService());
             services.AddSingleton<ISaftValidator, SaftValidator>();
             services.AddSingleton<IDatabaseService, DatabaseService>();

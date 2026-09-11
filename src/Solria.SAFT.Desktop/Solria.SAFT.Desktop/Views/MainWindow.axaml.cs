@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Avalonia.Interactivity;
@@ -30,16 +30,6 @@ namespace SolRIA.SAFT.Desktop.Views
             };
         }
 
-        private void ToggleButton_OnIsCheckedChanged(object sender, RoutedEventArgs e)
-        {
-            var app = Application.Current;
-            if (app is not null)
-            {
-                var theme = app.ActualThemeVariant;
-                app.RequestedThemeVariant = theme == ThemeVariant.Dark ? ThemeVariant.Light : ThemeVariant.Dark;
-            }
-        }
-
         public void NavigateToFirstPage()
         {
             var vm = new MainWindowViewModel();
@@ -59,16 +49,31 @@ namespace SolRIA.SAFT.Desktop.Views
 
         public void UpdateVersionInfo(string version)
         {
-
+            if (DataContext is MainWindowViewModel vm)
+            {
+                vm.AppVersion = version;
+            }
         }
         public void SetTitle(string title)
         {
             if (string.IsNullOrWhiteSpace(title) == false)
+            {
                 Title = "SolRIA SAFT - Validador | " + title;
+                if (DataContext is MainWindowViewModel vm)
+                {
+                    vm.LoadedCompanyName = title;
+                    vm.HasLoadedFile = true;
+                }
+            }
         }
         public void SetFileName(string file)
         {
             FileNameTxt.Text = file;
+            if (DataContext is MainWindowViewModel vm)
+            {
+                vm.LoadedFileName = System.IO.Path.GetFileName(file);
+                vm.HasLoadedFile = !string.IsNullOrWhiteSpace(file);
+            }
         }
         public void AddMessage(string message)
         {

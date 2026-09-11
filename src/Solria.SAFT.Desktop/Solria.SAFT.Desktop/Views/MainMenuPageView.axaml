@@ -1,59 +1,407 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
 			 xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 x:DataType="vm:MainWindowViewModel"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="SolRIA.SAFT.Desktop.Views.MainMenuPageView">
+			 mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="750"
+			 x:Class="SolRIA.SAFT.Desktop.Views.MainMenuPageView">
 
-	<Grid RowDefinitions="*,155,*" ColumnDefinitions="*,155,155,155,*">
-		<Grid.Styles>
-			<Style Selector="Button">
-				<Setter Property="Margin" Value="5"/>
-				<Setter Property="Grid.Row" Value="1"/>
-				<Setter Property="Width" Value="150"/>
-				<Setter Property="Height" Value="150"/>
-			</Style>
-			<Style Selector="TextBlock">
-				<Setter Property="TextAlignment" Value="Center"/>
-				<Setter Property="FontSize" Value="20"/>
-				<Setter Property="Grid.Row" Value="1"/>
-				<Setter Property="Foreground" Value="White"/>
-			</Style>
-			<Style Selector="icons|MaterialIcon">
-				<Setter Property="Width" Value="50"/>
-				<Setter Property="Height" Value="50"/>
-			</Style>
-		</Grid.Styles>
+	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+		<StackPanel MaxWidth="1200" Margin="24,20" Spacing="24">
 
-		<Button Command="{Binding OpenSaftCommand}" Grid.Column="1"
-				Foreground="{StaticResource SemiBlue4}">
-			<Grid RowDefinitions="*,40" ColumnSpacing="5">
-				<icons:MaterialIcon Kind="FileCode" />
+			<!-- Hero / Welcome Banner -->
+			<Border Theme="{DynamicResource CardBorder}" Padding="24,20">
+				<Grid ColumnDefinitions="*,Auto">
+					<StackPanel Spacing="6" VerticalAlignment="Center">
+						<StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+							<icons:MaterialIcon Kind="FileCheckOutline" Width="28" Height="28"
+												Foreground="{DynamicResource SemiColorPrimary}"/>
+							<TextBlock Text="Validador e Analisador SAF-T (PT)"
+									   FontSize="22" FontWeight="Bold"
+									   Foreground="{DynamicResource SemiColorText0}"/>
+						</StackPanel>
+						<TextBlock Text="Validação de estrutura, regras de negócio e assinaturas digitais da Autoridade Tributária (AT)."
+								   FontSize="14"
+								   Foreground="{DynamicResource SemiColorText1}"/>
+					</StackPanel>
 
-				<TextBlock Text="SAFT-PT" />
+					<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+						<Button Command="{Binding OpenSaftCommand}"
+								Classes="Primary" Theme="{DynamicResource SolidButton}"
+								Padding="16,10" Height="42">
+							<StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+								<icons:MaterialIcon Kind="FolderOpenOutline" Width="20" Height="20"/>
+								<TextBlock Text="Abrir Ficheiro SAF-T" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+							</StackPanel>
+						</Button>
+					</StackPanel>
+				</Grid>
+			</Border>
+
+			<!-- Primary Modules Grid (4 Action Cards) -->
+			<Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="16">
+
+				<!-- Card 1: SAF-T (PT) -->
+				<Border Grid.Column="0" Theme="{DynamicResource CardBorder}" Classes="Hover" Padding="18">
+					<Grid RowDefinitions="Auto,Auto,*,Auto" MinHeight="175">
+						<Border Grid.Row="0" Width="44" Height="44" CornerRadius="10"
+								Background="{DynamicResource SemiColorPrimaryLight}"
+								HorizontalAlignment="Left" Margin="0,0,0,12">
+							<icons:MaterialIcon Kind="FileCodeOutline" Width="24" Height="24"
+												Foreground="{DynamicResource SemiColorPrimary}"/>
+						</Border>
+
+						<StackPanel Grid.Row="1" Spacing="4" Margin="0,0,0,8">
+							<TextBlock Text="SAF-T (PT)" FontSize="16" FontWeight="Bold"
+									   Foreground="{DynamicResource SemiColorText0}"/>
+							<TextBlock Text="Faturação e Contabilidade" FontSize="12"
+									   Foreground="{DynamicResource SemiColorText2}"/>
+						</StackPanel>
+
+						<TextBlock Grid.Row="2"
+								   Text="Valide faturas, recibos, clientes, produtos e assinaturas de certificação AT."
+								   FontSize="12" TextWrapping="Wrap"
+								   Foreground="{DynamicResource SemiColorText1}"
+								   Margin="0,0,0,14"/>
+
+						<Button Grid.Row="3" Command="{Binding OpenSaftCommand}"
+								Classes="Primary" Theme="{DynamicResource SolidButton}"
+								HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+								Padding="12,8">
+							<StackPanel Orientation="Horizontal" Spacing="6">
+								<icons:MaterialIcon Kind="FileEyeOutline" Width="16" Height="16"/>
+								<TextBlock Text="Validar SAF-T" FontSize="13" FontWeight="SemiBold"/>
+							</StackPanel>
+						</Button>
+					</Grid>
+				</Border>
+
+				<!-- Card 2: Stocks -->
+				<Border Grid.Column="1" Theme="{DynamicResource CardBorder}" Classes="Hover" Padding="18">
+					<Grid RowDefinitions="Auto,Auto,*,Auto" MinHeight="175">
+						<Border Grid.Row="0" Width="44" Height="44" CornerRadius="10"
+								Background="{DynamicResource SemiColorPrimaryLight}"
+								HorizontalAlignment="Left" Margin="0,0,0,12">
+							<icons:MaterialIcon Kind="BarcodeScan" Width="24" Height="24"
+												Foreground="{StaticResource SemiOrange4}"/>
+						</Border>
+
+						<StackPanel Grid.Row="1" Spacing="4" Margin="0,0,0,8">
+							<TextBlock Text="Existências (Stocks)" FontSize="16" FontWeight="Bold"
+									   Foreground="{DynamicResource SemiColorText0}"/>
+							<TextBlock Text="Inventário Anual" FontSize="12"
+									   Foreground="{DynamicResource SemiColorText2}"/>
+						</StackPanel>
+
+						<TextBlock Grid.Row="2"
+								   Text="Validação de ficheiros XML e CSV de comunicação de inventários à AT."
+								   FontSize="12" TextWrapping="Wrap"
+								   Foreground="{DynamicResource SemiColorText1}"
+								   Margin="0,0,0,14"/>
+
+						<Button Grid.Row="3" Command="{Binding OpenStocksCommand}"
+								Classes="Warning"
+								HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+								Padding="12,8">
+							<StackPanel Orientation="Horizontal" Spacing="6">
+								<icons:MaterialIcon Kind="Warehouse" Width="16" Height="16"/>
+								<TextBlock Text="Validar Stocks" FontSize="13" FontWeight="SemiBold"/>
+							</StackPanel>
+						</Button>
+					</Grid>
+				</Border>
+
+				<!-- Card 3: Documentos AT -->
+				<Border Grid.Column="2" Theme="{DynamicResource CardBorder}" Classes="Hover" Padding="18">
+					<Grid RowDefinitions="Auto,Auto,*,Auto" MinHeight="175">
+						<Border Grid.Row="0" Width="44" Height="44" CornerRadius="10"
+								Background="{DynamicResource SemiColorPrimaryLight}"
+								HorizontalAlignment="Left" Margin="0,0,0,12">
+							<icons:MaterialIcon Kind="CloudDownloadOutline" Width="24" Height="24"
+												Foreground="{StaticResource SemiPurple4}"/>
+						</Border>
+
+						<StackPanel Grid.Row="1" Spacing="4" Margin="0,0,0,8">
+							<TextBlock Text="Documentos AT" FontSize="16" FontWeight="Bold"
+									   Foreground="{DynamicResource SemiColorText0}"/>
+							<TextBlock Text="Faturas Eletrónicas JSON" FontSize="12"
+									   Foreground="{DynamicResource SemiColorText2}"/>
+						</StackPanel>
+
+						<TextBlock Grid.Row="2"
+								   Text="Importe e analise ficheiros JSON obtidos a partir do portal da AT."
+								   FontSize="12" TextWrapping="Wrap"
+								   Foreground="{DynamicResource SemiColorText1}"
+								   Margin="0,0,0,14"/>
+
+						<Button Grid.Row="3" Command="{Binding OpenDocumentsATCommand}"
+								Classes="Secondary"
+								HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+								Padding="12,8">
+							<StackPanel Orientation="Horizontal" Spacing="6">
+								<icons:MaterialIcon Kind="FileDocumentOutline" Width="16" Height="16"/>
+								<TextBlock Text="Abrir Documentos" FontSize="13" FontWeight="SemiBold"/>
+							</StackPanel>
+						</Button>
+					</Grid>
+				</Border>
+
+				<!-- Card 4: Transporte -->
+				<Border Grid.Column="3" Theme="{DynamicResource CardBorder}" Classes="Hover" Padding="18">
+					<Grid RowDefinitions="Auto,Auto,*,Auto" MinHeight="175">
+						<Border Grid.Row="0" Width="44" Height="44" CornerRadius="10"
+								Background="{DynamicResource SemiColorPrimaryLight}"
+								HorizontalAlignment="Left" Margin="0,0,0,12">
+							<icons:MaterialIcon Kind="TruckFastOutline" Width="24" Height="24"
+												Foreground="{StaticResource SemiGreen4}"/>
+						</Border>
+
+						<StackPanel Grid.Row="1" Spacing="4" Margin="0,0,0,8">
+							<TextBlock Text="Guias Transporte" FontSize="16" FontWeight="Bold"
+									   Foreground="{DynamicResource SemiColorText0}"/>
+							<TextBlock Text="Movimentação de Bens" FontSize="12"
+									   Foreground="{DynamicResource SemiColorText2}"/>
+						</StackPanel>
+
+						<TextBlock Grid.Row="2"
+								   Text="Conferência e validação de guias de remessa e transporte."
+								   FontSize="12" TextWrapping="Wrap"
+								   Foreground="{DynamicResource SemiColorText1}"
+								   Margin="0,0,0,14"/>
+
+						<Button Grid.Row="3" Command="{Binding OpenTransportCommand}"
+								Classes="Success"
+								HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+								Padding="12,8">
+							<StackPanel Orientation="Horizontal" Spacing="6">
+								<icons:MaterialIcon Kind="TruckOutline" Width="16" Height="16"/>
+								<TextBlock Text="Abrir Transporte" FontSize="13" FontWeight="SemiBold"/>
+							</StackPanel>
+						</Button>
+					</Grid>
+				</Border>
+
 			</Grid>
-		</Button>
 
-		<Button Command="{Binding OpenTransportCommand}" Grid.Column="2"
-				Foreground="{StaticResource SemiGreen4}">
-			<Grid RowDefinitions="*,40" ColumnSpacing="5">
-				<icons:MaterialIcon Kind="TruckFastOutline" />
-				
-				<TextBlock Text="TRANSPORTE" FontSize="18"/>
+			<!-- Secondary Section: Recent Files (Left) & Quick Tools (Right) -->
+			<Grid ColumnDefinitions="*,360" ColumnSpacing="20">
+
+				<!-- Left: Ficheiros Recentes -->
+				<Border Grid.Column="0" Theme="{DynamicResource CardBorder}" Padding="20">
+					<Grid RowDefinitions="Auto,*">
+						<!-- Header -->
+						<Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,14">
+							<StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+								<icons:MaterialIcon Kind="History" Width="20" Height="20"
+													Foreground="{DynamicResource SemiColorPrimary}"/>
+								<TextBlock Text="Ficheiros Recentes" FontSize="16" FontWeight="Bold"
+										   Foreground="{DynamicResource SemiColorText0}"/>
+							</StackPanel>
+
+							<Button Grid.Column="1" Command="{Binding ClearRecentFilesCommand}"
+									Theme="{DynamicResource BorderlessButton}"
+									Padding="8,4"
+									IsVisible="{Binding RecentFilesDashboard.Count}">
+								<StackPanel Orientation="Horizontal" Spacing="4">
+									<icons:MaterialIcon Kind="DeleteSweepOutline" Width="16" Height="16"
+														Foreground="{DynamicResource SemiColorText2}"/>
+									<TextBlock Text="Limpar histórico" FontSize="12"
+											   Foreground="{DynamicResource SemiColorText2}"/>
+								</StackPanel>
+							</Button>
+						</Grid>
+
+						<!-- Empty State -->
+						<Border Grid.Row="1" Padding="20"
+								IsVisible="{Binding !RecentFilesDashboard.Count}">
+							<StackPanel Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+								<icons:MaterialIcon Kind="FileQuestionOutline" Width="36" Height="36"
+													Foreground="{DynamicResource SemiColorText3}"/>
+								<TextBlock Text="Ainda não abriu nenhum ficheiro."
+										   FontSize="13" TextAlignment="Center"
+										   Foreground="{DynamicResource SemiColorText2}"/>
+							</StackPanel>
+						</Border>
+
+						<!-- Recent Files List -->
+						<ItemsControl Grid.Row="1" ItemsSource="{Binding RecentFilesDashboard}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="vm:RecentFileItemViewModel">
+									<Button Command="{Binding OpenCommand}" CommandParameter="{Binding FullPath}"
+											Theme="{DynamicResource BorderlessButton}"
+											HorizontalAlignment="Stretch"
+											HorizontalContentAlignment="Stretch"
+											Padding="10,8" Margin="0,2">
+										<Grid ColumnDefinitions="Auto,*,Auto">
+											<Border Grid.Column="0" Width="32" Height="32" CornerRadius="6"
+													Background="{DynamicResource SemiColorBackground2}"
+													VerticalAlignment="Center" Margin="0,0,12,0">
+												<icons:MaterialIcon Kind="FileXmlBox" Width="20" Height="20"
+																	Foreground="{DynamicResource SemiColorPrimary}"/>
+											</Border>
+
+											<StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+												<TextBlock Text="{Binding FileName}" FontSize="13" FontWeight="SemiBold"
+														   Foreground="{DynamicResource SemiColorText0}"
+														   TextTrimming="CharacterEllipsis"/>
+												<TextBlock Text="{Binding Directory}" FontSize="11"
+														   Foreground="{DynamicResource SemiColorText2}"
+														   TextTrimming="CharacterEllipsis"/>
+											</StackPanel>
+
+											<icons:MaterialIcon Grid.Column="2" Kind="ArrowRight" Width="16" Height="16"
+																Foreground="{DynamicResource SemiColorText3}"
+																VerticalAlignment="Center" Margin="8,0,0,0"/>
+										</Grid>
+									</Button>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</Grid>
+				</Border>
+
+				<!-- Right: Ferramentas Rápidas & Info -->
+				<StackPanel Grid.Column="1" Spacing="16">
+
+					<!-- Ferramentas Rápidas Card -->
+					<Border Theme="{DynamicResource CardBorder}" Padding="18">
+						<StackPanel Spacing="14">
+							<StackPanel Orientation="Horizontal" Spacing="8">
+								<icons:MaterialIcon Kind="WrenchOutline" Width="20" Height="20"
+													Foreground="{DynamicResource SemiColorPrimary}"/>
+								<TextBlock Text="Ferramentas Rápidas" FontSize="16" FontWeight="Bold"
+										   Foreground="{DynamicResource SemiColorText0}"/>
+							</StackPanel>
+
+							<!-- Tool 1: PEM Converter -->
+							<Button Command="{Binding OpenPemDialogCommand}"
+									Theme="{DynamicResource BorderlessButton}"
+									HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+									Padding="10,8">
+								<Grid ColumnDefinitions="Auto,*,Auto">
+									<Border Grid.Column="0" Width="32" Height="32" CornerRadius="6"
+											Background="{DynamicResource SemiColorPrimaryLight}"
+											VerticalAlignment="Center" Margin="0,0,10,0">
+										<icons:MaterialIcon Kind="KeyOutline" Width="18" Height="18"
+															Foreground="{DynamicResource SemiColorPrimary}"/>
+									</Border>
+									<StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+										<TextBlock Text="Converter Chave .PEM" FontSize="13" FontWeight="SemiBold"
+												   Foreground="{DynamicResource SemiColorText0}"/>
+										<TextBlock Text="Gere parâmetros RSA .NET" FontSize="11"
+												   Foreground="{DynamicResource SemiColorText2}"/>
+									</StackPanel>
+									<icons:MaterialIcon Grid.Column="2" Kind="ChevronRight" Width="16" Height="16"
+														Foreground="{DynamicResource SemiColorText3}"
+														VerticalAlignment="Center"/>
+								</Grid>
+							</Button>
+
+							<!-- Tool 2: Hash Tester -->
+							<Button Command="{Binding OpenHashDialogCommand}"
+									Theme="{DynamicResource BorderlessButton}"
+									HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+									Padding="10,8">
+								<Grid ColumnDefinitions="Auto,*,Auto">
+									<Border Grid.Column="0" Width="32" Height="32" CornerRadius="6"
+											Background="{DynamicResource SemiColorPrimaryLight}"
+											VerticalAlignment="Center" Margin="0,0,10,0">
+										<icons:MaterialIcon Kind="ShieldCheckOutline" Width="18" Height="18"
+															Foreground="{DynamicResource SemiColorPrimary}"/>
+									</Border>
+									<StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+										<TextBlock Text="Testar Hash de Faturação" FontSize="13" FontWeight="SemiBold"
+												   Foreground="{DynamicResource SemiColorText0}"/>
+										<TextBlock Text="Valide a assinatura digital" FontSize="11"
+												   Foreground="{DynamicResource SemiColorText2}"/>
+									</StackPanel>
+									<icons:MaterialIcon Grid.Column="2" Kind="ChevronRight" Width="16" Height="16"
+														Foreground="{DynamicResource SemiColorText3}"
+														VerticalAlignment="Center"/>
+								</Grid>
+							</Button>
+						</StackPanel>
+					</Border>
+
+					<!-- Informação de Conformidade Card -->
+					<Border Theme="{DynamicResource CardBorder}" Padding="16">
+						<StackPanel Spacing="10">
+							<StackPanel Orientation="Horizontal" Spacing="8">
+								<icons:MaterialIcon Kind="ShieldCheck" Width="18" Height="18"
+													Foreground="{DynamicResource SemiColorSuccess}"/>
+								<TextBlock Text="Conformidade SAF-T (PT)" FontSize="13" FontWeight="Bold"
+										   Foreground="{DynamicResource SemiColorText0}"/>
+							</StackPanel>
+							<TextBlock Text="Compatível com as portarias em vigor: Portaria 302/2016 (SAF-T 1.04_01) e anteriores."
+									   FontSize="11" TextWrapping="Wrap"
+									   Foreground="{DynamicResource SemiColorText1}"/>
+							<Border Background="{DynamicResource SemiColorBackground2}"
+									CornerRadius="4" Padding="8,4">
+								<TextBlock Text="Consulte o site oficial da Autoridade Tributária para obter informações legais, fiscais e efetuar o envio de ficheiros."
+										   FontSize="11" TextWrapping="Wrap"
+										   Foreground="{DynamicResource SemiColorText2}"/>
+							</Border>
+
+							<Separator Height="1" Background="{DynamicResource SemiColorBorder}" Margin="0,2"/>
+
+							<!-- Botão 1: Portal das Finanças (Informações Legais) -->
+							<Button Command="{Binding OpenAtPortalCommand}"
+									Theme="{DynamicResource BorderlessButton}"
+									HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+									Padding="8,6"
+									ToolTip.Tip="Abrir o site oficial da AT para obter informações legais (https://www.portaldasfinancas.gov.pt)">
+								<Grid ColumnDefinitions="Auto,*,Auto">
+									<Border Grid.Column="0" Width="28" Height="28" CornerRadius="6"
+											Background="{DynamicResource SemiColorPrimaryLight}"
+											VerticalAlignment="Center" Margin="0,0,10,0">
+										<icons:MaterialIcon Kind="Web" Width="16" Height="16"
+															Foreground="{DynamicResource SemiColorPrimary}"/>
+									</Border>
+									<StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+										<TextBlock Text="Portal das Finanças (Oficial)" FontSize="12" FontWeight="SemiBold"
+												   Foreground="{DynamicResource SemiColorText0}"/>
+										<TextBlock Text="Site oficial da AT para informações legais" FontSize="10"
+												   Foreground="{DynamicResource SemiColorText2}"/>
+									</StackPanel>
+									<icons:MaterialIcon Grid.Column="2" Kind="OpenInNew" Width="14" Height="14"
+														Foreground="{DynamicResource SemiColorText3}"
+														VerticalAlignment="Center"/>
+								</Grid>
+							</Button>
+
+							<!-- Botão 2: Upload SAF-T (e-Fatura AT) -->
+							<Button Command="{Binding OpenAtUploadSaftCommand}"
+									Theme="{DynamicResource BorderlessButton}"
+									HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+									Padding="8,6"
+									ToolTip.Tip="Aceder ao site da AT para efetuar o upload do SAF-T (https://faturas.portaldasfinancas.gov.pt/)">
+								<Grid ColumnDefinitions="Auto,*,Auto">
+									<Border Grid.Column="0" Width="28" Height="28" CornerRadius="6"
+											Background="{DynamicResource SemiColorPrimaryLight}"
+											VerticalAlignment="Center" Margin="0,0,10,0">
+										<icons:MaterialIcon Kind="CloudUploadOutline" Width="16" Height="16"
+															Foreground="{StaticResource SemiGreen4}"/>
+									</Border>
+									<StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+										<TextBlock Text="Upload SAF-T (e-Fatura)" FontSize="12" FontWeight="SemiBold"
+												   Foreground="{DynamicResource SemiColorText0}"/>
+										<TextBlock Text="Aceder ao site da AT para envio do SAF-T" FontSize="10"
+												   Foreground="{DynamicResource SemiColorText2}"/>
+									</StackPanel>
+									<icons:MaterialIcon Grid.Column="2" Kind="OpenInNew" Width="14" Height="14"
+														Foreground="{DynamicResource SemiColorText3}"
+														VerticalAlignment="Center"/>
+								</Grid>
+							</Button>
+						</StackPanel>
+					</Border>
+
+				</StackPanel>
+
 			</Grid>
-		</Button>
 
-		<Button Command="{Binding OpenStocksCommand}" Grid.Column="3"
-				Foreground="{StaticResource SemiOrange4}">
-			<Grid RowDefinitions="*,40" ColumnSpacing="5">
-				<icons:MaterialIcon Kind="BarcodeScan" />
-				
-				<TextBlock Text="STOCKS" />
-			</Grid>
-		</Button>
-
-	</Grid>
+		</StackPanel>
+	</ScrollViewer>
 </UserControl>

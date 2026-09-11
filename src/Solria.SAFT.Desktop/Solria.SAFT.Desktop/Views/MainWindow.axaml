@@ -1,46 +1,185 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
         xmlns:views="clr-namespace:SolRIA.SAFT.Desktop.Views"
+        xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="700"
         x:Class="SolRIA.SAFT.Desktop.Views.MainWindow"
-		x:DataType="vm:MainWindowViewModel"
-		x:CompileBindings="True"
+        x:DataType="vm:MainWindowViewModel"
+        x:CompileBindings="True"
         Icon="/Assets/solria.ico"
-        Title="SolRIA SAFT - Validador" 
-		WindowState="Maximized" WindowStartupLocation="CenterScreen">
+        Title="SolRIA SAFT - Validador"
+        WindowState="Maximized" WindowStartupLocation="CenterScreen">
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="StackPanel.center">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Window.Styles>
 
-	<Grid RowDefinitions="45,*,40">
+    <Grid RowDefinitions="52,*,34">
 
-		<Menu ItemsSource="{Binding MenuItems}" FontSize="16" Grid.Row="0"
-			  HorizontalAlignment="Stretch">
-			<Menu.Styles>
-				<Style Selector="MenuItem" x:DataType="vm:MenuItemViewModel">
-					<Setter Property="Header" Value="{Binding Header}"/>
-					<Setter Property="ItemsSource" Value="{Binding Items}"/>
-					<Setter Property="Command" Value="{Binding Command}"/>
-					<Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-				</Style>
-			</Menu.Styles>
-		</Menu>
+        <!-- Modern Header Bar -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource SemiColorBackground0}"
+                BorderBrush="{DynamicResource SemiColorBorder}"
+                BorderThickness="0,0,0,1"
+                Padding="12,4">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto">
 
-		<!--<MenuItem Header="_Ficheiro">
-			<MenuItem Header="Abrir _SAFT" Command="{CompiledBinding OpenSaftCommand}"/>
-			<MenuItem Header="Abrir _Transporte" Command="{CompiledBinding OpenTransportCommand}"/>
-			<MenuItem Header="Abrir _Stocks" Command="{CompiledBinding OpenStocksCommand}"/>
-			<MenuItem Header="Recentes" Command="{CompiledBinding RecentFiles}"/>
-			<MenuItem Header="_Sair" Command="{CompiledBinding ExitCommand}"/>
-		</MenuItem>-->
+                <!-- App Brand & Home Navigation Button -->
+                <Button Grid.Column="0"
+                        Command="{Binding GoToHomeCommand}"
+                        Theme="{DynamicResource BorderlessButton}"
+                        ToolTip.Tip="Ir para o ecrã inicial (Início)"
+                        Padding="8,4" Margin="0,0,12,0">
+                    <StackPanel Spacing="8" Classes="center">
+                        <Image Source="/Assets/solria.ico" Width="24" Height="24" VerticalAlignment="Center"/>
+                        <TextBlock Text="SolRIA" FontWeight="Bold" FontSize="17" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SemiColorText0}"/>
+                        <Border Background="{DynamicResource SemiColorPrimaryLight}"
+                                CornerRadius="4" Padding="6,1" VerticalAlignment="Center">
+                            <TextBlock Text="SAF-T" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SemiColorPrimary}"/>
+                        </Border>
+                    </StackPanel>
+                </Button>
 
-		<!-- current view -->
-		<Grid x:Name="mainContentGrid" Grid.Row="1">
-			<views:MainMenuPageView />
-		</Grid>
+                <Separator Grid.Column="1" Margin="0,8,12,8" Width="1"
+                           Background="{DynamicResource SemiColorBorder}"/>
 
-		<Grid Grid.Row="2" Margin="0" Background="{StaticResource SemiGrey0}">
-			<TextBlock x:Name="FileNameTxt" VerticalAlignment="Center" Margin="10,0"/>
-		</Grid>
-	</Grid>
+                <!-- Main Menu -->
+                <Menu Grid.Column="2"
+                      ItemsSource="{Binding MenuItems}"
+                      FontSize="14"
+                      VerticalAlignment="Center">
+                    <Menu.Styles>
+                        <Style Selector="MenuItem" x:DataType="vm:MenuItemViewModel">
+                            <Setter Property="Header" Value="{Binding Header}"/>
+                            <Setter Property="ItemsSource" Value="{Binding Items}"/>
+                            <Setter Property="Command" Value="{Binding Command}"/>
+                            <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+                        </Style>
+                    </Menu.Styles>
+                </Menu>
+
+                <!-- Loaded Company Badge -->
+                <Border Grid.Column="3"
+                        IsVisible="{Binding HasLoadedFile}"
+                        Background="{DynamicResource SemiColorBackground1}"
+                        BorderBrush="{DynamicResource SemiColorBorder}"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="10,4"
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center">
+                    <StackPanel Spacing="6">
+                        <icons:MaterialIcon Kind="Domain" Width="16" Height="16"
+                                            Foreground="{DynamicResource SemiColorPrimary}"/>
+                        <TextBlock Text="{Binding LoadedCompanyName}" FontSize="12" FontWeight="SemiBold"
+                                   MaxWidth="260" TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SemiColorText0}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Theme Selector Quick Button with Menu Flyout -->
+                <Button Grid.Column="4"
+                        Theme="{DynamicResource BorderlessButton}"
+                        ToolTip.Tip="{Binding CurrentThemeTooltip}"
+                        Padding="8,6" Height="36">
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <icons:MaterialIcon Kind="{Binding CurrentThemeIcon}" Width="18" Height="18"
+                                            Foreground="{DynamicResource SemiColorPrimary}"/>
+                        <TextBlock Text="{Binding CurrentThemeDisplayName}" FontSize="13" FontWeight="Medium"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource SemiColorText1}"/>
+                        <icons:MaterialIcon Kind="ChevronDown" Width="14" Height="14"
+                                            Foreground="{DynamicResource SemiColorText2}"/>
+                    </StackPanel>
+                    <Button.Flyout>
+                        <MenuFlyout Placement="BottomEdgeAlignedRight">
+                            <MenuItem Header="Seguir Sistema" Command="{Binding SetThemeCommand}" CommandParameter="System">
+                                <MenuItem.Icon>
+                                    <icons:MaterialIcon Kind="Laptop" Width="16" Height="16"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Tema Claro" Command="{Binding SetThemeCommand}" CommandParameter="Light">
+                                <MenuItem.Icon>
+                                    <icons:MaterialIcon Kind="WeatherSunny" Width="16" Height="16"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Tema Escuro" Command="{Binding SetThemeCommand}" CommandParameter="Dark">
+                                <MenuItem.Icon>
+                                    <icons:MaterialIcon Kind="WeatherNight" Width="16" Height="16"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+
+            </Grid>
+        </Border>
+
+        <!-- Current View -->
+        <Grid x:Name="mainContentGrid" Grid.Row="1">
+            <views:MainMenuPageView />
+        </Grid>
+
+        <!-- Modern Status Bar -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource SemiColorBackground0}"
+                BorderBrush="{DynamicResource SemiColorBorder}"
+                BorderThickness="0,1,0,0"
+                Padding="14,0">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+
+                <!-- Active File Path -->
+                <StackPanel Grid.Column="0" Classes="center">
+                    <icons:MaterialIcon Kind="FileDocumentOutline" Width="16" Height="16"
+                                        Foreground="{DynamicResource SemiColorText2}"/>
+                    <TextBlock x:Name="FileNameTxt" FontSize="12"
+                               Foreground="{DynamicResource SemiColorText1}"
+                               VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+
+                <!-- App Version Badge -->
+                <Border Grid.Column="1"
+                        Background="{DynamicResource SemiColorBackground1}"
+                        BorderBrush="{DynamicResource SemiColorBorder}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="6,2"
+                        Margin="12,0"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="{Binding AppVersion, StringFormat='v{0}'}" FontSize="11"
+                               Foreground="{DynamicResource SemiColorText2}"
+                               VerticalAlignment="Center"/>
+                </Border>
+
+                <!-- Theme Status Quick Toggle Button -->
+                <Button Grid.Column="2"
+                        Command="{Binding ToggleThemeCommand}"
+                        Theme="{DynamicResource BorderlessButton}"
+                        ToolTip.Tip="Alternar tema rapidamente (Sistema -> Claro -> Escuro)"
+                        Padding="6,2" Height="26">
+                    <StackPanel Classes="center" Spacing="6">
+                        <icons:MaterialIcon Kind="{Binding CurrentThemeIcon}" Width="14" Height="14"
+                                            Foreground="{DynamicResource SemiColorPrimary}"/>
+                        <TextBlock Text="{Binding CurrentThemeDisplayName}" FontSize="11"
+                                   Foreground="{DynamicResource SemiColorText2}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+            </Grid>
+        </Border>
+
+    </Grid>
 </Window>
