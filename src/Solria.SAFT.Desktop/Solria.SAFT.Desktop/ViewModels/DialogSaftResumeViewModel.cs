@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Parser.Models;
@@ -32,8 +32,8 @@ public partial class DialogSaftResumeViewModel : ViewModelBase
                 TaxRegistrationNumber = saftValidator.SaftFile.Header.TaxRegistrationNumber
             };
 
-            HeaderErrors = erros.Count(m => m.TypeofError == typeof(Models.SaftV4.Header));
-            CustomersErrors = erros.Count(m => m.TypeofError == typeof(Models.SaftV4.Customer));
+            HeaderErrors = erros.Count(m => m.TypeofError == typeof(Header) || m.TypeofError == typeof(Models.SaftV4.Header));
+            CustomersErrors = erros.Count(m => m.TypeofError == typeof(Customer) || m.TypeofError == typeof(Models.SaftV4.Customer));
         }
 
         TotalErrors = erros.Count;

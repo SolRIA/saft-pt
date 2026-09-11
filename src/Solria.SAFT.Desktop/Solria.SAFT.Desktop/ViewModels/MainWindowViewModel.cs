@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Models;
 using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Desktop.Views;
+using SolRIA.SAFT.Parser.Models;
 using SolRIA.SAFT.Parser.Services;
 using System;
 using System.Collections.ObjectModel;
@@ -16,15 +17,15 @@ namespace SolRIA.SAFT.Desktop.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    readonly IDialogManager dialogManager;
-    readonly ISaftValidator saftValidator;
-    readonly IDatabaseService databaseService;
-    readonly INavigationService navigationService;
-    readonly IThemeService themeService;
+    private IDialogManager dialogManager;
+    private ISaftValidator saftValidator;
+    private IDatabaseService databaseService;
+    private INavigationService navigationService;
+    private IThemeService themeService;
 
     private Preferences preferences;
 
-    public MainWindowViewModel()
+    public void Init()
     {
         DatabaseReady = false;
         ShowMenu = false;
@@ -37,6 +38,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
         themeService.ThemeChanged += OnThemeChanged;
         UpdateThemeProperties(themeService.CurrentTheme);
+
+        UseNewParser = saftValidator.UseNewParser;
+        UpdateParserProperties(UseNewParser);
 
         AppVersion = databaseService.GetAppVersion();
 
@@ -58,61 +62,76 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [ObservableProperty]
-    private bool databaseReady;
+    public partial bool DatabaseReady { get; set; }
 
     [ObservableProperty]
-    private bool showMenu;
+    public partial bool ShowMenu { get; set; }
 
     [ObservableProperty]
-    private bool isSaft;
+    public partial bool IsSaft { get; set; }
 
     [ObservableProperty]
-    private bool isStock;
+    public partial bool IsStock { get; set; }
 
     [ObservableProperty]
-    private bool isTransport;
+    public partial bool IsTransport { get; set; }
 
     [ObservableProperty]
-    private string selectedSaftMenu;
+    public partial string SelectedSaftMenu { get; set; }
 
     [ObservableProperty]
-    private string selectedStocksMenu;
+    public partial string SelectedStocksMenu { get; set; }
 
     [ObservableProperty]
-    private string selectedTransportMenu;
+    public partial string SelectedTransportMenu { get; set; }
 
     [ObservableProperty]
-    private ObservableCollection<MenuItemViewModel> recentFiles = new();
+    public partial ObservableCollection<MenuItemViewModel> RecentFiles { get; set; } = new();
 
     [ObservableProperty]
-    private ObservableCollection<RecentFileItemViewModel> recentFilesDashboard = new();
+    public partial ObservableCollection<RecentFileItemViewModel> RecentFilesDashboard { get; set; } = new();
 
     [ObservableProperty]
-    private MenuItemViewModel[] menuItems;
+    public partial MenuItemViewModel[] MenuItems { get; set; }
 
     [ObservableProperty]
-    private string appVersion;
+    public partial string AppVersion { get; set; }
 
     [ObservableProperty]
-    private string loadedFileName;
+    public partial string LoadedFileName { get; set; }
 
     [ObservableProperty]
-    private string loadedCompanyName;
+    public partial string LoadedCompanyName { get; set; }
 
     [ObservableProperty]
-    private bool hasLoadedFile;
+    public partial bool HasLoadedFile { get; set; }
 
     [ObservableProperty]
-    private string currentTheme;
+    public partial string LoadingTitle { get; set; } = "A processar ficheiro SAF-T";
 
     [ObservableProperty]
-    private string currentThemeDisplayName;
+    public partial string LoadingFileName { get; set; }
 
     [ObservableProperty]
-    private string currentThemeIcon;
+    public partial string LoadingStep { get; set; } = "A iniciar...";
 
     [ObservableProperty]
-    private string currentThemeTooltip;
+    public partial string LoadingDetail { get; set; } = "";
+
+    [ObservableProperty]
+    public partial double LoadingProgress { get; set; }
+
+    [ObservableProperty]
+    public partial string CurrentTheme { get; set; }
+
+    [ObservableProperty]
+    public partial string CurrentThemeDisplayName { get; set; }
+
+    [ObservableProperty]
+    public partial string CurrentThemeIcon { get; set; }
+
+    [ObservableProperty]
+    public partial string CurrentThemeTooltip { get; set; }
 
     private void UpdateThemeProperties(string theme)
     {
@@ -153,6 +172,43 @@ public partial class MainWindowViewModel : ViewModelBase
         themeService.ToggleTheme();
     }
 
+    [ObservableProperty]
+    public partial bool UseNewParser { get; set; } = true;
+
+    [ObservableProperty]
+    public partial string UseNewParserDisplayName { get; set; }
+
+    [ObservableProperty]
+    public partial string UseNewParserIcon { get; set; }
+
+    [ObservableProperty]
+    public partial string UseNewParserTooltip { get; set; }
+
+    partial void OnUseNewParserChanged(bool value)
+    {
+        if (saftValidator != null)
+        {
+            saftValidator.UseNewParser = value;
+        }
+        UpdateParserProperties(value);
+        BuildMenu();
+    }
+
+    private void UpdateParserProperties(bool useNew)
+    {
+        UseNewParserDisplayName = useNew ? "Novo Validador (Streaming)" : "Validador Legado (Memória)";
+        UseNewParserIcon = useNew ? "Flash" : "Database";
+        UseNewParserTooltip = useNew
+            ? "A usar o Novo Validador com leitura contínua (Streaming) e gravação em SQLite. Clique para alternar para o Legado."
+            : "A usar o Validador Legado (carrega ficheiro todo para a memória). Clique para alternar para o Novo Validador.";
+    }
+
+    [RelayCommand]
+    private void OnToggleNewParser()
+    {
+        UseNewParser = !UseNewParser;
+    }
+
     [RelayCommand]
     private void OnGoToHome()
     {
@@ -188,7 +244,21 @@ public partial class MainWindowViewModel : ViewModelBase
             Preferences.Save(preferences);
             RefreshRecentFiles();
 
-            await saftValidator.OpenSaftFile(selectedfile);
+            LoadingTitle = "A processar ficheiro SAF-T";
+            LoadingFileName = Path.GetFileName(selectedfile);
+            LoadingStep = "A abrir ficheiro...";
+            LoadingDetail = "A inicializar...";
+            LoadingProgress = 0;
+            IsLoading = true;
+
+            var progress = new Progress<SaftProgress>(p =>
+            {
+                LoadingProgress = p.ProgressPercentage;
+                LoadingStep = p.CurrentStep;
+                LoadingDetail = p.Detail;
+            });
+
+            await saftValidator.OpenSaftFile(selectedfile, progress);
 
             dialogManager.SetFileName(selectedfile);
             dialogManager.SetTitle(saftValidator.SaftFile?.Header?.CompanyName);
@@ -196,6 +266,8 @@ public partial class MainWindowViewModel : ViewModelBase
             LoadedFileName = Path.GetFileName(selectedfile);
             LoadedCompanyName = saftValidator.SaftFile?.Header?.CompanyName ?? "";
             HasLoadedFile = true;
+
+            IsLoading = false;
 
             var vm = new DialogSaftResumeViewModel();
             vm.Init();
@@ -207,7 +279,12 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            IsLoading = false;
             await dialogManager.ShowMessageDialogAsync("Erro", ex.Message, MessageDialogType.Error);
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 
@@ -237,20 +314,48 @@ public partial class MainWindowViewModel : ViewModelBase
         Preferences.Save(preferences);
         RefreshRecentFiles();
 
-        await saftValidator.OpenStockFile(selectedfile);
+        try
+        {
+            LoadingTitle = "A processar existências (Stocks)";
+            LoadingFileName = Path.GetFileName(selectedfile);
+            LoadingStep = "A abrir ficheiro...";
+            LoadingDetail = "A inicializar...";
+            LoadingProgress = 0;
+            IsLoading = true;
 
-        dialogManager.SetFileName(selectedfile);
-        dialogManager.SetTitle(saftValidator.StockFile?.StockHeader?.TaxRegistrationNumber);
+            var progress = new Progress<SaftProgress>(p =>
+            {
+                LoadingProgress = p.ProgressPercentage;
+                LoadingStep = p.CurrentStep;
+                LoadingDetail = p.Detail;
+            });
 
-        LoadedFileName = Path.GetFileName(selectedfile);
-        LoadedCompanyName = saftValidator.StockFile?.StockHeader?.TaxRegistrationNumber ?? "";
-        HasLoadedFile = true;
+            await saftValidator.OpenStockFile(selectedfile, progress);
 
-        var vm = new StocksProductsPageViewModel();
-        navigationService.NavigateTo(new StocksProductsPageView { DataContext = vm });
+            dialogManager.SetFileName(selectedfile);
+            dialogManager.SetTitle(saftValidator.StockFile?.StockHeader?.TaxRegistrationNumber);
 
-        ShowMenu = true;
-        IsStock = true;
+            LoadedFileName = Path.GetFileName(selectedfile);
+            LoadedCompanyName = saftValidator.StockFile?.StockHeader?.TaxRegistrationNumber ?? "";
+            HasLoadedFile = true;
+
+            IsLoading = false;
+
+            var vm = new StocksProductsPageViewModel();
+            navigationService.NavigateTo(new StocksProductsPageView { DataContext = vm });
+
+            ShowMenu = true;
+            IsStock = true;
+        }
+        catch (Exception ex)
+        {
+            IsLoading = false;
+            await dialogManager.ShowMessageDialogAsync("Erro", ex.Message, MessageDialogType.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     [RelayCommand]
@@ -319,7 +424,21 @@ public partial class MainWindowViewModel : ViewModelBase
             Preferences.Save(preferences);
             RefreshRecentFiles();
 
-            await saftValidator.OpenSaftFile(saft_file);
+            LoadingTitle = "A processar ficheiro SAF-T";
+            LoadingFileName = Path.GetFileName(saft_file);
+            LoadingStep = "A abrir ficheiro...";
+            LoadingDetail = "A inicializar...";
+            LoadingProgress = 0;
+            IsLoading = true;
+
+            var progress = new Progress<SaftProgress>(p =>
+            {
+                LoadingProgress = p.ProgressPercentage;
+                LoadingStep = p.CurrentStep;
+                LoadingDetail = p.Detail;
+            });
+
+            await saftValidator.OpenSaftFile(saft_file, progress);
 
             dialogManager.SetFileName(saft_file);
             dialogManager.SetTitle(saftValidator.SaftFile?.Header?.CompanyName);
@@ -327,6 +446,8 @@ public partial class MainWindowViewModel : ViewModelBase
             LoadedFileName = Path.GetFileName(saft_file);
             LoadedCompanyName = saftValidator.SaftFile?.Header?.CompanyName ?? "";
             HasLoadedFile = true;
+
+            IsLoading = false;
 
             //show resume
             var vm = new DialogSaftResumeViewModel();
@@ -339,7 +460,12 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            IsLoading = false;
             await dialogManager.ShowMessageDialogAsync("Erro", ex.Message, MessageDialogType.Error);
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 
@@ -514,6 +640,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 Header = "_Ferramentas",
                 Items =
                 [
+                    new() { Header = UseNewParser ? "✓ Usar Novo Validador (Streaming / SQLite)" : "   Usar Novo Validador (Streaming / SQLite)", Command = ToggleNewParserCommand },
                     new() { Header = "Ler .pem", Command = OpenPemDialogCommand },
                     new() { Header = "Testar Hash", Command = OpenHashDialogCommand }
                 ]

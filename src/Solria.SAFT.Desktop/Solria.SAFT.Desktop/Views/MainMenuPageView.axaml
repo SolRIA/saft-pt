@@ -5,8 +5,24 @@
 			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
 			 xmlns:icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 x:DataType="vm:MainWindowViewModel"
-			 mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="750"
+			 mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="950"
 			 x:Class="SolRIA.SAFT.Desktop.Views.MainMenuPageView">
+
+	<Design.DataContext>
+		<vm:MainWindowViewModel AppVersion="1.0.0" UseNewParser="True"
+								UseNewParserIcon="Flash"
+								UseNewParserDisplayName="Novo Validador (Streaming)">
+			<vm:MainWindowViewModel.RecentFilesDashboard>
+				<vm:RecentFileItemViewModel FileName="Teste.xml" 
+											FullPath="c:\Testes\Teste.xml"
+											Directory="c:\Testes"/>
+
+				<vm:RecentFileItemViewModel FileName="Teste2.xml" 
+											FullPath="c:\Testes\Teste2.xml"
+											Directory="c:\Testes"/>
+			</vm:MainWindowViewModel.RecentFilesDashboard>
+		</vm:MainWindowViewModel>
+	</Design.DataContext>
 
 	<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
 		<StackPanel MaxWidth="1200" Margin="24,20" Spacing="24">
@@ -28,6 +44,27 @@
 					</StackPanel>
 
 					<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+						<Button Command="{Binding ToggleNewParserCommand}"
+								Theme="{DynamicResource BorderlessButton}"
+								ToolTip.Tip="{Binding UseNewParserTooltip}"
+								Padding="0" Height="42">
+							<Border Background="{DynamicResource SemiColorBackground1}"
+									BorderBrush="{DynamicResource SemiColorBorder}"
+									BorderThickness="1"
+									CornerRadius="6"
+									Padding="10,6">
+								<StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+									<icons:MaterialIcon Kind="{Binding UseNewParserIcon}"
+														Width="18" Height="18"
+														Foreground="{DynamicResource SemiColorPrimary}"/>
+									<StackPanel Spacing="1" VerticalAlignment="Center">
+										<TextBlock Text="Motor Validador" FontSize="10" Foreground="{DynamicResource SemiColorText2}"/>
+										<TextBlock Text="{Binding UseNewParserDisplayName}" FontSize="12" FontWeight="SemiBold"
+												   Foreground="{DynamicResource SemiColorText0}"/>
+									</StackPanel>
+								</StackPanel>
+							</Border>
+						</Button>
 						<Button Command="{Binding OpenSaftCommand}"
 								Classes="Primary" Theme="{DynamicResource SolidButton}"
 								Padding="16,10" Height="42">

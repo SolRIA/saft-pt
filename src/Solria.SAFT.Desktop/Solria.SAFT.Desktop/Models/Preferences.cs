@@ -9,6 +9,7 @@ public class Preferences
 {
     public IList<string> RecentFiles { get; set; } = new List<string>();
     public string Theme { get; set; } = "System";
+    public bool UseNewParser { get; set; } = true;
 
     private static string GetFileName()
     {
@@ -88,6 +89,6 @@ public class Preferences
 
         Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SolRIA SAFT"));
 
-        return new Preferences { RecentFiles = new List<string>(), Theme = "System" };
+        return new Preferences { RecentFiles = new List<string>(), Theme = "System", UseNewParser = true };
     }
 }

@@ -1,10 +1,11 @@
-﻿namespace SolRIA.SAFT.Parser.Models;
+namespace SolRIA.SAFT.Parser.Models;
 
-    public class BaseData
+public class BaseData
 {
 	/// <summary>
 	/// Unique id
 	/// </summary>
 	[System.Xml.Serialization.XmlIgnore]
-	public string Pk { get; }
+	public string Pk { get; set; } = System.Guid.NewGuid().ToString();
 }
+

@@ -1,4 +1,4 @@
-﻿CREATE TABLE IF NOT EXISTS `PemFiles` (
+CREATE TABLE IF NOT EXISTS `PemFiles` (
 	`Id`			INTEGER PRIMARY KEY AUTOINCREMENT,
 	`Name`			VARCHAR,
 	`PrivateKey`	BIT,
@@ -395,3 +395,92 @@ CREATE TABLE IF NOT EXISTS PaymentLines (
     -- Tax JSON
     Tax                 TEXT
 );
+
+CREATE TABLE IF NOT EXISTS Suppliers (
+    Id                      TEXT,
+    FileId                  TEXT,
+    SupplierID              TEXT,
+    AccountID               TEXT,
+    SupplierTaxID           TEXT,
+    CompanyName             TEXT,
+    Contact                 TEXT,
+    Telephone               TEXT,
+    Fax                     TEXT,
+    Email                   TEXT,
+    Website                 TEXT,
+    SelfBillingIndicator    TEXT,
+    BillingAddressId        TEXT,
+    ShipFromAddress         TEXT
+);
+
+CREATE TABLE IF NOT EXISTS GeneralLedgerAccounts (
+    Id                  TEXT,
+    FileId              TEXT,
+    TaxonomyReference   TEXT,
+    AccountID           TEXT,
+    AccountDescription  TEXT,
+    OpeningDebitBalance DECIMAL,
+    OpeningCreditBalance DECIMAL,
+    ClosingDebitBalance DECIMAL,
+    ClosingCreditBalance DECIMAL,
+    GroupingCategory    TEXT,
+    GroupingCode        TEXT,
+    TaxonomyCode        TEXT
+);
+
+CREATE TABLE IF NOT EXISTS GeneralLedgerEntries (
+    Id              TEXT,
+    FileId          TEXT,
+    NumberOfEntries TEXT,
+    TotalDebit      FLOAT,
+    TotalCredit     FLOAT
+);
+
+CREATE TABLE IF NOT EXISTS GeneralLedgerJournals (
+    Id          TEXT,
+    FileId      TEXT,
+    JournalID   TEXT,
+    Description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS GeneralLedgerTransactions (
+    Id                  TEXT,
+    JournalId           TEXT,
+    FileId              TEXT,
+    TransactionID       TEXT,
+    Period              TEXT,
+    TransactionDate     TIMESTAMP,
+    SourceID            TEXT,
+    Description         TEXT,
+    DocArchivalNumber   TEXT,
+    TransactionType     TEXT,
+    GLPostingDate       TIMESTAMP,
+    CustomerID          TEXT,
+    SupplierID          TEXT
+);
+
+CREATE TABLE IF NOT EXISTS GeneralLedgerTransactionLines (
+    Id                  TEXT,
+    TransactionId       TEXT,
+    RecordID            TEXT,
+    AccountID           TEXT,
+    SourceDocumentID    TEXT,
+    SystemEntryDate     TIMESTAMP,
+    Description         TEXT,
+    DebitAmount         DECIMAL,
+    CreditAmount        DECIMAL
+);
+
+CREATE INDEX IF NOT EXISTS IX_Invoices_FileId ON Invoices(FileId);
+CREATE INDEX IF NOT EXISTS IX_Invoices_FileId_Date ON Invoices(FileId, InvoiceDate DESC);
+CREATE INDEX IF NOT EXISTS IX_Invoices_InvoiceNo ON Invoices(InvoiceNo);
+CREATE INDEX IF NOT EXISTS IX_InvoiceLines_ParentId ON InvoiceLines(ParentId);
+CREATE INDEX IF NOT EXISTS IX_Customers_FileId ON Customers(FileId);
+CREATE INDEX IF NOT EXISTS IX_Products_FileId ON Products(FileId);
+CREATE INDEX IF NOT EXISTS IX_Suppliers_FileId ON Suppliers(FileId);
+CREATE INDEX IF NOT EXISTS IX_StockMovements_FileId ON StockMovements(FileId);
+CREATE INDEX IF NOT EXISTS IX_StockMovementLines_ParentId ON StockMovementLines(ParentId);
+CREATE INDEX IF NOT EXISTS IX_WorkDocuments_FileId ON WorkDocuments(FileId);
+CREATE INDEX IF NOT EXISTS IX_WorkDocumentLines_ParentId ON WorkDocumentLines(ParentId);
+CREATE INDEX IF NOT EXISTS IX_Payments_FileId ON Payments(FileId);
+CREATE INDEX IF NOT EXISTS IX_PaymentLines_ParentId ON PaymentLines(ParentId);

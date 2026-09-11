@@ -1,6 +1,8 @@
-﻿using Riok.Mapperly.Abstractions;
+using Riok.Mapperly.Abstractions;
+using SolRIA.SAFT.Desktop.Models;
 using SolRIA.SAFT.Parser;
 using SolRIA.SAFT.Parser.Models;
+using SolRIA.SAFT.Parser.Services;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -24,11 +26,32 @@ public class SaftValidator : ISaftValidator
 {
     readonly CultureInfo enCulture = new("en-US");
     private readonly List<ValidationError> _mensagensErro;
+    private readonly IDatabaseService _databaseService;
 
-    public SaftValidator()
+    private bool _useNewParser = true;
+    public bool UseNewParser
     {
+        get => _useNewParser;
+        set
+        {
+            _useNewParser = value;
+            var prefs = Preferences.Load();
+            if (prefs.UseNewParser != value)
+            {
+                prefs.UseNewParser = value;
+                Preferences.Save(prefs);
+            }
+        }
+    }
+
+    public SaftValidator(IDatabaseService databaseService = null)
+    {
+        _databaseService = databaseService ?? AppBootstrap.Resolve<IDatabaseService>();
         _mensagensErro = [];
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+        var prefs = Preferences.Load();
+        _useNewParser = prefs.UseNewParser;
     }
 
     public string SaftFileName { get; set; }
@@ -66,7 +89,7 @@ public class SaftValidator : ISaftValidator
     /// <summary>
     /// Loads the SAFT file
     /// </summary>
-    public async Task OpenSaftFile(string filename)
+    public async Task OpenSaftFile(string filename, IProgress<SaftProgress> progress = null)
     {
         if (File.Exists(filename) == false)
             return;
@@ -74,17 +97,41 @@ public class SaftValidator : ISaftValidator
         SaftFileName = filename;
         _mensagensErro.Clear();
 
-        //deserialize the saft file
-        //var (saftFile, errors) = await SaftParser.ReadFile(SaftFileName);
+        if (UseNewParser)
+        {
+            progress?.Report(new SaftProgress(0, "A abrir ficheiro SAF-T...", "A inicializar leitura em fluxo contínuo..."));
 
-        //SaftFile = saftFile;
+            var dbService = _databaseService ?? AppBootstrap.Resolve<IDatabaseService>();
 
-        //load the existing validations errors
-        //AddErro(errors);
+            // Map 0..100% of streaming read to 0..70% of total process
+            var streamProgress = progress == null ? null : new Progress<SaftProgress>(p =>
+            {
+                progress.Report(new SaftProgress
+                {
+                    ProgressPercentage = p.ProgressPercentage * 0.70,
+                    CurrentStep = p.CurrentStep,
+                    Detail = p.Detail
+                });
+            });
 
-        var saftFileV4 = await Task.Run(() => SaftXmlParser.DeserializeXml<Models.SaftV4.AuditFile>(SaftFileName, Encoding.GetEncoding(1252)));
+            var (saftFile, errors) = await SaftParser.ReadFile(
+                SaftFileName,
+                databaseService: dbService,
+                keepInMemory: true,
+                progress: streamProgress);
 
-        SaftFile = new AuditFileMapper().Map(saftFileV4);
+            SaftFile = saftFile;
+
+            if (errors != null && errors.Count > 0)
+                AddError(errors.ToArray());
+        }
+        else
+        {
+            progress?.Report(new SaftProgress(20, "A ler Ficheiro SAF-T...", "A carregar XML para a memória..."));
+            var saftFileV4 = await Task.Run(() => SaftXmlParser.DeserializeXml<Models.SaftV4.AuditFile>(SaftFileName, Encoding.GetEncoding(1252)));
+            progress?.Report(new SaftProgress(60, "A converter modelos...", "A mapear dados em memória..."));
+            SaftFile = new AuditFileMapper().Map(saftFileV4);
+        }
 
         //init custom navigation properties validations
         if (SaftFile == null)
@@ -93,6 +140,8 @@ public class SaftValidator : ISaftValidator
             AddError(new ValidationError { Description = "Erro ao abrir o ficheiro" });
             return;
         }
+
+        progress?.Report(new SaftProgress(72, "A preparar dados...", "A associar referências entre documentos e linhas..."));
         if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.SalesInvoices != null && SaftFile.SourceDocuments.SalesInvoices.Invoice != null)
         {
             //add the link from the line to the correspondent invoice
@@ -103,9 +152,19 @@ public class SaftValidator : ISaftValidator
                     line.InvoiceNo = invoice.InvoiceNo;
 
                     if (line.ItemElementName == ItemChoiceType4.CreditAmount)
-                        line.CreditAmount = line.Item;
+                    {
+                        if (line.CreditAmount == null || line.CreditAmount == 0)
+                            line.CreditAmount = line.Item;
+                        else if (line.Item == 0 && line.CreditAmount != null)
+                            line.Item = line.CreditAmount.Value;
+                    }
                     if (line.ItemElementName == ItemChoiceType4.DebitAmount)
-                        line.DebitAmount = line.Item;
+                    {
+                        if (line.DebitAmount == null || line.DebitAmount == 0)
+                            line.DebitAmount = line.Item;
+                        else if (line.Item == 0 && line.DebitAmount != null)
+                            line.Item = line.DebitAmount.Value;
+                    }
                 }
             }
         }
@@ -120,9 +179,19 @@ public class SaftValidator : ISaftValidator
                     line.DocNo = doc.DocumentNumber;
 
                     if (line.ItemElementName == ItemChoiceType6.CreditAmount)
-                        line.CreditAmount = line.Item;
+                    {
+                        if (line.CreditAmount == null || line.CreditAmount == 0)
+                            line.CreditAmount = line.Item;
+                        else if (line.Item == 0 && line.CreditAmount != null)
+                            line.Item = line.CreditAmount.Value;
+                    }
                     if (line.ItemElementName == ItemChoiceType6.DebitAmount)
-                        line.DebitAmount = line.Item;
+                    {
+                        if (line.DebitAmount == null || line.DebitAmount == 0)
+                            line.DebitAmount = line.Item;
+                        else if (line.Item == 0 && line.DebitAmount != null)
+                            line.Item = line.DebitAmount.Value;
+                    }
                 }
             }
         }
@@ -137,9 +206,19 @@ public class SaftValidator : ISaftValidator
                     line.DocNo = payment.PaymentRefNo;
 
                     if (line.ItemElementName == ItemChoiceType8.CreditAmount)
-                        line.CreditAmount = line.Item;
+                    {
+                        if (line.CreditAmount == null || line.CreditAmount == 0)
+                            line.CreditAmount = line.Item;
+                        else if (line.Item == 0 && line.CreditAmount != null)
+                            line.Item = line.CreditAmount.Value;
+                    }
                     if (line.ItemElementName == ItemChoiceType8.DebitAmount)
-                        line.DebitAmount = line.Item;
+                    {
+                        if (line.DebitAmount == null || line.DebitAmount == 0)
+                            line.DebitAmount = line.Item;
+                        else if (line.Item == 0 && line.DebitAmount != null)
+                            line.Item = line.DebitAmount.Value;
+                    }
                 }
             }
         }
@@ -154,58 +233,95 @@ public class SaftValidator : ISaftValidator
                     line.DocNo = doc.DocumentNumber;
 
                     if (line.ItemElementName == ItemChoiceType7.CreditAmount)
-                        line.CreditAmount = line.Item;
+                    {
+                        if (line.CreditAmount == null || line.CreditAmount == 0)
+                            line.CreditAmount = line.Item;
+                        else if (line.Item == 0 && line.CreditAmount != null)
+                            line.Item = line.CreditAmount.Value;
+                    }
                     if (line.ItemElementName == ItemChoiceType7.DebitAmount)
-                        line.DebitAmount = line.Item;
+                    {
+                        if (line.DebitAmount == null || line.DebitAmount == 0)
+                            line.DebitAmount = line.Item;
+                        else if (line.Item == 0 && line.DebitAmount != null)
+                            line.Item = line.DebitAmount.Value;
+                    }
                 }
             }
         }
 
         //Do validations on fields
+        progress?.Report(new SaftProgress(76, "A validar Cabeçalho...", "Verificação de NIF, datas e versão fiscal"));
         ValidateHeader(SaftFile.Header);
-        ValidaEstruturaXSD(SaftFileVersion.V10401);
+
+        progress?.Report(new SaftProgress(80, "A validar Estrutura XSD...", "Conformidade com o esquema oficial da AT"));
+        await Task.Run(() => ValidaEstruturaXSD(SaftFileVersion.V10401));
+
         if (SaftFile.MasterFiles != null)
         {
+            progress?.Report(new SaftProgress(84, "A validar Tabelas Mestras...", "Clientes, Fornecedores, Produtos e Impostos"));
             ValidateCustomers(SaftFile.MasterFiles.Customer);
             ValidateProducts(SaftFile.MasterFiles.Product);
             ValidateSupplier(SaftFile.MasterFiles.Supplier);
             ValidateTax(SaftFile.MasterFiles.TaxTable);
         }
+
         if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.SalesInvoices != null)
-            ValidateInvoices(SaftFile.SourceDocuments.SalesInvoices);
+        {
+            progress?.Report(new SaftProgress(89, "A validar Faturação...", "Validação de faturas, linhas e totais"));
+            await Task.Run(() => ValidateInvoices(SaftFile.SourceDocuments.SalesInvoices));
+        }
 
         if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.Payments != null)
+        {
+            progress?.Report(new SaftProgress(93, "A validar Pagamentos...", "Validação de recibos e meios de pagamento"));
             ValidatePayments(SaftFile.SourceDocuments.Payments);
+        }
 
         if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.MovementOfGoods != null)
+        {
+            progress?.Report(new SaftProgress(95, "A validar Mercadorias...", "Validação de guias de transporte e movimentação"));
             ValidateMovementOfGoods(SaftFile.SourceDocuments.MovementOfGoods);
+        }
 
         if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.WorkingDocuments != null)
+        {
+            progress?.Report(new SaftProgress(97, "A validar Documentos de Conferência...", "Validação de documentos de conferência"));
             ValidateWorkDocument(SaftFile.SourceDocuments.WorkingDocuments);
+        }
 
         //check for solria saft, if true validate the hash
         SaftHashValidationNumber = 0;
         SaftHashValidationErrorNumber = 0;
         if (SaftFile.Header.SoftwareCertificateNumber == "2340")
-            SolRiaValidateSaftHash(SaftFile);
+        {
+            progress?.Report(new SaftProgress(98, "A validar Assinaturas Digitais (Hash)...", "Verificação criptográfica SHA1/RSA de faturas"));
+            await Task.Run(() => SolRiaValidateSaftHash(SaftFile));
+        }
+
+        progress?.Report(new SaftProgress(100, "Concluído!", "Leitura e validação terminadas com sucesso."));
     }
 
-    public async Task OpenStockFile(string filename)
+    public async Task OpenStockFile(string filename, IProgress<SaftProgress> progress = null)
     {
         if (File.Exists(filename) == false)
             return;
 
         StockFileName = filename;
-
         _mensagensErro.Clear();
 
+        progress?.Report(new SaftProgress(10, "A abrir ficheiro de existências...", Path.GetFileName(filename)));
 
+        progress?.Report(new SaftProgress(40, "A ler ficheiro...", "A processar registos de existências"));
         var (stockFile, errors) = await StockParser.ReadFile(StockFileName);
 
         StockFile = stockFile;
 
+        progress?.Report(new SaftProgress(85, "A verificar dados...", "A validar existências"));
         //load the existing validations errors
         AddError(errors);
+
+        progress?.Report(new SaftProgress(100, "Concluído!", "Ficheiro de existências lido com sucesso."));
     }
 
     private void SolRiaValidateSaftHash(AuditFile auditFile)
@@ -749,15 +865,29 @@ public class SaftValidator : ISaftValidator
     {
         try
         {
-            string schema_filename = string.Empty;
-            if (fileversion == SaftFileVersion.V10401)
-                schema_filename = Path.Combine(Environment.CurrentDirectory, "Schemas", "SAFTPT1.04_01.xsd");
-            else if (fileversion == SaftFileVersion.V10301)
-                schema_filename = Path.Combine(Environment.CurrentDirectory, "Schemas", "SAFTPT1.03_01.xsd");
-            else if (fileversion == SaftFileVersion.V10201)
-                schema_filename = Path.Combine(Environment.CurrentDirectory, "Schemas", "SAFTPT1.02_01.xsd");
-            else if (fileversion == SaftFileVersion.V10101)
-                schema_filename = Path.Combine(Environment.CurrentDirectory, "Schemas", "SAFTPT1.01_01.xsd");
+            string schemaName = fileversion switch
+            {
+                SaftFileVersion.V10401 => "SAFTPT1.04_01.xsd",
+                SaftFileVersion.V10301 => "SAFTPT1.03_01.xsd",
+                SaftFileVersion.V10201 => "SAFTPT1.02_01.xsd",
+                SaftFileVersion.V10101 => "SAFTPT1.01_01.xsd",
+                _ => string.Empty
+            };
+
+            if (string.IsNullOrEmpty(schemaName))
+                return;
+
+            string schema_filename = Path.Combine(AppContext.BaseDirectory, "Schemas", schemaName);
+            if (!File.Exists(schema_filename))
+            {
+                schema_filename = Path.Combine(Environment.CurrentDirectory, "Schemas", schemaName);
+            }
+
+            if (!File.Exists(schema_filename))
+            {
+                AddError(new ValidationError { Description = $"Esquema XSD não encontrado: {schemaName}" });
+                return;
+            }
 
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.Schemas.Add(null, schema_filename);

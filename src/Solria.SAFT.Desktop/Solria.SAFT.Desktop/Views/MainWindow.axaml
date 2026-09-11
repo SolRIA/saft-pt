@@ -137,26 +137,60 @@
                 BorderBrush="{DynamicResource SemiColorBorder}"
                 BorderThickness="0,1,0,0"
                 Padding="14,0">
-            <Grid ColumnDefinitions="*,Auto,Auto">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
 
-                <!-- Active File Path -->
-                <StackPanel Grid.Column="0" Classes="center">
-                    <icons:MaterialIcon Kind="FileDocumentOutline" Width="16" Height="16"
-                                        Foreground="{DynamicResource SemiColorText2}"/>
-                    <TextBlock x:Name="FileNameTxt" FontSize="12"
-                               Foreground="{DynamicResource SemiColorText1}"
-                               VerticalAlignment="Center"
-                               TextTrimming="CharacterEllipsis"/>
-                </StackPanel>
+                <!-- Active File Path / Loading Status -->
+                <Grid Grid.Column="0" VerticalAlignment="Center">
+                    <!-- Normal File Info -->
+                    <StackPanel Classes="center" Spacing="6" IsVisible="{Binding !IsLoading}">
+                        <icons:MaterialIcon Kind="FileDocumentOutline" Width="16" Height="16"
+                                            Foreground="{DynamicResource SemiColorText2}"/>
+                        <TextBlock x:Name="FileNameTxt" FontSize="12"
+                                   Foreground="{DynamicResource SemiColorText1}"
+                                   VerticalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+
+                    <!-- Active Processing Status -->
+                    <StackPanel Classes="center" Spacing="8" IsVisible="{Binding IsLoading}">
+                        <icons:MaterialIcon Kind="ProgressUpload" Width="16" Height="16"
+                                            Foreground="{DynamicResource SemiColorPrimary}"/>
+                        <TextBlock Text="{Binding LoadingStep}" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource SemiColorPrimary}"
+                                   VerticalAlignment="Center"/>
+                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding LoadingProgress}"
+                                     Width="120" Height="6" CornerRadius="3"
+                                     VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding LoadingProgress, StringFormat='{}{0:F0}%'}"
+                                   FontSize="11" FontWeight="Bold"
+                                   Foreground="{DynamicResource SemiColorPrimary}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Parser Engine Quick Toggle Button -->
+                <Button Grid.Column="1"
+                        Command="{Binding ToggleNewParserCommand}"
+                        Theme="{DynamicResource BorderlessButton}"
+                        ToolTip.Tip="{Binding UseNewParserTooltip}"
+                        Padding="6,2" Height="26" Margin="6,0">
+                    <StackPanel Classes="center" Spacing="5">
+                        <icons:MaterialIcon Kind="{Binding UseNewParserIcon}" Width="14" Height="14"
+                                            Foreground="{DynamicResource SemiColorPrimary}"/>
+                        <TextBlock Text="{Binding UseNewParserDisplayName}" FontSize="11"
+                                   Foreground="{DynamicResource SemiColorText2}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
 
                 <!-- App Version Badge -->
-                <Border Grid.Column="1"
+                <Border Grid.Column="2"
                         Background="{DynamicResource SemiColorBackground1}"
                         BorderBrush="{DynamicResource SemiColorBorder}"
                         BorderThickness="1"
                         CornerRadius="4"
                         Padding="6,2"
-                        Margin="12,0"
+                        Margin="6,0"
                         VerticalAlignment="Center">
                     <TextBlock Text="{Binding AppVersion, StringFormat='v{0}'}" FontSize="11"
                                Foreground="{DynamicResource SemiColorText2}"
@@ -164,7 +198,7 @@
                 </Border>
 
                 <!-- Theme Status Quick Toggle Button -->
-                <Button Grid.Column="2"
+                <Button Grid.Column="3"
                         Command="{Binding ToggleThemeCommand}"
                         Theme="{DynamicResource BorderlessButton}"
                         ToolTip.Tip="Alternar tema rapidamente (Sistema -> Claro -> Escuro)"
@@ -179,6 +213,73 @@
                 </Button>
 
             </Grid>
+        </Border>
+
+        <!-- Processing / Loading Modal Overlay -->
+        <Border Grid.Row="0" Grid.RowSpan="3"
+                Background="#88000000"
+                IsVisible="{Binding IsLoading}"
+                ZIndex="1000">
+            <Border Theme="{DynamicResource CardBorder}"
+                    Background="{DynamicResource SemiColorBackground0}"
+                    BorderBrush="{DynamicResource SemiColorBorder}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    BoxShadow="0 12 36 0 #50000000"
+                    Padding="32,28"
+                    Width="460"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <StackPanel Spacing="18">
+
+                    <!-- Processing Icon & Header -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="10">
+                        <Border Width="56" Height="56" CornerRadius="28"
+                                Background="{DynamicResource SemiColorPrimaryLight}"
+                                HorizontalAlignment="Center">
+                            <icons:MaterialIcon Kind="ProgressUpload" Width="30" Height="30"
+                                                Foreground="{DynamicResource SemiColorPrimary}"
+                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="{Binding LoadingTitle}"
+                                   FontSize="18" FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource SemiColorText0}"/>
+                        <TextBlock Text="{Binding LoadingFileName}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource SemiColorText2}"
+                                   HorizontalAlignment="Center"
+                                   MaxWidth="380"
+                                   TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+
+                    <!-- Current Step, Percentage & Progress Bar -->
+                    <StackPanel Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="{Binding LoadingStep}"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SemiColorText0}"
+                                       TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding LoadingProgress, StringFormat='{}{0:F0}%'}"
+                                       FontSize="15" FontWeight="Bold"
+                                       Foreground="{DynamicResource SemiColorPrimary}"/>
+                        </Grid>
+
+                        <ProgressBar Minimum="0" Maximum="100"
+                                     Value="{Binding LoadingProgress}"
+                                     Height="8" CornerRadius="4"
+                                     Classes="Primary"
+                                     HorizontalAlignment="Stretch"/>
+
+                        <TextBlock Text="{Binding LoadingDetail}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource SemiColorText2}"
+                                   TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+
+                </StackPanel>
+            </Border>
         </Border>
 
     </Grid>

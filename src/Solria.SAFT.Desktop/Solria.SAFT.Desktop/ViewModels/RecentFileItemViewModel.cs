@@ -6,6 +6,8 @@ namespace SolRIA.SAFT.Desktop.ViewModels;
 
 public partial class RecentFileItemViewModel : ObservableObject
 {
+    public RecentFileItemViewModel() { }
+
     public RecentFileItemViewModel(string fullPath, ICommand openCommand)
     {
         FullPath = fullPath;
@@ -15,14 +17,14 @@ public partial class RecentFileItemViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    private string fullPath;
+    public partial string FullPath { get; set; }
 
     [ObservableProperty]
-    private string fileName;
+    public partial string FileName { get; set; }
 
     [ObservableProperty]
-    private string directory;
+    public partial string Directory { get; set; }
 
     [ObservableProperty]
-    private ICommand openCommand;
+    public partial ICommand OpenCommand { get; set; }
 }

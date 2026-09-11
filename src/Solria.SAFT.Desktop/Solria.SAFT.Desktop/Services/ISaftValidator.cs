@@ -1,4 +1,5 @@
-﻿using SolRIA.SAFT.Parser.Models;
+using SolRIA.SAFT.Parser.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,8 +21,10 @@ public interface ISaftValidator
     int SaftHashValidationNumber { get; set; }
     int SaftHashValidationErrorNumber { get; set; }
 
-    Task OpenSaftFile(string filename);
-    Task OpenStockFile(string filename);
+    bool UseNewParser { get; set; }
+
+    Task OpenSaftFile(string filename, IProgress<SaftProgress> progress = null);
+    Task OpenStockFile(string filename, IProgress<SaftProgress> progress = null);
 
     IList<ValidationError> GetErrors();
 }

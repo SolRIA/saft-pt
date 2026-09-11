@@ -1,4 +1,4 @@
-﻿using SolRIA.SAFT.Parser.Models;
+using SolRIA.SAFT.Parser.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,6 +8,11 @@ namespace SolRIA.SAFT.Parser;
 public static class Parsers
 {
     public static List<ValidationError> Validations { get; private set; } = [];
+
+    public static void ResetValidations()
+    {
+        Validations.Clear();
+    }
 
     public static bool StringEquals(string str1, string str2)
     {

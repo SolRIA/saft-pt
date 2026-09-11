@@ -1,4 +1,4 @@
-﻿using SolRIA.SAFT.Parser;
+using SolRIA.SAFT.Parser;
 using SolRIA.SAFT.Parser.Models;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -59,6 +59,11 @@ namespace ConsoleApp
             [CommandOption("-a|--print-all")]
             [DefaultValue(false)]
             public bool PrintAll { get; init; }
+
+            [Description("Grava os dados numa base de dados SQLite")]
+            [CommandOption("-d|--database")]
+            [DefaultValue(false)]
+            public bool UseDatabase { get; init; }
         }
 
         protected override async Task<int> ExecuteAsync(CommandContext context, Settings settings, CancellationToken cancellationToken)
@@ -68,7 +73,44 @@ namespace ConsoleApp
             if (string.IsNullOrWhiteSpace(filename))
                 filename = """C:\Users\frede\Downloads\SAFT_518381986_2026_maio_.xml""";
 #endif
-            var (saftFile, errors) = await SaftParser.ReadFile(filename);
+            AuditFile saftFile;
+            List<ValidationError> errors;
+
+            if (settings.UseDatabase)
+            {
+                var dbPath = Path.Combine(AppContext.BaseDirectory, "solria_saft_test.sqlite");
+                if (File.Exists(dbPath)) File.Delete(dbPath);
+                var dbService = new SolRIA.SAFT.Parser.Services.DatabaseService(dbPath);
+                dbService.InitDatabase();
+
+                var sw = System.Diagnostics.Stopwatch.StartNew();
+                (saftFile, errors) = await SaftParser.ReadFile(filename, dbService, keepInMemory: false);
+                sw.Stop();
+                AnsiConsole.MarkupLine($"[bold green]Parsed and stored into SQLite in {sw.ElapsedMilliseconds} ms![/]");
+
+                var invoicesPage = await dbService.GetInvoicesAsync(saftFile.Pk, page: 1, pageSize: 5);
+                AnsiConsole.MarkupLine($"[bold]Invoices total:[/] {invoicesPage.TotalItems}, TotalPages: {invoicesPage.TotalPages}");
+                foreach (var inv in invoicesPage.Items)
+                {
+                    AnsiConsole.MarkupLine($"  • Invoice {inv.InvoiceNo}, Date: {inv.InvoiceDate:yyyy-MM-dd}, Gross: {inv.DocumentTotals?.GrossTotal:N2}");
+                }
+
+                var customersPage = await dbService.GetCustomersAsync(saftFile.Pk, page: 1, pageSize: 5);
+                AnsiConsole.MarkupLine($"[bold]Customers total:[/] {customersPage.TotalItems}");
+
+                var productsPage = await dbService.GetProductsAsync(saftFile.Pk, page: 1, pageSize: 5);
+                AnsiConsole.MarkupLine($"[bold]Products total:[/] {productsPage.TotalItems}");
+
+                var stockPage = await dbService.GetStockMovementsAsync(saftFile.Pk, page: 1, pageSize: 5);
+                AnsiConsole.MarkupLine($"[bold]StockMovements total:[/] {stockPage.TotalItems}");
+
+                var paymentsPage = await dbService.GetPaymentsAsync(saftFile.Pk, page: 1, pageSize: 5);
+                AnsiConsole.MarkupLine($"[bold]Payments total:[/] {paymentsPage.TotalItems}");
+            }
+            else
+            {
+                (saftFile, errors) = await SaftParser.ReadFile(filename);
+            }
 
             Print(saftFile, errors, settings);
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -1918,3 +1918,20 @@ public partial class GeneralLedgerEntriesJournalTransactionLine : BaseData
 {
 
 }
+
+public partial class AuditFile : BaseData
+{
+}
+
+public partial class GeneralLedgerAccountsAccount : BaseData
+{
+}
+
+public partial class GeneralLedgerAccounts : BaseData
+{
+}
+
+public partial class GeneralLedgerEntries : BaseData
+{
+}
+
