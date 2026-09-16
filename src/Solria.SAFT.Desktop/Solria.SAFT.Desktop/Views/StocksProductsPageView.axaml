@@ -1,73 +1,80 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:icons="using:Material.Icons.Avalonia"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			 xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
-			 xmlns:models="using:SolRIA.SAFT.Parser.Models"
+             xmlns:vm="clr-namespace:SolRIA.SAFT.Desktop.ViewModels"
+             xmlns:models="using:SolRIA.SAFT.Parser.Models"
              x:Class="SolRIA.SAFT.Desktop.Views.StocksProductsPageView"
-			 x:DataType="vm:StocksProductsPageViewModel">
+             x:DataType="vm:StocksProductsPageViewModel">
+  <UserControl.Styles>
+    <Style Selector="icons|MaterialIcon">
+      <Setter Property="Width" Value="24"/>
+      <Setter Property="Height" Value="24"/>
+    </Style>
+  </UserControl.Styles>
 
-	<Grid RowDefinitions="50,*,Auto" ColumnDefinitions="*,54,54">
+  <Grid RowDefinitions="50,*,Auto" ColumnDefinitions="*,54,54">
 
-		<TextBox Margin="2"
-				 Text="{Binding Filter, Mode=TwoWay}"
-				 PlaceholderText="Filtro">
-			<TextBox.InnerRightContent>
-				<Button Command="{Binding SearchCommand}"
-						Classes="Primary" Padding="4"
-						Theme="{DynamicResource BorderlessButton}"
-						Width="{Binding $self.Bounds.Height}">
-					<PathIcon Data="{StaticResource Material.Magnify}" />
-				</Button>
-			</TextBox.InnerRightContent>
-			<TextBox.KeyBindings>
-				<KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
-			</TextBox.KeyBindings>
-		</TextBox>
+    <TextBox Margin="2"
+             Text="{Binding Filter, Mode=TwoWay}"
+             PlaceholderText="Filtro">
+      <TextBox.InnerRightContent>
+        <Button Command="{Binding SearchCommand}"
+                Classes="Primary" Padding="4"
+                Theme="{DynamicResource BorderlessButton}"
+                Width="{Binding $self.Bounds.Height}">
+          <icons:MaterialIcon Kind="Magnify"/>
+        </Button>
+      </TextBox.InnerRightContent>
+      <TextBox.KeyBindings>
+        <KeyBinding Command="{Binding SearchCommand}" Gesture="Enter"/>
+      </TextBox.KeyBindings>
+    </TextBox>
 
-		<Button Margin="2" Width="50" ToolTip.Tip="Limpar filtros"  Grid.Column="1"
-				Command="{Binding SearchClearCommand}" >
-			<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
-		</Button>
+    <Button Margin="2" Width="50" ToolTip.Tip="Limpar filtros"  Grid.Column="1"
+            Command="{Binding SearchClearCommand}" >
+      <icons:MaterialIcon Kind="FilterRemoveOutline"/>
+    </Button>
 
-		<Button Grid.Column="2" Width="50" Margin="2" ToolTip.Tip="Exportar para Excel"
-				Command="{Binding DoPrintCommand}">
-			<PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center"/>
-		</Button>
+    <Button Grid.Column="2" Width="50" Margin="2" ToolTip.Tip="Exportar para Excel"
+            Command="{Binding DoPrintCommand}">
+      <icons:MaterialIcon Kind="MicrosoftExcel"/>
+    </Button>
 
-		<DataGrid ItemsSource="{Binding Products}"
-				  Grid.Row="1" Grid.ColumnSpan="3" IsReadOnly="True">
-			<DataGrid.Columns>
-				<DataGridTextColumn Header="Categoria" Binding="{Binding ProductCategory}" x:DataType="models:Stock"/>
-				<DataGridTextColumn Header="Código" Binding="{Binding ProductCode}" x:DataType="models:Stock"/>
-				<DataGridTextColumn Header="Código EAN" Binding="{Binding ProductNumberCode}" x:DataType="models:Stock"/>
-				<DataGridTextColumn Header="Descrição" Binding="{Binding ProductDescription}" x:DataType="models:Stock"/>
-				<DataGridTemplateColumn Header="Quantidade" SortMemberPath="ClosingStockQuantity">
-					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate x:DataType="models:Stock">
-							<TextBlock Text="{Binding ClosingStockQuantity}" Classes="number"/>
-						</DataTemplate>
-					</DataGridTemplateColumn.CellTemplate>
-				</DataGridTemplateColumn>
-				<DataGridTextColumn Header="Unidade" Binding="{Binding UnitOfMeasure}" x:DataType="models:Stock"/>
-				<DataGridTemplateColumn Header="Valor" SortMemberPath="ClosingStockValue">
-					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate x:DataType="models:Stock">
-							<TextBlock Text="{Binding ClosingStockValue}" Classes="number"/>
-						</DataTemplate>
-					</DataGridTemplateColumn.CellTemplate>
-				</DataGridTemplateColumn>
-			</DataGrid.Columns>
-		</DataGrid>
+    <DataGrid ItemsSource="{Binding Products}"
+              Grid.Row="1" Grid.ColumnSpan="3" IsReadOnly="True">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Categoria" Binding="{Binding ProductCategory}" x:DataType="models:Stock"/>
+        <DataGridTextColumn Header="Código" Binding="{Binding ProductCode}" x:DataType="models:Stock"/>
+        <DataGridTextColumn Header="Código EAN" Binding="{Binding ProductNumberCode}" x:DataType="models:Stock"/>
+        <DataGridTextColumn Header="Descrição" Binding="{Binding ProductDescription}" x:DataType="models:Stock"/>
+        <DataGridTemplateColumn Header="Quantidade" SortMemberPath="ClosingStockQuantity">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate x:DataType="models:Stock">
+              <TextBlock Text="{Binding ClosingStockQuantity}" Classes="number"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTextColumn Header="Unidade" Binding="{Binding UnitOfMeasure}" x:DataType="models:Stock"/>
+        <DataGridTemplateColumn Header="Valor" SortMemberPath="ClosingStockValue">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate x:DataType="models:Stock">
+              <TextBlock Text="{Binding ClosingStockValue}" Classes="number"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+      </DataGrid.Columns>
+    </DataGrid>
 
-		<Border Classes="Hover" Theme="{DynamicResource CardBorder}"
-				Grid.Row="2" Grid.ColumnSpan="3">
-			<StackPanel Orientation="Horizontal">
-				<TextBlock Text="{Binding NumberProducts, StringFormat='#: {0}'}" />
-				<TextBlock Text="{Binding TotalQuantity, StringFormat='Quantidade: {0}'}" Margin="5,0"/>
-				<TextBlock Text="{Binding TotalValue, StringFormat='Total: {0}'}" />
-			</StackPanel>
-		</Border>
-	</Grid>
+    <Border Classes="Hover" Theme="{DynamicResource CardBorder}"
+            Grid.Row="2" Grid.ColumnSpan="3">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="{Binding NumberProducts, StringFormat='#: {0}'}" />
+        <TextBlock Text="{Binding TotalQuantity, StringFormat='Quantidade: {0}'}" Margin="5,0"/>
+        <TextBlock Text="{Binding TotalValue, StringFormat='Total: {0}'}" />
+      </StackPanel>
+    </Border>
+  </Grid>
 </UserControl>

@@ -410,11 +410,11 @@ public static class SaftParser
 
         if (keepInMemory)
         {
-            masterFiles.Customer = customers.ToArray();
-            masterFiles.Supplier = suppliers.ToArray();
-            masterFiles.Product = products.ToArray();
+            masterFiles.Customer = [.. customers];
+            masterFiles.Supplier = [.. suppliers];
+            masterFiles.Product = [.. products];
         }
-        masterFiles.TaxTable = taxes.ToArray();
+        masterFiles.TaxTable = [.. taxes];
 
         return masterFiles;
     }
@@ -489,7 +489,7 @@ public static class SaftParser
         }
 
         if (keepInMemory)
-            files.Invoice = invoices.ToArray();
+            files.Invoice = [.. invoices];
 
         return files;
     }
@@ -559,7 +559,7 @@ public static class SaftParser
         }
 
         if (keepInMemory)
-            files.StockMovement = documents.ToArray();
+            files.StockMovement = [.. documents];
 
         return files;
     }
@@ -634,7 +634,7 @@ public static class SaftParser
         }
 
         if (keepInMemory)
-            files.WorkDocument = documents.ToArray();
+            files.WorkDocument = [.. documents];
 
         return files;
     }
@@ -709,7 +709,7 @@ public static class SaftParser
         }
 
         if (keepInMemory)
-            files.Payment = documents.ToArray();
+            files.Payment = [.. documents];
 
         return files;
     }
@@ -846,8 +846,8 @@ public static class SaftParser
             }
         }
 
-        invoice.Line = lines.ToArray();
-        invoice.WithholdingTax = withholdingTax.ToArray();
+        invoice.Line = [.. lines];
+        invoice.WithholdingTax = [.. withholdingTax];
 
         return invoice;
     }
@@ -976,7 +976,7 @@ public static class SaftParser
             }
         }
 
-        document.Line = lines.ToArray();
+        document.Line = [.. lines];
 
         return document;
     }
@@ -1080,7 +1080,7 @@ public static class SaftParser
             }
         }
 
-        document.Line = lines.ToArray();
+        document.Line = [.. lines];
 
         return document;
     }
@@ -1186,9 +1186,9 @@ public static class SaftParser
             }
         }
 
-        document.Line = lines.ToArray();
-        document.WithholdingTax = withholdingTaxes.ToArray();
-        document.PaymentMethod = paymentMethods.ToArray();
+        document.Line = [.. lines];
+        document.WithholdingTax = [.. withholdingTaxes];
+        document.PaymentMethod = [.. paymentMethods];
 
         return document;
     }
@@ -1539,9 +1539,9 @@ public static class SaftParser
             }
         }
 
-        ship.DeliveryID = deliveryID.ToArray();
-        ship.WarehouseID = warehouseID.ToArray();
-        ship.LocationID = locationID.ToArray();
+        ship.DeliveryID = [.. deliveryID];
+        ship.WarehouseID = [.. warehouseID];
+        ship.LocationID = [.. locationID];
 
         return ship;
     }
@@ -1592,7 +1592,7 @@ public static class SaftParser
             }
         }
 
-        totals.Payment = payments.ToArray();
+        totals.Payment = [.. payments];
 
         return totals;
     }
@@ -1630,24 +1630,21 @@ public static class SaftParser
                 }
                 if (Parsers.StringEquals(reader.Name, "CurrencyCode"))
                 {
-                    if (totals.Currency == null)
-                        totals.Currency = new Currency();
+                    totals.Currency ??= new Currency();
 
                     totals.Currency.CurrencyCode = reader.ReadElementContentAsString();
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "CurrencyAmount"))
                 {
-                    if (totals.Currency == null)
-                        totals.Currency = new Currency();
+                    totals.Currency ??= new Currency();
 
                     totals.Currency.CurrencyAmount = Parsers.ParseDecimal(reader.ReadElementContentAsString(), pk, id, "StockMovement/DocumentTotals/Currency/CurrencyAmount", typeof(SourceDocumentsMovementOfGoodsStockMovement));
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "ExchangeRate"))
                 {
-                    if (totals.Currency == null)
-                        totals.Currency = new Currency();
+                    totals.Currency ??= new Currency();
 
                     totals.Currency.ExchangeRate = Parsers.ParseDecimal(reader.ReadElementContentAsString(), pk, id, "StockMovement/DocumentTotals/Currency/ExchangeRate", typeof(SourceDocumentsMovementOfGoodsStockMovement));
                     continue;
@@ -1696,24 +1693,21 @@ public static class SaftParser
                 }
                 if (Parsers.StringEquals(reader.Name, "CurrencyCode"))
                 {
-                    if (totals.Currency == null)
-                        totals.Currency = new Currency();
+                    totals.Currency ??= new Currency();
 
                     totals.Currency.CurrencyCode = reader.ReadElementContentAsString();
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "CurrencyAmount"))
                 {
-                    if (totals.Currency == null)
-                        totals.Currency = new Currency();
+                    totals.Currency ??= new Currency();
 
                     totals.Currency.CurrencyAmount = Parsers.ParseDecimal(reader.ReadElementContentAsString(), pk, id, "WorkDocument/DocumentTotals/Currency/CurrencyAmount", typeof(SourceDocumentsWorkingDocumentsWorkDocument));
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "ExchangeRate"))
                 {
-                    if (totals.Currency == null)
-                        totals.Currency = new Currency();
+                    totals.Currency ??= new Currency();
 
                     totals.Currency.ExchangeRate = Parsers.ParseDecimal(reader.ReadElementContentAsString(), pk, id, "WorkDocument/DocumentTotals/Currency/ExchangeRate", typeof(SourceDocumentsWorkingDocumentsWorkDocument));
                     continue;
@@ -1770,24 +1764,21 @@ public static class SaftParser
                 }
                 if (Parsers.StringEquals(reader.Name, "CurrencyCode"))
                 {
-                    if (totals.Currency == null)
-                        totals.Currency = new Currency();
+                    totals.Currency ??= new Currency();
 
                     totals.Currency.CurrencyCode = reader.ReadElementContentAsString();
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "CurrencyAmount"))
                 {
-                    if (totals.Currency == null)
-                        totals.Currency = new Currency();
+                    totals.Currency ??= new Currency();
 
                     totals.Currency.CurrencyAmount = Parsers.ParseDecimal(reader.ReadElementContentAsString(), pk, id, "Payment/DocumentTotals/Currency/CurrencyAmount", typeof(SourceDocumentsPaymentsPaymentDocumentTotals));
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "ExchangeRate"))
                 {
-                    if (totals.Currency == null)
-                        totals.Currency = new Currency();
+                    totals.Currency ??= new Currency();
 
                     totals.Currency.ExchangeRate = Parsers.ParseDecimal(reader.ReadElementContentAsString(), pk, id, "Payment/DocumentTotals/Currency/ExchangeRate", typeof(SourceDocumentsPaymentsPaymentDocumentTotals));
                     continue;
@@ -2043,7 +2034,7 @@ public static class SaftParser
             }
         }
 
-        line.ProductSerialNumber = productSerialNumbers.ToArray();
+        line.ProductSerialNumber = [.. productSerialNumbers];
 
         return line;
     }
@@ -2159,8 +2150,8 @@ public static class SaftParser
             }
         }
 
-        line.ProductSerialNumber = productSerialNumbers.ToArray();
-        line.References = references.ToArray();
+        line.ProductSerialNumber = [.. productSerialNumbers];
+        line.References = [.. references];
 
         return line;
     }
@@ -2235,7 +2226,7 @@ public static class SaftParser
             }
         }
 
-        line.SourceDocumentID = sourceDocuments.ToArray();
+        line.SourceDocumentID = [.. sourceDocuments];
 
         return line;
     }
@@ -2444,12 +2435,12 @@ public static class SaftParser
                 {
                     var shipTo = await ReadAddressStructure(reader.ReadSubtree());
                     if (customer.ShipToAddress == null)
-                        customer.ShipToAddress = new[] { shipTo };
+                        customer.ShipToAddress = [shipTo];
                     else
                     {
                         var list = customer.ShipToAddress.ToList();
                         list.Add(shipTo);
-                        customer.ShipToAddress = list.ToArray();
+                        customer.ShipToAddress = [.. list];
                     }
                     continue;
                 }
@@ -2540,12 +2531,12 @@ public static class SaftParser
                 {
                     var shipFrom = await ReadSupplierAddressStructure(reader.ReadSubtree());
                     if (supplier.ShipFromAddress == null)
-                        supplier.ShipFromAddress = new[] { shipFrom };
+                        supplier.ShipFromAddress = [shipFrom];
                     else
                     {
                         var list = supplier.ShipFromAddress.ToList();
                         list.Add(shipFrom);
-                        supplier.ShipFromAddress = list.ToArray();
+                        supplier.ShipFromAddress = [.. list];
                     }
                     continue;
                 }
@@ -2859,8 +2850,8 @@ public static class SaftParser
             }
         }
 
-        customs.CNCode = cnCodes.ToArray();
-        customs.UNNumber = unNumbers.ToArray();
+        customs.CNCode = [.. cnCodes];
+        customs.UNNumber = [.. unNumbers];
         return customs;
     }
 
@@ -2968,7 +2959,7 @@ public static class SaftParser
         if (writer != null)
             await writer.FlushGeneralLedgerAccountsAsync(glAccounts.TaxonomyReference);
 
-        glAccounts.Account = accounts.ToArray();
+        glAccounts.Account = [.. accounts];
         return glAccounts;
     }
 
@@ -3114,7 +3105,7 @@ public static class SaftParser
             await writer.FlushGeneralLedgerJournalsAsync();
         }
 
-        gl.Journal = journals.ToArray();
+        gl.Journal = [.. journals];
         return gl;
     }
 
@@ -3161,7 +3152,7 @@ public static class SaftParser
             }
         }
 
-        journal.Transaction = transactions.ToArray();
+        journal.Transaction = [.. transactions];
         return journal;
     }
 

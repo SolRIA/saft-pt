@@ -4,7 +4,7 @@ using SolRIA.SAFT.Desktop.Infrastructure;
 using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Parser.Models;
 using System;
-using System.IO;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,16 +40,16 @@ public partial class StocksProductsPageViewModel : ViewModelBase
     }
 
     [ObservableProperty]
-    private Stock[] products;
+    public partial Stock[] Products { get; set; }
 
     [ObservableProperty]
-    private decimal totalQuantity;
+    public partial decimal TotalQuantity { get; set; }
 
     [ObservableProperty]
-    private decimal totalValue;
+    public partial decimal TotalValue { get; set; }
 
     [ObservableProperty]
-    private decimal numberProducts;
+    public partial decimal NumberProducts { get; set; }
 
     [RelayCommand]
     private async Task OnDoPrint()
@@ -57,17 +57,21 @@ public partial class StocksProductsPageViewModel : ViewModelBase
         if (Products == null || Products.Length == 0) return;
 
         var (_, stream) = await dialogManager.SaveFileDialog(
-            "Guardar produtos",
+            "Guardar stocks",
             directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Produtos.csv",
+            initialFileName: "Stocks.csv",
             ".csv");
 
         if (stream == null) return;
 
         StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.AppendLine("ProductCategory;ProductCode;ProductDescription;ProductNumberCode;ClosingStockQuantity;UnitOfMeasure");
         foreach (var c in Products)
         {
-            stringBuilder.AppendLine($"{c.ProductCode};{c.ProductDescription};{c.ProductNumberCode};{c.ProductCategory};{c.UnitOfMeasure};{c.ClosingStockQuantity}");
+            stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"""
+                {c.ProductCategory};"{c.ProductCode}";"{c.ProductDescription}";"{c.ProductNumberCode}";{c.ClosingStockQuantity};{c.UnitOfMeasure}
+                """);
+                
         }
 
         await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);

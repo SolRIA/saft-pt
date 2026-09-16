@@ -38,7 +38,7 @@
 			<TextBox Grid.Row="3" 
 					 Text="{Binding Header.EndDate, Mode=OneTime}"/>
 
-			<CheckBox Content="Mostrar todas as linhas" Grid.Row="4" Grid.Column="1"
+			<CheckBox Content="Indicação de não existência de stocks" Grid.Row="4" Grid.Column="1"
 					  Margin="0" IsEnabled="False"
 					  IsChecked="{Binding Header.NoStock, Mode=OneTime}"
 					  Theme="{DynamicResource CardCheckBox}"/>

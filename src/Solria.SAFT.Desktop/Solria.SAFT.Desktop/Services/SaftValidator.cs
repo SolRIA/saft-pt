@@ -123,7 +123,7 @@ public class SaftValidator : ISaftValidator
             SaftFile = saftFile;
 
             if (errors != null && errors.Count > 0)
-                AddError(errors.ToArray());
+                AddError([.. errors]);
         }
         else
         {
