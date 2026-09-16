@@ -2,10 +2,10 @@
 using SolRIA.SAFT.Parser.Services;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 
 namespace SolRIA.SAFT.Parser;
 
@@ -32,38 +32,6 @@ public static class StockParser
         //TODO: replace with Xmlreader
         stockFile = await Task.Run(() => XmlParserService.DeserializeXml<StockFile>(filename, Encoding.UTF8));
 
-        //stockFile = new StockFile
-        //{
-        //    StockHeader = new StockHeader()
-        //};
-
-        ////register the Windows-1252 encoding
-        //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-
-        //var settings = new XmlReaderSettings
-        //{
-        //    Async = true,
-        //    IgnoreComments = true,
-        //    IgnoreWhitespace = true
-        //};
-
-        //using var reader = XmlReader.Create(filename, settings);
-
-        //while (await reader.ReadAsync())
-        //{
-        //    if (string.IsNullOrWhiteSpace(reader.Name))
-        //        continue;
-
-        //    if (reader.NodeType == XmlNodeType.Element)
-        //    {
-        //        if (Parsers.StringEquals(reader.Name, "Header"))
-        //        {
-
-        //        }
-        //    }
-        //}
-
         return (stockFile, Parsers.Validations.ToArray());
     }
 
@@ -88,8 +56,12 @@ public static class StockParser
                 if (columns == null || columns.Length < 6)
                     continue;
 
+                decimal closingStockValue = 0;
+
                 Enum.TryParse(columns[0], out ProductCategory productCategory);
-                decimal.TryParse(columns[4], out decimal quantity);
+                decimal.TryParse(columns[4], CultureInfo.CurrentCulture, out decimal quantity);
+                if (columns.Length > 6)
+                    decimal.TryParse(columns[6], CultureInfo.CurrentCulture, out closingStockValue);
 
                 stocks.Add(new Stock
                 {
@@ -98,7 +70,8 @@ public static class StockParser
                     ProductDescription = columns[2],
                     ProductNumberCode = columns[3],
                     ClosingStockQuantity = quantity,
-                    UnitOfMeasure = columns[5]
+                    UnitOfMeasure = columns[5],
+                    ClosingStockValue = closingStockValue
                 });
             }
             stockFile = new StockFile

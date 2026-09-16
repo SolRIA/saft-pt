@@ -86,9 +86,21 @@
 				<DataGridTextColumn Header="Cliente" Binding="{Binding CustomerID}" />
 				<DataGridTextColumn Header="Periodo" Binding="{Binding Period}"/>
 				<DataGridTextColumn Header="Transacção" Binding="{Binding TransactionID}" />
-				<DataGridTextColumn Header="Hash" Binding="{Binding Hash}" Width="100"/>
+				<DataGridTemplateColumn Header="Hash" SortMemberPath="Hash" Width="100">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Hash}" Margin="3,0"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
 				<DataGridTextColumn Header="Hash Test" Binding="{Binding HashTest}"/>
-				<DataGridTextColumn Header="Hash Control" Binding="{Binding HashControl}" />
+				<DataGridTemplateColumn Header="Hash Control" SortMemberPath="HashControl">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding HashControl}" TextAlignment="Center" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
 			</DataGrid.Columns>
 
 			<DataGrid.ContextMenu>
