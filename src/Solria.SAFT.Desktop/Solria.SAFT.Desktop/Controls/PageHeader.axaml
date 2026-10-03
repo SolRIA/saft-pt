@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:SolRIA.SAFT.Desktop.Controls"
+             xmlns:icons="using:Material.Icons.Avalonia"
+             x:Class="SolRIA.SAFT.Desktop.Controls.PageHeader"
+             x:DataType="controls:PageHeader" x:Name="Header">
+    <Border Padding="12" BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource SemiColorBorder}">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <StackPanel Spacing="4" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Title, ElementName=Header}" FontSize="22" FontWeight="SemiBold"
+                           Foreground="{DynamicResource SemiColorText0}" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding Description, ElementName=Header}" FontSize="13"
+                           Foreground="{DynamicResource SemiColorText1}" TextWrapping="Wrap"/>
+            </StackPanel>
+            <Button Grid.Column="1" VerticalAlignment="Center" Padding="10,8"
+                    Command="{Binding DetachCommand, ElementName=Header}"
+                    IsVisible="{Binding CanDetach, ElementName=Header}"
+                    ToolTip.Tip="Abrir numa nova janela" AutomationProperties.Name="Abrir numa nova janela">
+                <icons:MaterialIcon Kind="OpenInNew" Width="20" Height="20"/>
+            </Button>
+        </Grid>
+    </Border>
+</UserControl>

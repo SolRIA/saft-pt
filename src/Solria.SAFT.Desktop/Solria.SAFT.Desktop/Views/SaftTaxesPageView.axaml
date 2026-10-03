@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns:controls="using:SolRIA.SAFT.Desktop.Controls" xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,14 +7,13 @@
              x:Class="SolRIA.SAFT.Desktop.Views.SaftTaxesPageView"
 			 x:DataType="vm:SaftTaxesPageViewModel">
 
-	<Grid RowDefinitions="40,35,*" ColumnDefinitions="*,54,54" Margin="5"
+  <Grid RowDefinitions="Auto,*">
+    <controls:PageHeader Title="Impostos" Description="Consulte, filtre e exporte a tabela de impostos do ficheiro SAF-T."/>
+    <Grid Grid.Row="1" RowDefinitions="35,*" ColumnDefinitions="*,54,54" Margin="5"
 	   ColumnSpacing="5">
 
-		<TextBlock Text="Impostos" Classes="H2"
-				   Theme="{DynamicResource TitleTextBlock}"/>
-
 		<TextBox Text="{Binding Filter, Mode=TwoWay}"
-				 PlaceholderText="Filtro" Grid.Row="1" 
+				 PlaceholderText="Filtro" Grid.Row="0"
 				 VerticalAlignment="Stretch">
 			<TextBox.InnerRightContent>
 				<Button Command="{Binding SearchCommand}"
@@ -30,23 +29,23 @@
 		</TextBox>
 
 		<Button Width="50" ToolTip.Tip="Remover filtros"
-				Grid.Row="1" Grid.Column="1"
+				Grid.Row="0" Grid.Column="1"
 				VerticalAlignment="Stretch"
 				Command="{Binding SearchClearCommand}" >
 			<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="20" Height="20"/>
 		</Button>
 
 		<Button Width="50" ToolTip.Tip="Exportar para Excel"
-				Grid.Row="1" Grid.Column="2"
+				Grid.Row="0" Grid.Column="2"
 				Command="{Binding DoPrintCommand}"
 				VerticalAlignment="Stretch">
 			<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="20" Height="20"/>
 		</Button>
 
 		<!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
-                           Grid.Row="1" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>-->
+                           Grid.Row="0" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>-->
 
-		<DataGrid Grid.Row="2" Grid.ColumnSpan="3" IsReadOnly="True" FontSize="16"
+		<DataGrid Grid.Row="1" Grid.ColumnSpan="3" IsReadOnly="True" FontSize="16"
 				  ItemsSource="{Binding Taxes}">
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="País ou região imposto" Binding="{Binding TaxCountryRegion}" />
@@ -71,4 +70,5 @@
 		</DataGrid>
 
 	</Grid>
+  </Grid>
 </UserControl>

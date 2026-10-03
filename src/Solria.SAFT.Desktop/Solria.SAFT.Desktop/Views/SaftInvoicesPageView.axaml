@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns:controls="using:SolRIA.SAFT.Desktop.Controls" xmlns="https://github.com/avaloniaui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -9,7 +9,9 @@
 			 x:Class="SolRIA.SAFT.Desktop.Views.SaftInvoicesPageView"
 			 x:DataType="vm:SaftInvoicesPageViewModel">
 
-	<Grid RowDefinitions="55,*,7,55,*" ColumnDefinitions="*,7,Auto">
+  <Grid RowDefinitions="Auto,*">
+    <controls:PageHeader Title="Faturas" Description="Consulte e filtre as faturas, linhas e impostos do ficheiro SAF-T."/>
+    <Grid Grid.Row="1" RowDefinitions="55,*,7,55,*" ColumnDefinitions="*,7,Auto">
 
 		<!-- documents filter -->
 		<Grid ColumnDefinitions="*,Auto,Auto,54,54,54" Grid.Row="0" Grid.Column="0">
@@ -329,4 +331,5 @@
 		</DataGrid>
 
 	</Grid>
+  </Grid>
 </UserControl>

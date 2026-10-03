@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns:controls="using:SolRIA.SAFT.Desktop.Controls" xmlns="https://github.com/avaloniaui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -8,16 +8,15 @@
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 x:Class="SolRIA.SAFT.Desktop.Views.SaftCustomersPageView"
 			 x:DataType="vm:SaftCustomersPageViewModel">
-	<Grid RowDefinitions="40,35,*"
+  <Grid RowDefinitions="Auto,*">
+    <controls:PageHeader Title="Clientes" Description="Consulte, filtre e exporte os clientes do ficheiro SAF-T."/>
+    <Grid Grid.Row="1" RowDefinitions="35,*"
 		  ColumnDefinitions="*,54,54" Margin="5"
 		  ColumnSpacing="5"
 		  RowSpacing="5">
 
-		<TextBlock Text="Clientes" Classes="H2" Grid.ColumnSpan="3"
-				   Theme="{DynamicResource TitleTextBlock}"/>
-
 		<TextBox Text="{Binding Filter, Mode=TwoWay}" PlaceholderText="Filtro"
-				 Grid.Row="1"
+				 Grid.Row="0"
 				 VerticalAlignment="Stretch">
 			<TextBox.InnerRightContent>
 				<Button Command="{Binding SearchCommand}"
@@ -32,22 +31,22 @@
 			</TextBox.KeyBindings>
 		</TextBox>
 
-		<Button ToolTip.Tip="Remover filtros" Grid.Row="1" Grid.Column="1"
+		<Button ToolTip.Tip="Remover filtros" Grid.Row="0" Grid.Column="1"
 				Command="{Binding SearchClearCommand}"
 				VerticalAlignment="Stretch">
 			<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
 		</Button>
 
-		<Button ToolTip.Tip="Exportar para Excel" Grid.Row="1" Grid.Column="2"
+		<Button ToolTip.Tip="Exportar para Excel" Grid.Row="0" Grid.Column="2"
 				Command="{Binding DoPrintCommand}"
 				VerticalAlignment="Stretch">
 			<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
 		</Button>
 
 		<!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
-		Grid.Row="1" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>-->
+		Grid.Row="0" Margin="10" Height="50" Width="50" HorizontalAlignment="Center"/>-->
 
-		<DataGrid Grid.Row="2" IsReadOnly="True" Grid.ColumnSpan="3"
+		<DataGrid Grid.Row="1" IsReadOnly="True" Grid.ColumnSpan="3"
 				  ItemsSource="{Binding List, Mode=OneWay}">
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Código" Binding="{Binding CustomerID}"/>
@@ -62,4 +61,5 @@
 			</DataGrid.Columns>
 		</DataGrid>
 	</Grid>
+  </Grid>
 </UserControl>

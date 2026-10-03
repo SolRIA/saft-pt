@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Notifications;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
@@ -38,6 +39,7 @@ namespace SolRIA.SAFT.Desktop.Views
 
             var navService = AppBootstrap.Resolve<INavigationService>();
             navService.InitNavigationcontrol(mainContentGrid);
+            Closed += (_, _) => navService.CloseDetachedWindows();
 
             navService.NavigateTo(view);
         }
@@ -107,7 +109,10 @@ namespace SolRIA.SAFT.Desktop.Views
 
             if (dialog == null) return;
 
-            dialog.Show(GetTopWindow());
+            var owner = GetTopWindow();
+            dialogs.Add(dialog);
+            dialog.Closed += (_, _) => dialogs.Remove(dialog);
+            dialog.Show(owner);
         }
 
         private readonly List<Window> dialogs = [];
@@ -119,6 +124,7 @@ namespace SolRIA.SAFT.Desktop.Views
             if (dialog == null) return;
 
             dialogs.Add(dialog);
+            dialog.Closed += (_, _) => dialogs.Remove(dialog);
             await dialog.ShowDialog(top_window);
         }
 
@@ -164,6 +170,11 @@ namespace SolRIA.SAFT.Desktop.Views
         }
         private Window GetTopWindow()
         {
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                var activeWindow = desktop.Windows.FirstOrDefault(window => window.IsActive);
+                if (activeWindow != null) return activeWindow;
+            }
             Window parent = this;
             if (dialogs.Count > 0)
                 parent = dialogs.Last();
@@ -173,12 +184,13 @@ namespace SolRIA.SAFT.Desktop.Views
 
         public async Task<string[]> OpenFileDialog(string title, string initialFileName = "", bool allowMultiple = false, FilePickerFileType[] filters = null)
         {
-            var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            var storageProvider = GetTopWindow().StorageProvider;
+            var result = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = title,
                 AllowMultiple = allowMultiple,
                 FileTypeFilter = filters,
-                SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(initialFileName)
+                SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(initialFileName)
             });
 
             return [.. result.Select(f => f.Path.LocalPath)];
@@ -186,12 +198,13 @@ namespace SolRIA.SAFT.Desktop.Views
 
         public async Task<(string filename, Stream stream)> SaveFileDialog(string title, string directory = "", string initialFileName = "", string defaultExtension = "", FilePickerFileType[] filters = null)
         {
-            var result = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            var storageProvider = GetTopWindow().StorageProvider;
+            var result = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 Title = title,
                 DefaultExtension = defaultExtension,
                 ShowOverwritePrompt = true,
-                SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(directory),
+                SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(directory),
                 SuggestedFileName = initialFileName,
                 FileTypeChoices = filters
             });
@@ -203,11 +216,12 @@ namespace SolRIA.SAFT.Desktop.Views
 
         public async Task<string> OpenFolderDialog(string title, string directory = "")
         {
-            var result = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+            var storageProvider = GetTopWindow().StorageProvider;
+            var result = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
             {
                 Title = title,
                 AllowMultiple = false,
-                SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(directory)
+                SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(directory)
             });
 
             return result.Select(result => result.Name).FirstOrDefault();

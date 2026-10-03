@@ -3,11 +3,9 @@ using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Infrastructure;
 using SolRIA.SAFT.Desktop.Models;
 using SolRIA.SAFT.Desktop.Services;
-using SolRIA.SAFT.Parser;
 using SolRIA.SAFT.Parser.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,17 +53,17 @@ public partial class SaftProductsPageViewModel : ViewModelBase
     }
 
     [ObservableProperty]
-    private ProductToolTipService toolTip;
+    public partial ProductToolTipService ToolTip { get; set; }
 
     [ObservableProperty]
-    private IList<Product> products;
+    public partial IList<Product> Products { get; set; }
 
     [RelayCommand]
     private async Task OnDoPrint()
     {
         if (Products == null || Products.Count == 0) return;
 
-        var (file, stream) = await dialogManager.SaveFileDialog(
+        var (_, stream) = await dialogManager.SaveFileDialog(
             title: "Guardar produtos excel",
             directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             initialFileName: "Produtos.csv",
@@ -73,21 +71,14 @@ public partial class SaftProductsPageViewModel : ViewModelBase
 
         if (stream is null) return;
 
-        StringBuilder stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder("Código;Descrição;Preço;Código de Barras;Grupo;IVA;Preço com IVA");
+        stringBuilder.AppendLine();
         foreach (var c in Products)
         {
-            stringBuilder.AppendLine($"{c.ProductCode};{c.ProductDescription};;{c.Prices};{c.ProductNumberCode};{c.ProductGroup};{c.Taxes};{c.PricesWithVat}");
+            stringBuilder.AppendLine($"{c.ProductCode};{c.ProductDescription};{c.Prices};{c.ProductNumberCode};{c.ProductGroup};{c.Taxes};{c.PricesWithVat}");
         }
 
         await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);
-
-        await SaftXmlParser.SerializeXml(allProducts, file.Replace(".csv", ".xml"), new System.Xml.XmlWriterSettings
-        {
-            Encoding = Encoding.UTF8,
-            Indent = true,
-            OmitXmlDeclaration = true,
-            Async = true
-        }).ConfigureAwait(false);
     }
 
     [RelayCommand]

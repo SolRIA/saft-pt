@@ -5,7 +5,6 @@ using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Parser.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,7 +30,7 @@ public partial class SaftCustomersPageViewModel : ViewModelBase
     }
 
     [ObservableProperty]
-    private IList<Customer> list;
+    public partial IList<Customer> List { get; set; }
 
     [RelayCommand]
     private async Task OnDoPrint()
@@ -47,8 +46,10 @@ public partial class SaftCustomersPageViewModel : ViewModelBase
         if (stream == null) return;
 
 
-        StringBuilder stringBuilder = new StringBuilder();
-        StringBuilder moradas = new StringBuilder();
+        var stringBuilder = new StringBuilder("NIF;Nome;Fiscal;Morada;ID;Morada;Telefone;Fax;Email");
+        stringBuilder.AppendLine();
+
+        var moradas = new StringBuilder();
         foreach (var c in List)
         {
             moradas.Clear();
@@ -59,7 +60,7 @@ public partial class SaftCustomersPageViewModel : ViewModelBase
                     c.BillingAddress.StreetName + " " + c.BillingAddress.BuildingNumber + " " + c.BillingAddress.PostalCode);
             }
 
-            stringBuilder.AppendLine($"{c.CustomerTaxID};{c.CompanyName};{c.CustomerID};{moradas};{c.Telephone};;{c.Fax};{c.Email}");
+            stringBuilder.AppendLine($"{c.CustomerTaxID};{c.CompanyName};{c.CustomerID};{moradas};{c.Telephone};{c.Fax};{c.Email}");
         }
 
         // save the csv to the file stream

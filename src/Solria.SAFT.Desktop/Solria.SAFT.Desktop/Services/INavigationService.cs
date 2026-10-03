@@ -8,4 +8,6 @@ public interface INavigationService
     void InitNavigationcontrol(Grid parentNavigationControl);
     void NavigateTo(UserControl control);
     void NavigateTo<T>(T vm) where T : ViewModelBase;
+    void DetachCurrentPage();
+    void CloseDetachedWindows();
 }

@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns:controls="using:SolRIA.SAFT.Desktop.Controls" xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:icons="using:Material.Icons.Avalonia"
@@ -15,7 +15,9 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid RowDefinitions="50,*,Auto" ColumnDefinitions="*,54,54">
+  <Grid RowDefinitions="Auto,*">
+    <controls:PageHeader Title="Existências" Description="Consulte, filtre e exporte os produtos e quantidades em inventário."/>
+    <Grid Grid.Row="1" RowDefinitions="50,*,Auto" ColumnDefinitions="*,54,54">
 
     <TextBox Margin="2"
              Text="{Binding Filter, Mode=TwoWay}"
@@ -76,5 +78,6 @@
         <TextBlock Text="{Binding TotalValue, StringFormat='Total: {0}'}" />
       </StackPanel>
     </Border>
+  </Grid>
   </Grid>
 </UserControl>

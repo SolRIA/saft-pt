@@ -404,6 +404,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             // Preserve preferences changed by other services, such as the theme.
+            navigationService.CloseDetachedWindows();
             preferences = Preferences.Load();
             preferences.AddRecentFile(fullPath, fileType);
             Preferences.Save(preferences);

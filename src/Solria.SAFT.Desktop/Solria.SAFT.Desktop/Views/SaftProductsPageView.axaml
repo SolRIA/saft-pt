@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns:controls="using:SolRIA.SAFT.Desktop.Controls" xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -8,79 +8,83 @@
              xmlns:model="clr-namespace:SolRIA.SAFT.Parser.Models;assembly=SolRIA.SAFT.Parser"
              x:DataType="vm:SaftProductsPageViewModel"
              x:Class="SolRIA.SAFT.Desktop.Views.SaftProductsPageView">
-  <UserControl.Styles>
-    <Style Selector="icons|MaterialIcon">
-      <Setter Property="Width" Value="24"/>
-      <Setter Property="Height" Value="24"/>
-    </Style>
-  </UserControl.Styles>
+    <UserControl.Styles>
+        <Style Selector="icons|MaterialIcon">
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+        </Style>
+    </UserControl.Styles>
 
-  <Grid RowDefinitions="40,35,Auto,*" RowSpacing="5"
-        ColumnDefinitions="*,54,54,54"
-        Margin="5">
+    <Grid RowDefinitions="Auto,*">
 
-    <TextBlock Text="Produtos" Classes="H2"
-               Theme="{DynamicResource TitleTextBlock}"/>
+        <controls:PageHeader Title="Produtos" 
+                             Description="Consulte, filtre e exporte os produtos do ficheiro SAF-T."/>
 
-    <TextBox Text="{Binding Filter, Mode=TwoWay}"
-             PlaceholderText="Filtro"
-             VerticalAlignment="Stretch"
-             Grid.Row="1" Margin="0,0,2,0">
-      <TextBox.InnerRightContent>
-        <Button Command="{Binding SearchCommand}"
-                Classes="Primary" Padding="4,0"
-                Theme="{DynamicResource BorderlessButton}">
-          <icons:MaterialIcon Kind="Magnify"/>
-        </Button>
-      </TextBox.InnerRightContent>
-      <TextBox.KeyBindings>
-        <KeyBinding Command="{CompiledBinding SearchCommand}" Gesture="Enter"/>
-      </TextBox.KeyBindings>
-    </TextBox>
+        <Grid Grid.Row="1" RowDefinitions="35,Auto,*" 
+              RowSpacing="5"
+              ColumnDefinitions="*,54,54,54"
+              Margin="5">
 
-    <Button Margin="2,0" Width="50"
-            ToolTip.Tip="Filtrar" Classes="Primary"
-            VerticalAlignment="Stretch"
-            Grid.Row="1" Grid.Column="1"
-            Command="{Binding SearchClearCommand}" >
-      <icons:MaterialIcon Kind="FilterRemoveOutline"/>
-    </Button>
+            <TextBox Text="{Binding Filter, Mode=TwoWay}"
+                     PlaceholderText="Filtro"
+                     VerticalAlignment="Stretch"
+                     Grid.Row="0" Margin="0,0,2,0">
+                <TextBox.InnerRightContent>
+                    <Button Command="{Binding SearchCommand}"
+                            Classes="Primary" Padding="4,0"
+                            Theme="{DynamicResource BorderlessButton}">
+                        <icons:MaterialIcon Kind="Magnify"/>
+                    </Button>
+                </TextBox.InnerRightContent>
+                <TextBox.KeyBindings>
+                    <KeyBinding Command="{CompiledBinding SearchCommand}" Gesture="Enter"/>
+                </TextBox.KeyBindings>
+            </TextBox>
 
-    <Button Margin="2,0" Width="50"
-            ToolTip.Tip="Exportar para Excel" Classes="Primary"
-            VerticalAlignment="Stretch"
-            Grid.Row="1" Grid.Column="2"
-            Command="{Binding DoPrintCommand}">
-      <icons:MaterialIcon Kind="MicrosoftExcel"/>
-    </Button>
+            <Button Margin="2,0" Width="50"
+                    ToolTip.Tip="Filtrar" Classes="Primary"
+                    VerticalAlignment="Stretch"
+                    Grid.Row="0" Grid.Column="1"
+                    Command="{Binding SearchClearCommand}" >
+                <icons:MaterialIcon Kind="FilterRemoveOutline"/>
+            </Button>
 
-    <Button Margin="2,0" Width="50"
-            ToolTip.Tip="Gerar a tabela com base nas linhas dos documentos" Classes="Primary"
-            VerticalAlignment="Stretch"
-            Grid.Row="1" Grid.Column="3"
-            Command="{Binding GenerateProductsFromDocumentLinesCommand}">
-      <icons:MaterialIcon Kind="RefreshCircle"/>
-    </Button>
+            <Button Margin="2,0" Width="50"
+                    ToolTip.Tip="Exportar para Excel" Classes="Primary"
+                    VerticalAlignment="Stretch"
+                    Grid.Row="0" Grid.Column="2"
+                    Command="{Binding DoPrintCommand}">
+                <icons:MaterialIcon Kind="MicrosoftExcel"/>
+            </Button>
 
-    <ProgressBar Grid.Row="2" Grid.ColumnSpan="4"
-                 IsIndeterminate="True"
-                 IsVisible="{Binding IsLoading}"/>
+            <Button Margin="2,0" Width="50"
+                    ToolTip.Tip="Gerar a tabela com base nas linhas dos documentos" Classes="Primary"
+                    VerticalAlignment="Stretch"
+                    Grid.Row="0" Grid.Column="3"
+                    Command="{Binding GenerateProductsFromDocumentLinesCommand}">
+                <icons:MaterialIcon Kind="RefreshCircle"/>
+            </Button>
 
-    <DataGrid Grid.Row="3"
-              Grid.ColumnSpan="4"
-              IsReadOnly="True"
-              FontSize="16"
-              ItemsSource="{Binding Products}" >
-      <DataGrid.Columns>
-        <DataGridTextColumn Header="Grupo" Binding="{Binding ProductGroup}" SortMemberPath="ProductGroup" x:DataType="model:Product"/>
-        <DataGridTextColumn Header="Código" Binding="{Binding ProductCode}" SortMemberPath="ProductCode" x:DataType="model:Product"/>
-        <DataGridTextColumn Header="Código barras" Binding="{Binding ProductNumberCode}" SortMemberPath="ProductNumberCode" x:DataType="model:Product"/>
-        <DataGridTextColumn Header="Descrição" Binding="{Binding ProductDescription}" Width="*" SortMemberPath="ProductDescription" x:DataType="model:Product"/>
-        <DataGridTextColumn Header="Preços" Binding="{Binding Prices}" SortMemberPath="Prices" x:DataType="model:Product"/>
-        <DataGridTextColumn Header="Preços c/ IVA" Binding="{Binding PricesWithVat}" SortMemberPath="PricesWithVat" x:DataType="model:Product"/>
-        <DataGridTextColumn Header="IVA" Binding="{Binding Taxes}" SortMemberPath="Taxes" x:DataType="model:Product"/>
-      </DataGrid.Columns>
-    </DataGrid>
+            <ProgressBar Grid.Row="1" Grid.ColumnSpan="4"
+                         IsIndeterminate="True"
+                         IsVisible="{Binding IsLoading}"/>
 
-  </Grid>
+            <DataGrid Grid.Row="2"
+                      Grid.ColumnSpan="4"
+                      IsReadOnly="True"
+                      FontSize="16"
+                      ItemsSource="{Binding Products}" >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Grupo" Binding="{Binding ProductGroup}" SortMemberPath="ProductGroup" x:DataType="model:Product"/>
+                    <DataGridTextColumn Header="Código" Binding="{Binding ProductCode}" SortMemberPath="ProductCode" x:DataType="model:Product"/>
+                    <DataGridTextColumn Header="Código barras" Binding="{Binding ProductNumberCode}" SortMemberPath="ProductNumberCode" x:DataType="model:Product"/>
+                    <DataGridTextColumn Header="Descrição" Binding="{Binding ProductDescription}" Width="*" SortMemberPath="ProductDescription" x:DataType="model:Product"/>
+                    <DataGridTextColumn Header="Preços" Binding="{Binding Prices}" SortMemberPath="Prices" x:DataType="model:Product"/>
+                    <DataGridTextColumn Header="Preços c/ IVA" Binding="{Binding PricesWithVat}" SortMemberPath="PricesWithVat" x:DataType="model:Product"/>
+                    <DataGridTextColumn Header="IVA" Binding="{Binding Taxes}" SortMemberPath="Taxes" x:DataType="model:Product"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </Grid>
+    </Grid>
 </UserControl>
