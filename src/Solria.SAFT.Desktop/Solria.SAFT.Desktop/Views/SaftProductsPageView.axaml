@@ -77,6 +77,7 @@
         <DataGridTextColumn Header="Código barras" Binding="{Binding ProductNumberCode}" SortMemberPath="ProductNumberCode" x:DataType="model:Product"/>
         <DataGridTextColumn Header="Descrição" Binding="{Binding ProductDescription}" Width="*" SortMemberPath="ProductDescription" x:DataType="model:Product"/>
         <DataGridTextColumn Header="Preços" Binding="{Binding Prices}" SortMemberPath="Prices" x:DataType="model:Product"/>
+        <DataGridTextColumn Header="Preços c/ IVA" Binding="{Binding PricesWithVat}" SortMemberPath="PricesWithVat" x:DataType="model:Product"/>
         <DataGridTextColumn Header="IVA" Binding="{Binding Taxes}" SortMemberPath="Taxes" x:DataType="model:Product"/>
       </DataGrid.Columns>
     </DataGrid>

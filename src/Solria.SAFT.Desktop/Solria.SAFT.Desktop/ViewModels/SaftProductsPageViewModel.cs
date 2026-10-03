@@ -76,7 +76,7 @@ public partial class SaftProductsPageViewModel : ViewModelBase
         StringBuilder stringBuilder = new StringBuilder();
         foreach (var c in Products)
         {
-            stringBuilder.AppendLine($"{c.ProductCode};{c.ProductDescription};;{c.Prices};{c.ProductNumberCode};{c.ProductGroup};{c.Taxes}");
+            stringBuilder.AppendLine($"{c.ProductCode};{c.ProductDescription};;{c.Prices};{c.ProductNumberCode};{c.ProductGroup};{c.Taxes};{c.PricesWithVat}");
         }
 
         await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);
@@ -158,21 +158,26 @@ public partial class SaftProductsPageViewModel : ViewModelBase
     {
         foreach (var p in allProducts)
         {
-            var prices = invoices_lines.Where(l => l.ProductCode.Equals(p.ProductCode, StringComparison.OrdinalIgnoreCase))
+            var productLines = invoices_lines
+                .Where(l => l.ProductCode != null && string.Equals(l.ProductCode, p.ProductCode, StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+
+            var prices = productLines
                 .Select(l => l.UnitPrice.ToString("N3"))
-                .Distinct()
-                .ToArray();
+                .Distinct();
 
-            var taxes = invoices_lines.Where(l => l.ProductCode.Equals(p.ProductCode, StringComparison.OrdinalIgnoreCase))
-                .Select(l => l.Tax.TaxCode)
-                .Distinct()
-                .ToArray();
+            var pricesWithVat = productLines
+                .Select(l => (l.UnitPrice * (1 + (l.Tax?.TaxPercentage ?? 0) / 100m)).ToString("N3"))
+                .Distinct();
 
-            if (prices != null && prices.Length > 0)
-                p.Prices = prices.Aggregate((i, j) => i + " | " + j);
+            var taxes = productLines
+                .Select(l => l.Tax?.TaxCode)
+                .Where(t => t != null)
+                .Distinct();
 
-            if (taxes != null && taxes.Length > 0)
-                p.Taxes = taxes.Aggregate((i, j) => i + " | " + j);
+            p.Prices = string.Join(" | ", prices);
+            p.PricesWithVat = string.Join(" | ", pricesWithVat);
+            p.Taxes = string.Join(" | ", taxes);
         }
     }
 }

@@ -1477,6 +1477,7 @@ public partial class Header : BaseData
 public partial class Product : BaseData
 {
     public string Prices { get; set; }
+    public string PricesWithVat { get; set; }
     public string Taxes { get; set; }
 
     public ValidationError ValidateProductCode()
