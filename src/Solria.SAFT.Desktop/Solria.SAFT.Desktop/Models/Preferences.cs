@@ -7,7 +7,7 @@ namespace SolRIA.SAFT.Desktop.Models;
 
 public class Preferences
 {
-    public IList<string> RecentFiles { get; set; } = new List<string>();
+    public IList<RecentFileEntry> RecentFiles { get; set; } = new List<RecentFileEntry>();
     public string Theme { get; set; } = "System";
     public bool UseNewParser { get; set; } = true;
 
@@ -16,25 +16,34 @@ public class Preferences
         return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SolRIA SAFT", "preferences.json");
     }
 
-    public void AddRecentFile(string filePath)
+    public void AddRecentFile(string filePath, RecentFileType fileType)
     {
         if (string.IsNullOrWhiteSpace(filePath)) return;
 
-        RecentFiles ??= new List<string>();
+        RecentFiles ??= new List<RecentFileEntry>();
 
         for (int i = RecentFiles.Count - 1; i >= 0; i--)
         {
-            if (string.Equals(RecentFiles[i], filePath, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(RecentFiles[i]?.FullPath, filePath, StringComparison.OrdinalIgnoreCase))
             {
                 RecentFiles.RemoveAt(i);
             }
         }
 
-        RecentFiles.Insert(0, filePath);
+        RecentFiles.Insert(0, new RecentFileEntry { FullPath = filePath, FileType = fileType });
 
         while (RecentFiles.Count > 15)
         {
             RecentFiles.RemoveAt(RecentFiles.Count - 1);
+        }
+    }
+
+    public void RemoveRecentFile(string filePath)
+    {
+        for (int i = RecentFiles.Count - 1; i >= 0; i--)
+        {
+            if (string.Equals(RecentFiles[i]?.FullPath, filePath, StringComparison.OrdinalIgnoreCase))
+                RecentFiles.RemoveAt(i);
         }
     }
 
@@ -61,17 +70,17 @@ public class Preferences
                 var prefs = System.Text.Json.JsonSerializer.Deserialize<Preferences>(json);
                 if (prefs != null)
                 {
-                    prefs.RecentFiles ??= new List<string>();
+                    prefs.RecentFiles ??= new List<RecentFileEntry>();
                     if (string.IsNullOrWhiteSpace(prefs.Theme))
                     {
                         prefs.Theme = "System";
                     }
 
                     // Deduplicate existing entries and limit to 15
-                    var unique = new List<string>();
+                    var unique = new List<RecentFileEntry>();
                     foreach (var file in prefs.RecentFiles)
                     {
-                        if (!string.IsNullOrWhiteSpace(file) && !unique.Exists(u => string.Equals(u, file, StringComparison.OrdinalIgnoreCase)))
+                        if (!string.IsNullOrWhiteSpace(file?.FullPath) && !unique.Exists(u => string.Equals(u.FullPath, file.FullPath, StringComparison.OrdinalIgnoreCase)))
                         {
                             unique.Add(file);
                             if (unique.Count >= 15) break;
@@ -89,6 +98,6 @@ public class Preferences
 
         Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SolRIA SAFT"));
 
-        return new Preferences { RecentFiles = new List<string>(), Theme = "System", UseNewParser = true };
+        return new Preferences { RecentFiles = new List<RecentFileEntry>(), Theme = "System", UseNewParser = true };
     }
 }

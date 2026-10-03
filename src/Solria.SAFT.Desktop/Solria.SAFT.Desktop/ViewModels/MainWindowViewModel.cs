@@ -240,42 +240,7 @@ public partial class MainWindowViewModel : ViewModelBase
             if (results == null || results.Length == 0) return;
 
             var selectedfile = results.First();
-            preferences.AddRecentFile(selectedfile);
-            Preferences.Save(preferences);
-            RefreshRecentFiles();
-
-            LoadingTitle = "A processar ficheiro SAF-T";
-            LoadingFileName = Path.GetFileName(selectedfile);
-            LoadingStep = "A abrir ficheiro...";
-            LoadingDetail = "A inicializar...";
-            LoadingProgress = 0;
-            IsLoading = true;
-
-            var progress = new Progress<SaftProgress>(p =>
-            {
-                LoadingProgress = p.ProgressPercentage;
-                LoadingStep = p.CurrentStep;
-                LoadingDetail = p.Detail;
-            });
-
-            await saftValidator.OpenSaftFile(selectedfile, progress);
-
-            dialogManager.SetFileName(selectedfile);
-            dialogManager.SetTitle(saftValidator.SaftFile?.Header?.CompanyName);
-
-            LoadedFileName = Path.GetFileName(selectedfile);
-            LoadedCompanyName = saftValidator.SaftFile?.Header?.CompanyName ?? "";
-            HasLoadedFile = true;
-
-            IsLoading = false;
-
-            var vm = new DialogSaftResumeViewModel();
-            vm.Init();
-
-            await dialogManager.ShowChildDialogAsync(vm);
-
-            ShowMenu = true;
-            IsSaft = true;
+            await OpenFileAsync(selectedfile, RecentFileType.Saft);
         }
         catch (Exception ex)
         {
@@ -310,10 +275,11 @@ public partial class MainWindowViewModel : ViewModelBase
         if (results == null || results.Length == 0) return;
 
         var selectedfile = results.First();
-        preferences.AddRecentFile(selectedfile);
-        Preferences.Save(preferences);
-        RefreshRecentFiles();
+        await OpenFileAsync(selectedfile, RecentFileType.Stocks);
+    }
 
+    private async Task OpenStocksFileAsync(string selectedfile)
+    {
         try
         {
             LoadingTitle = "A processar existências (Stocks)";
@@ -410,20 +376,62 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task OnOpenRecentSaftFile(string saft_file)
+    private async Task OnOpenRecentFile(string fullPath)
     {
-        if (string.IsNullOrWhiteSpace(saft_file) || File.Exists(saft_file) == false)
+        if (string.IsNullOrWhiteSpace(fullPath)) return;
+        if (!File.Exists(fullPath))
         {
-            await dialogManager.ShowMessageDialogAsync("Aviso", $"O ficheiro não foi encontrado:\n{saft_file}", MessageDialogType.Warning);
+            var remove = await dialogManager.ShowMessageDialogAsync("Ficheiro inexistente",
+                $"O ficheiro já não existe:\n{fullPath}\n\nQuer remover esta entrada dos ficheiros recentes?",
+                MessageDialogType.Question);
+            if (remove) OnRemoveRecentFile(fullPath);
             return;
         }
 
+        var entry = preferences.RecentFiles.FirstOrDefault(r =>
+            string.Equals(r.FullPath, fullPath, StringComparison.OrdinalIgnoreCase));
+        if (entry != null) await OpenFileAsync(entry.FullPath, entry.FileType);
+    }
+
+    private async Task OpenFileAsync(string fullPath, RecentFileType fileType)
+    {
         try
         {
-            preferences.AddRecentFile(saft_file);
+            if (fileType == RecentFileType.Transport)
+            {
+                await dialogManager.ShowMessageDialogAsync("Aviso", "A abertura de guias de transporte ainda não está disponível.", MessageDialogType.Information);
+                return;
+            }
+
+            // Preserve preferences changed by other services, such as the theme.
+            preferences = Preferences.Load();
+            preferences.AddRecentFile(fullPath, fileType);
             Preferences.Save(preferences);
             RefreshRecentFiles();
 
+            switch (fileType)
+            {
+                case RecentFileType.Saft:
+                    await OpenSaftFileAsync(fullPath);
+                    break;
+                case RecentFileType.Stocks:
+                    await OpenStocksFileAsync(fullPath);
+                    break;
+                case RecentFileType.DocumentsAT:
+                    await OpenDocumentsATFileAsync(fullPath);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            await dialogManager.ShowMessageDialogAsync("Erro", ex.Message, MessageDialogType.Error);
+        }
+    }
+
+    private async Task OpenSaftFileAsync(string saft_file)
+    {
+        try
+        {
             LoadingTitle = "A processar ficheiro SAF-T";
             LoadingFileName = Path.GetFileName(saft_file);
             LoadingStep = "A abrir ficheiro...";
@@ -470,13 +478,21 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void OnRemoveRecentFile(string fullPath)
+    {
+        preferences = Preferences.Load();
+        preferences.RemoveRecentFile(fullPath);
+        Preferences.Save(preferences);
+        RefreshRecentFiles();
+    }
+
+    [RelayCommand]
     private void OnClearRecentFiles()
     {
-        RecentFiles.Clear();
-        RecentFilesDashboard.Clear();
+        preferences = Preferences.Load();
         preferences.RecentFiles.Clear();
         Preferences.Save(preferences);
-        BuildMenu();
+        RefreshRecentFiles();
     }
 
     private void RefreshRecentFiles()
@@ -485,9 +501,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
         var recentItems = preferences.RecentFiles.Select(r => new MenuItemViewModel
         {
-            Header = Path.GetFileName(r),
-            Command = OpenRecentSaftFileCommand,
-            CommandParameter = r
+            Header = Path.GetFileName(r.FullPath),
+            Command = OpenRecentFileCommand,
+            CommandParameter = r.FullPath
         });
 
         RecentFiles = new ObservableCollection<MenuItemViewModel>(recentItems);
@@ -496,8 +512,9 @@ public partial class MainWindowViewModel : ViewModelBase
             RecentFiles.Add(new() { Header = "Limpar histórico", Command = ClearRecentFilesCommand });
         }
 
-        var dashboardItems = preferences.RecentFiles.Select(r => new RecentFileItemViewModel(r, OpenRecentSaftFileCommand));
+        var dashboardItems = preferences.RecentFiles.Select(r => new RecentFileItemViewModel(r, OpenRecentFileCommand, RemoveRecentFileCommand));
         RecentFilesDashboard = new ObservableCollection<RecentFileItemViewModel>(dashboardItems);
+        BuildMenu();
     }
 
     [RelayCommand]
@@ -534,8 +551,11 @@ public partial class MainWindowViewModel : ViewModelBase
 
         if (results == null || results.Length == 0) return;
 
-        var selectedfile = results.First();
+        await OpenFileAsync(results.First(), RecentFileType.DocumentsAT);
+    }
 
+    private async Task OpenDocumentsATFileAsync(string selectedfile)
+    {
         var vm = new DialogReadInvoicesATViewModel();
         vm.Init(selectedfile);
 

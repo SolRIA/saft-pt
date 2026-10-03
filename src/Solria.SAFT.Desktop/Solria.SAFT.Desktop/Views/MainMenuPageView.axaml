@@ -8,6 +8,34 @@
 			 mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="950"
 			 x:Class="SolRIA.SAFT.Desktop.Views.MainMenuPageView">
 
+	<UserControl.Styles>
+		<Style Selector="Border.file-type-pill">
+			<Setter Property="Background" Value="{DynamicResource SemiColorBackground2}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource SemiColorPrimary}"/>
+		</Style>
+		<Style Selector="Border.file-type-pill TextBlock">
+			<Setter Property="Foreground" Value="{DynamicResource SemiColorPrimary}"/>
+		</Style>
+		<Style Selector="Border.file-type-pill.stocks">
+			<Setter Property="BorderBrush" Value="{StaticResource SemiOrange4}"/>
+		</Style>
+		<Style Selector="Border.file-type-pill.stocks TextBlock">
+			<Setter Property="Foreground" Value="{StaticResource SemiOrange4}"/>
+		</Style>
+		<Style Selector="Border.file-type-pill.documents-at">
+			<Setter Property="BorderBrush" Value="{StaticResource SemiPurple4}"/>
+		</Style>
+		<Style Selector="Border.file-type-pill.documents-at TextBlock">
+			<Setter Property="Foreground" Value="{StaticResource SemiPurple4}"/>
+		</Style>
+		<Style Selector="Border.file-type-pill.transport">
+			<Setter Property="BorderBrush" Value="{StaticResource SemiGreen4}"/>
+		</Style>
+		<Style Selector="Border.file-type-pill.transport TextBlock">
+			<Setter Property="Foreground" Value="{StaticResource SemiGreen4}"/>
+		</Style>
+	</UserControl.Styles>
+
 	<Design.DataContext>
 		<vm:MainWindowViewModel AppVersion="1.0.0" UseNewParser="True"
 								UseNewParserIcon="Flash"
@@ -266,33 +294,51 @@
 						<ItemsControl Grid.Row="1" ItemsSource="{Binding RecentFilesDashboard}">
 							<ItemsControl.ItemTemplate>
 								<DataTemplate x:DataType="vm:RecentFileItemViewModel">
-									<Button Command="{Binding OpenCommand}" CommandParameter="{Binding FullPath}"
-											Theme="{DynamicResource BorderlessButton}"
-											HorizontalAlignment="Stretch"
-											HorizontalContentAlignment="Stretch"
-											Padding="10,8" Margin="0,2">
-										<Grid ColumnDefinitions="Auto,*,Auto">
-											<Border Grid.Column="0" Width="32" Height="32" CornerRadius="6"
-													Background="{DynamicResource SemiColorBackground2}"
-													VerticalAlignment="Center" Margin="0,0,12,0">
-												<icons:MaterialIcon Kind="FileXmlBox" Width="20" Height="20"
-																	Foreground="{DynamicResource SemiColorPrimary}"/>
-											</Border>
+									<Grid ColumnDefinitions="*,Auto">
+										<Button Command="{Binding OpenCommand}" CommandParameter="{Binding FullPath}"
+												Theme="{DynamicResource BorderlessButton}"
+												HorizontalAlignment="Stretch"
+												HorizontalContentAlignment="Stretch"
+												Padding="10,8" Margin="0,2">
+											<Grid ColumnDefinitions="Auto,*,Auto">
+												<Border Grid.Column="0" Width="32" Height="32" CornerRadius="6"
+														Background="{DynamicResource SemiColorBackground2}"
+														VerticalAlignment="Center" Margin="0,0,12,0">
+													<icons:MaterialIcon Kind="{Binding Icon}" Width="20" Height="20"
+																		Foreground="{DynamicResource SemiColorPrimary}"/>
+												</Border>
 
-											<StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
-												<TextBlock Text="{Binding FileName}" FontSize="13" FontWeight="SemiBold"
-														   Foreground="{DynamicResource SemiColorText0}"
-														   TextTrimming="CharacterEllipsis"/>
-												<TextBlock Text="{Binding Directory}" FontSize="11"
-														   Foreground="{DynamicResource SemiColorText2}"
-														   TextTrimming="CharacterEllipsis"/>
-											</StackPanel>
+												<StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+													<TextBlock Text="{Binding FileName}" FontSize="13" FontWeight="SemiBold"
+															   Foreground="{DynamicResource SemiColorText0}"
+															   TextTrimming="CharacterEllipsis"/>
+													<Border Classes="file-type-pill"
+															Classes.stocks="{Binding IsStocks}"
+															Classes.documents-at="{Binding IsDocumentsAT}"
+															Classes.transport="{Binding IsTransport}"
+															CornerRadius="12" BorderThickness="1" Padding="8,2"
+															HorizontalAlignment="Left" Margin="0,2">
+														<TextBlock Text="{Binding FileTypeDisplayName}" FontSize="11" FontWeight="SemiBold"/>
+													</Border>
+													<TextBlock Text="{Binding Directory}" FontSize="11"
+															   Foreground="{DynamicResource SemiColorText2}"
+															   TextTrimming="CharacterEllipsis"/>
+												</StackPanel>
 
-											<icons:MaterialIcon Grid.Column="2" Kind="ArrowRight" Width="16" Height="16"
-																Foreground="{DynamicResource SemiColorText3}"
-																VerticalAlignment="Center" Margin="8,0,0,0"/>
-										</Grid>
-									</Button>
+												<icons:MaterialIcon Grid.Column="2"
+																	Kind="ArrowRight" Width="16" Height="16"
+																	Foreground="{DynamicResource SemiColorText3}"
+																	VerticalAlignment="Center" Margin="8,0,0,0"/>
+											</Grid>
+										</Button>
+										<Button Grid.Column="1" Command="{Binding RemoveCommand}" CommandParameter="{Binding FullPath}"
+												Theme="{DynamicResource BorderlessButton}" Padding="8" Margin="4,2,0,2"
+												VerticalAlignment="Center" ToolTip.Tip="Remover dos recentes"
+												AutomationProperties.Name="Remover dos recentes">
+											<icons:MaterialIcon Kind="DeleteOutline" Width="18" Height="18"
+													Foreground="{DynamicResource SemiColorText2}"/>
+										</Button>
+									</Grid>
 								</DataTemplate>
 							</ItemsControl.ItemTemplate>
 						</ItemsControl>

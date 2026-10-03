@@ -130,6 +130,7 @@ namespace SolRIA.SAFT.Desktop.Views
             var dialog = new DialogMessage { DataContext = vm };
 
             dialogs.Add(dialog);
+            dialog.Closed += (_, _) => dialogs.Remove(dialog);
             return dialog.ShowDialog<bool>(top_window);
         }
 

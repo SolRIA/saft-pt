@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Models;
+using SolRIA.SAFT.Desktop.Services;
 
 namespace SolRIA.SAFT.Desktop.ViewModels;
 
@@ -62,10 +63,12 @@ public partial class DialogMessageViewModel : ViewModelBase
     [RelayCommand]
     private void OnOk()
     {
+        AppBootstrap.Resolve<IDialogManager>().CloseDialog(true);
     }
 
     [RelayCommand]
     private void OnCancel()
     {
+        AppBootstrap.Resolve<IDialogManager>().CloseDialog(false);
     }
 }
