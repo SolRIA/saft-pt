@@ -36,11 +36,11 @@
 		</Button>
 
 		<Button Margin="2,0" Width="50"
-				ToolTip.Tip="Exportar para Excel" Classes="Primary"
+				ToolTip.Tip="Ver relatório" Classes="Primary"
 				Grid.Row="0" Grid.Column="2"
 				VerticalAlignment="Stretch"
 				Command="{Binding DoPrintCommand}">
-			<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+			<icons:MaterialIcon Kind="FileDocumentOutline" Width="24" Height="24"/>
 		</Button>
 
 		<TextBlock Grid.Row="1" Grid.ColumnSpan="3" Margin="5" Text="{Binding NumErros}"/>

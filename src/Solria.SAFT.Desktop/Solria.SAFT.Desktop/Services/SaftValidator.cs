@@ -1084,11 +1084,11 @@ public class SaftValidator : ISaftValidator
                 .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0));
 
             if (Math.Abs(netTotal - workDocument.DocumentTotals.NetTotal) > 0.01m)
-                AddError(new ValidationError { Value = workDocument.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Total de incidência incorrecto. Documento: {0}, esperado: {1}", workDocument.DocumentTotals.NetTotal, netTotal) });
+                AddError(new ValidationError { Value = workDocument.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Documento: {0}, valor: {1} esperado: {2}", workDocument.DocumentNumber, workDocument.DocumentTotals.NetTotal, netTotal) });
             if (Math.Abs(grossTotal - workDocument.DocumentTotals.GrossTotal) > 0.01m)
-                AddError(new ValidationError { Value = workDocument.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Total incorrecto. Documento: {0}, esperado: {1}", workDocument.DocumentTotals.GrossTotal, grossTotal) });
+                AddError(new ValidationError { Value = workDocument.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Documento: {0}, valor: {1} esperado: {2}", workDocument.DocumentNumber, workDocument.DocumentTotals.GrossTotal, grossTotal) });
             if (Math.Abs(taxPayable - workDocument.DocumentTotals.TaxPayable) > 0.01m)
-                AddError(new ValidationError { Value = workDocument.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Total de imposto incorrecto. Documento: {0}, esperado: {1}", workDocument.DocumentTotals.TaxPayable, taxPayable) });
+                AddError(new ValidationError { Value = workDocument.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Documento: {0}, valor: {1} esperado: {2}", workDocument.DocumentNumber, workDocument.DocumentTotals.TaxPayable, taxPayable) });
 
             foreach (var line in workDocument.Line)
             {
@@ -1110,16 +1110,27 @@ public class SaftValidator : ISaftValidator
         AddError(line.ValidateTax(workDocument.Pk));
 
         int numCasasDecimais = 6;// Workspace.Instance.Config.NumCasasDecimaisValidacoes;
+        bool incidencia = Math.Abs(Math.Round(line.UnitPrice * line.Quantity, numCasasDecimais, MidpointRounding.AwayFromZero) - Math.Round(line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), numCasasDecimais, MidpointRounding.AwayFromZero)) > 0.01m;
 
-        if (line.UnitPrice * line.Quantity != line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0) && Math.Round(line.UnitPrice * line.Quantity, numCasasDecimais, MidpointRounding.AwayFromZero) != Math.Round(line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), numCasasDecimais, MidpointRounding.AwayFromZero))
-            AddError(new ValidationError { Value = line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0).ToString(), Field = "Item", TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovementLine), Description = string.Format("Valor da linha incorrecto. Valor: {0}, esperado: {1}", line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), line.UnitPrice * line.Quantity), UID = line.Pk, SupUID = workDocument.Pk });
+        if (incidencia == true)
+        {
+            AddError(new ValidationError
+            {
+                Value = line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0).ToString(),
+                Field = line.ItemElementName.ToString(),
+                TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovementLine),
+                Description = string.Format("Total de linha diferente do valor unitário * quantidade ({0} * {1} <> {2}). Documento: {3}", line.UnitPrice, line.Quantity, line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), line.DocNo),
+                UID = line.Pk,
+                SupUID = workDocument.Pk
+            });
+        }
     }
 
     void ValidateMovementOfGoods(SourceDocumentsMovementOfGoods movements)
     {
         int numberOfLines = movements.StockMovement.Sum(m => m.Line.Length);
         if (Convert.ToInt32(movements.NumberOfMovementLines) != numberOfLines)
-            AddError(new ValidationError { Value = movements.NumberOfMovementLines, Field = "MovementOfGoods", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Nº de registos incorrecto. Documento: {0}, esperado: {1}", movements.NumberOfMovementLines, numberOfLines) });
+            AddError(new ValidationError { Value = movements.NumberOfMovementLines, Field = "MovementOfGoods", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Nº de registos incorrecto. valor: {0} esperado: {1}", movements.NumberOfMovementLines, numberOfLines) });
 
         decimal quantity = 0;
         foreach (var movement in movements.StockMovement)
@@ -1149,11 +1160,11 @@ public class SaftValidator : ISaftValidator
                 decimal taxPayable = movement.Line.Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) * (l.Tax != null ? l.Tax.TaxPercentage : 0) * 0.01m);
 
                 if (Math.Abs(netTotal - movement.DocumentTotals.NetTotal) > 0.01m)
-                    AddError(new ValidationError { Value = movement.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total de incidência incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.NetTotal, netTotal) });
+                    AddError(new ValidationError { Value = movement.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Documento: {0}, valor: {1} esperado: {2}", movement.DocumentNumber, movement.DocumentTotals.NetTotal, netTotal) });
                 if (Math.Abs(grossTotal - movement.DocumentTotals.GrossTotal) > 0.01m)
-                    AddError(new ValidationError { Value = movement.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.GrossTotal, grossTotal) });
+                    AddError(new ValidationError { Value = movement.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Documento: {0}, valor: {1} esperado: {2}", movement.DocumentNumber, movement.DocumentTotals.GrossTotal, grossTotal) });
                 if (Math.Abs(taxPayable - movement.DocumentTotals.TaxPayable) > 0.01m)
-                    AddError(new ValidationError { Value = movement.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total de imposto incorrecto. Documento: {0}, esperado: {1}", movement.DocumentTotals.TaxPayable, taxPayable) });
+                    AddError(new ValidationError { Value = movement.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Documento: {0}, valor: {1} esperado: {2}", movement.DocumentNumber, movement.DocumentTotals.TaxPayable, taxPayable) });
             }
 
             //verificar as linhas
@@ -1164,7 +1175,7 @@ public class SaftValidator : ISaftValidator
         }
 
         if (quantity != movements.TotalQuantityIssued)
-            AddError(new ValidationError { Value = movements.TotalQuantityIssued.ToString(), Field = "MovementOfGoods", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total da quantidade incorrecto. Documento: {0}, esperado: {1}", movements.TotalQuantityIssued, quantity) });
+            AddError(new ValidationError { Value = movements.TotalQuantityIssued.ToString(), Field = "MovementOfGoods", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total da quantidade incorrecto. valor: {0}, esperado: {1}", movements.TotalQuantityIssued, quantity) });
     }
 
     void ValidateMovementOfGoodsStockMovementLine(SourceDocumentsMovementOfGoodsStockMovementLine line, SourceDocumentsMovementOfGoodsStockMovement movement)
@@ -1189,7 +1200,7 @@ public class SaftValidator : ISaftValidator
     void ValidateInvoices(SourceDocumentsSalesInvoices invoices)
     {
         if (Convert.ToInt32(invoices.NumberOfEntries) != invoices.Invoice.Length)
-            AddError(new ValidationError { Value = invoices.NumberOfEntries, Field = "SalesInvoices", TypeofError = typeof(SourceDocumentsSalesInvoices), Description = string.Format("Nº de registos de documentos comerciais incorrecto. Documento: {0}, esperado: {1}", invoices.NumberOfEntries, invoices.Invoice.Length) });
+            AddError(new ValidationError { Value = invoices.NumberOfEntries, Field = "SalesInvoices", TypeofError = typeof(SourceDocumentsSalesInvoices), Description = string.Format("Nº de registos de documentos comerciais incorrecto. valor: {0}, esperado: {1}", invoices.NumberOfEntries, invoices.Invoice.Length) });
 
         foreach (var invoice in invoices.Invoice)
         {
@@ -1239,15 +1250,15 @@ public class SaftValidator : ISaftValidator
             total = Math.Round(total, 2, MidpointRounding.AwayFromZero);
 
             if (Math.Abs(total - invoice.DocumentTotals.GrossTotal) > 0.01m)
-                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "GrossTotal", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Total errado. Documento: {0}, total: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.GrossTotal, total), UID = invoice.Pk });
+                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "GrossTotal", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Documento: {0}, total: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.GrossTotal, total), UID = invoice.Pk });
             if (Math.Abs(incidencia - invoice.DocumentTotals.NetTotal) > 0.01m)
-                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "NetTotal", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Incidencia errada. Documento {0}, incidencia:{1} esperado:{2}", invoice.InvoiceNo, invoice.DocumentTotals.NetTotal, incidencia), UID = invoice.Pk });
+                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "NetTotal", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Documento {0}, incidencia:{1} esperado:{2}", invoice.InvoiceNo, invoice.DocumentTotals.NetTotal, incidencia), UID = invoice.Pk });
             if (Math.Abs(iva - invoice.DocumentTotals.TaxPayable) > 0.01m)
-                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxPayable", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Iva errado. Documento: {0}, iva: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.TaxPayable, iva), UID = invoice.Pk });
+                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxPayable", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Documento: {0}, iva: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.TaxPayable, iva), UID = invoice.Pk });
             if (Math.Abs(invoice.DocumentTotals.TaxPayable - (invoice.DocumentTotals.GrossTotal - invoice.DocumentTotals.NetTotal)) > 0.01m)
-                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxPayable", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Iva errado. Documento: {0}, iva: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.TaxPayable, invoice.DocumentTotals.GrossTotal - invoice.DocumentTotals.NetTotal), UID = invoice.Pk });
+                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxPayable", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Documento: {0}, iva: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.TaxPayable, invoice.DocumentTotals.GrossTotal - invoice.DocumentTotals.NetTotal), UID = invoice.Pk });
             if (Math.Abs(invoice.DocumentTotals.GrossTotal - (invoice.DocumentTotals.NetTotal + invoice.DocumentTotals.TaxPayable)) > 0.01m)
-                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "DocumentTotals", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Total errado. Documento: {0}, NetTotal + TaxPayable = {1} != GrossTotal {2}", invoice.InvoiceNo, invoice.DocumentTotals.NetTotal + invoice.DocumentTotals.TaxPayable, invoice.DocumentTotals.GrossTotal), UID = invoice.Pk });
+                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "DocumentTotals", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Documento: {0}, NetTotal + TaxPayable = {1} != GrossTotal {2}", invoice.InvoiceNo, invoice.DocumentTotals.NetTotal + invoice.DocumentTotals.TaxPayable, invoice.DocumentTotals.GrossTotal), UID = invoice.Pk });
         }
     }
 
@@ -1265,8 +1276,8 @@ public class SaftValidator : ISaftValidator
         AddError(line.ValidateTax(supPk));
 
         int numCasasDecimais = 6;// Workspace.Instance.Config.NumCasasDecimaisValidacoes;
-        bool incidendia = Math.Abs(Math.Round(line.UnitPrice * line.Quantity, numCasasDecimais, MidpointRounding.AwayFromZero) - Math.Round(line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), numCasasDecimais, MidpointRounding.AwayFromZero)) > 0.01m;
-        if (incidendia == true)
+        bool incidencia = Math.Abs(Math.Round(line.UnitPrice * line.Quantity, numCasasDecimais, MidpointRounding.AwayFromZero) - Math.Round(line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), numCasasDecimais, MidpointRounding.AwayFromZero)) > 0.01m;
+        if (incidencia == true)
         {
             AddError(new ValidationError
             {
@@ -1283,7 +1294,7 @@ public class SaftValidator : ISaftValidator
     private void ValidatePayments(SourceDocumentsPayments payments)
     {
         if (Convert.ToInt32(payments.NumberOfEntries) != (payments.Payment?.Length ?? 0))
-            AddError(new ValidationError { Value = payments.NumberOfEntries, Field = "Payments/NumberOfEntries", TypeofError = typeof(SourceDocumentsPayments), Description = string.Format("Nº de registos dos recibos incorrecto. Documento: {0}, esperado: {1}", payments.NumberOfEntries, payments.Payment?.Length ?? 0) });
+            AddError(new ValidationError { Value = payments.NumberOfEntries, Field = "Payments/NumberOfEntries", TypeofError = typeof(SourceDocumentsPayments), Description = string.Format("Nº de registos dos recibos incorrecto. valor: {0}, esperado: {1}", payments.NumberOfEntries, payments.Payment?.Length ?? 0) });
 
         if (payments.Payment != null)
         {
@@ -1333,7 +1344,7 @@ public class SaftValidator : ISaftValidator
     {
         if (i.InvoiceType == InvoiceType.FT || i.InvoiceType == InvoiceType.VD || i.InvoiceType == InvoiceType.ND || i.InvoiceType == InvoiceType.FR || i.InvoiceType == InvoiceType.FS || i.InvoiceType == InvoiceType.TV || i.InvoiceType == InvoiceType.AA)
             return l.ItemElementName == ItemChoiceType4.CreditAmount ? 1 : -1;
-        
+
         if (i.InvoiceType == InvoiceType.NC || i.InvoiceType == InvoiceType.TD || i.InvoiceType == InvoiceType.DA || i.InvoiceType == InvoiceType.RE)
             return l.ItemElementName == ItemChoiceType4.DebitAmount ? 1 : -1;
 

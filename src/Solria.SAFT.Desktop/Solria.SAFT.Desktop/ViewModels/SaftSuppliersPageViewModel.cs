@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Infrastructure;
 using SolRIA.SAFT.Desktop.Models;
@@ -42,31 +42,12 @@ public partial class SaftSuppliersPageViewModel : ViewModelBase
     private async Task OnDoPrint()
     {
         if (Suppliers == null || Suppliers.Length == 0) return;
-
-        var (_, stream) = await dialogManager.SaveFileDialog(
-            "Guardar fornecedores",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Fornecedores.csv",
-            ".csv");
-
-        if (stream == null) return;
-
-        StringBuilder stringBuilder = new StringBuilder();
-        StringBuilder moradas = new StringBuilder();
-        foreach (var c in Suppliers)
-        {
-            moradas.Clear();
-            if (c.BillingAddress != null)
-            {
-                moradas.Append(
-                    c.BillingAddress.AddressDetail ??
-                    c.BillingAddress.StreetName + " " + c.BillingAddress.BuildingNumber + " " + c.BillingAddress.PostalCode);
-            }
-
-            stringBuilder.AppendLine($"{c.SupplierTaxID};{c.CompanyName};{c.SupplierID};{moradas};{c.Telephone};;{c.Fax};{c.Email}");
-        }
-
-        await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);
+        var request = ReportRequest.FromRows(ReportTemplate.Fornecedores, "Fornecedores",
+            ["NIF", "Nome", "ID", "Morada", "Telefone", "Fax", "Email"],
+            Suppliers.Select(c => new object[] { c.SupplierTaxID, c.CompanyName, c.SupplierID,
+                c.BillingAddress?.AddressDetail ?? $"{c.BillingAddress?.StreetName} {c.BillingAddress?.BuildingNumber} {c.BillingAddress?.PostalCode}",
+                c.Telephone, c.Fax, c.Email }));
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(request);
     }
 
     [RelayCommand]

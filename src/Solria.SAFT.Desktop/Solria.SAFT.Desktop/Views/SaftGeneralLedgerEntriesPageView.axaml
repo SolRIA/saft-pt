@@ -45,10 +45,10 @@
 
 			</Button>
 
-			<Button Margin="2" Width="50" ToolTip.Tip="Exportar documentos para Excel" Grid.Column="4"
+			<Button Margin="2" Width="50" ToolTip.Tip="Ver relatório de documentos" Grid.Column="4"
 					Command="{Binding SaveExcelCommand}"
 					VerticalAlignment="Stretch">
-				<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+				<icons:MaterialIcon Kind="FileDocumentOutline" Width="24" Height="24"/>
 			</Button>
 		</Grid>
 
@@ -104,12 +104,12 @@
 				</ScrollViewer>
 			</Border>
 
-			<Button Height="50" ToolTip.Tip="Exportar para Excel"
+			<Button Height="50" ToolTip.Tip="Ver relatório"
 					Margin="5,0,2.5,5" Grid.Row="1" Grid.Column="0"
 					Command="{Binding SaveExcelCommand}">
 				<StackPanel Orientation="Horizontal">
-					<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>			
-					
+					<icons:MaterialIcon Kind="FileDocumentOutline" Width="24" Height="24"/>
+
 					<TextBlock Text="Documento" VerticalAlignment="Center" Margin="5,0"/>
 				</StackPanel>
 			</Button>

@@ -48,7 +48,7 @@ namespace SolRIA.SAFT.Desktop
             services.AddSingleton<IDatabaseService, DatabaseService>();
 
             services.AddSingleton<IDialogManager>(mainWindow);
-            services.AddSingleton<IReportService>(mainWindow);
+            services.AddSingleton<IReportService, ReportService>();
 
             AppBootstrap.ConfigureServices(services);
         }

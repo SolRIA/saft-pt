@@ -1,0 +1,3 @@
+# The repository ignores directories named Viewer; these are vendored sources.
+!/Viewer/
+!/Viewer/**

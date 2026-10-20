@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Infrastructure;
 using SolRIA.SAFT.Desktop.Services;
@@ -37,22 +37,10 @@ public partial class SaftTaxesPageViewModel : ViewModelBase
     private async Task OnDoPrint()
     {
         if (Taxes == null || Taxes.Count == 0) return;
-
-        var (_, stream) = await dialogManager.SaveFileDialog(
-            "Guardar Impostos",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Impostos.csv",
-            ".csv");
-
-        if (stream == null) return;
-
-        StringBuilder stringBuilder = new StringBuilder();
-        foreach (var c in Taxes)
-        {
-            stringBuilder.AppendLine($"{c.TaxType};{c.Description};{c.TaxCode};{c.TaxCountryRegion};{c.TaxAmount};{c.TaxPercentage};{c.TaxExpirationDate}");
-        }
-
-        await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);
+        var request = ReportRequest.FromRows(ReportTemplate.Impostos, "Impostos",
+            ["Tipo", "Descrição", "Código", "País / Região", "Montante", "Percentagem", "Validade"],
+            Taxes.Select(c => new object[] { c.TaxType.ToString(), c.Description, c.TaxCode, c.TaxCountryRegion, c.TaxAmount, c.TaxPercentage, c.TaxExpirationDate }));
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(request);
     }
 
     [RelayCommand]

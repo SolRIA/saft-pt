@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Infrastructure;
 using SolRIA.SAFT.Desktop.Models;
@@ -62,23 +62,10 @@ public partial class SaftProductsPageViewModel : ViewModelBase
     private async Task OnDoPrint()
     {
         if (Products == null || Products.Count == 0) return;
-
-        var (_, stream) = await dialogManager.SaveFileDialog(
-            title: "Guardar produtos excel",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Produtos.csv",
-            defaultExtension: ".csv");
-
-        if (stream is null) return;
-
-        var stringBuilder = new StringBuilder("Código;Descrição;Preço;Código de Barras;Grupo;IVA;Preço com IVA");
-        stringBuilder.AppendLine();
-        foreach (var c in Products)
-        {
-            stringBuilder.AppendLine($"{c.ProductCode};{c.ProductDescription};{c.Prices};{c.ProductNumberCode};{c.ProductGroup};{c.Taxes};{c.PricesWithVat}");
-        }
-
-        await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);
+        var request = ReportRequest.FromRows(ReportTemplate.Produtos, "Produtos",
+            ["Código", "Descrição", "Preço", "Código de Barras", "Grupo", "IVA", "Preço com IVA"],
+            Products.Select(c => new object[] { c.ProductCode, c.ProductDescription, c.Prices, c.ProductNumberCode, c.ProductGroup, c.Taxes, c.PricesWithVat }));
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(request);
     }
 
     [RelayCommand]

@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Infrastructure;
 using SolRIA.SAFT.Desktop.Services;
@@ -36,35 +36,12 @@ public partial class SaftCustomersPageViewModel : ViewModelBase
     private async Task OnDoPrint()
     {
         if (List == null || List.Count == 0) return;
-
-        var (_, stream) = await dialogManager.SaveFileDialog(
-            "Guardar clientes",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Clientes.csv",
-            ".csv");
-
-        if (stream == null) return;
-
-
-        var stringBuilder = new StringBuilder("NIF;Nome;Fiscal;Morada;ID;Morada;Telefone;Fax;Email");
-        stringBuilder.AppendLine();
-
-        var moradas = new StringBuilder();
-        foreach (var c in List)
-        {
-            moradas.Clear();
-            if (c.BillingAddress != null)
-            {
-                moradas.Append(
-                    c.BillingAddress.AddressDetail ??
-                    c.BillingAddress.StreetName + " " + c.BillingAddress.BuildingNumber + " " + c.BillingAddress.PostalCode);
-            }
-
-            stringBuilder.AppendLine($"{c.CustomerTaxID};{c.CompanyName};{c.CustomerID};{moradas};{c.Telephone};{c.Fax};{c.Email}");
-        }
-
-        // save the csv to the file stream
-        await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);
+        var request = ReportRequest.FromRows(ReportTemplate.Clientes, "Clientes",
+            ["NIF", "Nome", "ID", "Morada", "Telefone", "Fax", "Email"],
+            List.Select(c => new object[] { c.CustomerTaxID, c.CompanyName, c.CustomerID,
+                c.BillingAddress?.AddressDetail ?? $"{c.BillingAddress?.StreetName} {c.BillingAddress?.BuildingNumber} {c.BillingAddress?.PostalCode}",
+                c.Telephone, c.Fax, c.Email }));
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(request);
     }
 
     [RelayCommand]

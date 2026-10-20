@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Infrastructure;
 using SolRIA.SAFT.Desktop.Services;
@@ -55,21 +55,10 @@ public partial class SaftErrorPageViewModel : ViewModelBase
     private async Task OnDoPrint()
     {
         if (Errors == null || Errors.Count == 0) return;
-
-        var (_, stream) = await dialogManager.SaveFileDialog(
-            "Guardar erros",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Erros.csv",
-            ".csv");
-
-        StringBuilder stringBuilder = new StringBuilder();
-        foreach (var c in Errors)
-        {
-            stringBuilder.AppendLine($"{c.Field};{c.Value};{c.Description}");
-        }
-
-        if (stream == null) return;
-        await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);
+        var request = ReportRequest.FromRows(ReportTemplate.ErrosValidacao, "Erros",
+            ["Campo", "Valor", "Descrição"],
+            Errors.Select(c => new object[] { c.Field, c.Value, c.Description }));
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(request);
     }
 
     [RelayCommand]

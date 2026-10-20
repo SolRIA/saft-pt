@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DocumentFormat.OpenXml.Spreadsheet;
 using SolRIA.SAFT.Desktop.Services;
@@ -198,7 +198,7 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
     [RelayCommand]
     private void OnSearchDetails()
     {
-        var allLines = ShowAllLines ? saftValidator.SaftFile?.SourceDocuments?.Payments?.Payment?.SelectMany(i => i.Line) ?? [] : CurrentPayment?.Line ?? [];
+        var allLines = ShowAllLines ? saftValidator.SaftFile?.SourceDocuments?.Payments?.Payment?.SelectMany(i => i.Line ?? []) ?? [] : CurrentPayment?.Line ?? [];
 
         if (string.IsNullOrWhiteSpace(FilterLines))
         {
@@ -241,20 +241,13 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
     {
         if (Documents == null || Documents.Count == 0) return;
 
-        var (_, stream) = await dialogManager.SaveFileDialog(
-            "Guardar Documentos Pagammento",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Documentos Pagamentos - Impostos.xlsx",
-            ".xlsx");
-
-        if (stream == null) return;
         using var workbook = new ClosedXML.Excel.XLWorkbook();
         var sheet = workbook.Worksheets.Add("Impostos");
 
         var taxes_selling_group = Documents
-            .SelectMany(i => i.Line)
+            .SelectMany(i => i.Line ?? [])
             .Where(c => c.CreditAmount > 0)
-            .GroupBy(l => new { l.DocNo, l.Tax.TaxPercentage })
+            .GroupBy(l => new { l.DocNo, l.Tax?.TaxPercentage })
             .Select(g => new { g.Key.DocNo, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.CreditAmount ?? 0) })
             .OrderBy(g => g.DocNo)
             .ThenBy(g => g.Tax);
@@ -276,13 +269,12 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
             rowIndex++;
         }
 
-        sheet.Cell(rowIndex, 4).FormulaA1 = $"=SUM(D2:D{rowIndex - 1})";
+        if (rowIndex > 2) sheet.Cell(rowIndex, 4).FormulaA1 = $"=SUM(D2:D{rowIndex - 1})";
+        else sheet.Cell(rowIndex, 4).Value = 0;
 
         sheet.Columns().AdjustToContents();
 
-        workbook.SaveAs(stream);
-        stream.Close();
-        await stream.DisposeAsync().ConfigureAwait(false);
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(ReportRequest.FromWorkbook(ReportTemplate.PagamentosImpostos, workbook, "Documentos Pagamentos - Impostos.xlsx"));
     }
 
     [RelayCommand]
@@ -290,14 +282,6 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
     {
         if (Documents == null || Documents.Count == 0) return;
 
-        var (_, stream) = await dialogManager.SaveFileDialog(
-            "Guardar Documentos Pagamento",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Documentos_Pagamento.xlsx",
-            ".xlsx");
-
-
-        if (stream == null) return;
         using var workbook = new ClosedXML.Excel.XLWorkbook();
         var sheet = workbook.Worksheets.Add("Documentos");
 
@@ -313,7 +297,7 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
             //create lines header
             LineHeader(sheet, rowIndex);
 
-            foreach (var l in c.Line)
+            foreach (var l in c.Line ?? [])
             {
                 rowIndex++;
 
@@ -325,9 +309,7 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
 
         sheet.Columns().AdjustToContents();
 
-        workbook.SaveAs(stream);
-        stream.Close();
-        await stream.DisposeAsync().ConfigureAwait(false);
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(ReportRequest.FromWorkbook(ReportTemplate.PagamentosDocumentos, workbook, "Documentos_Pagamento.xlsx"));
     }
 
     [RelayCommand]
@@ -335,14 +317,6 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
     {
         if (CurrentPayment == null)
             return;
-
-        var (_, stream) = await dialogManager.SaveFileDialog(
-                "Guardar Documento Pagamento",
-                directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                initialFileName: "Documento Pagamento.xlsx",
-                "xlsx");
-
-        if (stream == null) return;
 
         using var workbook = new ClosedXML.Excel.XLWorkbook();
         var sheet = workbook.Worksheets.Add("Documento");
@@ -357,7 +331,7 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
         //create lines header
         LineHeader(sheet, rowIndex);
 
-        foreach (var l in CurrentPayment.Line)
+        foreach (var l in CurrentPayment.Line ?? [])
         {
             rowIndex++;
 
@@ -366,23 +340,13 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
 
         sheet.Columns().AdjustToContents();
 
-        workbook.SaveAs(stream);
-        stream.Close();
-        await stream.DisposeAsync().ConfigureAwait(false);
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(ReportRequest.FromWorkbook(ReportTemplate.PagamentosDocumento, workbook, "Documento Pagamento.xlsx"));
     }
 
     [RelayCommand]
     private async Task OnExportLinesExcel()
     {
         if (Lines == null || Lines.Any() == false) return;
-
-        var (_, stream) = await dialogManager.SaveFileDialog(
-            "Guardar Linhas",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Linhas_Pagamentos.xlsx",
-            "xlsx");
-
-        if (stream is null) return;
 
         using var workbook = new ClosedXML.Excel.XLWorkbook();
         var sheet = workbook.Worksheets.Add("Linhas");
@@ -400,9 +364,7 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
 
         sheet.Columns().AdjustToContents();
 
-        workbook.SaveAs(stream);
-        stream.Close();
-        await stream.DisposeAsync().ConfigureAwait(false);
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(ReportRequest.FromWorkbook(ReportTemplate.PagamentosLinhas, workbook, "Linhas_Pagamentos.xlsx"));
     }
 
     private void AddLineToWorksheet(ClosedXML.Excel.IXLWorksheet sheet, int rowIndex, SourceDocumentsPaymentsPaymentLine l)
@@ -424,14 +386,14 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
         sheet.Cell(rowIndex, 1).Value = doc.ATCUD;
         sheet.Cell(rowIndex, 2).Value = doc.PaymentType.ToString();
         sheet.Cell(rowIndex, 3).Value = doc.PaymentRefNo;
-        sheet.Cell(rowIndex, 4).Value = doc.DocumentStatus.PaymentStatus.ToString();
+        sheet.Cell(rowIndex, 4).Value = doc.DocumentStatus?.PaymentStatus.ToString();
         sheet.Cell(rowIndex, 5).Value = doc.SystemEntryDate;
         sheet.Cell(rowIndex, 6).Value = doc.CustomerID;
-        sheet.Cell(rowIndex, 7).Value = doc.Customer.CustomerTaxID;
-        sheet.Cell(rowIndex, 8).Value = doc.Customer.CompanyName;
-        sheet.Cell(rowIndex, 9).Value = doc.DocumentTotals.NetTotal;
-        sheet.Cell(rowIndex, 10).Value = doc.DocumentTotals.TaxPayable;
-        sheet.Cell(rowIndex, 11).Value = doc.DocumentTotals.GrossTotal;
+        sheet.Cell(rowIndex, 7).Value = doc.Customer?.CustomerTaxID;
+        sheet.Cell(rowIndex, 8).Value = doc.Customer?.CompanyName;
+        sheet.Cell(rowIndex, 9).Value = doc.DocumentTotals?.NetTotal;
+        sheet.Cell(rowIndex, 10).Value = doc.DocumentTotals?.TaxPayable;
+        sheet.Cell(rowIndex, 11).Value = doc.DocumentTotals?.GrossTotal;
     }
 
     private static int Operation(SourceDocumentsPaymentsPaymentLine l)
@@ -441,6 +403,7 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
 
     private static void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
     {
+        sheet.Row(row).Style.Font.Bold = true;
         sheet.Cell(row, 1).Value = "ATCUD";
         sheet.Cell(row, 2).Value = "Tipo";
         sheet.Cell(row, 3).Value = "Nº";
@@ -456,6 +419,7 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
 
     private void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
     {
+        sheet.Row(row).Style.Font.Bold = true;
         if (ShowAllLines)
             sheet.Cell(row, 1).Value = "Documento";
         sheet.Cell(row, 2).Value = "Nº linha";

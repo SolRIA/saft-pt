@@ -50,11 +50,11 @@
             </Button>
 
             <Button Margin="2,0" Width="50"
-                    ToolTip.Tip="Exportar para Excel" Classes="Primary"
+                    ToolTip.Tip="Ver relatório" Classes="Primary"
                     VerticalAlignment="Stretch"
                     Grid.Row="0" Grid.Column="2"
                     Command="{Binding DoPrintCommand}">
-                <icons:MaterialIcon Kind="MicrosoftExcel"/>
+                <icons:MaterialIcon Kind="FileDocumentOutline"/>
             </Button>
 
             <Button Margin="2,0" Width="50"

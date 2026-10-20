@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Parser.Models;
@@ -120,14 +120,6 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
     {
         if (Documents == null || Documents.Count == 0) return;
 
-        var (_, stream) = await dialogManager.SaveFileDialog(
-            "Guardar Documentos Movimentação",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Documentos Movimentação.xlsx",
-            ".xlsx");
-
-        if (stream == null) return;
-
         using var workbook = new ClosedXML.Excel.XLWorkbook();
         var sheet = workbook.Worksheets.Add("Documentos");
 
@@ -139,19 +131,19 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
             sheet.Cell(rowIndex, 1).Value = c.ATCUD;
             sheet.Cell(rowIndex, 2).Value = c.MovementType.ToString();
             sheet.Cell(rowIndex, 3).Value = c.DocumentNumber;
-            sheet.Cell(rowIndex, 4).Value = c.DocumentStatus.MovementStatus.ToString();
+            sheet.Cell(rowIndex, 4).Value = c.DocumentStatus?.MovementStatus.ToString();
             sheet.Cell(rowIndex, 5).Value = c.MovementDate;
             sheet.Cell(rowIndex, 6).Value = c.CustomerID;
-            sheet.Cell(rowIndex, 7).Value = c.DocumentTotals.NetTotal;
-            sheet.Cell(rowIndex, 8).Value = c.DocumentTotals.TaxPayable;
-            sheet.Cell(rowIndex, 9).Value = c.DocumentTotals.GrossTotal;
+            sheet.Cell(rowIndex, 7).Value = c.DocumentTotals?.NetTotal;
+            sheet.Cell(rowIndex, 8).Value = c.DocumentTotals?.TaxPayable;
+            sheet.Cell(rowIndex, 9).Value = c.DocumentTotals?.GrossTotal;
 
             rowIndex += 2;
 
             //create lines header
             LineHeader(sheet, rowIndex);
 
-            foreach (var l in c.Line)
+            foreach (var l in c.Line ?? [])
             {
                 rowIndex++;
 
@@ -163,7 +155,7 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
                 sheet.Cell(rowIndex, 7).Value = l.CreditAmount;
                 sheet.Cell(rowIndex, 8).Value = l.DebitAmount;
                 sheet.Cell(rowIndex, 9).Value = l.SettlementAmount;
-                sheet.Cell(rowIndex, 10).Value = l.Tax.TaxPercentage;
+                sheet.Cell(rowIndex, 10).Value = l.Tax?.TaxPercentage;
                 sheet.Cell(rowIndex, 11).Value = l.TaxExemptionReason;
                 sheet.Cell(rowIndex, 12).Value = l.TaxExemptionCode;
                 sheet.Cell(rowIndex, 13).Value = l.UnitOfMeasure;
@@ -175,9 +167,7 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
 
         sheet.Columns().AdjustToContents();
 
-        workbook.SaveAs(stream);
-        stream.Close();
-        await stream.DisposeAsync().ConfigureAwait(false);
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(ReportRequest.FromWorkbook(ReportTemplate.MercadoriasDocumentos, workbook, "Documentos Movimentação.xlsx"));
     }
 
     [RelayCommand]
@@ -185,21 +175,13 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
     {
         if (Documents == null || Documents.Count == 0) return;
 
-        var (_, stream) = await dialogManager.SaveFileDialog(
-                "Guardar Documentos Movimentação",
-                directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                initialFileName: "Documentos Movimentação - Impostos.xlsx",
-                ".xlsx");
-
-        if (stream == null) return;
-
         using var workbook = new ClosedXML.Excel.XLWorkbook();
         var sheet = workbook.Worksheets.Add("Impostos");
 
         var taxes_selling_group = Documents
-            .SelectMany(i => i.Line)
+            .SelectMany(i => i.Line ?? [])
             .Where(c => c.CreditAmount > 0)
-            .GroupBy(l => new { l.DocNo, l.Tax.TaxPercentage })
+            .GroupBy(l => new { l.DocNo, l.Tax?.TaxPercentage })
             .Select(g => new { g.Key.DocNo, Tax = g.Key.TaxPercentage, NetTotal = g.Sum(l => l.Quantity * l.UnitPrice) })
             .OrderBy(g => g.DocNo)
             .ThenBy(g => g.Tax);
@@ -210,23 +192,23 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
         sheet.Cell(rowIndex, 3).Value = "Incidência";
         sheet.Cell(rowIndex, 4).Value = "Total";
 
+        rowIndex++;
         foreach (var tax in taxes_selling_group)
         {
             sheet.Cell(rowIndex, 1).Value = tax.DocNo;
             sheet.Cell(rowIndex, 2).Value = tax.Tax;
             sheet.Cell(rowIndex, 3).Value = tax.NetTotal;
-            sheet.Cell(rowIndex, 4).Value = Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax * 0.01m, 2, MidpointRounding.AwayFromZero);
+            sheet.Cell(rowIndex, 4).Value = Math.Round(Math.Round(tax.NetTotal, 2, MidpointRounding.AwayFromZero) * tax.Tax.GetValueOrDefault(0) * 0.01m, 2, MidpointRounding.AwayFromZero);
 
             rowIndex++;
         }
 
-        sheet.Cell(rowIndex, 4).FormulaA1 = $"=SUM(D2:D{rowIndex - 1})";
+        if (rowIndex > 2) sheet.Cell(rowIndex, 4).FormulaA1 = $"=SUM(D2:D{rowIndex - 1})";
+        else sheet.Cell(rowIndex, 4).Value = 0;
 
         sheet.Columns().AdjustToContents();
 
-        workbook.SaveAs(stream);
-        stream.Close();
-        await stream.DisposeAsync().ConfigureAwait(false);
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(ReportRequest.FromWorkbook(ReportTemplate.MercadoriasImpostos, workbook, "Documentos Movimentação - Impostos.xlsx"));
     }
 
     [RelayCommand]
@@ -279,7 +261,7 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
     [RelayCommand]
     private void OnSearchDetails()
     {
-        var allLines = ShowAllLines ? saftValidator?.SaftFile?.SourceDocuments?.MovementOfGoods?.StockMovement?.SelectMany(i => i.Line) ?? [] : CurrentDocument?.Line ?? [];
+        var allLines = ShowAllLines ? saftValidator?.SaftFile?.SourceDocuments?.MovementOfGoods?.StockMovement?.SelectMany(i => i.Line ?? []) ?? [] : CurrentDocument?.Line ?? [];
 
         if (string.IsNullOrWhiteSpace(FilterLines))
         {
@@ -326,13 +308,6 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
         if (CurrentDocument == null)
             return;
 
-        var (_, stream) = await dialogManager.SaveFileDialog(
-                "Guardar Documento Movimentação",
-                directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                initialFileName: "Documento Movimentação.xlsx",
-                "xlsx");
-
-        if (stream == null) return;
         using var workbook = new ClosedXML.Excel.XLWorkbook();
         var sheet = workbook.Worksheets.Add("Documento");
 
@@ -343,19 +318,19 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
         sheet.Cell(rowIndex, 1).Value = CurrentDocument.ATCUD;
         sheet.Cell(rowIndex, 2).Value = CurrentDocument.MovementType.ToString();
         sheet.Cell(rowIndex, 3).Value = CurrentDocument.DocumentNumber;
-        sheet.Cell(rowIndex, 4).Value = CurrentDocument.DocumentStatus.MovementStatus.ToString();
+        sheet.Cell(rowIndex, 4).Value = CurrentDocument.DocumentStatus?.MovementStatus.ToString();
         sheet.Cell(rowIndex, 5).Value = CurrentDocument.MovementDate;
         sheet.Cell(rowIndex, 6).Value = CurrentDocument.CustomerID;
-        sheet.Cell(rowIndex, 7).Value = CurrentDocument.DocumentTotals.NetTotal;
-        sheet.Cell(rowIndex, 8).Value = CurrentDocument.DocumentTotals.TaxPayable;
-        sheet.Cell(rowIndex, 9).Value = CurrentDocument.DocumentTotals.GrossTotal;
+        sheet.Cell(rowIndex, 7).Value = CurrentDocument.DocumentTotals?.NetTotal;
+        sheet.Cell(rowIndex, 8).Value = CurrentDocument.DocumentTotals?.TaxPayable;
+        sheet.Cell(rowIndex, 9).Value = CurrentDocument.DocumentTotals?.GrossTotal;
 
         rowIndex += 2;
 
         //create lines header
         LineHeader(sheet, rowIndex);
 
-        foreach (var l in CurrentDocument.Line)
+        foreach (var l in CurrentDocument.Line ?? [])
         {
             rowIndex++;
 
@@ -367,7 +342,7 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
             sheet.Cell(rowIndex, 7).Value = l.CreditAmount;
             sheet.Cell(rowIndex, 8).Value = l.DebitAmount;
             sheet.Cell(rowIndex, 9).Value = l.SettlementAmount;
-            sheet.Cell(rowIndex, 10).Value = l.Tax.TaxPercentage;
+            sheet.Cell(rowIndex, 10).Value = l.Tax?.TaxPercentage;
             sheet.Cell(rowIndex, 11).Value = l.TaxExemptionReason;
             sheet.Cell(rowIndex, 12).Value = l.TaxExemptionCode;
             sheet.Cell(rowIndex, 13).Value = l.UnitOfMeasure;
@@ -376,9 +351,7 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
 
         sheet.Columns().AdjustToContents();
 
-        workbook.SaveAs(stream);
-        stream.Close();
-        await stream.DisposeAsync().ConfigureAwait(false);
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(ReportRequest.FromWorkbook(ReportTemplate.MercadoriasDocumento, workbook, "Documento Movimentação.xlsx"));
     }
 
     [RelayCommand]
@@ -425,6 +398,7 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
 
     private static void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
     {
+        sheet.Row(row).Style.Font.Bold = true;
         sheet.Cell(row, 1).Value = "ATCUD";
         sheet.Cell(row, 2).Value = "Tipo";
         sheet.Cell(row, 3).Value = "Nº";
@@ -438,6 +412,7 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
 
     private static void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
     {
+        sheet.Row(row).Style.Font.Bold = true;
         sheet.Cell(row, 2).Value = "Nº linha";
         sheet.Cell(row, 3).Value = "Código produto";
         sheet.Cell(row, 4).Value = "Descrição produto";
@@ -447,9 +422,9 @@ public partial class SaftMovementOfGoodsPageViewModel : ViewModelBase
         sheet.Cell(row, 8).Value = "Débito";
         sheet.Cell(row, 9).Value = "Desconto";
         sheet.Cell(row, 10).Value = "Imposto";
-        sheet.Cell(row, 12).Value = "Isenção";
-        sheet.Cell(row, 13).Value = "Cód. Isenção";
-        sheet.Cell(row, 14).Value = "Unidade medida";
-        sheet.Cell(row, 15).Value = "Descrição";
+        sheet.Cell(row, 11).Value = "Isenção";
+        sheet.Cell(row, 12).Value = "Cód. Isenção";
+        sheet.Cell(row, 13).Value = "Unidade medida";
+        sheet.Cell(row, 14).Value = "Descrição";
     }
 }

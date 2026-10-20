@@ -1,4 +1,4 @@
-<UserControl xmlns:controls="using:SolRIA.SAFT.Desktop.Controls" xmlns="https://github.com/avaloniaui"
+<UserControl xmlns:reportIcons="using:Material.Icons.Avalonia" xmlns:controls="using:SolRIA.SAFT.Desktop.Controls" xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -42,13 +42,13 @@
 				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
 			</Button>
 
-			<Button Margin="2" Width="50" ToolTip.Tip="Exportar documentos para Excel" Grid.Column="4"
+			<Button Margin="2" Width="50" ToolTip.Tip="Ver relatório de documentos" Grid.Column="4"
 					Command="{Binding DoPrintCommand}"
 					VerticalAlignment="Stretch">
-				<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
+				<reportIcons:MaterialIcon Kind="FileDocumentOutline" Width="24" Height="24"/>
 			</Button>
 
-			<Button Margin="2" Width="50" ToolTip.Tip="Exportar impostos para Excel" Grid.Column="5"
+			<Button Margin="2" Width="50" ToolTip.Tip="Ver relatório de impostos" Grid.Column="5"
 				   Command="{Binding DoPrintTaxesCommand}"
 				   VerticalAlignment="Stretch">
 				<PathIcon Data="{StaticResource Material.FilePercent}" Width="24" Height="24"/>
@@ -106,7 +106,7 @@
 					</MenuItem>
 					<MenuItem Header="Abrir Documento Excel" Command="{Binding DoOpenExcelCommand}">
 						<MenuItem.Icon>
-							<PathIcon Data="{StaticResource Material.MicrosoftExcel}" HorizontalAlignment="Center" />
+							<reportIcons:MaterialIcon Kind="FileDocumentOutline" HorizontalAlignment="Center" />
 						</MenuItem.Icon>
 					</MenuItem>
 				</ContextMenu>
@@ -165,11 +165,11 @@
 				</ScrollViewer>
 			</Border>
 
-			<Button Height="50" ToolTip.Tip="Exportar para Excel"
+			<Button Height="50" ToolTip.Tip="Ver relatório"
 					Margin="5,0,2.5,5" Grid.Row="1" Grid.Column="0"
 					Command="{Binding DoPrintCommand}">
 				<StackPanel Orientation="Horizontal">
-					<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
+					<reportIcons:MaterialIcon Kind="FileDocumentOutline" Width="24" Height="24"/>
 					<TextBlock Text="Documento" VerticalAlignment="Center" Margin="5,0"/>
 				</StackPanel>
 			</Button>
@@ -213,10 +213,10 @@
 				  VerticalAlignment="Stretch">
 				<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="24" Height="24"/>
 			</Button>
-			<Button Margin="2" Width="50" ToolTip.Tip="Exportar linhas excel" Grid.Column="3"
+			<Button Margin="2" Width="50" ToolTip.Tip="Ver relatório de linhas" Grid.Column="3"
 				  Command="{Binding ExportLinesExcelCommand}" 
 				  VerticalAlignment="Stretch">
-				<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="24" Height="24"/>
+				<reportIcons:MaterialIcon Kind="FileDocumentOutline" Width="24" Height="24"/>
 			</Button>
 		</Grid>
 

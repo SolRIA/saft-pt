@@ -37,10 +37,10 @@
 			<icons:MaterialIcon Kind="FilterRemoveOutline" Width="24" Height="24"/>
 		</Button>
 
-		<Button ToolTip.Tip="Exportar para Excel" Grid.Row="0" Grid.Column="2"
+		<Button ToolTip.Tip="Ver relatório" Grid.Row="0" Grid.Column="2"
 				Command="{Binding DoPrintCommand}"
 				VerticalAlignment="Stretch">
-			<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+			<icons:MaterialIcon Kind="FileDocumentOutline" Width="24" Height="24"/>
 		</Button>
 
 		<!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"

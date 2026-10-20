@@ -48,6 +48,7 @@ namespace SolRIA.SAFT.Parser.Models
 						"SourceDocumentsPaymentsPaymentLine" => "Linhas recibos",
 						"SourceDocumentsSalesInvoicesInvoiceLine" => "Linhas documentos de facturação",
 						"Product" => "Produtos",
+						"Stock" => "Existências",
 						"Customer" => "Clientes",
 						"Header" => "Cabeçalho",
 						"Tax" => "Impostos",

@@ -15,6 +15,8 @@ public static class StockParser
 
     public static async Task<(StockFile stockFile, ValidationError[] validations)> ReadFile(string filename)
     {
+        Parsers.ResetValidations();
+
         if (filename.EndsWith("xml"))
         {
             return await ReadXml(filename);
@@ -52,7 +54,7 @@ public static class StockParser
             var splitChar = new char[] { ';' };
             for (int i = 1; i < lines.Length; i++)
             {
-                var columns = lines[i].Split(splitChar, StringSplitOptions.RemoveEmptyEntries);
+                var columns = lines[i].Split(splitChar, StringSplitOptions.None);
                 if (columns == null || columns.Length < 6)
                     continue;
 
@@ -66,9 +68,9 @@ public static class StockParser
                 stocks.Add(new Stock
                 {
                     ProductCategory = productCategory,
-                    ProductCode = columns[1],
-                    ProductDescription = columns[2],
-                    ProductNumberCode = columns[3],
+                    ProductCode = ReadQuotedField(columns[1], i + 1, 2, nameof(Stock.ProductCode)),
+                    ProductDescription = ReadQuotedField(columns[2], i + 1, 3, nameof(Stock.ProductDescription)),
+                    ProductNumberCode = ReadQuotedField(columns[3], i + 1, 4, nameof(Stock.ProductNumberCode)),
                     ClosingStockQuantity = quantity,
                     UnitOfMeasure = columns[5],
                     ClosingStockValue = closingStockValue
@@ -86,5 +88,27 @@ public static class StockParser
         }
 
         return (stockFile, Parsers.Validations.ToArray());
+    }
+
+    private static string ReadQuotedField(string value, int line, int column, string field)
+    {
+        bool startsWithQuote = value.StartsWith('"');
+        bool endsWithQuote = value.EndsWith('"');
+
+        if (value.Length < 2 || !startsWithQuote || !endsWithQuote)
+        {
+            Parsers.Validations.Add(new ValidationError
+            {
+                Description = $"Linha {line}, coluna {column} ({field}): o valor deve começar e terminar com aspas duplas (\").",
+                TypeofError = typeof(Stock),
+                UID = line.ToString(CultureInfo.InvariantCulture),
+                Field = field,
+                Value = value
+            });
+        }
+
+        int start = startsWithQuote ? 1 : 0;
+        int end = endsWithQuote ? value.Length - 1 : value.Length;
+        return value.Substring(start, Math.Max(0, end - start));
     }
 }

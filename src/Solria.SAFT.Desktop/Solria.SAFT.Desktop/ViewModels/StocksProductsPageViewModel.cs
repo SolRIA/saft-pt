@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Infrastructure;
 using SolRIA.SAFT.Desktop.Services;
@@ -55,26 +55,10 @@ public partial class StocksProductsPageViewModel : ViewModelBase
     private async Task OnDoPrint()
     {
         if (Products == null || Products.Length == 0) return;
-
-        var (_, stream) = await dialogManager.SaveFileDialog(
-            "Guardar stocks",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Stocks.csv",
-            ".csv");
-
-        if (stream == null) return;
-
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.AppendLine("ProductCategory;ProductCode;ProductDescription;ProductNumberCode;ClosingStockQuantity;UnitOfMeasure");
-        foreach (var c in Products)
-        {
-            stringBuilder.AppendLine(CultureInfo.CurrentCulture, $"""
-                {c.ProductCategory};"{c.ProductCode}";"{c.ProductDescription}";"{c.ProductNumberCode}";{c.ClosingStockQuantity};{c.UnitOfMeasure}
-                """);
-                
-        }
-
-        await stream.Save(stringBuilder.ToString()).ConfigureAwait(false);
+        var request = ReportRequest.FromRows(ReportTemplate.Inventario, "Stocks",
+            ["Categoria", "Código", "Descrição", "Código de Barras", "Quantidade", "Unidade"],
+            Products.Select(c => new object[] { c.ProductCategory.ToString(), c.ProductCode, c.ProductDescription, c.ProductNumberCode, c.ClosingStockQuantity, c.UnitOfMeasure }));
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(request);
     }
 
     [RelayCommand]

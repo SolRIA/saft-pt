@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace SolRIA.SAFT.Desktop.Views
 {
-    public partial class MainWindow : Window, IDialogManager, IReportService
+    public partial class MainWindow : Window, IDialogManager
     {
         private readonly WindowNotificationManager notificationManager;
 
@@ -152,6 +152,9 @@ namespace SolRIA.SAFT.Desktop.Views
         private static Window GetDialogView<T>(T vm) where T : ViewModelBase
         {
             var vmType = typeof(T);
+
+            if (vmType == typeof(ReportViewModel))
+                return new ReportWindow { DataContext = vm };
 
             if (vmType == typeof(DialogConvertPemKeyViewModel))
                 return new DialogConvertPemKey { DataContext = vm };

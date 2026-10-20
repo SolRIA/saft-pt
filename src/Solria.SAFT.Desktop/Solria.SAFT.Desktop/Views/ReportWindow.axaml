@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SolRIA.SAFT.Desktop.ViewModels"
+        xmlns:reporting="using:Majorsilence.Reporting.UI.RdlAvalonia.Viewer"
+        x:Class="SolRIA.SAFT.Desktop.Views.ReportWindow" x:DataType="vm:ReportViewModel"
+        Title="{Binding Title}" Width="1200" Height="800" MinWidth="700" MinHeight="450"
+        WindowStartupLocation="CenterOwner">
+  <Grid RowDefinitions="Auto,*,Auto">
+    <StackPanel Orientation="Horizontal" Margin="12" Spacing="8">
+      <Button Content="Exportar Excel" Command="{Binding ExportExcelCommand}" />
+      <Button Content="Exportar PDF" Command="{Binding ExportPdfCommand}" />
+      <Button Content="Exportar CSV" Command="{Binding ExportCsvCommand}" IsVisible="{Binding AllowCsv}" />
+    </StackPanel>
+    <reporting:AvaloniaReportViewer x:Name="Viewer" Grid.Row="1" />
+    <StackPanel Grid.Row="2" Margin="12" Spacing="6">
+      <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" Height="4" />
+      <TextBlock Text="{Binding Status}" TextWrapping="Wrap" />
+    </StackPanel>
+  </Grid>
+</Window>

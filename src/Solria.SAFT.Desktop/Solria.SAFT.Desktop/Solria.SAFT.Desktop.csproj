@@ -12,6 +12,8 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<AvaloniaResource Include="Assets\**" />
+		<None Update="Reports\**\*.rdl;Reports\README.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+		<InternalsVisibleTo Include="Solria.Reporting.Tests" />
 	</ItemGroup>
 	<ItemGroup>
 		<AvaloniaResource Remove="Assets\Icons.axaml" />
@@ -128,6 +130,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SolRIA.SAFT.Parser\SolRIA.SAFT.Parser.csproj" />
+		<ProjectReference Include="..\Solria.Reporting.Viewer\Solria.Reporting.Viewer.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<AvaloniaXaml Update="Views\DialogConvertPemKey.axaml">

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Solria.SAFT.Desktop\SolRIA.SAFT.Desktop.csproj" />
+    <PackageReference Include="Avalonia.Headless" Version="12.1.2" />
+  </ItemGroup>
+  <Target Name="UseApplicationAvaloniaLicense" BeforeTargets="ObtainAvnLicenseTicket">
+    <XmlPeek XmlInputPath="$(MSBuildThisFileDirectory)..\Solria.SAFT.Desktop\SolRIA.SAFT.Desktop.csproj"
+             Query="/Project/ItemGroup/AvaloniaUILicenseKey/@Include">
+      <Output TaskParameter="Result" ItemName="AvaloniaUILicenseKey" />
+    </XmlPeek>
+  </Target>
+</Project>

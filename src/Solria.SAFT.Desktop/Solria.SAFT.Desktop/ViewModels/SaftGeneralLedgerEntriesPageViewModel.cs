@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SolRIA.SAFT.Desktop.Services;
 using SolRIA.SAFT.Parser.Models;
@@ -86,14 +86,6 @@ public partial class SaftGeneralLedgerEntriesPageViewModel : ViewModelBase
     {
         if (Documents == null || Documents.Count == 0) return;
 
-        var (_, stream) = await dialogManager.SaveFileDialog(
-            "Guardar Documentos Movimentação",
-            directory: Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            initialFileName: "Documentos Movimentação.xlsx",
-            ".xlsx");
-
-        if (stream == null) return;
-
         using var workbook = new ClosedXML.Excel.XLWorkbook();
         var sheet = workbook.Worksheets.Add("Documentos");
 
@@ -110,7 +102,7 @@ public partial class SaftGeneralLedgerEntriesPageViewModel : ViewModelBase
             //create lines header
             LineHeader(sheet, rowIndex);
 
-            foreach (var l in c.Transaction)
+            foreach (var l in c.Transaction ?? [])
             {
                 rowIndex++;
 
@@ -131,9 +123,7 @@ public partial class SaftGeneralLedgerEntriesPageViewModel : ViewModelBase
 
         sheet.Columns().AdjustToContents();
 
-        workbook.SaveAs(stream);
-        stream.Close();
-        await stream.DisposeAsync().ConfigureAwait(false);
+        await AppBootstrap.Resolve<IReportService>().ShowAsync(ReportRequest.FromWorkbook(ReportTemplate.LancamentosContabilisticos, workbook, "Documentos Movimentação.xlsx"));
     }
 
     [RelayCommand]
@@ -211,12 +201,14 @@ public partial class SaftGeneralLedgerEntriesPageViewModel : ViewModelBase
 
     private static void DocHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
     {
+        sheet.Row(row).Style.Font.Bold = true;
         sheet.Cell(row, 1).Value = "JournalID";
         sheet.Cell(row, 2).Value = "Descrição";
     }
 
     private static void LineHeader(ClosedXML.Excel.IXLWorksheet sheet, int row)
     {
+        sheet.Row(row).Style.Font.Bold = true;
         sheet.Cell(row, 2).Value = "TransactionID";
         sheet.Cell(row, 3).Value = "Period";
         sheet.Cell(row, 4).Value = "TransactionDate";
@@ -226,6 +218,6 @@ public partial class SaftGeneralLedgerEntriesPageViewModel : ViewModelBase
         sheet.Cell(row, 8).Value = "TransactionType";
         sheet.Cell(row, 9).Value = "GLPostingDate";
         sheet.Cell(row, 10).Value = "ItemElementName";
-        sheet.Cell(row, 12).Value = "Item";
+        sheet.Cell(row, 11).Value = "Item";
     }
 }

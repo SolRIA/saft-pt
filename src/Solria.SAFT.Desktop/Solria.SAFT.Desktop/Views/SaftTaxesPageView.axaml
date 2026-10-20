@@ -1,4 +1,4 @@
-<UserControl xmlns:controls="using:SolRIA.SAFT.Desktop.Controls" xmlns="https://github.com/avaloniaui"
+<UserControl xmlns:reportIcons="using:Material.Icons.Avalonia" xmlns:controls="using:SolRIA.SAFT.Desktop.Controls" xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -35,11 +35,11 @@
 			<PathIcon Data="{StaticResource Material.FilterRemoveOutline}" Width="20" Height="20"/>
 		</Button>
 
-		<Button Width="50" ToolTip.Tip="Exportar para Excel"
+		<Button Width="50" ToolTip.Tip="Ver relatório"
 				Grid.Row="0" Grid.Column="2"
 				Command="{Binding DoPrintCommand}"
 				VerticalAlignment="Stretch">
-			<PathIcon Data="{StaticResource Material.MicrosoftExcel}" Width="20" Height="20"/>
+			<reportIcons:MaterialIcon Kind="FileDocumentOutline" Width="20" Height="20"/>
 		</Button>
 
 		<!--<controls:ProgressRing IsActive="{Binding IsLoading}" IsVisible="{Binding IsLoading}"

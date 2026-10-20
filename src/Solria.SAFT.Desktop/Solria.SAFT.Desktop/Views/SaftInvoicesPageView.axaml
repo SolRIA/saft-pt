@@ -49,14 +49,14 @@
 			</Button>
 
 			<Button Margin="2" Width="50"
-					ToolTip.Tip="Exportar documentos para Excel" Grid.Column="4"
+					ToolTip.Tip="Ver relatório de documentos" Grid.Column="4"
 					VerticalAlignment="Stretch"
 					Command="{Binding DoPrintCommand}">
-				<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+				<icons:MaterialIcon Kind="FileDocumentOutline" Width="24" Height="24"/>
 			</Button>
 
 			<Button Margin="2" Width="50"
-					ToolTip.Tip="Exportar impostos para Excel" Grid.Column="5"
+					ToolTip.Tip="Ver relatório de impostos" Grid.Column="5"
 					VerticalAlignment="Stretch"
 					Command="{Binding DoPrintTaxesCommand}">
 				<icons:MaterialIcon Kind="FilePercent" Width="24" Height="24"/>
@@ -155,7 +155,7 @@
 					</MenuItem>
 					<MenuItem Header="Abrir Documento Excel" Command="{Binding SaveExcelCommand}">
 						<MenuItem.Icon>
-							<icons:MaterialIcon Kind="MicrosoftExcel" HorizontalAlignment="Center" />
+							<icons:MaterialIcon Kind="FileDocumentOutline" HorizontalAlignment="Center" />
 						</MenuItem.Icon>
 					</MenuItem>
 					<MenuItem Header="Testar valores certificação" Command="{Binding TestHashCommand}">
@@ -219,11 +219,11 @@
 				</ScrollViewer>
 			</Border>
 
-			<Button Height="50" ToolTip.Tip="Exportar para Excel"
+			<Button Height="50" ToolTip.Tip="Ver relatório"
 					Margin="5,0,2.5,5" Grid.Row="1" Grid.Column="0"
 					Command="{Binding SaveExcelCommand}">
 				<StackPanel Orientation="Horizontal">
-					<icons:MaterialIcon Kind="MicrosoftExcel" Width="24" Height="24"/>
+					<icons:MaterialIcon Kind="FileDocumentOutline" Width="24" Height="24"/>
 					<TextBlock Text="Documento" VerticalAlignment="Center" Margin="5,0"/>
 				</StackPanel>
 			</Button>
