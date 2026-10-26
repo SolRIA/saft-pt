@@ -41,10 +41,10 @@ public partial class SaftProductsPageViewModel : ViewModelBase
         IsLoading = true;
 
         //calculated fields
-        var invoices_lines = saftValidator.SaftFile?.SourceDocuments?.SalesInvoices?.Invoice?.SelectMany(i => i.Line);
-        if (invoices_lines != null)
+        var documentLines = GetDocumentLines();
+        if (documentLines.Length > 0)
         {
-            ProcessProducts(invoices_lines);
+            ProcessProducts(documentLines);
         }
 
         Products = [.. allProducts];
@@ -101,55 +101,96 @@ public partial class SaftProductsPageViewModel : ViewModelBase
     [RelayCommand]
     private void OnGenerateProductsFromDocumentLines()
     {
-        var invoices_lines = saftValidator.SaftFile?.SourceDocuments?.SalesInvoices?.Invoice?.SelectMany(i => i.Line);
-        if (invoices_lines == null) return;
-
-
-        var lineProducts = invoices_lines
-            .Where(l => l.ProductCode != null)
-            .Select(l => new Product
-            {
-                ProductCode = l.ProductCode,
-                ProductDescription = l.ProductDescription,
-                Prices = l.UnitPrice.ToString("N3"),
-                ProductType = ProductType.P
-            })
-            .Distinct()
-            .ToArray();
-
-        var uniqueProducts = new List<Product>();
-        foreach (var p in lineProducts)
+        var documentLines = GetDocumentLines();
+        if (documentLines.Length == 0)
         {
-            if (uniqueProducts.Any(u => u.ProductCode.Equals(p.ProductCode, StringComparison.OrdinalIgnoreCase)))
-                continue;
-
-            uniqueProducts.Add(p);
+            dialogManager.ShowNotification("Aviso", "Não existem linhas de documentos no ficheiro SAFT.", Avalonia.Controls.Notifications.NotificationType.Warning);
+            return;
         }
 
-        allProducts = [.. uniqueProducts];
-        ProcessProducts(invoices_lines);
+        IsLoading = true;
 
-        Products = [.. allProducts];
+        allProducts = [.. documentLines
+            .Where(l => !string.IsNullOrWhiteSpace(l.ProductCode))
+            .GroupBy(l => l.ProductCode, StringComparer.OrdinalIgnoreCase)
+            .Select(g =>
+            {
+                var first = g.First();
+                var description = g.Select(x => x.ProductDescription).FirstOrDefault(d => !string.IsNullOrWhiteSpace(d))
+                    ?? g.Select(x => x.Description).FirstOrDefault(d => !string.IsNullOrWhiteSpace(d));
+                return new Product
+                {
+                    ProductCode = first.ProductCode,
+                    ProductDescription = description,
+                    Prices = first.UnitPrice.ToString("N3"),
+                    ProductType = ProductType.P
+                };
+            })];
+
+        ProcessProducts(documentLines);
+        OnSearch();
+
+        IsLoading = false;
     }
 
-    private void ProcessProducts(IEnumerable<SourceDocumentsSalesInvoicesInvoiceLine> invoices_lines)
+    private readonly record struct DocumentProductLine(
+        string ProductCode,
+        string ProductDescription,
+        string Description,
+        decimal UnitPrice,
+        string TaxCode,
+        decimal TaxPercentage);
+
+    private DocumentProductLine[] GetDocumentLines()
+    {
+        var sourceDocs = saftValidator.SaftFile?.SourceDocuments;
+        if (sourceDocs == null) return [];
+
+        var invoiceLines = sourceDocs.SalesInvoices?.Invoice?
+            .Where(i => i.Line != null)
+            .SelectMany(i => i.Line)
+            .Select(l => new DocumentProductLine(l.ProductCode, l.ProductDescription, l.Description, l.UnitPrice, l.Tax?.TaxCode, l.Tax?.TaxPercentage ?? 0m))
+            ?? [];
+
+        var movementLines = sourceDocs.MovementOfGoods?.StockMovement?
+            .Where(m => m.Line != null)
+            .SelectMany(m => m.Line)
+            .Select(l => new DocumentProductLine(l.ProductCode, l.ProductDescription, l.Description, l.UnitPrice, l.Tax?.TaxCode, l.Tax?.TaxPercentage ?? 0m))
+            ?? [];
+
+        var workingLines = sourceDocs.WorkingDocuments?.WorkDocument?
+            .Where(w => w.Line != null)
+            .SelectMany(w => w.Line)
+            .Select(l => new DocumentProductLine(l.ProductCode, l.ProductDescription, l.Description, l.UnitPrice, l.Tax?.TaxCode, l.Tax?.TaxPercentage ?? 0m))
+            ?? [];
+
+        return [.. invoiceLines, .. movementLines, .. workingLines];
+    }
+
+    private void ProcessProducts(IReadOnlyList<DocumentProductLine> documentLines)
     {
         foreach (var p in allProducts)
         {
-            var productLines = invoices_lines
+            var productLines = documentLines
                 .Where(l => l.ProductCode != null && string.Equals(l.ProductCode, p.ProductCode, StringComparison.OrdinalIgnoreCase))
                 .ToArray();
+
+            if (string.IsNullOrWhiteSpace(p.ProductDescription))
+            {
+                p.ProductDescription = productLines.Select(x => x.ProductDescription).FirstOrDefault(d => !string.IsNullOrWhiteSpace(d))
+                    ?? productLines.Select(x => x.Description).FirstOrDefault(d => !string.IsNullOrWhiteSpace(d));
+            }
 
             var prices = productLines
                 .Select(l => l.UnitPrice.ToString("N3"))
                 .Distinct();
 
             var pricesWithVat = productLines
-                .Select(l => (l.UnitPrice * (1 + (l.Tax?.TaxPercentage ?? 0) / 100m)).ToString("N3"))
+                .Select(l => (l.UnitPrice * (1 + l.TaxPercentage / 100m)).ToString("N3"))
                 .Distinct();
 
             var taxes = productLines
-                .Select(l => l.Tax?.TaxCode)
+                .Select(l => l.TaxCode)
                 .Where(t => t != null)
                 .Distinct();
 
