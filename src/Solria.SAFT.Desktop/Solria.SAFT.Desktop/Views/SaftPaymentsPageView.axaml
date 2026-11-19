@@ -56,62 +56,78 @@
 		</Grid>
 
 		<!-- documents list -->
-		<DataGrid IsReadOnly="True" Grid.Row="1" Grid.Column="0" FontSize="14"
-				  ItemsSource="{Binding Documents, Mode=OneWay}"
-				  SelectedItem="{Binding CurrentPayment, Mode=TwoWay}">
-			<DataGrid.Columns>
-				<DataGridTextColumn Header="Nº" Binding="{Binding PaymentRefNo}" />
-				<DataGridTextColumn Header="ATCUD" Binding="{Binding ATCUD}" />
-				<DataGridTextColumn Header="Estado" Binding="{Binding DocumentStatus.PaymentStatus}" />
-				<DataGridTextColumn Header="Data sistema" Binding="{Binding SystemEntryDate}" />
-				<DataGridTemplateColumn Header="Total s/ IVA" SortMemberPath="DocumentTotals.NetTotal">
-					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate>
-							<TextBlock Text="{Binding DocumentTotals.NetTotal, StringFormat=N2}" Classes="number"/>
-						</DataTemplate>
-					</DataGridTemplateColumn.CellTemplate>
-				</DataGridTemplateColumn>
-				<DataGridTemplateColumn Header="Total" SortMemberPath="DocumentTotals.GrossTotal">
-					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate>
-							<TextBlock Text="{Binding DocumentTotals.GrossTotal, StringFormat=N2}" Classes="number"/>
-						</DataTemplate>
-					</DataGridTemplateColumn.CellTemplate>
-				</DataGridTemplateColumn>
-				<DataGridTemplateColumn Header="Total imposto" SortMemberPath="DocumentTotals.TaxPayable">
-					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate>
-							<TextBlock Text="{Binding DocumentTotals.TaxPayable, StringFormat=N2}" Classes="number"/>
-						</DataTemplate>
-					</DataGridTemplateColumn.CellTemplate>
-				</DataGridTemplateColumn>
-				<DataGridTextColumn Header="Cliente" Binding="{Binding CustomerID}" />
-				<DataGridTextColumn Header="NIF" Binding="{Binding Customer.CustomerTaxID}" />
-				<DataGridTextColumn Header="Nome" Binding="{Binding Customer.CompanyName}" />
-				<DataGridTextColumn Header="Periodo" Binding="{Binding Period}"/>
-				<DataGridTextColumn Header="Transacção" Binding="{Binding TransactionID}" />
-			</DataGrid.Columns>
+		<Grid Grid.Row="1" Grid.Column="0" RowDefinitions="*,Auto">
+			<DataGrid x:Name="documentsDatagrid" IsReadOnly="True" FontSize="14"
+					  ItemsSource="{Binding Documents, Mode=OneWay}"
+					  SelectedItem="{Binding CurrentPayment, Mode=TwoWay}">
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Nº" Binding="{Binding PaymentRefNo}" />
+					<DataGridTextColumn Header="ATCUD" Binding="{Binding ATCUD}" />
+					<DataGridTextColumn Header="Estado" Binding="{Binding DocumentStatus.PaymentStatus}" />
+					<DataGridTextColumn Header="Data sistema" Binding="{Binding SystemEntryDate}" />
+					<DataGridTemplateColumn Header="Total s/ IVA" SortMemberPath="DocumentTotals.NetTotal">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding DocumentTotals.NetTotal, StringFormat=N2}" Classes="number"/>
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+					<DataGridTemplateColumn Header="Total" SortMemberPath="DocumentTotals.GrossTotal">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding DocumentTotals.GrossTotal, StringFormat=N2}" Classes="number"/>
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+					<DataGridTemplateColumn Header="Total imposto" SortMemberPath="DocumentTotals.TaxPayable">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding DocumentTotals.TaxPayable, StringFormat=N2}" Classes="number"/>
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+					<DataGridTextColumn Header="Cliente" Binding="{Binding CustomerID}" />
+					<DataGridTextColumn Header="NIF" Binding="{Binding Customer.CustomerTaxID}" />
+					<DataGridTextColumn Header="Nome" Binding="{Binding Customer.CompanyName}" />
+					<DataGridTextColumn Header="Periodo" Binding="{Binding Period}"/>
+					<DataGridTextColumn Header="Transacção" Binding="{Binding TransactionID}" />
+				</DataGrid.Columns>
 
-			<DataGrid.ContextMenu>
-				<ContextMenu>
-					<MenuItem Header="Mostrar Cliente" Command="{Binding ShowCustomerCommand}">
-						<MenuItem.Icon>
-							<PathIcon Data="{StaticResource Material.AccountCardDetailsOutline}" HorizontalAlignment="Center" />
-						</MenuItem.Icon>
-					</MenuItem>
-					<MenuItem Header="Mostrar Detalhes Documento" Command="{Binding ShowInvoiceDetailsCommand}">
-						<MenuItem.Icon>
-							<PathIcon Data="{StaticResource Material.FileDocument}" HorizontalAlignment="Center" />
-						</MenuItem.Icon>
-					</MenuItem>
-					<MenuItem Header="Abrir Documento Excel" Command="{Binding DoOpenExcelCommand}">
-						<MenuItem.Icon>
-							<reportIcons:MaterialIcon Kind="FileDocumentOutline" HorizontalAlignment="Center" />
-						</MenuItem.Icon>
-					</MenuItem>
-				</ContextMenu>
-			</DataGrid.ContextMenu>
-		</DataGrid>
+				<DataGrid.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="Mostrar Cliente" Command="{Binding ShowCustomerCommand}">
+							<MenuItem.Icon>
+								<PathIcon Data="{StaticResource Material.AccountCardDetailsOutline}" HorizontalAlignment="Center" />
+							</MenuItem.Icon>
+						</MenuItem>
+						<MenuItem Header="Mostrar Detalhes Documento" Command="{Binding ShowInvoiceDetailsCommand}">
+							<MenuItem.Icon>
+								<PathIcon Data="{StaticResource Material.FileDocument}" HorizontalAlignment="Center" />
+							</MenuItem.Icon>
+						</MenuItem>
+						<MenuItem Header="Abrir Documento Excel" Command="{Binding DoOpenExcelCommand}">
+							<MenuItem.Icon>
+								<reportIcons:MaterialIcon Kind="FileDocumentOutline" HorizontalAlignment="Center" />
+							</MenuItem.Icon>
+						</MenuItem>
+					</ContextMenu>
+				</DataGrid.ContextMenu>
+			</DataGrid>
+			<Border Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource SemiColorBorder}">
+				<controls:DataGridTotalsFooter TargetGrid="{Binding #documentsDatagrid}" ClipToBounds="True">
+					<controls:DataGridTotalsFooter.Styles>
+						<Style Selector="TextBlock">
+							<Setter Property="FontWeight" Value="Bold"/>
+							<Setter Property="ClipToBounds" Value="True"/>
+						</Style>
+					</controls:DataGridTotalsFooter.Styles>
+					<TextBlock Tag="Nº" Text="Totais" Margin="5,0" FontSize="14" VerticalAlignment="Center"/>
+					<TextBlock Tag="Total s/ IVA" Text="{Binding ListNetTotal, StringFormat=N2}" Classes="number"/>
+					<TextBlock Tag="Total" Text="{Binding ListGrossTotal, StringFormat=N2}" Classes="number"/>
+					<TextBlock Tag="Total imposto" Text="{Binding ListTaxPayable, StringFormat=N2}" Classes="number"/>
+				</controls:DataGridTotalsFooter>
+			</Border>
+		</Grid>
 
 		<GridSplitter Grid.Column="1" Grid.RowSpan="5" Width="5" Margin="1,5" />
 

@@ -505,7 +505,7 @@ public class SaftDatabaseWriter : IAsyncDisposable
                             TaxItemElementName = line.Tax?.ItemElementName.ToString(),
                             ProductSerialNumber = (string)null,
                             References = (string)null,
-                            OrderReferences = (string)null,
+                            OrderReferences = line.OrderReferences != null ? JsonSerializer.Serialize(line.OrderReferences) : null,
                             CustomsInformation = (string)null
                         });
                     }
@@ -641,7 +641,7 @@ public class SaftDatabaseWriter : IAsyncDisposable
                             SettlementAmount = (double)line.SettlementAmount,
                             Tax = (string)null,
                             ProductSerialNumber = line.ProductSerialNumber != null ? JsonSerializer.Serialize(line.ProductSerialNumber) : null,
-                            OrderReferences = (string)null,
+                            OrderReferences = line.OrderReferences != null ? JsonSerializer.Serialize(line.OrderReferences) : null,
                             CustomsInformation = (string)null
                         });
                     }
@@ -773,7 +773,7 @@ public class SaftDatabaseWriter : IAsyncDisposable
                             Tax = line.Tax != null ? JsonSerializer.Serialize(line.Tax) : null,
                             References = line.References != null ? JsonSerializer.Serialize(line.References) : null,
                             ProductSerialNumber = line.ProductSerialNumber != null ? JsonSerializer.Serialize(line.ProductSerialNumber) : null,
-                            OrderReferences = (string)null,
+                            OrderReferences = line.OrderReferences != null ? JsonSerializer.Serialize(line.OrderReferences) : null,
                             CustomsInformation = (string)null
                         });
                     }

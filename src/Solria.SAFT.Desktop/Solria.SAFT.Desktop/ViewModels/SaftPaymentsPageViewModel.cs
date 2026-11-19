@@ -82,6 +82,34 @@ public partial class SaftPaymentsPageViewModel : ViewModelBase
     private IList<SourceDocumentsPaymentsPayment> documents;
 
     [ObservableProperty]
+    private decimal listNetTotal;
+
+    [ObservableProperty]
+    private decimal listGrossTotal;
+
+    [ObservableProperty]
+    private decimal listTaxPayable;
+
+    partial void OnDocumentsChanged(IList<SourceDocumentsPaymentsPayment> value)
+    {
+        decimal netTotal = 0;
+        decimal grossTotal = 0;
+        decimal taxPayable = 0;
+
+        foreach (var document in value ?? [])
+        {
+            var totals = document.DocumentTotals;
+            netTotal += totals?.NetTotal ?? 0;
+            grossTotal += totals?.GrossTotal ?? 0;
+            taxPayable += totals?.TaxPayable ?? 0;
+        }
+
+        ListNetTotal = netTotal;
+        ListGrossTotal = grossTotal;
+        ListTaxPayable = taxPayable;
+    }
+
+    [ObservableProperty]
     private IList<SourceDocumentsPaymentsPaymentLine> lines;
 
     [ObservableProperty]

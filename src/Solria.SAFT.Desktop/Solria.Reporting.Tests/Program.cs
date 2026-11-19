@@ -30,6 +30,8 @@ static void Check(bool condition, string message)
 
 static async Task RunTests()
 {
+    await WorkingDocumentReferences.VerifyAsync();
+    await OrderReferencesImport.VerifyAsync();
     await ExportRoutes.VerifyAsync();
     var outputDirectory = Path.Combine(AppContext.BaseDirectory, "artifacts");
     Directory.CreateDirectory(outputDirectory);

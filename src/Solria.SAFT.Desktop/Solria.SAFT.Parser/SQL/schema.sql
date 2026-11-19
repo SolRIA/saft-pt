@@ -483,4 +483,4 @@ CREATE INDEX IF NOT EXISTS IX_StockMovementLines_ParentId ON StockMovementLines(
 CREATE INDEX IF NOT EXISTS IX_WorkDocuments_FileId ON WorkDocuments(FileId);
 CREATE INDEX IF NOT EXISTS IX_WorkDocumentLines_ParentId ON WorkDocumentLines(ParentId);
 CREATE INDEX IF NOT EXISTS IX_Payments_FileId ON Payments(FileId);
-CREATE INDEX IF NOT EXISTS IX_PaymentLines_ParentId ON PaymentLines(ParentId);
+CREATE INDEX IF NOT EXISTS IX_PaymentLines_ParentId ON PaymentLines(ParentId);

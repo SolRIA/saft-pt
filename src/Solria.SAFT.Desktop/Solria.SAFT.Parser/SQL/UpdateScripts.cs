@@ -19,8 +19,8 @@ namespace SolRIA.SAFT.Parser.SQL
 
         private static UpdateScript[] BuildUpdateScripts()
         {
-            return new UpdateScript[]
-            {
+            return
+            [
                 new UpdateScript { Version = 2, Order = 1, Sql = "CREATE TABLE IF NOT EXISTS Suppliers (Id TEXT, FileId TEXT, SupplierID TEXT, AccountID TEXT, SupplierTaxID TEXT, CompanyName TEXT, Contact TEXT, Telephone TEXT, Fax TEXT, Email TEXT, Website TEXT, SelfBillingIndicator TEXT, BillingAddressId TEXT, ShipFromAddress TEXT);" },
                 new UpdateScript { Version = 2, Order = 2, Sql = "CREATE TABLE IF NOT EXISTS GeneralLedgerAccounts (Id TEXT, FileId TEXT, TaxonomyReference TEXT, AccountID TEXT, AccountDescription TEXT, OpeningDebitBalance DECIMAL, OpeningCreditBalance DECIMAL, ClosingDebitBalance DECIMAL, ClosingCreditBalance DECIMAL, GroupingCategory TEXT, GroupingCode TEXT, TaxonomyCode TEXT);" },
                 new UpdateScript { Version = 2, Order = 3, Sql = "CREATE TABLE IF NOT EXISTS GeneralLedgerEntries (Id TEXT, FileId TEXT, NumberOfEntries TEXT, TotalDebit FLOAT, TotalCredit FLOAT);" },
@@ -40,7 +40,7 @@ namespace SolRIA.SAFT.Parser.SQL
                 new UpdateScript { Version = 2, Order = 17, Sql = "CREATE INDEX IF NOT EXISTS IX_WorkDocumentLines_ParentId ON WorkDocumentLines(ParentId);" },
                 new UpdateScript { Version = 2, Order = 18, Sql = "CREATE INDEX IF NOT EXISTS IX_Payments_FileId ON Payments(FileId);" },
                 new UpdateScript { Version = 2, Order = 19, Sql = "CREATE INDEX IF NOT EXISTS IX_PaymentLines_ParentId ON PaymentLines(ParentId);" }
-            };
+            ];
         }
 
     }

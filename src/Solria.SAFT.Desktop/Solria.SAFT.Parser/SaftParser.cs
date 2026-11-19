@@ -1840,6 +1840,8 @@ public static class SaftParser
     private static async Task<SourceDocumentsSalesInvoicesInvoiceLine> ReadInvoiceLines(XmlReader reader, string supPk, string id)
     {
         var line = new SourceDocumentsSalesInvoicesInvoiceLine();
+        var orderReferences = new List<OrderReferences>();
+        var references = new List<References>();
 
         if (Parsers.StringEquals(reader.Name, "Line"))
             await reader.ReadAsync();
@@ -1857,6 +1859,12 @@ public static class SaftParser
                 if (Parsers.StringEquals(reader.Name, "LineNumber"))
                 {
                     line.LineNumber = reader.ReadElementContentAsString();
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.LocalName, "OrderReferences"))
+                {
+                    orderReferences.Add(await ReadOrderReference(reader, line.Pk, supPk, id,
+                        "Invoice/Line/OrderReferences/OrderDate", typeof(SourceDocumentsSalesInvoicesInvoice)));
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "ProductCode"))
@@ -1887,6 +1895,11 @@ public static class SaftParser
                 if (Parsers.StringEquals(reader.Name, "TaxPointDate"))
                 {
                     line.TaxPointDate = Parsers.ParseDate(reader.ReadElementContentAsString(), line.Pk, id, "Invoice/Line/TaxPointDate", typeof(SourceDocumentsSalesInvoicesInvoice), supPk: supPk);
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.LocalName, "References"))
+                {
+                    references.Add(await ReadLineReference(reader));
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "Description"))
@@ -1936,11 +1949,70 @@ public static class SaftParser
             }
         }
 
+        line.References = [.. references];
+        line.OrderReferences = orderReferences.Count > 0 ? orderReferences.ToArray() : null;
+
         return line;
     }
+
+    private static async Task<OrderReferences> ReadOrderReference(
+        XmlReader reader, string linePk, string supPk, string id, string dateField, Type documentType)
+    {
+        var reference = new OrderReferences();
+        var elementDepth = reader.Depth;
+        var isEmpty = reader.IsEmptyElement;
+        await reader.ReadAsync();
+
+        if (isEmpty)
+            return reference;
+
+        while (reader.Depth > elementDepth)
+        {
+            if (reader.NodeType != XmlNodeType.Element)
+                await reader.ReadAsync();
+            else if (Parsers.StringEquals(reader.LocalName, "OriginatingON"))
+                reference.OriginatingON = reader.ReadElementContentAsString();
+            else if (Parsers.StringEquals(reader.LocalName, "OrderDate"))
+                reference.OrderDate = Parsers.ParseDate(reader.ReadElementContentAsString(),
+                    linePk, id, dateField, documentType, supPk: supPk);
+            else
+                await reader.SkipAsync();
+        }
+
+        if (reader.Depth == elementDepth && reader.NodeType == XmlNodeType.EndElement)
+            await reader.ReadAsync();
+
+        return reference;
+    }
+
+    private static async Task<References> ReadLineReference(XmlReader reader)
+    {
+        var reference = new References();
+        var elementDepth = reader.Depth;
+        await reader.ReadAsync();
+
+        while (reader.Depth > elementDepth)
+        {
+            if (reader.NodeType != XmlNodeType.Element)
+                await reader.ReadAsync();
+            else if (Parsers.StringEquals(reader.LocalName, "Reference"))
+                reference.Reference = reader.ReadElementContentAsString();
+            else if (Parsers.StringEquals(reader.LocalName, "Reason"))
+                reference.Reason = reader.ReadElementContentAsString();
+            else
+                await reader.SkipAsync();
+        }
+
+        if (reader.Depth == elementDepth && reader.NodeType == XmlNodeType.EndElement)
+            await reader.ReadAsync();
+
+        return reference;
+    }
+
     private static async Task<SourceDocumentsMovementOfGoodsStockMovementLine> ReadStockMovementLines(XmlReader reader, string supPk, string id)
     {
         var line = new SourceDocumentsMovementOfGoodsStockMovementLine();
+        var orderReferences = new List<OrderReferences>();
         var productSerialNumbers = new List<string>();
 
         if (Parsers.StringEquals(reader.Name, "Line"))
@@ -1959,6 +2031,12 @@ public static class SaftParser
                 if (Parsers.StringEquals(reader.Name, "LineNumber"))
                 {
                     line.LineNumber = reader.ReadElementContentAsString();
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.LocalName, "OrderReferences"))
+                {
+                    orderReferences.Add(await ReadOrderReference(reader, line.Pk, supPk, id,
+                        "StockMovement/Line/OrderReferences/OrderDate", typeof(SourceDocumentsMovementOfGoodsStockMovement)));
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "ProductCode"))
@@ -2035,12 +2113,14 @@ public static class SaftParser
         }
 
         line.ProductSerialNumber = [.. productSerialNumbers];
+        line.OrderReferences = orderReferences.Count > 0 ? orderReferences.ToArray() : null;
 
         return line;
     }
     private static async Task<SourceDocumentsWorkingDocumentsWorkDocumentLine> ReadWorkDocumentLines(XmlReader reader, string supPk, string id)
     {
         var line = new SourceDocumentsWorkingDocumentsWorkDocumentLine();
+        var orderReferences = new List<OrderReferences>();
         var productSerialNumbers = new List<string>();
         var references = new List<References>();
 
@@ -2060,6 +2140,12 @@ public static class SaftParser
                 if (Parsers.StringEquals(reader.Name, "LineNumber"))
                 {
                     line.LineNumber = reader.ReadElementContentAsString();
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.LocalName, "OrderReferences"))
+                {
+                    orderReferences.Add(await ReadOrderReference(reader, line.Pk, supPk, id,
+                        "WorkDocument/Line/OrderReferences/OrderDate", typeof(SourceDocumentsWorkingDocumentsWorkDocument)));
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "ProductCode"))
@@ -2095,6 +2181,11 @@ public static class SaftParser
                 if (Parsers.StringEquals(reader.Name, "TaxPointDate"))
                 {
                     line.TaxPointDate = Parsers.ParseDate(reader.ReadElementContentAsString(), line.Pk, id, "WorkDocument/Line/TaxPointDate", typeof(SourceDocumentsWorkingDocumentsWorkDocument), supPk: supPk);
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.LocalName, "References"))
+                {
+                    references.Add(await ReadLineReference(reader));
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "Description"))
@@ -2152,6 +2243,7 @@ public static class SaftParser
 
         line.ProductSerialNumber = [.. productSerialNumbers];
         line.References = [.. references];
+        line.OrderReferences = orderReferences.Count > 0 ? orderReferences.ToArray() : null;
 
         return line;
     }

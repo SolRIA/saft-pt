@@ -12,7 +12,6 @@ namespace SolRIA.SAFT.Parser;
 /// </summary>
 public class SaftXmlParser
 {
-
     public static T DeserializeXml<T>(string xmlFileName, Encoding encoding)
     {
         if (File.Exists(xmlFileName) == false)

@@ -8,6 +8,7 @@ using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SolRIA.SAFT.Parser.Services;
@@ -342,6 +343,9 @@ public class DatabaseService(string customDatabaseFilename = null) : IDatabaseSe
             {
                 Pk = row.Id,
                 LineNumber = row.LineNumber,
+                OrderReferences = row.OrderReferences is string orderReferences
+                    ? JsonSerializer.Deserialize<OrderReferences[]>(orderReferences)
+                    : null,
                 ProductCode = row.ProductCode,
                 ProductDescription = row.ProductDescription,
                 Quantity = row.Quantity != null ? Convert.ToDecimal(row.Quantity) : 0m,
@@ -612,6 +616,9 @@ public class DatabaseService(string customDatabaseFilename = null) : IDatabaseSe
             {
                 Pk = row.Id,
                 LineNumber = row.LineNumber,
+                OrderReferences = row.OrderReferences is string orderReferences
+                    ? JsonSerializer.Deserialize<OrderReferences[]>(orderReferences)
+                    : null,
                 ProductCode = row.ProductCode,
                 ProductDescription = row.ProductDescription,
                 Quantity = row.Quantity != null ? Convert.ToDecimal(row.Quantity) : 0m,
@@ -709,6 +716,9 @@ public class DatabaseService(string customDatabaseFilename = null) : IDatabaseSe
             {
                 Pk = row.Id,
                 LineNumber = row.LineNumber,
+                OrderReferences = row.OrderReferences is string orderReferences
+                    ? JsonSerializer.Deserialize<OrderReferences[]>(orderReferences)
+                    : null,
                 ProductCode = row.ProductCode,
                 ProductDescription = row.ProductDescription,
                 Quantity = row.Quantity != null ? Convert.ToDecimal(row.Quantity) : 0m,

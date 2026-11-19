@@ -88,6 +88,34 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
     private IList<SourceDocumentsSalesInvoicesInvoice> documents;
 
     [ObservableProperty]
+    private decimal listNetTotal;
+
+    [ObservableProperty]
+    private decimal listGrossTotal;
+
+    [ObservableProperty]
+    private decimal listTaxPayable;
+
+    partial void OnDocumentsChanged(IList<SourceDocumentsSalesInvoicesInvoice> value)
+    {
+        decimal netTotal = 0;
+        decimal grossTotal = 0;
+        decimal taxPayable = 0;
+
+        foreach (var document in value ?? [])
+        {
+            var totals = document.DocumentTotals;
+            netTotal += totals?.NetTotal ?? 0;
+            grossTotal += totals?.GrossTotal ?? 0;
+            taxPayable += totals?.TaxPayable ?? 0;
+        }
+
+        ListNetTotal = netTotal;
+        ListGrossTotal = grossTotal;
+        ListTaxPayable = taxPayable;
+    }
+
+    [ObservableProperty]
     private SourceDocumentsSalesInvoicesInvoice currentInvoice;
 
     [ObservableProperty]
@@ -236,7 +264,7 @@ public partial class SaftInvoicesPageViewModel : ViewModelBase
             || string.IsNullOrWhiteSpace(line.ProductCode) == false && line.ProductCode.Contains(filter, StringComparison.OrdinalIgnoreCase)
             || string.IsNullOrWhiteSpace(line.ProductDescription) == false && line.ProductDescription.Contains(filter, StringComparison.OrdinalIgnoreCase)
             || line.ProductSerialNumber != null && line.ProductSerialNumber.Any(l => l.Contains(filter, StringComparison.OrdinalIgnoreCase))
-            || line.OrderReferences != null && line.OrderReferences.Any(l => l.OriginatingON.Contains(filter, StringComparison.OrdinalIgnoreCase))
+            || line.OrderReferences?.Any(l => l.OriginatingON?.Contains(filter, StringComparison.OrdinalIgnoreCase) == true) == true
             || string.IsNullOrWhiteSpace(line.TaxExemptionCode) == false && line.TaxExemptionCode.Contains(filter, StringComparison.OrdinalIgnoreCase)
             || string.IsNullOrWhiteSpace(line.TaxExemptionReason) == false && line.TaxExemptionReason.Contains(filter, StringComparison.OrdinalIgnoreCase))
             return true;

@@ -61,6 +61,34 @@ public partial class SaftWorkingDocumentsPageViewModel : ViewModelBase
     private IList<SourceDocumentsWorkingDocumentsWorkDocument> documents;
 
     [ObservableProperty]
+    private decimal listNetTotal;
+
+    [ObservableProperty]
+    private decimal listGrossTotal;
+
+    [ObservableProperty]
+    private decimal listTaxPayable;
+
+    partial void OnDocumentsChanged(IList<SourceDocumentsWorkingDocumentsWorkDocument> value)
+    {
+        decimal netTotal = 0;
+        decimal grossTotal = 0;
+        decimal taxPayable = 0;
+
+        foreach (var document in value ?? [])
+        {
+            var totals = document.DocumentTotals;
+            netTotal += totals?.NetTotal ?? 0;
+            grossTotal += totals?.GrossTotal ?? 0;
+            taxPayable += totals?.TaxPayable ?? 0;
+        }
+
+        ListNetTotal = netTotal;
+        ListGrossTotal = grossTotal;
+        ListTaxPayable = taxPayable;
+    }
+
+    [ObservableProperty]
     private IList<SourceDocumentsWorkingDocumentsWorkDocumentLine> lines;
 
     [ObservableProperty]
@@ -68,6 +96,9 @@ public partial class SaftWorkingDocumentsPageViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool showAllLines;
+
+    [ObservableProperty]
+    private bool showOnlyUnreferencedDocuments;
 
     [ObservableProperty]
     private DateTimeOffset filtroDataInicio;
@@ -267,22 +298,51 @@ public partial class SaftWorkingDocumentsPageViewModel : ViewModelBase
     [RelayCommand]
     private void OnSearch()
     {
-        var docs = saftValidator.SaftFile?.SourceDocuments?.WorkingDocuments?.WorkDocument ?? [];
-
-        if (string.IsNullOrWhiteSpace(Filter))
+        var sourceDocuments = saftValidator.SaftFile?.SourceDocuments;
+        var workDocuments = sourceDocuments?.WorkingDocuments?.WorkDocument ?? [];
+        IEnumerable<SourceDocumentsWorkingDocumentsWorkDocument> docs = workDocuments;
+        if (ShowOnlyUnreferencedDocuments)
         {
-            Documents = docs
-                .Where(d => FilterDocumentsByDate(d, FiltroDataInicio, FiltroDataFim))
-                .ToArray();
-
-            return;
+            var referencedNumbers = GetReferencedDocumentNumbers(workDocuments, sourceDocuments?.SalesInvoices?.Invoice ?? []);
+            docs = docs.Where(d => !referencedNumbers.Contains(d.DocumentNumber));
         }
 
-        Documents = docs
-            .Where(d => FilterDocuments(d, Filter))
-            .Where(d => FilterDocumentsByDate(d, FiltroDataInicio, FiltroDataFim))
-            .ToArray();
+        if (!string.IsNullOrWhiteSpace(Filter))
+            docs = docs.Where(d => FilterDocuments(d, Filter));
+
+        Documents = docs.Where(d => FilterDocumentsByDate(d, FiltroDataInicio, FiltroDataFim)).ToArray();
     }
+
+    partial void OnShowOnlyUnreferencedDocumentsChanged(bool value) => OnSearch();
+
+    private static HashSet<string> GetReferencedDocumentNumbers(
+        SourceDocumentsWorkingDocumentsWorkDocument[] workDocuments,
+        SourceDocumentsSalesInvoicesInvoice[] invoices)
+    {
+        var comparer = StringComparer.OrdinalIgnoreCase;
+        var referencedNumbers = new HashSet<string>(comparer);
+
+        foreach (var document in workDocuments)
+        foreach (var line in document.Line ?? [])
+        foreach (var reference in line.OrderReferences ?? [])
+        {
+            var number = reference?.OriginatingON;
+            if (!string.IsNullOrWhiteSpace(number) && !comparer.Equals(number, document.DocumentNumber))
+                referencedNumbers.Add(number);
+        }
+
+        foreach (var invoice in invoices)
+        foreach (var line in invoice.Line ?? [])
+        foreach (var reference in line.OrderReferences ?? [])
+        {
+            var number = reference?.OriginatingON;
+            if (!string.IsNullOrWhiteSpace(number))
+                referencedNumbers.Add(number);
+        }
+
+        return referencedNumbers;
+    }
+
     private static bool FilterDocuments(SourceDocumentsWorkingDocumentsWorkDocument doc, string filter)
     {
         if (doc.ATCUD != null && doc.ATCUD.Contains(filter, StringComparison.OrdinalIgnoreCase)
@@ -311,7 +371,10 @@ public partial class SaftWorkingDocumentsPageViewModel : ViewModelBase
     private void OnSearchClear()
     {
         Filter = null;
-        OnSearch();
+        if (ShowOnlyUnreferencedDocuments)
+            ShowOnlyUnreferencedDocuments = false;
+        else
+            OnSearch();
     }
 
     [RelayCommand]
@@ -333,7 +396,7 @@ public partial class SaftWorkingDocumentsPageViewModel : ViewModelBase
             || string.IsNullOrWhiteSpace(line.ProductCode) == false && line.ProductCode.Contains(filter, StringComparison.OrdinalIgnoreCase)
             || string.IsNullOrWhiteSpace(line.ProductDescription) == false && line.ProductDescription.Contains(filter, StringComparison.OrdinalIgnoreCase)
             || line.ProductSerialNumber != null && line.ProductSerialNumber.Any(l => l.Contains(filter, StringComparison.OrdinalIgnoreCase))
-            || line.OrderReferences != null && line.OrderReferences.Any(l => l.OriginatingON.Contains(filter, StringComparison.OrdinalIgnoreCase))
+            || line.OrderReferences?.Any(l => l.OriginatingON?.Contains(filter, StringComparison.OrdinalIgnoreCase) == true) == true
             || string.IsNullOrWhiteSpace(line.TaxExemptionCode) == false && line.TaxExemptionCode.Contains(filter, StringComparison.OrdinalIgnoreCase)
             || string.IsNullOrWhiteSpace(line.TaxExemptionReason) == false && line.TaxExemptionReason.Contains(filter, StringComparison.OrdinalIgnoreCase))
             return true;
