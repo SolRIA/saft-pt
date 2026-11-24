@@ -361,7 +361,7 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
 
         if (menu.Equals("Erros", StringComparison.OrdinalIgnoreCase))
-            navigationService.NavigateTo(new StocksHeaderPageViewModel());
+            navigationService.NavigateTo(new SaftErrorPageViewModel());
         else if (menu.Equals("Cabeçalho", StringComparison.OrdinalIgnoreCase))
             navigationService.NavigateTo(new StocksHeaderPageViewModel());
         else if (menu.Equals("Produtos", StringComparison.OrdinalIgnoreCase))

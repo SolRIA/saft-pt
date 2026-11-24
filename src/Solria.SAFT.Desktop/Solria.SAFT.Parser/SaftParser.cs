@@ -787,11 +787,13 @@ public static class SaftParser
                 if (Parsers.StringEquals(reader.Name, "MovementEndTime"))
                 {
                     invoice.MovementEndTime = Parsers.ParseDateTime(reader.ReadElementContentAsString(), invoice.Pk, invoice.InvoiceNo, "Invoice/MovementEndTime", typeof(SourceDocumentsSalesInvoicesInvoice));
+                    invoice.MovementEndTimeSpecified = true;
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "MovementStartTime"))
                 {
                     invoice.MovementStartTime = Parsers.ParseDateTime(reader.ReadElementContentAsString(), invoice.Pk, invoice.InvoiceNo, "Invoice/MovementStartTime", typeof(SourceDocumentsSalesInvoicesInvoice));
+                    invoice.MovementStartTimeSpecified = true;
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "TransactionID"))
@@ -922,11 +924,13 @@ public static class SaftParser
                 if (Parsers.StringEquals(reader.Name, "MovementEndTime"))
                 {
                     document.MovementEndTime = Parsers.ParseDateTime(reader.ReadElementContentAsString(), document.Pk, document.DocumentNumber, "StockMovement/MovementEndTime", typeof(SourceDocumentsMovementOfGoodsStockMovement));
+                    document.MovementEndTimeSpecified = true;
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "MovementStartTime"))
                 {
                     document.MovementStartTime = Parsers.ParseDateTime(reader.ReadElementContentAsString(), document.Pk, document.DocumentNumber, "StockMovement/MovementStartTime", typeof(SourceDocumentsMovementOfGoodsStockMovement));
+                    document.MovementStartTimeSpecified = true;
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "ATDocCodeID"))
@@ -942,6 +946,14 @@ public static class SaftParser
                 if (Parsers.StringEquals(reader.Name, "CustomerID"))
                 {
                     document.CustomerID = reader.ReadElementContentAsString();
+                    document.Item = document.CustomerID;
+                    document.ItemElementName = ItemChoiceType5.CustomerID;
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.Name, "SupplierID"))
+                {
+                    document.Item = reader.ReadElementContentAsString();
+                    document.ItemElementName = ItemChoiceType5.SupplierID;
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "Line"))
@@ -1218,7 +1230,7 @@ public static class SaftParser
                 }
                 if (Parsers.StringEquals(reader.Name, "InvoiceStatusDate"))
                 {
-                    status.InvoiceStatusDate = Parsers.ParseDateTime(reader.ReadElementContentAsString(), pk, id, "Invoice/DocumentStatus/InvoiceStatus", typeof(SourceDocumentsSalesInvoicesInvoice));
+                    status.InvoiceStatusDate = Parsers.ParseDateTime(reader.ReadElementContentAsString(), pk, id, "Invoice/DocumentStatus/InvoiceStatusDate", typeof(SourceDocumentsSalesInvoicesInvoice));
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "Reason"))
@@ -1514,6 +1526,7 @@ public static class SaftParser
                 if (Parsers.StringEquals(reader.Name, "DeliveryDate"))
                 {
                     ship.DeliveryDate = Parsers.ParseDate(reader.ReadElementContentAsString(), pk, id, "DeliveryDate", typeof(SourceDocumentsSalesInvoicesInvoice));
+                    ship.DeliveryDateSpecified = true;
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "WarehouseID"))
@@ -1550,6 +1563,7 @@ public static class SaftParser
     {
         var totals = new SourceDocumentsSalesInvoicesInvoiceDocumentTotals();
         var payments = new List<PaymentMethod>();
+        var settlements = new List<Settlement>();
 
         if (Parsers.StringEquals(reader.Name, "DocumentTotals"))
             await reader.ReadAsync();
@@ -1579,6 +1593,29 @@ public static class SaftParser
                     totals.GrossTotal = Parsers.ParseDecimal(reader.ReadElementContentAsString(), pk, id, "Invoice/DocumentTotals/GrossTotal", typeof(SourceDocumentsSalesInvoicesInvoice));
                     continue;
                 }
+                if (Parsers.StringEquals(reader.Name, "CurrencyCode"))
+                {
+                    totals.Currency ??= new Currency();
+                    totals.Currency.CurrencyCode = reader.ReadElementContentAsString();
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.Name, "CurrencyAmount"))
+                {
+                    totals.Currency ??= new Currency();
+                    totals.Currency.CurrencyAmount = Parsers.ParseDecimal(reader.ReadElementContentAsString(), pk, id, "Invoice/DocumentTotals/Currency/CurrencyAmount", typeof(SourceDocumentsSalesInvoicesInvoice));
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.Name, "ExchangeRate"))
+                {
+                    totals.Currency ??= new Currency();
+                    totals.Currency.ExchangeRate = Parsers.ParseDecimal(reader.ReadElementContentAsString(), pk, id, "Invoice/DocumentTotals/Currency/ExchangeRate", typeof(SourceDocumentsSalesInvoicesInvoice));
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.Name, "Settlement"))
+                {
+                    settlements.Add(await ReadInvoiceSettlement(reader.ReadSubtree(), pk, id));
+                    continue;
+                }
                 if (Parsers.StringEquals(reader.Name, "Payment"))
                 {
                     payments.Add(await ReadPaymentMethod(reader.ReadSubtree(), pk, id, "Invoice/DocumentTotals/Payment", typeof(SourceDocumentsSalesInvoicesInvoice)));
@@ -1593,8 +1630,57 @@ public static class SaftParser
         }
 
         totals.Payment = [.. payments];
+        totals.Settlement = settlements.Count > 0 ? [.. settlements] : null;
 
         return totals;
+    }
+
+    private static async Task<Settlement> ReadInvoiceSettlement(XmlReader reader, string pk, string id)
+    {
+        var settlement = new Settlement();
+
+        if (Parsers.StringEquals(reader.Name, "Settlement"))
+            await reader.ReadAsync();
+
+        while (await reader.ReadAsync())
+        {
+            if (string.IsNullOrWhiteSpace(reader.Name) || reader.NodeType != XmlNodeType.Element)
+                continue;
+
+            while (true)
+            {
+                if (string.IsNullOrWhiteSpace(reader.Name) || reader.NodeType != XmlNodeType.Element)
+                    break;
+
+                if (Parsers.StringEquals(reader.Name, "SettlementDiscount"))
+                {
+                    settlement.SettlementDiscount = reader.ReadElementContentAsString();
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.Name, "SettlementAmount"))
+                {
+                    settlement.SettlementAmount = Parsers.ParseDecimal(reader.ReadElementContentAsString(), pk, id, "Invoice/DocumentTotals/Settlement/SettlementAmount", typeof(SourceDocumentsSalesInvoicesInvoice));
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.Name, "SettlementDate"))
+                {
+                    settlement.SettlementDate = Parsers.ParseDate(reader.ReadElementContentAsString(), pk, id, "Invoice/DocumentTotals/Settlement/SettlementDate", typeof(SourceDocumentsSalesInvoicesInvoice));
+                    settlement.SettlementDateSpecified = true;
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.Name, "PaymentTerms"))
+                {
+                    settlement.PaymentTerms = reader.ReadElementContentAsString();
+                    continue;
+                }
+
+                await reader.ReadAsync();
+                if (string.IsNullOrWhiteSpace(reader.Name))
+                    await reader.ReadAsync();
+            }
+        }
+
+        return settlement;
     }
     private static async Task<SourceDocumentsMovementOfGoodsStockMovementDocumentTotals> ReadStockMovementsDocumentTotals(XmlReader reader, string pk, string id)
     {
@@ -1756,10 +1842,7 @@ public static class SaftParser
                 }
                 if (Parsers.StringEquals(reader.Name, "Settlement"))
                 {
-                    totals.Settlement = new SourceDocumentsPaymentsPaymentDocumentTotalsSettlement
-                    {
-                        SettlementAmount = Parsers.ParseDecimal(reader.ReadElementContentAsString(), pk, id, "Payment/DocumentTotals/Settlement/SettlementAmount", typeof(SourceDocumentsPaymentsPaymentDocumentTotals))
-                    };
+                    totals.Settlement = await ReadPaymentSettlement(reader.ReadSubtree(), pk, id);
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "CurrencyCode"))
@@ -1792,6 +1875,38 @@ public static class SaftParser
         }
 
         return totals;
+    }
+
+    private static async Task<SourceDocumentsPaymentsPaymentDocumentTotalsSettlement> ReadPaymentSettlement(XmlReader reader, string pk, string id)
+    {
+        var settlement = new SourceDocumentsPaymentsPaymentDocumentTotalsSettlement();
+
+        if (Parsers.StringEquals(reader.Name, "Settlement"))
+            await reader.ReadAsync();
+
+        while (await reader.ReadAsync())
+        {
+            if (string.IsNullOrWhiteSpace(reader.Name) || reader.NodeType != XmlNodeType.Element)
+                continue;
+
+            while (true)
+            {
+                if (string.IsNullOrWhiteSpace(reader.Name) || reader.NodeType != XmlNodeType.Element)
+                    break;
+
+                if (Parsers.StringEquals(reader.Name, "SettlementAmount"))
+                {
+                    settlement.SettlementAmount = Parsers.ParseDecimal(reader.ReadElementContentAsString(), pk, id, "Payment/DocumentTotals/Settlement/SettlementAmount", typeof(SourceDocumentsPaymentsPaymentDocumentTotals));
+                    continue;
+                }
+
+                await reader.ReadAsync();
+                if (string.IsNullOrWhiteSpace(reader.Name))
+                    await reader.ReadAsync();
+            }
+        }
+
+        return settlement;
     }
 
     private static async Task<PaymentMethod> ReadPaymentMethod(XmlReader reader, string pk, string id, string basePath, Type type)
@@ -1973,8 +2088,11 @@ public static class SaftParser
             else if (Parsers.StringEquals(reader.LocalName, "OriginatingON"))
                 reference.OriginatingON = reader.ReadElementContentAsString();
             else if (Parsers.StringEquals(reader.LocalName, "OrderDate"))
+            {
                 reference.OrderDate = Parsers.ParseDate(reader.ReadElementContentAsString(),
                     linePk, id, dateField, documentType, supPk: supPk);
+                reference.OrderDateSpecified = true;
+            }
             else
                 await reader.SkipAsync();
         }
@@ -2086,6 +2204,11 @@ public static class SaftParser
                     line.ItemElementName = ItemChoiceType6.DebitAmount;
                     line.DebitAmount = Parsers.ParseDecimal(reader.ReadElementContentAsString(), line.Pk, id, "StockMovement/Line/DebitAmount", typeof(SourceDocumentsMovementOfGoodsStockMovement), supPk: supPk);
                     line.Item = line.DebitAmount.GetValueOrDefault();
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.Name, "Tax"))
+                {
+                    line.Tax = await ReadMovementTax(reader.ReadSubtree(), line.Pk, supPk, id, typeof(SourceDocumentsMovementOfGoodsStockMovement));
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "TaxExemptionReason"))
@@ -2323,6 +2446,53 @@ public static class SaftParser
         return line;
     }
 
+    private static async Task<MovementTax> ReadMovementTax(XmlReader reader, string linePk, string supPk, string id, Type type)
+    {
+        var tax = new MovementTax();
+
+        if (Parsers.StringEquals(reader.Name, "Tax"))
+            await reader.ReadAsync();
+
+        while (await reader.ReadAsync())
+        {
+            if (string.IsNullOrWhiteSpace(reader.Name) || reader.NodeType != XmlNodeType.Element)
+                continue;
+
+            while (true)
+            {
+                if (string.IsNullOrWhiteSpace(reader.Name) || reader.NodeType != XmlNodeType.Element)
+                    break;
+
+                if (Parsers.StringEquals(reader.Name, "TaxType"))
+                {
+                    tax.TaxType = Parsers.ParseEnum<SAFTPTMovementTaxType>(reader.ReadElementContentAsString(), linePk, id, "StockMovement/Line/Tax/TaxType", type, supPk: supPk);
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.Name, "TaxCountryRegion"))
+                {
+                    tax.TaxCountryRegion = reader.ReadElementContentAsString();
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.Name, "TaxCode"))
+                {
+                    tax.TaxCode = reader.ReadElementContentAsString();
+                    continue;
+                }
+                if (Parsers.StringEquals(reader.Name, "TaxPercentage"))
+                {
+                    tax.TaxPercentage = Parsers.ParseDecimal(reader.ReadElementContentAsString(), linePk, id, "StockMovement/Line/Tax/TaxPercentage", type, supPk: supPk);
+                    continue;
+                }
+
+                await reader.ReadAsync();
+                if (string.IsNullOrWhiteSpace(reader.Name))
+                    await reader.ReadAsync();
+            }
+        }
+
+        return tax;
+    }
+
     private static async Task<Tax> ReadTax(XmlReader reader, string linePk, string supPk, string id, Type type)
     {
         var tax = new Tax();
@@ -2413,12 +2583,14 @@ public static class SaftParser
                 {
                     tax.ItemElementName = ItemChoiceType.TaxAmount;
                     tax.TaxAmount = Parsers.ParseDecimal(reader.ReadElementContentAsString(), linePk, id, "Payment/Line/Tax/TaxAmount", type, supPk: supPk);
+                    tax.Item = tax.TaxAmount.GetValueOrDefault();
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "TaxPercentage"))
                 {
                     tax.ItemElementName = ItemChoiceType.TaxPercentage;
                     tax.TaxPercentage = Parsers.ParseDecimal(reader.ReadElementContentAsString(), linePk, id, "Payment/Line/Tax/TaxPercentage", type, supPk: supPk);
+                    tax.Item = tax.TaxPercentage.GetValueOrDefault();
                     continue;
                 }
 
@@ -2979,18 +3151,21 @@ public static class SaftParser
                 if (Parsers.StringEquals(reader.Name, "TaxExpirationDate"))
                 {
                     tax.TaxExpirationDate = Parsers.ParseDate(reader.ReadElementContentAsString(), tax.Pk, string.Empty, "TaxExpirationDate", typeof(TaxTableEntry));
+                    tax.TaxExpirationDateSpecified = true;
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "TaxPercentage"))
                 {
                     tax.ItemElementName = ItemChoiceType2.TaxPercentage;
                     tax.TaxPercentage = Parsers.ParseDecimal(reader.ReadElementContentAsString(), tax.Pk, string.Empty, "TaxPercentage", typeof(TaxTableEntry));
+                    tax.Item = tax.TaxPercentage.GetValueOrDefault();
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "TaxAmount"))
                 {
                     tax.ItemElementName = ItemChoiceType2.TaxAmount;
                     tax.TaxAmount = Parsers.ParseDecimal(reader.ReadElementContentAsString(), tax.Pk, string.Empty, "TaxAmount", typeof(TaxTableEntry));
+                    tax.Item = tax.TaxAmount.GetValueOrDefault();
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "TaxType"))
@@ -3335,6 +3510,8 @@ public static class SaftParser
     private static async Task<GeneralLedgerEntriesJournalTransactionLines> ReadGeneralLedgerLines(XmlReader reader, string transactionPk, string journalId)
     {
         var lines = new GeneralLedgerEntriesJournalTransactionLines();
+        var debitLines = new List<GeneralLedgerEntriesJournalTransactionLinesDebitLine>();
+        var creditLines = new List<GeneralLedgerEntriesJournalTransactionLinesCreditLine>();
 
         if (Parsers.StringEquals(reader.Name, "Lines"))
             await reader.ReadAsync();
@@ -3351,12 +3528,12 @@ public static class SaftParser
 
                 if (Parsers.StringEquals(reader.Name, "DebitLine"))
                 {
-                    lines.DebitLine = await ReadGeneralLedgerDebitLine(reader.ReadSubtree(), transactionPk, journalId);
+                    debitLines.Add(await ReadGeneralLedgerDebitLine(reader.ReadSubtree(), transactionPk, journalId));
                     continue;
                 }
                 if (Parsers.StringEquals(reader.Name, "CreditLine"))
                 {
-                    lines.CreditLine = await ReadGeneralLedgerCreditLine(reader.ReadSubtree(), transactionPk, journalId);
+                    creditLines.Add(await ReadGeneralLedgerCreditLine(reader.ReadSubtree(), transactionPk, journalId));
                     continue;
                 }
 
@@ -3365,6 +3542,11 @@ public static class SaftParser
                     await reader.ReadAsync();
             }
         }
+
+        lines.DebitLines = debitLines.Count > 0 ? [.. debitLines] : null;
+        lines.CreditLines = creditLines.Count > 0 ? [.. creditLines] : null;
+        lines.DebitLine = debitLines.FirstOrDefault();
+        lines.CreditLine = creditLines.FirstOrDefault();
 
         return lines;
     }

@@ -37,9 +37,9 @@ public partial class SaftGeneralLedgerEntriesPageViewModel : ViewModelBase
         TotalCredit = saftValidator?.SaftFile?.GeneralLedgerEntries?.TotalCredit ?? 0;
         TotalDebit = saftValidator?.SaftFile?.GeneralLedgerEntries?.TotalDebit ?? 0;
 
-        NumberOfEntriesCalc = documents.Sum(c => c.Transaction.Length).ToString();
-        TotalCreditCalc = documents.Sum(d => d.Transaction?.Sum(t => t.Lines?.CreditLine?.CreditAmount ?? 0) ?? 0);
-        TotalDebitCalc = documents.Sum(d => d.Transaction?.Sum(t => t.Lines?.DebitLine?.DebitAmount ?? 0) ?? 0);
+        NumberOfEntriesCalc = documents.Sum(c => c.Transaction?.Length ?? 0).ToString();
+        TotalCreditCalc = documents.Sum(d => d.Transaction?.Sum(t => (t.Lines?.CreditLines?.Sum(l => l.CreditAmount) ?? t.Lines?.CreditLine?.CreditAmount ?? 0)) ?? 0);
+        TotalDebitCalc = documents.Sum(d => d.Transaction?.Sum(t => (t.Lines?.DebitLines?.Sum(l => l.DebitAmount) ?? t.Lines?.DebitLine?.DebitAmount ?? 0)) ?? 0);
 
         IsLoading = false;
     }

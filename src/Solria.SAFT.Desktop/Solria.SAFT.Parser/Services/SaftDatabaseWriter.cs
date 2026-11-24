@@ -1044,35 +1044,41 @@ public class SaftDatabaseWriter : IAsyncDisposable
                             SupplierID = suppId
                         }, tx);
 
-                        if (t.Lines?.DebitLine != null)
+                        var debitLines = t.Lines?.DebitLines is { Length: > 0 } dl
+                            ? dl
+                            : (t.Lines?.DebitLine != null ? [t.Lines.DebitLine] : []);
+                        foreach (var debitLine in debitLines)
                         {
                             await _connection.ExecuteAsync(sqlLine, new
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 TransactionId = tId,
-                                t.Lines.DebitLine.RecordID,
-                                t.Lines.DebitLine.AccountID,
-                                t.Lines.DebitLine.SourceDocumentID,
-                                t.Lines.DebitLine.SystemEntryDate,
-                                t.Lines.DebitLine.Description,
-                                DebitAmount = t.Lines.DebitLine.DebitAmount,
+                                debitLine.RecordID,
+                                debitLine.AccountID,
+                                debitLine.SourceDocumentID,
+                                debitLine.SystemEntryDate,
+                                debitLine.Description,
+                                DebitAmount = debitLine.DebitAmount,
                                 CreditAmount = 0m
                             }, tx);
                         }
 
-                        if (t.Lines?.CreditLine != null)
+                        var creditLines = t.Lines?.CreditLines is { Length: > 0 } cl
+                            ? cl
+                            : (t.Lines?.CreditLine != null ? [t.Lines.CreditLine] : []);
+                        foreach (var creditLine in creditLines)
                         {
                             await _connection.ExecuteAsync(sqlLine, new
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 TransactionId = tId,
-                                t.Lines.CreditLine.RecordID,
-                                t.Lines.CreditLine.AccountID,
-                                t.Lines.CreditLine.SourceDocumentID,
-                                t.Lines.CreditLine.SystemEntryDate,
-                                t.Lines.CreditLine.Description,
+                                creditLine.RecordID,
+                                creditLine.AccountID,
+                                creditLine.SourceDocumentID,
+                                creditLine.SystemEntryDate,
+                                creditLine.Description,
                                 DebitAmount = 0m,
-                                CreditAmount = t.Lines.CreditLine.CreditAmount
+                                CreditAmount = creditLine.CreditAmount
                             }, tx);
                         }
                     }

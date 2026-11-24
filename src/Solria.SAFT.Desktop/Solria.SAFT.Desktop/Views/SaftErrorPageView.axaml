@@ -49,6 +49,7 @@
 				  ItemsSource="{Binding Errors}" SelectionMode="Single"
 				  SelectedItem="{Binding SelectedError, Mode=TwoWay}">
 			<DataGrid.Columns>
+				<DataGridTextColumn Header="Tipo" Binding="{Binding ValidationType}" />
 				<DataGridTextColumn Header="ID" Binding="{Binding FileID}" />
 				<DataGridTextColumn Header="Campo" Binding="{Binding Field}" />
 				<DataGridTextColumn Header="Valor" Binding="{Binding Value}" />

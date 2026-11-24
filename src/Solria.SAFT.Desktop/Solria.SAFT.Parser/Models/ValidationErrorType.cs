@@ -3,6 +3,7 @@
     public enum ValidationErrorType
     {
         SCHEMA,
-        LEGAL
+        LEGAL,
+        WARNING
     }
 }

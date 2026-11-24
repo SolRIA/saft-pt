@@ -20,10 +20,23 @@ namespace SolRIA.SAFT.Desktop.Services;
 public partial class AuditFileMapper
 {
     public partial AuditFile Map(Models.SaftV4.AuditFile file);
+
+    private static string MapXmlObjectToString(object value)
+    {
+        if (value == null) return null;
+        if (value is string s) return s;
+        if (value is XmlNode[] nodes)
+            return string.Concat(nodes.Select(n => n.InnerText ?? n.Value));
+        if (value is XmlNode node)
+            return node.InnerText ?? node.Value;
+        return value.ToString();
+    }
 }
 
 public class SaftValidator : ISaftValidator
 {
+    private const string SolRiaPublicKeyXml = "<RSAKeyValue><Modulus>vU9AbSDUgXjuKEHl8UaYWfboVz0YRnMMspGHxZ59aJSEYwMYPNsmakNBS9is3+BGXd3AVlthaPmNW5BUuzICNyCQ+DldQ9dP8jr7xcyv1+E5xrMobF8+4xD2ST+DuAUw41ZTCZA3/r47BXonF/DWx+PpVhS68zorDWiJZUJGVg8=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>";
+
     readonly CultureInfo enCulture = new("en-US");
     private readonly List<ValidationError> _mensagensErro;
     private readonly IDatabaseService _databaseService;
@@ -142,12 +155,78 @@ public class SaftValidator : ISaftValidator
         }
 
         progress?.Report(new SaftProgress(72, "A preparar dados...", "A associar referências entre documentos e linhas..."));
-        if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.SalesInvoices != null && SaftFile.SourceDocuments.SalesInvoices.Invoice != null)
+        LinkDocumentLineProperties();
+
+        //Do validations on fields
+        progress?.Report(new SaftProgress(76, "A validar Cabeçalho...", "Verificação de NIF, datas e versão fiscal"));
+        if (SaftFile.Header != null)
+            ValidateHeader(SaftFile.Header);
+        else
+            AddError(new ValidationError { Description = "Cabeçalho (Header) inexistente.", Field = "Header", TypeofError = typeof(Header) });
+
+        progress?.Report(new SaftProgress(80, "A validar Estrutura XSD...", "Conformidade com o esquema oficial da AT"));
+        var schemaVersion = SaftFile.Header?.AuditFileVersion ?? SaftFileVersion.V10401;
+        await Task.Run(() => ValidaEstruturaXSD(schemaVersion));
+
+        if (SaftFile.MasterFiles != null)
         {
-            //add the link from the line to the correspondent invoice
+            progress?.Report(new SaftProgress(84, "A validar Tabelas Mestras...", "Clientes, Fornecedores, Produtos, Impostos e Plano de Contas"));
+            ValidateCustomers(SaftFile.MasterFiles.Customer);
+            ValidateProducts(SaftFile.MasterFiles.Product);
+            ValidateSupplier(SaftFile.MasterFiles.Supplier);
+            ValidateTax(SaftFile.MasterFiles.TaxTable);
+            ValidateGeneralLedgerAccounts(SaftFile.MasterFiles.GeneralLedgerAccounts);
+        }
+
+        if (SaftFile.GeneralLedgerEntries != null)
+        {
+            progress?.Report(new SaftProgress(87, "A validar Movimentos Contabilísticos...", "Validação de diários, lançamentos e saldos"));
+            ValidateGeneralLedgerEntries(SaftFile.GeneralLedgerEntries, SaftFile.MasterFiles?.GeneralLedgerAccounts);
+        }
+
+        if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.SalesInvoices != null)
+        {
+            progress?.Report(new SaftProgress(89, "A validar Faturação...", "Validação de faturas, linhas e totais"));
+            await Task.Run(() => ValidateInvoices(SaftFile.SourceDocuments.SalesInvoices, SaftFile.Header, SaftFile.MasterFiles));
+        }
+
+        if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.Payments != null)
+        {
+            progress?.Report(new SaftProgress(93, "A validar Pagamentos...", "Validação de recibos e meios de pagamento"));
+            ValidatePayments(SaftFile.SourceDocuments.Payments, SaftFile.Header, SaftFile.MasterFiles, includeExtendedChecks: true);
+        }
+
+        if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.MovementOfGoods != null)
+        {
+            progress?.Report(new SaftProgress(95, "A validar Mercadorias...", "Validação de guias de transporte e movimentação"));
+            ValidateMovementOfGoods(SaftFile.SourceDocuments.MovementOfGoods, SaftFile.Header, SaftFile.MasterFiles);
+        }
+
+        if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.WorkingDocuments != null)
+        {
+            progress?.Report(new SaftProgress(97, "A validar Documentos de Conferência...", "Validação de documentos de conferência"));
+            ValidateWorkDocument(SaftFile.SourceDocuments.WorkingDocuments, SaftFile.Header, SaftFile.MasterFiles);
+        }
+
+        //check for solria saft, if true validate the hash
+        SaftHashValidationNumber = 0;
+        SaftHashValidationErrorNumber = 0;
+        if (SaftFile.Header?.SoftwareCertificateNumber == "2340")
+        {
+            progress?.Report(new SaftProgress(98, "A validar Assinaturas Digitais (Hash)...", "Verificação criptográfica SHA1/RSA de faturas"));
+            await Task.Run(() => SolRiaValidateSaftHash(SaftFile));
+        }
+
+        progress?.Report(new SaftProgress(100, "Concluído!", "Leitura e validação terminadas com sucesso."));
+    }
+
+    private void LinkDocumentLineProperties()
+    {
+        if (SaftFile.SourceDocuments?.SalesInvoices?.Invoice != null)
+        {
             foreach (var invoice in SaftFile.SourceDocuments.SalesInvoices.Invoice)
             {
-                foreach (var line in invoice.Line)
+                foreach (var line in invoice.Line ?? [])
                 {
                     line.InvoiceNo = invoice.InvoiceNo;
 
@@ -169,12 +248,14 @@ public class SaftValidator : ISaftValidator
             }
         }
 
-        if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.MovementOfGoods != null && SaftFile.SourceDocuments.MovementOfGoods.StockMovement != null)
+        if (SaftFile.SourceDocuments?.MovementOfGoods?.StockMovement != null)
         {
-            //add the link from the line to the correspondent movement
             foreach (var doc in SaftFile.SourceDocuments.MovementOfGoods.StockMovement)
             {
-                foreach (var line in doc.Line)
+                if (string.IsNullOrEmpty(doc.CustomerID) && doc.ItemElementName == ItemChoiceType5.CustomerID)
+                    doc.CustomerID = doc.Item;
+
+                foreach (var line in doc.Line ?? [])
                 {
                     line.DocNo = doc.DocumentNumber;
 
@@ -196,12 +277,11 @@ public class SaftValidator : ISaftValidator
             }
         }
 
-        if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.Payments != null && SaftFile.SourceDocuments.Payments.Payment != null)
+        if (SaftFile.SourceDocuments?.Payments?.Payment != null)
         {
-            //add the link from the line to the correspondent payment
             foreach (var payment in SaftFile.SourceDocuments.Payments.Payment)
             {
-                foreach (var line in payment.Line)
+                foreach (var line in payment.Line ?? [])
                 {
                     line.DocNo = payment.PaymentRefNo;
 
@@ -223,12 +303,11 @@ public class SaftValidator : ISaftValidator
             }
         }
 
-        if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.WorkingDocuments != null && SaftFile.SourceDocuments.WorkingDocuments.WorkDocument != null)
+        if (SaftFile.SourceDocuments?.WorkingDocuments?.WorkDocument != null)
         {
-            //add the link from the line to the correspondent invoice
             foreach (var doc in SaftFile.SourceDocuments.WorkingDocuments.WorkDocument)
             {
-                foreach (var line in doc.Line)
+                foreach (var line in doc.Line ?? [])
                 {
                     line.DocNo = doc.DocumentNumber;
 
@@ -249,57 +328,6 @@ public class SaftValidator : ISaftValidator
                 }
             }
         }
-
-        //Do validations on fields
-        progress?.Report(new SaftProgress(76, "A validar Cabeçalho...", "Verificação de NIF, datas e versão fiscal"));
-        ValidateHeader(SaftFile.Header);
-
-        progress?.Report(new SaftProgress(80, "A validar Estrutura XSD...", "Conformidade com o esquema oficial da AT"));
-        await Task.Run(() => ValidaEstruturaXSD(SaftFileVersion.V10401));
-
-        if (SaftFile.MasterFiles != null)
-        {
-            progress?.Report(new SaftProgress(84, "A validar Tabelas Mestras...", "Clientes, Fornecedores, Produtos e Impostos"));
-            ValidateCustomers(SaftFile.MasterFiles.Customer);
-            ValidateProducts(SaftFile.MasterFiles.Product);
-            ValidateSupplier(SaftFile.MasterFiles.Supplier);
-            ValidateTax(SaftFile.MasterFiles.TaxTable);
-        }
-
-        if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.SalesInvoices != null)
-        {
-            progress?.Report(new SaftProgress(89, "A validar Faturação...", "Validação de faturas, linhas e totais"));
-            await Task.Run(() => ValidateInvoices(SaftFile.SourceDocuments.SalesInvoices));
-        }
-
-        if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.Payments != null)
-        {
-            progress?.Report(new SaftProgress(93, "A validar Pagamentos...", "Validação de recibos e meios de pagamento"));
-            ValidatePayments(SaftFile.SourceDocuments.Payments);
-        }
-
-        if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.MovementOfGoods != null)
-        {
-            progress?.Report(new SaftProgress(95, "A validar Mercadorias...", "Validação de guias de transporte e movimentação"));
-            ValidateMovementOfGoods(SaftFile.SourceDocuments.MovementOfGoods);
-        }
-
-        if (SaftFile.SourceDocuments != null && SaftFile.SourceDocuments.WorkingDocuments != null)
-        {
-            progress?.Report(new SaftProgress(97, "A validar Documentos de Conferência...", "Validação de documentos de conferência"));
-            ValidateWorkDocument(SaftFile.SourceDocuments.WorkingDocuments);
-        }
-
-        //check for solria saft, if true validate the hash
-        SaftHashValidationNumber = 0;
-        SaftHashValidationErrorNumber = 0;
-        if (SaftFile.Header.SoftwareCertificateNumber == "2340")
-        {
-            progress?.Report(new SaftProgress(98, "A validar Assinaturas Digitais (Hash)...", "Verificação criptográfica SHA1/RSA de faturas"));
-            await Task.Run(() => SolRiaValidateSaftHash(SaftFile));
-        }
-
-        progress?.Report(new SaftProgress(100, "Concluído!", "Leitura e validação terminadas com sucesso."));
     }
 
     public async Task OpenStockFile(string filename, IProgress<SaftProgress> progress = null)
@@ -317,111 +345,424 @@ public class SaftValidator : ISaftValidator
 
         StockFile = stockFile;
 
-        progress?.Report(new SaftProgress(85, "A verificar dados...", "A validar existências"));
-        //load the existing validations errors
+        progress?.Report(new SaftProgress(75, "A verificar dados...", "A validar estrutura e existências"));
         AddError(errors);
+
+        if (StockFile != null)
+        {
+            if (StockFileName.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                await Task.Run(() => ValidateStockSchema(StockFileName, StockFile.StockHeader?.FileVersion));
+
+            ValidateStockFile(StockFile);
+        }
 
         progress?.Report(new SaftProgress(100, "Concluído!", "Ficheiro de existências lido com sucesso."));
     }
 
-    private void SolRiaValidateSaftHash(AuditFile auditFile)
+    internal void ValidateStockFile(StockFile stockFile)
     {
-        object hasher = SHA1.Create();
+        if (stockFile == null) return;
 
-        using var rsaCryptokey = new RSACryptoServiceProvider(1024);
-        rsaCryptokey.FromXmlString("<RSAKeyValue><Modulus>vU9AbSDUgXjuKEHl8UaYWfboVz0YRnMMspGHxZ59aJSEYwMYPNsmakNBS9is3+BGXd3AVlthaPmNW5BUuzICNyCQ+DldQ9dP8jr7xcyv1+E5xrMobF8+4xD2ST+DuAUw41ZTCZA3/r47BXonF/DWx+PpVhS68zorDWiJZUJGVg8=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>");
+        var header = stockFile.StockHeader;
+        bool isCsv = string.Equals(header?.FileVersion, "csv", StringComparison.OrdinalIgnoreCase);
 
-        StringBuilder toHash = new StringBuilder();
-
-        //invoices
-        if (auditFile.SourceDocuments.SalesInvoices != null)
+        if (header == null)
         {
-            for (int i = 0; i < auditFile.SourceDocuments.SalesInvoices.Invoice.Length; i++)
+            AddError(new ValidationError
             {
-                var invoice = auditFile.SourceDocuments.SalesInvoices.Invoice[i];
+                Description = "Cabeçalho de existências (StockHeader) inexistente.",
+                Field = "StockHeader",
+                TypeofError = typeof(StockHeader)
+            });
+        }
+        else if (!isCsv)
+        {
+            if (!Validations.CheckTaxRegistrationNumber(header.TaxRegistrationNumber))
+            {
+                AddError(new ValidationError
+                {
+                    Description = "NIF inválido no cabeçalho do ficheiro de existências.",
+                    Field = "StockHeader/TaxRegistrationNumber",
+                    Value = header.TaxRegistrationNumber,
+                    TypeofError = typeof(StockHeader)
+                });
+            }
 
-                bool usaHashAnterior = true;
-                if (i == 0 || invoice.InvoiceType != auditFile.SourceDocuments.SalesInvoices.Invoice[i - 1].InvoiceType || Convert.ToInt32(invoice.InvoiceNo.Split('/')[1]) != Convert.ToInt32(auditFile.SourceDocuments.SalesInvoices.Invoice[i - 1].InvoiceNo.Split('/')[1]) + 1)
-                    usaHashAnterior = false;
+            if (string.IsNullOrEmpty(header.FiscalYear) || !int.TryParse(header.FiscalYear, out int fiscalYear) || fiscalYear < 2000 || fiscalYear > 9999)
+            {
+                AddError(new ValidationError
+                {
+                    Description = "Ano fiscal inválido no cabeçalho do ficheiro de existências.",
+                    Field = "StockHeader/FiscalYear",
+                    Value = header.FiscalYear,
+                    TypeofError = typeof(StockHeader)
+                });
+            }
 
-                //ignore the first documents on each billing numbers, there is no way to verify these without the hash of the previous documents
-                if (usaHashAnterior == false)
-                    continue;
+            if (header.EndDate == DateTime.MinValue)
+            {
+                AddError(new ValidationError
+                {
+                    Description = "Data de fim do período inválida no ficheiro de existências.",
+                    Field = "StockHeader/EndDate",
+                    Value = header.EndDate.ToString(),
+                    TypeofError = typeof(StockHeader)
+                });
+            }
 
-                //check for invoice hash
-                if (SolRiaHashExists(invoice.Hash, invoice.InvoiceNo) == false)
-                    continue;
-
-                //build the hash
-                SolRiaBuildHash(toHash, invoice.InvoiceDate, invoice.SystemEntryDate, invoice.InvoiceNo, invoice.DocumentTotals.GrossTotal, usaHashAnterior ? auditFile.SourceDocuments.SalesInvoices.Invoice[i - 1].Hash : "");
-
-                SolRiaIsHashValid(toHash.ToString(), invoice.Hash, rsaCryptokey, hasher, invoice.InvoiceNo);
+            if (header.NoStock && (stockFile.Stock?.Length ?? 0) > 0)
+            {
+                AddError(new ValidationError
+                {
+                    Description = "O cabeçalho indica ausência de existências (NoStock=true), mas existem registos de stock.",
+                    Field = "StockHeader/NoStock",
+                    Value = header.NoStock.ToString(),
+                    TypeofError = typeof(StockHeader)
+                });
             }
         }
 
-        //movement of goods
-        if (auditFile.SourceDocuments.MovementOfGoods != null)
+        var items = stockFile.Stock ?? [];
+        var seenProductCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        for (int i = 0; i < items.Length; i++)
         {
-            for (int i = 0; i < auditFile.SourceDocuments.MovementOfGoods.StockMovement.Length; i++)
+            var item = items[i];
+            if (item == null) continue;
+
+            string uid = (i + 1).ToString(CultureInfo.InvariantCulture);
+
+            if (string.IsNullOrEmpty(item.ProductCode) || item.ProductCode.Length > 60)
             {
-                var movement = auditFile.SourceDocuments.MovementOfGoods.StockMovement[i];
-
-                bool usaHashAnterior = true;
-                if (i == 0 || movement.MovementType != auditFile.SourceDocuments.MovementOfGoods.StockMovement[i - 1].MovementType || Convert.ToInt32(movement.DocumentNumber.Split('/')[1]) != Convert.ToInt32(auditFile.SourceDocuments.MovementOfGoods.StockMovement[i - 1].DocumentNumber.Split('/')[1]) + 1)
-                    usaHashAnterior = false;
-
-                //ignore the first documents on each billing numbers, there is no way to verify these without the hash of the previous documents
-                if (usaHashAnterior == false)
-                    continue;
-
-                //check for invoice hash
-                if (SolRiaHashExists(movement.Hash, movement.DocumentNumber) == false)
-                    continue;
-
-                //build the hash
-                SolRiaBuildHash(toHash, movement.MovementDate, movement.SystemEntryDate, movement.DocumentNumber, movement.DocumentTotals.GrossTotal, usaHashAnterior ? auditFile.SourceDocuments.MovementOfGoods.StockMovement[i - 1].Hash : "");
-
-                SolRiaIsHashValid(toHash.ToString(), movement.Hash, rsaCryptokey, hasher, movement.DocumentNumber);
+                AddError(new ValidationError
+                {
+                    Description = $"Código do produto inválido na linha {i + 1}.",
+                    Field = "Stock/ProductCode",
+                    FileID = item.ProductCode,
+                    Value = item.ProductCode,
+                    TypeofError = typeof(Stock),
+                    UID = uid
+                });
             }
-        }
-
-        //working documents
-        if (auditFile.SourceDocuments.WorkingDocuments != null)
-        {
-            for (int i = 0; i < auditFile.SourceDocuments.WorkingDocuments.WorkDocument.Length; i++)
+            else if (!seenProductCodes.Add(item.ProductCode))
             {
-                var document = auditFile.SourceDocuments.WorkingDocuments.WorkDocument[i];
+                AddError(new ValidationError
+                {
+                    Description = $"Código de produto duplicado no inventário: {item.ProductCode}.",
+                    Field = "Stock/ProductCode",
+                    FileID = item.ProductCode,
+                    Value = item.ProductCode,
+                    TypeofError = typeof(Stock),
+                    UID = uid
+                });
+            }
 
-                bool usaHashAnterior = true;
-                if (i == 0 || document.WorkType != auditFile.SourceDocuments.WorkingDocuments.WorkDocument[i - 1].WorkType || Convert.ToInt32(document.DocumentNumber.Split('/')[1]) != Convert.ToInt32(auditFile.SourceDocuments.WorkingDocuments.WorkDocument[i - 1].DocumentNumber.Split('/')[1]) + 1)
-                    usaHashAnterior = false;
+            if (string.IsNullOrEmpty(item.ProductDescription) || item.ProductDescription.Length > 200)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Descrição do produto inválida na linha {i + 1}.",
+                    Field = "Stock/ProductDescription",
+                    FileID = item.ProductCode,
+                    Value = item.ProductDescription,
+                    TypeofError = typeof(Stock),
+                    UID = uid
+                });
+            }
 
-                //ignore the first documents on each billing numbers, there is no way to verify these without the hash of the previous documents
-                if (usaHashAnterior == false)
-                    continue;
+            if (string.IsNullOrEmpty(item.ProductNumberCode) || item.ProductNumberCode.Length > 60)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Código de barras / número do produto inválido na linha {i + 1}.",
+                    Field = "Stock/ProductNumberCode",
+                    FileID = item.ProductCode,
+                    Value = item.ProductNumberCode,
+                    TypeofError = typeof(Stock),
+                    UID = uid
+                });
+            }
 
-                //check for invoice hash
-                if (SolRiaHashExists(document.Hash, document.DocumentNumber) == false)
-                    continue;
+            if (string.IsNullOrEmpty(item.UnitOfMeasure) || item.UnitOfMeasure.Length > 20)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Unidade de medida inválida na linha {i + 1}.",
+                    Field = "Stock/UnitOfMeasure",
+                    FileID = item.ProductCode,
+                    Value = item.UnitOfMeasure,
+                    TypeofError = typeof(Stock),
+                    UID = uid
+                });
+            }
 
-                //build the hash
-                SolRiaBuildHash(toHash, document.WorkDate, document.SystemEntryDate, document.DocumentNumber, document.DocumentTotals.GrossTotal, usaHashAnterior ? auditFile.SourceDocuments.WorkingDocuments.WorkDocument[i - 1].Hash : "");
+            if (item.ClosingStockQuantity < 0)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Quantidade de existência negativa na linha {i + 1}.",
+                    Field = "Stock/ClosingStockQuantity",
+                    FileID = item.ProductCode,
+                    Value = item.ClosingStockQuantity.ToString(CultureInfo.InvariantCulture),
+                    TypeofError = typeof(Stock),
+                    UID = uid
+                });
+            }
 
-                SolRiaIsHashValid(toHash.ToString(), document.Hash, rsaCryptokey, hasher, document.DocumentNumber);
+            if (item.ClosingStockValue < 0)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Valor de existência negativo na linha {i + 1}.",
+                    Field = "Stock/ClosingStockValue",
+                    FileID = item.ProductCode,
+                    Value = item.ClosingStockValue.ToString(CultureInfo.InvariantCulture),
+                    TypeofError = typeof(Stock),
+                    UID = uid
+                });
             }
         }
     }
 
-    private bool SolRiaHashExists(string hash, string documentNo)
+    private void ValidateStockSchema(string stockFilename, string fileVersion)
     {
-        if (string.IsNullOrEmpty(hash))
+        try
         {
-            AddError(new ValidationError { Description = string.Format("Erro dados: A assinatura do documento {0} não existe.", documentNo) });
+            string schemaName = fileVersion switch
+            {
+                "2_01" => "Inventario_2_01.xsd",
+                "1_02" => "Stock_1_2.xsd",
+                _ => DetectStockSchemaFromXml(stockFilename)
+            };
 
-            return false;
+            if (string.IsNullOrEmpty(schemaName))
+                return;
+
+            string schemaFilename = ResolveSchemaPath("Models", schemaName) ?? ResolveSchemaPath("Schemas", schemaName);
+            if (string.IsNullOrEmpty(schemaFilename))
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Esquema XSD de inventário não encontrado: {schemaName}",
+                    Field = "Schema",
+                    TypeofError = typeof(SchemaResults),
+                    ValidationType = ValidationErrorType.SCHEMA
+                });
+                return;
+            }
+
+            ValidateXmlAgainstSchema(stockFilename, schemaFilename);
+        }
+        catch (Exception error)
+        {
+            AddError(new ValidationError
+            {
+                Description = $"Erro na validação XSD do ficheiro de existências: {error.Message}",
+                Field = "Schema",
+                TypeofError = typeof(SchemaResults),
+                ValidationType = ValidationErrorType.SCHEMA
+            });
+        }
+    }
+
+    private static string DetectStockSchemaFromXml(string stockFilename)
+    {
+        try
+        {
+            using var reader = XmlReader.Create(stockFilename);
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.NamespaceURI.Contains("PT_2_01", StringComparison.OrdinalIgnoreCase))
+                        return "Inventario_2_01.xsd";
+                    if (reader.NamespaceURI.Contains("PT_1_02", StringComparison.OrdinalIgnoreCase))
+                        return "Stock_1_2.xsd";
+                    break;
+                }
+            }
+        }
+        catch
+        {
+            // Ignorado; validação seguinte reporta erro XML se malformado.
+        }
+        return "Inventario_2_01.xsd";
+    }
+
+    private void SolRiaValidateSaftHash(AuditFile auditFile)
+    {
+        using var rsaCryptokey = RSA.Create();
+        rsaCryptokey.FromXmlString(SolRiaPublicKeyXml);
+        ValidateAllDocumentHashes(auditFile, rsaCryptokey, countStats: true);
+    }
+
+    private void ValidateAllDocumentHashes(AuditFile auditFile, RSA rsaCryptokey, bool countStats)
+    {
+        var toHash = new StringBuilder();
+
+        if (auditFile.SourceDocuments?.SalesInvoices?.Invoice != null)
+        {
+            ValidateSeriesHashes(
+                auditFile.SourceDocuments.SalesInvoices.Invoice,
+                i => i.InvoiceNo,
+                i => i.InvoiceType.ToString(),
+                i => i.DocumentStatus?.SourceBilling ?? SAFTPTSourceBilling.P,
+                i => i.Hash,
+                i => i.InvoiceDate,
+                i => i.SystemEntryDate,
+                i => i.DocumentTotals?.GrossTotal ?? 0m,
+                i => i.Pk,
+                typeof(SourceDocumentsSalesInvoicesInvoice),
+                rsaCryptokey,
+                toHash,
+                countStats);
         }
 
-        return true;
+        if (auditFile.SourceDocuments?.MovementOfGoods?.StockMovement != null)
+        {
+            ValidateSeriesHashes(
+                auditFile.SourceDocuments.MovementOfGoods.StockMovement,
+                m => m.DocumentNumber,
+                m => m.MovementType.ToString(),
+                m => m.DocumentStatus?.SourceBilling ?? SAFTPTSourceBilling.P,
+                m => m.Hash,
+                m => m.MovementDate,
+                m => m.SystemEntryDate,
+                m => m.DocumentTotals?.GrossTotal ?? 0m,
+                m => m.Pk,
+                typeof(SourceDocumentsMovementOfGoodsStockMovement),
+                rsaCryptokey,
+                toHash,
+                countStats);
+        }
+
+        if (auditFile.SourceDocuments?.WorkingDocuments?.WorkDocument != null)
+        {
+            ValidateSeriesHashes(
+                auditFile.SourceDocuments.WorkingDocuments.WorkDocument,
+                d => d.DocumentNumber,
+                d => d.WorkType.ToString(),
+                d => d.DocumentStatus?.SourceBilling ?? SAFTPTSourceBilling.P,
+                d => d.Hash,
+                d => d.WorkDate,
+                d => d.SystemEntryDate,
+                d => d.DocumentTotals?.GrossTotal ?? 0m,
+                d => d.Pk,
+                typeof(SourceDocumentsWorkingDocumentsWorkDocument),
+                rsaCryptokey,
+                toHash,
+                countStats);
+        }
+    }
+
+    private void ValidateSeriesHashes<TDoc>(
+        TDoc[] docs,
+        Func<TDoc, string> getDocNo,
+        Func<TDoc, string> getDocType,
+        Func<TDoc, SAFTPTSourceBilling> getSourceBilling,
+        Func<TDoc, string> getHash,
+        Func<TDoc, DateTime> getDocDate,
+        Func<TDoc, DateTime> getSystemEntryDate,
+        Func<TDoc, decimal> getGrossTotal,
+        Func<TDoc, string> getPk,
+        Type docErrorType,
+        RSA rsaCryptokey,
+        StringBuilder toHash,
+        bool countStats)
+    {
+        var parsedGroups = docs
+            .Select(d =>
+            {
+                string docNo = getDocNo(d);
+                bool ok = Validations.TryParseDocumentNumber(docNo, out string parsedType, out string series, out int number);
+                return (Doc: d, DocNo: docNo, Type: ok ? parsedType : getDocType(d), Series: series ?? string.Empty, Number: number, Parsed: ok);
+            })
+            .Where(x => x.Parsed)
+            .GroupBy(x => (x.Type, x.Series));
+
+        foreach (var group in parsedGroups)
+        {
+            var ordered = group.OrderBy(x => x.Number).ToArray();
+            for (int i = 0; i < ordered.Length; i++)
+            {
+                var current = ordered[i];
+                if (getSourceBilling(current.Doc) != SAFTPTSourceBilling.P)
+                    continue;
+
+                string hashAnterior;
+                if (current.Number == 1)
+                {
+                    hashAnterior = string.Empty;
+                }
+                else if (i > 0 && ordered[i - 1].Number == current.Number - 1)
+                {
+                    hashAnterior = getHash(ordered[i - 1].Doc) ?? string.Empty;
+                }
+                else
+                {
+                    // Documento anterior em falta (ex.: SAF-T parcial) -> não é possível validar a cadeia a partir daqui.
+                    continue;
+                }
+
+                string docHash = getHash(current.Doc);
+                if (string.IsNullOrEmpty(docHash))
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"A assinatura do documento {current.DocNo} não existe.",
+                        Field = "Hash",
+                        FileID = current.DocNo,
+                        Value = current.DocNo,
+                        TypeofError = countStats ? typeof(HashResults) : docErrorType,
+                        UID = getPk(current.Doc)
+                    });
+                    if (countStats) SaftHashValidationErrorNumber++;
+                    continue;
+                }
+
+                SolRiaBuildHash(toHash, getDocDate(current.Doc), getSystemEntryDate(current.Doc), current.DocNo, getGrossTotal(current.Doc), hashAnterior);
+
+                byte[] stringToHashBuffer = Encoding.UTF8.GetBytes(toHash.ToString());
+                byte[] hashBuffer;
+                try
+                {
+                    hashBuffer = Convert.FromBase64String(docHash);
+                }
+                catch (FormatException)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"A assinatura do documento {current.DocNo} não está em formato Base64 válido.",
+                        Field = "Hash",
+                        FileID = current.DocNo,
+                        Value = current.DocNo,
+                        TypeofError = countStats ? typeof(HashResults) : docErrorType,
+                        UID = getPk(current.Doc)
+                    });
+                    if (countStats) SaftHashValidationErrorNumber++;
+                    continue;
+                }
+
+                bool isHashCorrect = rsaCryptokey.VerifyData(stringToHashBuffer, hashBuffer, HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
+                if (!isHashCorrect)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"A assinatura do documento {current.DocNo} é inválida.",
+                        Field = "Hash",
+                        FileID = current.DocNo,
+                        Value = current.DocNo,
+                        TypeofError = countStats ? typeof(HashResults) : docErrorType,
+                        UID = getPk(current.Doc)
+                    });
+                    if (countStats) SaftHashValidationErrorNumber++;
+                }
+                else if (countStats)
+                {
+                    SaftHashValidationNumber++;
+                }
+            }
+        }
     }
 
     private static void SolRiaBuildHash(StringBuilder toHash, DateTime documentDate, DateTime systemEntryDate, string documentNo, decimal documentTotal, string hashAnterior)
@@ -436,28 +777,6 @@ public class SaftValidator : ISaftValidator
             , documentTotal
             , hashAnterior);
     }
-
-    private bool SolRiaIsHashValid(string generatedHash, string fileHash, RSACryptoServiceProvider rsaCryptokey, object hasher, string documentNo)
-    {
-        byte[] stringToHashBuffer = Encoding.UTF8.GetBytes(generatedHash);
-        byte[] hashBuffer = Convert.FromBase64String(fileHash);
-
-        //verifi the hash with the public key
-        bool isHashCorrect = rsaCryptokey.VerifyData(stringToHashBuffer, hasher, hashBuffer);
-
-        //add error message if the document hash is incorrect
-        if (isHashCorrect == false)
-        {
-            AddError(new ValidationError { Description = string.Format("Erro dados: A assinatura do documento {0} é inválida.", documentNo) });
-
-            SaftHashValidationErrorNumber++;
-            return false;
-        }
-
-        SaftHashValidationNumber++;
-        return true;
-    }
-
 
     /// <summary>
     /// Validate the hashes in the file for the sales invoices
@@ -532,123 +851,96 @@ public class SaftValidator : ISaftValidator
 
     #region metodos privados
 
-    /// <summary>
-    /// Generate the hash filed for the sales invoices, base in a AuditFile object, the hash will be stored in HashTest field.
-    /// </summary>
     void GenerateHash(AuditFile saftfile)
     {
-        if (saftfile == null || saftfile.SourceDocuments == null || saftfile.SourceDocuments.SalesInvoices == null || saftfile.SourceDocuments.SalesInvoices.Invoice == null)
+        if (saftfile?.SourceDocuments?.SalesInvoices?.Invoice == null)
             return;
 
-        object hasher = SHA1.Create();
-
-        using var rsaCryptokey = new RSACryptoServiceProvider(1024);
+        using var rsaCryptokey = RSA.Create();
         rsaCryptokey.FromXmlString(GetRSAPrivateKey());
+        var toHash = new StringBuilder();
 
-        StringBuilder toHash = new StringBuilder();
+        var groups = saftfile.SourceDocuments.SalesInvoices.Invoice
+            .Select(i => (Doc: i, Ok: Validations.TryParseDocumentNumber(i.InvoiceNo, out string t, out string s, out int n), Type: t, Series: s, Number: n))
+            .Where(x => x.Ok)
+            .GroupBy(x => (x.Type, x.Series));
 
-        var invoices =
-            (from i in saftfile.SourceDocuments.SalesInvoices.Invoice
-             orderby i.InvoiceNo
-             select i).ToArray();
-
-        for (int i = 0; i < invoices.Length; i++)
+        foreach (var group in groups)
         {
-            var invoice = invoices[i];
+            var ordered = group.OrderBy(x => x.Number).ToArray();
+            for (int i = 0; i < ordered.Length; i++)
+            {
+                var current = ordered[i];
+                bool usaHashAnterior = i > 0 && ordered[i - 1].Number == current.Number - 1;
+                FormatStringToHash(ref toHash, current.Doc, usaHashAnterior ? ordered[i - 1].Doc.Hash : string.Empty);
 
-            bool usaHashAnterior = true;
-            if (i == 0 || invoice.InvoiceType != invoices[i - 1].InvoiceType || Convert.ToInt32(invoice.InvoiceNo.Split('/')[1]) != Convert.ToInt32(invoices[i - 1].InvoiceNo.Split('/')[1]) + 1)
-                usaHashAnterior = false;
-
-            FormatStringToHash(ref toHash, invoice, usaHashAnterior ? invoices[i - 1].Hash : "");
-
-            byte[] stringToHashBuffer = Encoding.UTF8.GetBytes(toHash.ToString());
-            byte[] r = rsaCryptokey.SignData(stringToHashBuffer, hasher);
-
-            invoice.HashTest = Convert.ToBase64String(r);
+                byte[] stringToHashBuffer = Encoding.UTF8.GetBytes(toHash.ToString());
+                byte[] r = rsaCryptokey.SignData(stringToHashBuffer, HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
+                current.Doc.HashTest = Convert.ToBase64String(r);
+            }
         }
     }
 
-    /// <summary>
-    /// Generate the hash filed for the working documents, base in a AuditFile object, the hash will be stored in HashTest field.
-    /// </summary>
     void GenerateHashWD(AuditFile saftfile)
     {
-        if (saftfile == null || saftfile.SourceDocuments == null || saftfile.SourceDocuments.WorkingDocuments == null || saftfile.SourceDocuments.WorkingDocuments.WorkDocument == null)
+        if (saftfile?.SourceDocuments?.WorkingDocuments?.WorkDocument == null)
             return;
 
-        object hasher = SHA1.Create();
-
-        using var rsaCryptokey = new RSACryptoServiceProvider(1024);
+        using var rsaCryptokey = RSA.Create();
         rsaCryptokey.FromXmlString(GetRSAPrivateKey());
+        var toHash = new StringBuilder();
 
-        StringBuilder toHash = new StringBuilder();
+        var groups = saftfile.SourceDocuments.WorkingDocuments.WorkDocument
+            .Select(i => (Doc: i, Ok: Validations.TryParseDocumentNumber(i.DocumentNumber, out string t, out string s, out int n), Type: t, Series: s, Number: n))
+            .Where(x => x.Ok)
+            .GroupBy(x => (x.Type, x.Series));
 
-        var workingDocs =
-           (from i in saftfile.SourceDocuments.WorkingDocuments.WorkDocument
-            orderby i.DocumentNumber
-            select i).ToArray();
-
-        for (int i = 0; i < workingDocs.Length; i++)
+        foreach (var group in groups)
         {
-            var doc = workingDocs[i];
+            var ordered = group.OrderBy(x => x.Number).ToArray();
+            for (int i = 0; i < ordered.Length; i++)
+            {
+                var current = ordered[i];
+                bool usaHashAnterior = i > 0 && ordered[i - 1].Number == current.Number - 1;
+                FormatStringToHash(ref toHash, current.Doc, usaHashAnterior ? ordered[i - 1].Doc.Hash : string.Empty);
 
-            bool usaHashAnterior = true;
-            if (i == 0 || doc.WorkType != workingDocs[i - 1].WorkType || Convert.ToInt32(doc.DocumentNumber.Split('/')[1]) != Convert.ToInt32(workingDocs[i - 1].DocumentNumber.Split('/')[1]) + 1)
-                usaHashAnterior = false;
-
-            FormatStringToHash(ref toHash, doc, usaHashAnterior ? workingDocs[i - 1].Hash : "");
-
-            byte[] stringToHashBuffer = Encoding.UTF8.GetBytes(toHash.ToString());
-            byte[] r = rsaCryptokey.SignData(stringToHashBuffer, hasher);
-
-            doc.HashTest = Convert.ToBase64String(r);
+                byte[] stringToHashBuffer = Encoding.UTF8.GetBytes(toHash.ToString());
+                byte[] r = rsaCryptokey.SignData(stringToHashBuffer, HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
+                current.Doc.HashTest = Convert.ToBase64String(r);
+            }
         }
     }
 
-    /// <summary>
-    /// Generate the hash filed for the Movement of goods, base in a AuditFile object, the hash will be stored in HashTest field.
-    /// </summary>
     void GenerateHashMG(AuditFile saftfile)
     {
-        if (saftfile == null || saftfile.SourceDocuments == null || saftfile.SourceDocuments.MovementOfGoods == null || saftfile.SourceDocuments.MovementOfGoods.StockMovement == null)
+        if (saftfile?.SourceDocuments?.MovementOfGoods?.StockMovement == null)
             return;
 
-        object hasher = SHA1.Create();
-
-        using var rsaCryptokey = new RSACryptoServiceProvider(1024);
+        using var rsaCryptokey = RSA.Create();
         rsaCryptokey.FromXmlString(GetRSAPrivateKey());
+        var toHash = new StringBuilder();
 
-        StringBuilder toHash = new StringBuilder();
+        var groups = saftfile.SourceDocuments.MovementOfGoods.StockMovement
+            .Select(i => (Doc: i, Ok: Validations.TryParseDocumentNumber(i.DocumentNumber, out string t, out string s, out int n), Type: t, Series: s, Number: n))
+            .Where(x => x.Ok)
+            .GroupBy(x => (x.Type, x.Series));
 
-        var movements =
-            (from i in saftfile.SourceDocuments.MovementOfGoods.StockMovement
-             orderby i.DocumentNumber
-             select i).ToArray();
-
-        for (int i = 0; i < movements.Length; i++)
+        foreach (var group in groups)
         {
-            var doc = movements[i];
+            var ordered = group.OrderBy(x => x.Number).ToArray();
+            for (int i = 0; i < ordered.Length; i++)
+            {
+                var current = ordered[i];
+                bool usaHashAnterior = i > 0 && ordered[i - 1].Number == current.Number - 1;
+                FormatStringToHash(ref toHash, current.Doc, usaHashAnterior ? ordered[i - 1].Doc.Hash : string.Empty);
 
-            bool usaHashAnterior = true;
-            if (i == 0 || doc.MovementType != movements[i - 1].MovementType || Convert.ToInt32(doc.DocumentNumber.Split('/')[1]) != Convert.ToInt32(movements[i - 1].DocumentNumber.Split('/')[1]) + 1)
-                usaHashAnterior = false;
-
-            FormatStringToHash(ref toHash, doc, usaHashAnterior ? movements[i - 1].Hash : "");
-
-            byte[] stringToHashBuffer = Encoding.UTF8.GetBytes(toHash.ToString());
-            byte[] r = rsaCryptokey.SignData(stringToHashBuffer, hasher);
-
-            doc.HashTest = Convert.ToBase64String(r);
+                byte[] stringToHashBuffer = Encoding.UTF8.GetBytes(toHash.ToString());
+                byte[] r = rsaCryptokey.SignData(stringToHashBuffer, HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
+                current.Doc.HashTest = Convert.ToBase64String(r);
+            }
         }
     }
 
-    /// <summary>
-    /// Format the correct invoice fields to the spesification of the hash field.
-    /// </summary>
-    /// <param name="toHash">StringBuilder that will contain the formated string.</param>
-    /// <param name="invoice">The invoice.</param>
-    /// <param name="hashAnterior">The string hash generated of the last invoice.</param>
     void FormatStringToHash(ref StringBuilder toHash, SourceDocumentsSalesInvoicesInvoice invoice, string hashAnterior)
     {
         toHash.Clear();
@@ -683,7 +975,6 @@ public class SaftValidator : ISaftValidator
     /// <summary>
     /// Reads the public key file and returns the RSA public key
     /// </summary>
-    /// <returns></returns>
     public string GetRSAPublicKey()
     {
         if (File.Exists(PublicKeyFileName))
@@ -692,25 +983,19 @@ public class SaftValidator : ISaftValidator
 
             if (publickey.StartsWith(RSAKeys.PEM_PUB_HEADER) && publickey.EndsWith(RSAKeys.PEM_PUB_FOOTER))
             {
-                //this is a pem file
                 var rsa = new RSAKeys();
                 rsa.DecodePEMKey(publickey);
-
                 return rsa.PublicKey;
             }
-            else
-            {
-                return publickey;
-            }
+            return publickey;
         }
 
         return string.Empty;
     }
 
     /// <summary>
-    /// Reads the public key file and returns the RSA private key
+    /// Reads the private key file and returns the RSA private key
     /// </summary>
-    /// <returns></returns>
     public string GetRSAPrivateKey()
     {
         if (File.Exists(PrivateKeyFileName))
@@ -719,16 +1004,11 @@ public class SaftValidator : ISaftValidator
 
             if (privatekey.StartsWith(RSAKeys.PEM_PRIV_HEADER) && privatekey.EndsWith(RSAKeys.PEM_PRIV_FOOTER))
             {
-                //this is a pem file
                 var rsa = new RSAKeys();
                 rsa.DecodePEMKey(privatekey);
-
                 return rsa.PrivateKey;
             }
-            else
-            {
-                return privatekey;
-            }
+            return privatekey;
         }
 
         return string.Empty;
@@ -736,135 +1016,107 @@ public class SaftValidator : ISaftValidator
 
     void ValidateSaftHash(AuditFile auditFile)
     {
-        if (!File.Exists(SaftFileName) || auditFile == null || auditFile.SourceDocuments == null || auditFile.SourceDocuments.SalesInvoices == null || auditFile.SourceDocuments.SalesInvoices.Invoice == null)
+        if (auditFile?.SourceDocuments?.SalesInvoices?.Invoice == null)
             return;
 
-        object hasher = SHA1.Create();
-
-        using var rsaCryptokey = new RSACryptoServiceProvider(1024);
-        StringBuilder toHash = new StringBuilder();
-
+        using var rsaCryptokey = RSA.Create();
         try
         {
             rsaCryptokey.FromXmlString(GetRSAPublicKey());
         }
         catch (Exception ex)
         {
-            AddError(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message) });
+            AddError(new ValidationError { Description = $"Não foi possível ler o ficheiro com a chave pública. {ex.Message}", Field = "Hash", TypeofError = typeof(HashResults) });
             return;
         }
 
-        var invoices =
-            (from i in auditFile.SourceDocuments.SalesInvoices.Invoice
-             orderby i.InvoiceNo
-             select i).ToArray();
-
-        for (int i = 0; i < invoices.Length; i++)
-        {
-            var invoice = invoices[i];
-
-            bool usaHashAnterior = true;
-            if (i == 0 || invoice.InvoiceType != invoices[i - 1].InvoiceType || Convert.ToInt32(invoice.InvoiceNo.Split('/')[1]) != Convert.ToInt32(invoices[i - 1].InvoiceNo.Split('/')[1]) + 1)
-                usaHashAnterior = false;
-
-            FormatStringToHash(ref toHash, invoice, usaHashAnterior ? auditFile.SourceDocuments.SalesInvoices.Invoice[i - 1].Hash : "");
-
-            byte[] stringToHashBuffer = Encoding.UTF8.GetBytes(toHash.ToString());
-            byte[] hashBuffer = Convert.FromBase64String(invoice.Hash);
-
-            if (rsaCryptokey.VerifyData(stringToHashBuffer, hasher, hashBuffer) == false)
-                AddError(new ValidationError { Value = invoice.InvoiceNo, TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Field = "Hash", Description = string.Format("A assinatura do documento {0} é inválida.{1}", invoice.InvoiceNo, Environment.NewLine) });
-        }
+        ValidateSeriesHashes(
+            auditFile.SourceDocuments.SalesInvoices.Invoice,
+            i => i.InvoiceNo,
+            i => i.InvoiceType.ToString(),
+            i => i.DocumentStatus?.SourceBilling ?? SAFTPTSourceBilling.P,
+            i => i.Hash,
+            i => i.InvoiceDate,
+            i => i.SystemEntryDate,
+            i => i.DocumentTotals?.GrossTotal ?? 0m,
+            i => i.Pk,
+            typeof(SourceDocumentsSalesInvoicesInvoice),
+            rsaCryptokey,
+            new StringBuilder(),
+            countStats: false);
     }
+
     void ValidateSaftHashWD(AuditFile auditFile)
     {
-        if (!File.Exists(SaftFileName) || auditFile == null || auditFile.SourceDocuments == null || auditFile.SourceDocuments.WorkingDocuments == null || auditFile.SourceDocuments.WorkingDocuments.WorkDocument == null)
+        if (auditFile?.SourceDocuments?.WorkingDocuments?.WorkDocument == null)
             return;
 
-        object hasher = SHA1.Create();
-
-        using var rsaCryptokey = new RSACryptoServiceProvider(1024);
-        StringBuilder toHash = new StringBuilder();
-
+        using var rsaCryptokey = RSA.Create();
         try
         {
             rsaCryptokey.FromXmlString(GetRSAPublicKey());
         }
         catch (Exception ex)
         {
-            AddError(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message) });
+            AddError(new ValidationError { Description = $"Não foi possível ler o ficheiro com a chave pública. {ex.Message}", Field = "Hash", TypeofError = typeof(HashResults) });
             return;
         }
 
-        var workingDocs =
-            (from i in auditFile.SourceDocuments.WorkingDocuments.WorkDocument
-             orderby i.DocumentNumber
-             select i).ToArray();
-
-        for (int i = 0; i < workingDocs.Length; i++)
-        {
-            var doc = workingDocs[i];
-
-            bool usaHashAnterior = true;
-            if (i == 0 || doc.WorkType != workingDocs[i - 1].WorkType || Convert.ToInt32(doc.DocumentNumber.Split('/')[1]) != Convert.ToInt32(workingDocs[i - 1].DocumentNumber.Split('/')[1]) + 1)
-                usaHashAnterior = false;
-
-            FormatStringToHash(ref toHash, doc, usaHashAnterior ? workingDocs[i - 1].Hash : "");
-
-            byte[] stringToHashBuffer = Encoding.UTF8.GetBytes(toHash.ToString());
-            byte[] hashBuffer = Convert.FromBase64String(doc.Hash);
-
-            if (rsaCryptokey.VerifyData(stringToHashBuffer, hasher, hashBuffer) == false)
-                AddError(new ValidationError { Value = doc.DocumentNumber, TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Field = "Hash", Description = string.Format("A assinatura do documento {0} é inválida.{1}", doc.DocumentNumber, Environment.NewLine) });
-        }
+        ValidateSeriesHashes(
+            auditFile.SourceDocuments.WorkingDocuments.WorkDocument,
+            d => d.DocumentNumber,
+            d => d.WorkType.ToString(),
+            d => d.DocumentStatus?.SourceBilling ?? SAFTPTSourceBilling.P,
+            d => d.Hash,
+            d => d.WorkDate,
+            d => d.SystemEntryDate,
+            d => d.DocumentTotals?.GrossTotal ?? 0m,
+            d => d.Pk,
+            typeof(SourceDocumentsWorkingDocumentsWorkDocument),
+            rsaCryptokey,
+            new StringBuilder(),
+            countStats: false);
     }
+
     void ValidateSaftHashMG(AuditFile auditFile)
     {
-        if (!File.Exists(SaftFileName) || auditFile == null || auditFile.SourceDocuments == null || auditFile.SourceDocuments.MovementOfGoods == null || auditFile.SourceDocuments.MovementOfGoods.StockMovement == null)
+        if (auditFile?.SourceDocuments?.MovementOfGoods?.StockMovement == null)
             return;
 
-        object hasher = SHA1.Create();
-
-        using var rsaCryptokey = new RSACryptoServiceProvider(1024);
-        StringBuilder toHash = new StringBuilder();
-
+        using var rsaCryptokey = RSA.Create();
         try
         {
             rsaCryptokey.FromXmlString(GetRSAPublicKey());
         }
         catch (Exception ex)
         {
-            AddError(new ValidationError { Description = string.Format("Não foi possível ler o ficheiro com a chave pública. {0}", ex.Message) });
+            AddError(new ValidationError { Description = $"Não foi possível ler o ficheiro com a chave pública. {ex.Message}", Field = "Hash", TypeofError = typeof(HashResults) });
             return;
         }
 
-        var movements =
-            (from i in auditFile.SourceDocuments.MovementOfGoods.StockMovement
-             orderby i.DocumentNumber
-             select i).ToArray();
-
-        for (int i = 0; i < movements.Length; i++)
-        {
-            var doc = movements[i];
-
-            bool usaHashAnterior = true;
-            if (i == 0 || doc.MovementType != movements[i - 1].MovementType || Convert.ToInt32(doc.DocumentNumber.Split('/')[1]) != Convert.ToInt32(movements[i - 1].DocumentNumber.Split('/')[1]) + 1)
-                usaHashAnterior = false;
-
-            FormatStringToHash(ref toHash, doc, usaHashAnterior ? movements[i - 1].Hash : "");
-
-            byte[] stringToHashBuffer = Encoding.UTF8.GetBytes(toHash.ToString());
-            byte[] hashBuffer = Convert.FromBase64String(doc.Hash);
-
-            if (rsaCryptokey.VerifyData(stringToHashBuffer, hasher, hashBuffer) == false)
-                AddError(new ValidationError { Value = doc.DocumentNumber, TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovement), Field = "Hash", Description = string.Format("A assinatura do documento {0} é inválida.{1}", doc.DocumentNumber, Environment.NewLine) });
-        }
+        ValidateSeriesHashes(
+            auditFile.SourceDocuments.MovementOfGoods.StockMovement,
+            m => m.DocumentNumber,
+            m => m.MovementType.ToString(),
+            m => m.DocumentStatus?.SourceBilling ?? SAFTPTSourceBilling.P,
+            m => m.Hash,
+            m => m.MovementDate,
+            m => m.SystemEntryDate,
+            m => m.DocumentTotals?.GrossTotal ?? 0m,
+            m => m.Pk,
+            typeof(SourceDocumentsMovementOfGoodsStockMovement),
+            rsaCryptokey,
+            new StringBuilder(),
+            countStats: false);
     }
 
-    void ValidaEstruturaXSD(string fileversion)
+    internal void ValidaEstruturaXSD(string fileversion)
     {
         try
         {
+            if (string.IsNullOrWhiteSpace(fileversion))
+                fileversion = SaftFileVersion.V10401;
+
             string schemaName = fileversion switch
             {
                 SaftFileVersion.V10401 => "SAFTPT1.04_01.xsd",
@@ -875,46 +1127,86 @@ public class SaftValidator : ISaftValidator
             };
 
             if (string.IsNullOrEmpty(schemaName))
-                return;
-
-            string schema_filename = Path.Combine(AppContext.BaseDirectory, "Schemas", schemaName);
-            if (!File.Exists(schema_filename))
             {
-                schema_filename = Path.Combine(Environment.CurrentDirectory, "Schemas", schemaName);
-            }
-
-            if (!File.Exists(schema_filename))
-            {
-                AddError(new ValidationError { Description = $"Esquema XSD não encontrado: {schemaName}" });
+                AddError(new ValidationError
+                {
+                    Description = $"Versão de esquema XSD desconhecida: {fileversion}",
+                    Field = "Schema",
+                    Value = fileversion,
+                    TypeofError = typeof(SchemaResults),
+                    ValidationType = ValidationErrorType.SCHEMA
+                });
                 return;
             }
 
-            XmlReaderSettings settings = new XmlReaderSettings();
-            settings.Schemas.Add(null, schema_filename);
-            settings.ValidationType = ValidationType.Schema;
+            string schemaFilename = ResolveSchemaPath("Schemas", schemaName);
+            if (string.IsNullOrEmpty(schemaFilename))
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Esquema XSD não encontrado: {schemaName}",
+                    Field = "Schema",
+                    TypeofError = typeof(SchemaResults),
+                    ValidationType = ValidationErrorType.SCHEMA
+                });
+                return;
+            }
 
-            ValidationEventHandler eventHandler = new ValidationEventHandler(ValidationEventHandler);
-
-            XmlReader reader = XmlReader.Create(SaftFileName, settings);
-            XmlDocument document = new XmlDocument();
-            document.Load(reader);
-            // the following call to Validate succeeds.
-            document.Validate(eventHandler);
+            ValidateXmlAgainstSchema(SaftFileName, schemaFilename);
         }
         catch (Exception error)
         {
-            // XML Validation failed
-            AddError(new ValidationError { Description = string.Format("Mensagem de erro: {0}", error.Message) });
+            AddError(new ValidationError
+            {
+                Description = $"Mensagem de erro: {error.Message}",
+                Field = "Schema",
+                TypeofError = typeof(SchemaResults),
+                ValidationType = ValidationErrorType.SCHEMA
+            });
         }
+    }
+
+    private static string ResolveSchemaPath(string folder, string schemaName)
+    {
+        string path = Path.Combine(AppContext.BaseDirectory, folder, schemaName);
+        if (File.Exists(path)) return path;
+
+        path = Path.Combine(Environment.CurrentDirectory, folder, schemaName);
+        if (File.Exists(path)) return path;
+
+        return null;
+    }
+
+    private void ValidateXmlAgainstSchema(string xmlFilename, string schemaFilename)
+    {
+        var settings = new XmlReaderSettings
+        {
+            ValidationType = ValidationType.Schema,
+            ValidationFlags = XmlSchemaValidationFlags.ProcessIdentityConstraints | XmlSchemaValidationFlags.ReportValidationWarnings
+        };
+        settings.Schemas.Add(null, schemaFilename);
+        settings.ValidationEventHandler += ValidationEventHandler;
+
+        using var reader = XmlReader.Create(xmlFilename, settings);
+        while (reader.Read()) { }
     }
 
     void ValidationEventHandler(object sender, ValidationEventArgs e)
     {
-        AddError(new ValidationError { Description = e.Message, ValidationType = ValidationErrorType.SCHEMA });
+        string pos = e.Exception != null ? $" (Linha {e.Exception.LineNumber}, Coluna {e.Exception.LinePosition})" : string.Empty;
+        AddError(new ValidationError
+        {
+            Description = $"{e.Message}{pos}",
+            Field = "Schema",
+            TypeofError = typeof(SchemaResults),
+            ValidationType = e.Severity == XmlSeverityType.Warning ? ValidationErrorType.WARNING : ValidationErrorType.SCHEMA
+        });
     }
 
-    void ValidateHeader(Header header)
+    internal void ValidateHeader(Header header)
     {
+        if (header == null) return;
+
         AddError(header.ValidateTaxRegistrationNumber());
         AddError(header.ValidateAuditFileVersion());
         AddError(header.ValidateBusinessName());
@@ -930,6 +1222,7 @@ public class SaftValidator : ISaftValidator
         AddError(header.ValidateCompanyName());
         AddError(header.ValidateCurrencyCode());
         AddError(header.ValidateDateCreated());
+        AddError(header.ValidateStartDate());
         AddError(header.ValidateEndDate());
         AddError(header.ValidateFax());
         AddError(header.ValidateFiscalYear());
@@ -944,19 +1237,28 @@ public class SaftValidator : ISaftValidator
         AddError(header.ValidateWebsite());
     }
 
-    void ValidateCustomers(Customer[] customers)
+    internal void ValidateCustomers(Customer[] customers)
     {
         if (customers is null || customers.Length == 0) return;
 
         var duplicated = from p in customers
+                         where !string.IsNullOrEmpty(p.CustomerID)
                          group p by p.CustomerID into ci
                          where ci.Count() > 1
                          select new { codigo = ci.Key, quantidade = ci.Count() };
 
         foreach (var d in duplicated)
         {
-            string pk = (from p in customers where p.CustomerID.Contains(d.codigo, StringComparison.OrdinalIgnoreCase) select p.Pk).FirstOrDefault();
-            AddError(new ValidationError { Value = d.codigo, Field = "CustomerID", Description = string.Format("O código {0} está repetido {1} vezes.", d.codigo, d.quantidade), TypeofError = typeof(Customer), UID = pk });
+            string pk = customers.FirstOrDefault(p => string.Equals(p.CustomerID, d.codigo, StringComparison.OrdinalIgnoreCase))?.Pk;
+            AddError(new ValidationError
+            {
+                Value = d.codigo,
+                FileID = d.codigo,
+                Field = "Customer/CustomerID",
+                Description = $"O código {d.codigo} está repetido {d.quantidade} vezes.",
+                TypeofError = typeof(Customer),
+                UID = pk
+            });
         }
 
         foreach (var customer in customers)
@@ -973,23 +1275,46 @@ public class SaftValidator : ISaftValidator
             AddError(customer.ValidateWebsite());
             AddError(customer.ValidateBillingAddress());
             AddError(customer.ValidateShipToAddress());
+
+            if (customer.CustomerTaxID == "999999990" && !string.Equals(customer.CompanyName, "Consumidor final", StringComparison.OrdinalIgnoreCase))
+            {
+                AddError(new ValidationError
+                {
+                    Description = "Cliente com NIF genérico 999999990 deve ter CompanyName igual a «Consumidor final».",
+                    Field = "Customer/CompanyName",
+                    FileID = customer.CustomerID,
+                    Value = customer.CompanyName,
+                    TypeofError = typeof(Customer),
+                    ValidationType = ValidationErrorType.WARNING,
+                    UID = customer.Pk
+                });
+            }
         }
     }
 
-    void ValidateProducts(Product[] products)
+    internal void ValidateProducts(Product[] products)
     {
         if (products is null || products.Length == 0) return;
 
         var duplicated = from p in products
+                         where !string.IsNullOrEmpty(p.ProductCode)
                          group p by p.ProductCode into pc
                          where pc.Count() > 1
                          select new { codigo = pc.Key, quantidade = pc.Count() };
 
         foreach (var d in duplicated)
         {
-            string pk = (from p in products where string.IsNullOrWhiteSpace(p.ProductCode) == false && p.ProductCode.Contains(d.codigo, StringComparison.OrdinalIgnoreCase) select p.Pk).FirstOrDefault();
+            string pk = products.FirstOrDefault(p => string.Equals(p.ProductCode, d.codigo, StringComparison.OrdinalIgnoreCase))?.Pk;
 
-            AddError(new ValidationError { Value = d.codigo, Field = "ProductCode", Description = string.Format("O código {0} está repetido {1} vezes.", d.codigo, d.quantidade), TypeofError = typeof(Product), UID = pk });
+            AddError(new ValidationError
+            {
+                Value = d.codigo,
+                FileID = d.codigo,
+                Field = "Product/ProductCode",
+                Description = $"O código {d.codigo} está repetido {d.quantidade} vezes.",
+                TypeofError = typeof(Product),
+                UID = pk
+            });
         }
 
         foreach (var product in products)
@@ -1001,30 +1326,59 @@ public class SaftValidator : ISaftValidator
         }
     }
 
-    void ValidateTax(TaxTableEntry[] taxs)
+    internal void ValidateTax(TaxTableEntry[] taxs)
     {
         if (taxs is null || taxs.Length == 0) return;
 
+        var seen = new HashSet<(TaxType, string, string, decimal?, decimal?)>();
+
         foreach (var tax in taxs)
         {
+            AddError(tax.ValidateTaxType());
             AddError(tax.ValidateTaxCode());
             AddError(tax.ValidateTaxCountryRegion());
+            AddError(tax.ValidateDescription());
+            AddError(tax.ValidateTaxValue());
+
+            var key = (tax.TaxType, tax.TaxCountryRegion ?? string.Empty, tax.TaxCode ?? string.Empty, tax.TaxPercentage, tax.TaxAmount);
+            if (!seen.Add(key))
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Entrada duplicada na tabela de impostos ({tax.TaxType}/{tax.TaxCountryRegion}/{tax.TaxCode}).",
+                    Field = "TaxTableEntry",
+                    FileID = tax.TaxCode,
+                    Value = tax.TaxCode,
+                    TypeofError = typeof(TaxTableEntry),
+                    ValidationType = ValidationErrorType.WARNING,
+                    UID = tax.Pk
+                });
+            }
         }
     }
 
-    void ValidateSupplier(Supplier[] suppliers)
+    internal void ValidateSupplier(Supplier[] suppliers)
     {
         if (suppliers is null || suppliers.Length == 0) return;
 
         var duplicated = from p in suppliers
+                         where !string.IsNullOrEmpty(p.SupplierID)
                          group p by p.SupplierID into ci
                          where ci.Count() > 1
                          select new { codigo = ci.Key, quantidade = ci.Count() };
 
         foreach (var d in duplicated)
         {
-            string pk = (from p in suppliers where p.SupplierID.Contains(d.codigo, StringComparison.OrdinalIgnoreCase) select p.Pk).FirstOrDefault();
-            AddError(new ValidationError { Value = d.codigo, Field = "SupplierID", Description = string.Format("O código {0} está repetido {1} vezes.", d.codigo, d.quantidade), TypeofError = typeof(Supplier), UID = pk });
+            string pk = suppliers.FirstOrDefault(p => string.Equals(p.SupplierID, d.codigo, StringComparison.OrdinalIgnoreCase))?.Pk;
+            AddError(new ValidationError
+            {
+                Value = d.codigo,
+                FileID = d.codigo,
+                Field = "Supplier/SupplierID",
+                Description = $"O código {d.codigo} está repetido {d.quantidade} vezes.",
+                TypeofError = typeof(Supplier),
+                UID = pk
+            });
         }
 
         foreach (var supplier in suppliers)
@@ -1044,60 +1398,586 @@ public class SaftValidator : ISaftValidator
         }
     }
 
-    void ValidateWorkDocument(SourceDocumentsWorkingDocuments workDocuments)
+    internal void ValidateGeneralLedgerAccounts(GeneralLedgerAccounts glAccounts)
     {
-        int numberOfLines = workDocuments.WorkDocument.Length;
-        if (Convert.ToInt32(workDocuments.NumberOfEntries) != numberOfLines)
-            AddError(new ValidationError { Value = workDocuments.NumberOfEntries, Field = "WorkingDocuments", TypeofError = typeof(SourceDocumentsWorkingDocuments), Description = string.Format("Nº de registos incorrecto. Documento: {0}, esperado: {1}", workDocuments.NumberOfEntries, numberOfLines) });
+        if (glAccounts == null) return;
 
-        foreach (var workDocument in workDocuments.WorkDocument)
+        if (glAccounts.TaxonomyReference == TaxonomyReference.INVALIDO)
+        {
+            AddError(new ValidationError
+            {
+                Description = "Referência da taxonomia inválida no plano de contas.",
+                Field = "GeneralLedgerAccounts/TaxonomyReference",
+                Value = glAccounts.TaxonomyReference.ToString(),
+                TypeofError = typeof(GeneralLedgerAccounts),
+                UID = glAccounts.Pk
+            });
+        }
+
+        var accounts = glAccounts.Account ?? [];
+        var seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var acc in accounts)
+        {
+            if (string.IsNullOrEmpty(acc.AccountID) || acc.AccountID.Length < 2 || acc.AccountID.Length > 30)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Código de conta contabilística inválido ({acc.AccountID}).",
+                    Field = "GeneralLedgerAccounts/Account/AccountID",
+                    FileID = acc.AccountID,
+                    Value = acc.AccountID,
+                    TypeofError = typeof(GeneralLedgerAccountsAccount),
+                    UID = acc.Pk
+                });
+            }
+            else if (!seenIds.Add(acc.AccountID))
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Conta contabilística duplicada: {acc.AccountID}.",
+                    Field = "GeneralLedgerAccounts/Account/AccountID",
+                    FileID = acc.AccountID,
+                    Value = acc.AccountID,
+                    TypeofError = typeof(GeneralLedgerAccountsAccount),
+                    UID = acc.Pk
+                });
+            }
+
+            if (string.IsNullOrEmpty(acc.AccountDescription) || acc.AccountDescription.Length > 100)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Descrição da conta {acc.AccountID} inválida.",
+                    Field = "GeneralLedgerAccounts/Account/AccountDescription",
+                    FileID = acc.AccountID,
+                    Value = acc.AccountDescription,
+                    TypeofError = typeof(GeneralLedgerAccountsAccount),
+                    UID = acc.Pk
+                });
+            }
+
+            if (acc.GroupingCategory == GroupingCategory.INVALIDO)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Categoria de agrupamento inválida na conta {acc.AccountID}.",
+                    Field = "GeneralLedgerAccounts/Account/GroupingCategory",
+                    FileID = acc.AccountID,
+                    Value = acc.GroupingCategory.ToString(),
+                    TypeofError = typeof(GeneralLedgerAccountsAccount),
+                    UID = acc.Pk
+                });
+            }
+
+            if (acc.OpeningDebitBalance < 0 || acc.OpeningCreditBalance < 0 || acc.ClosingDebitBalance < 0 || acc.ClosingCreditBalance < 0)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Saldos negativos não permitidos na conta {acc.AccountID}.",
+                    Field = "GeneralLedgerAccounts/Account",
+                    FileID = acc.AccountID,
+                    TypeofError = typeof(GeneralLedgerAccountsAccount),
+                    UID = acc.Pk
+                });
+            }
+
+            if (!string.IsNullOrEmpty(acc.TaxonomyCode) && (!int.TryParse(acc.TaxonomyCode, out int taxCode) || taxCode < 0 || taxCode > 999))
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Código de taxonomia inválido na conta {acc.AccountID}: {acc.TaxonomyCode}.",
+                    Field = "GeneralLedgerAccounts/Account/TaxonomyCode",
+                    FileID = acc.AccountID,
+                    Value = acc.TaxonomyCode,
+                    TypeofError = typeof(GeneralLedgerAccountsAccount),
+                    UID = acc.Pk
+                });
+            }
+        }
+
+        // Equilíbrio de saldos nas contas de movimento (GM), ou de 1.º grau (GR) se não houver GM
+        var balanceAccounts = accounts.Where(a => a.GroupingCategory == GroupingCategory.GM).ToArray();
+        if (balanceAccounts.Length == 0)
+            balanceAccounts = accounts.Where(a => a.GroupingCategory == GroupingCategory.GR).ToArray();
+
+        if (balanceAccounts.Length > 0)
+        {
+            decimal openDebit = balanceAccounts.Sum(a => a.OpeningDebitBalance);
+            decimal openCredit = balanceAccounts.Sum(a => a.OpeningCreditBalance);
+            if (Math.Abs(openDebit - openCredit) > 0.01m)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Desequilíbrio nos saldos de abertura do plano de contas: Débito={openDebit:N2} <> Crédito={openCredit:N2}.",
+                    Field = "GeneralLedgerAccounts/OpeningBalance",
+                    Value = openDebit.ToString(CultureInfo.InvariantCulture),
+                    TypeofError = typeof(GeneralLedgerAccounts),
+                    UID = glAccounts.Pk
+                });
+            }
+
+            decimal closeDebit = balanceAccounts.Sum(a => a.ClosingDebitBalance);
+            decimal closeCredit = balanceAccounts.Sum(a => a.ClosingCreditBalance);
+            if (Math.Abs(closeDebit - closeCredit) > 0.01m)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Desequilíbrio nos saldos de fecho do plano de contas: Débito={closeDebit:N2} <> Crédito={closeCredit:N2}.",
+                    Field = "GeneralLedgerAccounts/ClosingBalance",
+                    Value = closeDebit.ToString(CultureInfo.InvariantCulture),
+                    TypeofError = typeof(GeneralLedgerAccounts),
+                    UID = glAccounts.Pk
+                });
+            }
+        }
+    }
+
+    internal void ValidateGeneralLedgerEntries(GeneralLedgerEntries gl, GeneralLedgerAccounts glAccounts = null)
+    {
+        if (gl == null) return;
+
+        var journals = gl.Journal ?? [];
+        int totalTransactions = journals.Sum(j => j.Transaction?.Length ?? 0);
+        if (!int.TryParse(gl.NumberOfEntries, out int declaredEntries) || declaredEntries != totalTransactions)
+        {
+            AddError(new ValidationError
+            {
+                Value = gl.NumberOfEntries,
+                Field = "GeneralLedgerEntries/NumberOfEntries",
+                TypeofError = typeof(GeneralLedgerEntries),
+                Description = $"Nº de registos contabilísticos incorrecto. valor: {gl.NumberOfEntries}, esperado: {totalTransactions}",
+                UID = gl.Pk
+            });
+        }
+
+        var validAccountIds = glAccounts?.Account != null
+            ? new HashSet<string>(glAccounts.Account.Where(a => !string.IsNullOrEmpty(a.AccountID)).Select(a => a.AccountID), StringComparer.OrdinalIgnoreCase)
+            : null;
+
+        var seenJournalIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var seenTransactionIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        decimal calcTotalDebit = 0m;
+        decimal calcTotalCredit = 0m;
+
+        foreach (var journal in journals)
+        {
+            if (string.IsNullOrEmpty(journal.JournalID) || journal.JournalID.Length > 30 || journal.JournalID.Contains(' '))
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Identificador de diário inválido ({journal.JournalID}).",
+                    Field = "GeneralLedgerEntries/Journal/JournalID",
+                    FileID = journal.JournalID,
+                    Value = journal.JournalID,
+                    TypeofError = typeof(GeneralLedgerEntriesJournal),
+                    UID = journal.Pk
+                });
+            }
+            else if (!seenJournalIds.Add(journal.JournalID))
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Diário duplicado: {journal.JournalID}.",
+                    Field = "GeneralLedgerEntries/Journal/JournalID",
+                    FileID = journal.JournalID,
+                    Value = journal.JournalID,
+                    TypeofError = typeof(GeneralLedgerEntriesJournal),
+                    UID = journal.Pk
+                });
+            }
+
+            if (string.IsNullOrEmpty(journal.Description) || journal.Description.Length > 200)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Descrição do diário {journal.JournalID} inválida.",
+                    Field = "GeneralLedgerEntries/Journal/Description",
+                    FileID = journal.JournalID,
+                    Value = journal.Description,
+                    TypeofError = typeof(GeneralLedgerEntriesJournal),
+                    UID = journal.Pk
+                });
+            }
+
+            foreach (var tx in journal.Transaction ?? [])
+            {
+                if (string.IsNullOrEmpty(tx.TransactionID) || tx.TransactionID.Length > 70)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"TransactionID inválido no diário {journal.JournalID}.",
+                        Field = "GeneralLedgerEntries/Journal/Transaction/TransactionID",
+                        FileID = tx.TransactionID,
+                        Value = tx.TransactionID,
+                        TypeofError = typeof(GeneralLedgerEntriesJournalTransaction),
+                        UID = tx.Pk
+                    });
+                }
+                else if (!seenTransactionIds.Add(tx.TransactionID))
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"TransactionID duplicado: {tx.TransactionID}.",
+                        Field = "GeneralLedgerEntries/Journal/Transaction/TransactionID",
+                        FileID = tx.TransactionID,
+                        Value = tx.TransactionID,
+                        TypeofError = typeof(GeneralLedgerEntriesJournalTransaction),
+                        UID = tx.Pk
+                    });
+                }
+
+                if (string.IsNullOrEmpty(tx.Period) || !int.TryParse(tx.Period, out int period) || period < 1 || period > 16)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"Período contabilístico inválido na transacção {tx.TransactionID}.",
+                        Field = "GeneralLedgerEntries/Journal/Transaction/Period",
+                        FileID = tx.TransactionID,
+                        Value = tx.Period,
+                        TypeofError = typeof(GeneralLedgerEntriesJournalTransaction),
+                        UID = tx.Pk
+                    });
+                }
+
+                if (tx.TransactionDate == DateTime.MinValue)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"Data de transacção inválida em {tx.TransactionID}.",
+                        Field = "GeneralLedgerEntries/Journal/Transaction/TransactionDate",
+                        FileID = tx.TransactionID,
+                        Value = tx.TransactionDate.ToString(),
+                        TypeofError = typeof(GeneralLedgerEntriesJournalTransaction),
+                        UID = tx.Pk
+                    });
+                }
+
+                if (tx.GLPostingDate == DateTime.MinValue)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"Data de movimento contabilístico (GLPostingDate) inválida em {tx.TransactionID}.",
+                        Field = "GeneralLedgerEntries/Journal/Transaction/GLPostingDate",
+                        FileID = tx.TransactionID,
+                        Value = tx.GLPostingDate.ToString(),
+                        TypeofError = typeof(GeneralLedgerEntriesJournalTransaction),
+                        UID = tx.Pk
+                    });
+                }
+
+                if (tx.TransactionType == TransactionType.INVALIDO)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"Tipo de movimento contabilístico inválido em {tx.TransactionID}.",
+                        Field = "GeneralLedgerEntries/Journal/Transaction/TransactionType",
+                        FileID = tx.TransactionID,
+                        Value = tx.TransactionType.ToString(),
+                        TypeofError = typeof(GeneralLedgerEntriesJournalTransaction),
+                        UID = tx.Pk
+                    });
+                }
+
+                var debitLines = tx.Lines?.DebitLines is { Length: > 0 } dl
+                    ? dl
+                    : (tx.Lines?.DebitLine != null ? [tx.Lines.DebitLine] : []);
+                var creditLines = tx.Lines?.CreditLines is { Length: > 0 } cl
+                    ? cl
+                    : (tx.Lines?.CreditLine != null ? [tx.Lines.CreditLine] : []);
+
+                decimal txDebit = 0m;
+                foreach (var d in debitLines)
+                {
+                    if (d.DebitAmount < 0)
+                    {
+                        AddError(new ValidationError
+                        {
+                            Description = $"Montante a débito negativo na transacção {tx.TransactionID}.",
+                            Field = "GeneralLedgerEntries/DebitLine/DebitAmount",
+                            FileID = tx.TransactionID,
+                            Value = d.DebitAmount.ToString(CultureInfo.InvariantCulture),
+                            TypeofError = typeof(GeneralLedgerEntriesJournalTransactionLinesDebitLine),
+                            UID = d.Pk,
+                            SupUID = tx.Pk
+                        });
+                    }
+                    if (validAccountIds != null && (string.IsNullOrEmpty(d.AccountID) || !validAccountIds.Contains(d.AccountID)))
+                    {
+                        AddError(new ValidationError
+                        {
+                            Description = $"Conta {d.AccountID} na linha de débito da transacção {tx.TransactionID} não existe no Plano de Contas.",
+                            Field = "GeneralLedgerEntries/DebitLine/AccountID",
+                            FileID = tx.TransactionID,
+                            Value = d.AccountID,
+                            TypeofError = typeof(GeneralLedgerEntriesJournalTransactionLinesDebitLine),
+                            UID = d.Pk,
+                            SupUID = tx.Pk
+                        });
+                    }
+                    txDebit += d.DebitAmount;
+                }
+
+                decimal txCredit = 0m;
+                foreach (var c in creditLines)
+                {
+                    if (c.CreditAmount < 0)
+                    {
+                        AddError(new ValidationError
+                        {
+                            Description = $"Montante a crédito negativo na transacção {tx.TransactionID}.",
+                            Field = "GeneralLedgerEntries/CreditLine/CreditAmount",
+                            FileID = tx.TransactionID,
+                            Value = c.CreditAmount.ToString(CultureInfo.InvariantCulture),
+                            TypeofError = typeof(GeneralLedgerEntriesJournalTransactionLinesCreditLine),
+                            UID = c.Pk,
+                            SupUID = tx.Pk
+                        });
+                    }
+                    if (validAccountIds != null && (string.IsNullOrEmpty(c.AccountID) || !validAccountIds.Contains(c.AccountID)))
+                    {
+                        AddError(new ValidationError
+                        {
+                            Description = $"Conta {c.AccountID} na linha de crédito da transacção {tx.TransactionID} não existe no Plano de Contas.",
+                            Field = "GeneralLedgerEntries/CreditLine/AccountID",
+                            FileID = tx.TransactionID,
+                            Value = c.AccountID,
+                            TypeofError = typeof(GeneralLedgerEntriesJournalTransactionLinesCreditLine),
+                            UID = c.Pk,
+                            SupUID = tx.Pk
+                        });
+                    }
+                    txCredit += c.CreditAmount;
+                }
+
+                if (Math.Abs(txDebit - txCredit) > 0.01m)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"Transacção contabilística {tx.TransactionID} desequilibrada: Débito={txDebit:N2} <> Crédito={txCredit:N2}.",
+                        Field = "GeneralLedgerEntries/Journal/Transaction",
+                        FileID = tx.TransactionID,
+                        Value = txDebit.ToString(CultureInfo.InvariantCulture),
+                        TypeofError = typeof(GeneralLedgerEntriesJournalTransaction),
+                        UID = tx.Pk
+                    });
+                }
+
+                calcTotalDebit += txDebit;
+                calcTotalCredit += txCredit;
+            }
+        }
+
+        if (gl.TotalDebit != calcTotalDebit)
+        {
+            AddError(new ValidationError
+            {
+                Description = $"Total de débitos contabilísticos incorrecto. valor: {gl.TotalDebit}, esperado: {calcTotalDebit}",
+                Field = "GeneralLedgerEntries/TotalDebit",
+                Value = gl.TotalDebit.ToString(CultureInfo.InvariantCulture),
+                TypeofError = typeof(GeneralLedgerEntries),
+                UID = gl.Pk
+            });
+        }
+
+        if (gl.TotalCredit != calcTotalCredit)
+        {
+            AddError(new ValidationError
+            {
+                Description = $"Total de créditos contabilísticos incorrecto. valor: {gl.TotalCredit}, esperado: {calcTotalCredit}",
+                Field = "GeneralLedgerEntries/TotalCredit",
+                Value = gl.TotalCredit.ToString(CultureInfo.InvariantCulture),
+                TypeofError = typeof(GeneralLedgerEntries),
+                UID = gl.Pk
+            });
+        }
+
+        if (Math.Abs(calcTotalDebit - calcTotalCredit) > 0.01m)
+        {
+            AddError(new ValidationError
+            {
+                Description = $"Desequilíbrio global nos movimentos contabilísticos: TotalDebit={calcTotalDebit:N2} <> TotalCredit={calcTotalCredit:N2}.",
+                Field = "GeneralLedgerEntries",
+                Value = calcTotalDebit.ToString(CultureInfo.InvariantCulture),
+                TypeofError = typeof(GeneralLedgerEntries),
+                UID = gl.Pk
+            });
+        }
+    }
+
+    internal void ValidateWorkDocument(SourceDocumentsWorkingDocuments workDocuments, Header header = null, AuditFileMasterFiles masterFiles = null)
+    {
+        if (workDocuments == null) return;
+
+        var docs = workDocuments.WorkDocument ?? [];
+        int numberOfLines = docs.Length;
+        if (!int.TryParse(workDocuments.NumberOfEntries, out int declaredEntries) || declaredEntries != numberOfLines)
+        {
+            AddError(new ValidationError
+            {
+                Value = workDocuments.NumberOfEntries,
+                Field = "WorkingDocuments/NumberOfEntries",
+                TypeofError = typeof(SourceDocumentsWorkingDocuments),
+                Description = $"Nº de registos incorrecto. Documento: {workDocuments.NumberOfEntries}, esperado: {numberOfLines}"
+            });
+        }
+
+        var (customerIds, _, productCodes, taxKeys) = BuildMasterLookups(masterFiles);
+
+        decimal headerTotalDebit = 0m;
+        decimal headerTotalCredit = 0m;
+
+        ValidateDocumentSequenceAndDates(
+            docs,
+            d => d.DocumentNumber,
+            d => d.WorkDate,
+            d => d.SystemEntryDate,
+            d => d.Pk,
+            "WorkDocument/DocumentNumber",
+            typeof(SourceDocumentsWorkingDocumentsWorkDocument));
+
+        foreach (var workDocument in docs)
         {
             AddError(workDocument.ValidateDocumentNumber());
+            AddError(workDocument.ValidateATCUD());
             AddError(workDocument.ValidateHash());
             AddError(workDocument.ValidateHashControl());
             AddError(workDocument.ValidatePeriod());
             AddError(workDocument.ValidateSystemEntryDate());
             AddError(workDocument.ValidateWorkDate());
+            AddError(workDocument.ValidateCustomerID());
+            AddError(workDocument.ValidateSourceID());
+            AddError(workDocument.ValidateTransactionID());
+            AddError(workDocument.ValidateEACCode());
             AddError(workDocument.ValidateDocumentStatus());
             AddError(workDocument.ValidateDocumentTotals());
 
-            //verificar os totais do documento
-            decimal netTotal, grossTotal, taxPayable;
-            netTotal = workDocument.Line.Sum(l => l.CreditAmount ?? l.DebitAmount ?? 0);
-            grossTotal = workDocument.Line
-                .Where(l => l.Tax != null && l.Tax.ItemElementName == ItemChoiceType1.TaxPercentage)
-                .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) * (1 + l.Tax.TaxPercentage.GetValueOrDefault(0) * 0.01m));
-            taxPayable = workDocument.Line
-                .Where(l => l.Tax != null && l.Tax.ItemElementName == ItemChoiceType1.TaxPercentage)
-                .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) * l.Tax.TaxPercentage.GetValueOrDefault(0) * 0.01m);
-            grossTotal += workDocument.Line
-                .Where(l => l.Tax != null && l.Tax.ItemElementName == ItemChoiceType1.TaxAmount)
-                .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) + l.Tax.TaxPercentage.GetValueOrDefault(0));
-            taxPayable += workDocument.Line
-                .Where(l => l.Tax != null && l.Tax.ItemElementName == ItemChoiceType1.TaxAmount)
-                .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) + l.Tax.TaxPercentage.GetValueOrDefault(0));
-            grossTotal += workDocument.Line
-                .Where(l => l.Tax == null)
-                .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0));
-            taxPayable += workDocument.Line
-                .Where(l => l.Tax == null)
-                .Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0));
+            ValidateDocumentTemporalConsistency(
+                header,
+                workDocument.DocumentNumber,
+                workDocument.WorkDate,
+                workDocument.SystemEntryDate,
+                workDocument.DocumentStatus?.WorkStatusDate ?? DateTime.MinValue,
+                workDocument.Period,
+                "WorkDocument",
+                typeof(SourceDocumentsWorkingDocumentsWorkDocument),
+                workDocument.Pk);
 
-            if (Math.Abs(netTotal - workDocument.DocumentTotals.NetTotal) > 0.01m)
-                AddError(new ValidationError { Value = workDocument.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Documento: {0}, valor: {1} esperado: {2}", workDocument.DocumentNumber, workDocument.DocumentTotals.NetTotal, netTotal) });
-            if (Math.Abs(grossTotal - workDocument.DocumentTotals.GrossTotal) > 0.01m)
-                AddError(new ValidationError { Value = workDocument.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Documento: {0}, valor: {1} esperado: {2}", workDocument.DocumentNumber, workDocument.DocumentTotals.GrossTotal, grossTotal) });
-            if (Math.Abs(taxPayable - workDocument.DocumentTotals.TaxPayable) > 0.01m)
-                AddError(new ValidationError { Value = workDocument.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = string.Format("Documento: {0}, valor: {1} esperado: {2}", workDocument.DocumentNumber, workDocument.DocumentTotals.TaxPayable, taxPayable) });
-
-            foreach (var line in workDocument.Line)
+            if (customerIds != null && !string.IsNullOrEmpty(workDocument.CustomerID) && !customerIds.Contains(workDocument.CustomerID))
             {
-                ValidateWorkDocumentLine(line, workDocument);
+                AddError(new ValidationError
+                {
+                    Description = $"Cliente {workDocument.CustomerID} referenciado no documento {workDocument.DocumentNumber} não existe na tabela de clientes.",
+                    Field = "WorkDocument/CustomerID",
+                    FileID = workDocument.DocumentNumber,
+                    Value = workDocument.CustomerID,
+                    TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument),
+                    UID = workDocument.Pk
+                });
             }
+
+            var lines = workDocument.Line ?? [];
+            bool isExcludedFromTotals = workDocument.DocumentStatus?.WorkStatus is WorkStatus.A or WorkStatus.F;
+
+            decimal netTotal = 0m;
+            decimal grossTotal = 0m;
+            decimal taxPayable = 0m;
+            int numLinha = 1;
+
+            foreach (var line in lines)
+            {
+                int num = -1;
+                if (!string.IsNullOrEmpty(line.LineNumber))
+                    int.TryParse(line.LineNumber, out num);
+
+                if (numLinha != num)
+                {
+                    AddError(new ValidationError
+                    {
+                        Value = line.LineNumber,
+                        FileID = workDocument.DocumentNumber,
+                        Field = "WorkDocument/Line/LineNumber",
+                        TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocumentLine),
+                        Description = $"Número de linha incorrecto, Documento: {workDocument.DocumentNumber}, esperado: {numLinha}, valor: {line.LineNumber}",
+                        UID = line.Pk,
+                        SupUID = workDocument.Pk
+                    });
+                }
+                numLinha++;
+
+                ValidateWorkDocumentLine(line, workDocument, productCodes, taxKeys);
+
+                decimal creditAmt = GetWorkLineCreditAmount(line);
+                decimal debitAmt = GetWorkLineDebitAmount(line);
+                if (!isExcludedFromTotals)
+                {
+                    headerTotalCredit += creditAmt;
+                    headerTotalDebit += debitAmt;
+                }
+
+                decimal lineAmount = creditAmt > 0 ? creditAmt : debitAmt;
+                int op = Operation(workDocument, line);
+
+                decimal lineTaxAmount = 0m;
+                if (line.Tax != null)
+                {
+                    if (line.Tax.ItemElementName == ItemChoiceType1.TaxPercentage)
+                        lineTaxAmount = lineAmount * line.Tax.TaxPercentage.GetValueOrDefault(0) * 0.01m;
+                    else if (line.Tax.ItemElementName == ItemChoiceType1.TaxAmount)
+                        lineTaxAmount = line.Tax.TaxAmount.GetValueOrDefault(0);
+                }
+
+                netTotal += lineAmount * op;
+                taxPayable += lineTaxAmount * op;
+                grossTotal += (lineAmount + lineTaxAmount) * op;
+            }
+
+            netTotal = Math.Round(netTotal, 2, MidpointRounding.AwayFromZero);
+            taxPayable = Math.Round(taxPayable, 2, MidpointRounding.AwayFromZero);
+            grossTotal = Math.Round(grossTotal, 2, MidpointRounding.AwayFromZero);
+
+            if (workDocument.DocumentTotals != null)
+            {
+                if (Math.Abs(netTotal - workDocument.DocumentTotals.NetTotal) > 0.01m)
+                    AddError(new ValidationError { Value = workDocument.DocumentTotals.NetTotal.ToString(), FileID = workDocument.DocumentNumber, Field = "WorkDocument/DocumentTotals/NetTotal", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = $"Documento: {workDocument.DocumentNumber}, NetTotal: {workDocument.DocumentTotals.NetTotal} esperado: {netTotal}", UID = workDocument.Pk });
+                if (Math.Abs(grossTotal - workDocument.DocumentTotals.GrossTotal) > 0.01m)
+                    AddError(new ValidationError { Value = workDocument.DocumentTotals.GrossTotal.ToString(), FileID = workDocument.DocumentNumber, Field = "WorkDocument/DocumentTotals/GrossTotal", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = $"Documento: {workDocument.DocumentNumber}, GrossTotal: {workDocument.DocumentTotals.GrossTotal} esperado: {grossTotal}", UID = workDocument.Pk });
+                if (Math.Abs(taxPayable - workDocument.DocumentTotals.TaxPayable) > 0.01m)
+                    AddError(new ValidationError { Value = workDocument.DocumentTotals.TaxPayable.ToString(), FileID = workDocument.DocumentNumber, Field = "WorkDocument/DocumentTotals/TaxPayable", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = $"Documento: {workDocument.DocumentNumber}, TaxPayable: {workDocument.DocumentTotals.TaxPayable} esperado: {taxPayable}", UID = workDocument.Pk });
+                if (Math.Abs(workDocument.DocumentTotals.GrossTotal - (workDocument.DocumentTotals.NetTotal + workDocument.DocumentTotals.TaxPayable)) > 0.01m)
+                    AddError(new ValidationError { Value = workDocument.DocumentTotals.GrossTotal.ToString(), FileID = workDocument.DocumentNumber, Field = "WorkDocument/DocumentTotals", TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocument), Description = $"Documento: {workDocument.DocumentNumber}, NetTotal + TaxPayable = {workDocument.DocumentTotals.NetTotal + workDocument.DocumentTotals.TaxPayable} != GrossTotal {workDocument.DocumentTotals.GrossTotal}", UID = workDocument.Pk });
+            }
+        }
+
+        if (workDocuments.TotalDebit != headerTotalDebit)
+        {
+            AddError(new ValidationError
+            {
+                Value = workDocuments.TotalDebit.ToString(),
+                Field = "WorkingDocuments/TotalDebit",
+                TypeofError = typeof(SourceDocumentsWorkingDocuments),
+                Description = $"Total de débitos dos documentos de conferência incorrecto. valor: {workDocuments.TotalDebit}, esperado: {headerTotalDebit}"
+            });
+        }
+
+        if (workDocuments.TotalCredit != headerTotalCredit)
+        {
+            AddError(new ValidationError
+            {
+                Value = workDocuments.TotalCredit.ToString(),
+                Field = "WorkingDocuments/TotalCredit",
+                TypeofError = typeof(SourceDocumentsWorkingDocuments),
+                Description = $"Total de créditos dos documentos de conferência incorrecto. valor: {workDocuments.TotalCredit}, esperado: {headerTotalCredit}"
+            });
         }
     }
 
-    void ValidateWorkDocumentLine(SourceDocumentsWorkingDocumentsWorkDocumentLine line, SourceDocumentsWorkingDocumentsWorkDocument workDocument)
+    void ValidateWorkDocumentLine(
+        SourceDocumentsWorkingDocumentsWorkDocumentLine line,
+        SourceDocumentsWorkingDocumentsWorkDocument workDocument,
+        HashSet<string> productCodes,
+        HashSet<(TaxType, string, string)> taxKeys)
     {
         AddError(line.ValidateLineNumber(workDocument.Pk));
         AddError(line.ValidateProductCode(workDocument.Pk));
@@ -1106,36 +1986,93 @@ public class SaftValidator : ISaftValidator
         AddError(line.ValidateTaxPointDate(workDocument.Pk));
         AddError(line.ValidateUnitOfMeasure(workDocument.Pk));
         AddError(line.ValidateUnitPrice(workDocument.Pk));
+        AddError(line.ValidateDescription(workDocument.Pk));
+        AddError(line.ValidateSettlementAmount(workDocument.Pk));
+        AddError(line.ValidateTaxBase(workDocument.Pk));
         AddError(line.ValidateOrderReferences(workDocument.Pk));
         AddError(line.ValidateTax(workDocument.Pk));
+        AddError(line.ValidateTaxExemption(workDocument.Pk, workDocument.WorkDate));
 
-        int numCasasDecimais = 6;// Workspace.Instance.Config.NumCasasDecimaisValidacoes;
-        bool incidencia = Math.Abs(Math.Round(line.UnitPrice * line.Quantity, numCasasDecimais, MidpointRounding.AwayFromZero) - Math.Round(line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), numCasasDecimais, MidpointRounding.AwayFromZero)) > 0.01m;
-
-        if (incidencia == true)
+        if (productCodes != null && !string.IsNullOrEmpty(line.ProductCode) && !productCodes.Contains(line.ProductCode))
         {
             AddError(new ValidationError
             {
-                Value = line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0).ToString(),
-                Field = line.ItemElementName.ToString(),
-                TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovementLine),
-                Description = string.Format("Total de linha diferente do valor unitário * quantidade ({0} * {1} <> {2}). Documento: {3}", line.UnitPrice, line.Quantity, line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), line.DocNo),
+                Description = $"Produto {line.ProductCode} na linha nº {line.LineNumber} do documento {workDocument.DocumentNumber} não existe na tabela de produtos.",
+                Field = "WorkDocument/Line/ProductCode",
+                FileID = workDocument.DocumentNumber,
+                Value = line.ProductCode,
+                TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocumentLine),
+                UID = line.Pk,
+                SupUID = workDocument.Pk
+            });
+        }
+
+        if (taxKeys != null && line.Tax != null && !taxKeys.Contains((line.Tax.TaxType, line.Tax.TaxCountryRegion ?? string.Empty, line.Tax.TaxCode ?? string.Empty)))
+        {
+            AddError(new ValidationError
+            {
+                Description = $"Taxa ({line.Tax.TaxType}/{line.Tax.TaxCountryRegion}/{line.Tax.TaxCode}) na linha nº {line.LineNumber} do documento {workDocument.DocumentNumber} não existe na tabela de impostos.",
+                Field = "WorkDocument/Line/Tax",
+                FileID = workDocument.DocumentNumber,
+                Value = line.Tax.TaxCode,
+                TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocumentLine),
+                UID = line.Pk,
+                SupUID = workDocument.Pk
+            });
+        }
+
+        decimal lineAmount = line.CreditAmount ?? line.DebitAmount ?? line.Item;
+        int numCasasDecimais = 6;
+        bool incidencia = Math.Abs(Math.Round(line.UnitPrice * line.Quantity, numCasasDecimais, MidpointRounding.AwayFromZero) - Math.Round(lineAmount, numCasasDecimais, MidpointRounding.AwayFromZero)) > 0.01m;
+
+        if (incidencia)
+        {
+            AddError(new ValidationError
+            {
+                Value = lineAmount.ToString(),
+                FileID = workDocument.DocumentNumber,
+                Field = $"WorkDocument/Line/{line.ItemElementName}",
+                TypeofError = typeof(SourceDocumentsWorkingDocumentsWorkDocumentLine),
+                Description = $"Total de linha diferente do valor unitário * quantidade ({line.UnitPrice} * {line.Quantity} <> {lineAmount}). Documento: {line.DocNo}",
                 UID = line.Pk,
                 SupUID = workDocument.Pk
             });
         }
     }
 
-    void ValidateMovementOfGoods(SourceDocumentsMovementOfGoods movements)
+    internal void ValidateMovementOfGoods(SourceDocumentsMovementOfGoods movements, Header header = null, AuditFileMasterFiles masterFiles = null)
     {
-        int numberOfLines = movements.StockMovement.Sum(m => m.Line.Length);
-        if (Convert.ToInt32(movements.NumberOfMovementLines) != numberOfLines)
-            AddError(new ValidationError { Value = movements.NumberOfMovementLines, Field = "MovementOfGoods", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Nº de registos incorrecto. valor: {0} esperado: {1}", movements.NumberOfMovementLines, numberOfLines) });
+        if (movements == null) return;
 
-        decimal quantity = 0;
-        foreach (var movement in movements.StockMovement)
+        var docs = movements.StockMovement ?? [];
+        int numberOfLines = docs.Sum(m => m.Line?.Length ?? 0);
+        if (!int.TryParse(movements.NumberOfMovementLines, out int declaredLines) || declaredLines != numberOfLines)
+        {
+            AddError(new ValidationError
+            {
+                Value = movements.NumberOfMovementLines,
+                Field = "MovementOfGoods/NumberOfMovementLines",
+                TypeofError = typeof(SourceDocumentsMovementOfGoods),
+                Description = $"Nº de registos incorrecto. valor: {movements.NumberOfMovementLines} esperado: {numberOfLines}"
+            });
+        }
+
+        var (customerIds, supplierIds, productCodes, taxKeys) = BuildMasterLookups(masterFiles);
+
+        ValidateDocumentSequenceAndDates(
+            docs,
+            d => d.DocumentNumber,
+            d => d.MovementDate,
+            d => d.SystemEntryDate,
+            d => d.Pk,
+            "StockMovement/DocumentNumber",
+            typeof(SourceDocumentsMovementOfGoodsStockMovement));
+
+        decimal quantity = 0m;
+        foreach (var movement in docs)
         {
             AddError(movement.ValidateDocumentNumber());
+            AddError(movement.ValidateATCUD());
             AddError(movement.ValidateHash());
             AddError(movement.ValidateHashControl());
             AddError(movement.ValidatePeriod());
@@ -1143,42 +2080,123 @@ public class SaftValidator : ISaftValidator
             AddError(movement.ValidateMovementDate());
             AddError(movement.ValidateMovementEndTime());
             AddError(movement.ValidateMovementStartTime());
+            AddError(movement.ValidateMovementTimeRange());
+            AddError(movement.ValidateSourceID());
+            AddError(movement.ValidateEACCode());
             AddError(movement.ValidateTransactionID());
             AddError(movement.ValidateDocumentStatus());
             AddError(movement.ValidateDocumentTotals());
             AddError(movement.ValidateShipFrom());
             AddError(movement.ValidateShipTo());
 
-            //verificar a quantidade
-            quantity += movement.Line.Sum(l => l.Quantity);
+            ValidateDocumentTemporalConsistency(
+                header,
+                movement.DocumentNumber,
+                movement.MovementDate,
+                movement.SystemEntryDate,
+                movement.DocumentStatus?.MovementStatusDate ?? DateTime.MinValue,
+                movement.Period,
+                "StockMovement",
+                typeof(SourceDocumentsMovementOfGoodsStockMovement),
+                movement.Pk);
 
-            //verificar os totais do documento
-            if (movement.DocumentTotals.GrossTotal > 0)
+            if (movement.ItemElementName == ItemChoiceType5.SupplierID)
             {
-                decimal netTotal = movement.Line.Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0));
-                decimal grossTotal = movement.Line.Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) * (1 + (l.Tax != null ? l.Tax.TaxPercentage : 0) * 0.01m));
-                decimal taxPayable = movement.Line.Sum(l => l.CreditAmount.GetValueOrDefault(l.DebitAmount ?? 0) * (l.Tax != null ? l.Tax.TaxPercentage : 0) * 0.01m);
-
-                if (Math.Abs(netTotal - movement.DocumentTotals.NetTotal) > 0.01m)
-                    AddError(new ValidationError { Value = movement.DocumentTotals.NetTotal.ToString(), Field = "NetTotal", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Documento: {0}, valor: {1} esperado: {2}", movement.DocumentNumber, movement.DocumentTotals.NetTotal, netTotal) });
-                if (Math.Abs(grossTotal - movement.DocumentTotals.GrossTotal) > 0.01m)
-                    AddError(new ValidationError { Value = movement.DocumentTotals.GrossTotal.ToString(), Field = "GrossTotal", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Documento: {0}, valor: {1} esperado: {2}", movement.DocumentNumber, movement.DocumentTotals.GrossTotal, grossTotal) });
-                if (Math.Abs(taxPayable - movement.DocumentTotals.TaxPayable) > 0.01m)
-                    AddError(new ValidationError { Value = movement.DocumentTotals.TaxPayable.ToString(), Field = "TaxPayable", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Documento: {0}, valor: {1} esperado: {2}", movement.DocumentNumber, movement.DocumentTotals.TaxPayable, taxPayable) });
+                if (supplierIds != null && !string.IsNullOrEmpty(movement.Item) && !supplierIds.Contains(movement.Item))
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"Fornecedor {movement.Item} referenciado no documento {movement.DocumentNumber} não existe na tabela de fornecedores.",
+                        Field = "StockMovement/SupplierID",
+                        FileID = movement.DocumentNumber,
+                        Value = movement.Item,
+                        TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovement),
+                        UID = movement.Pk
+                    });
+                }
+            }
+            else
+            {
+                string custId = !string.IsNullOrEmpty(movement.CustomerID) ? movement.CustomerID : movement.Item;
+                if (customerIds != null && !string.IsNullOrEmpty(custId) && !customerIds.Contains(custId))
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"Cliente {custId} referenciado no documento {movement.DocumentNumber} não existe na tabela de clientes.",
+                        Field = "StockMovement/CustomerID",
+                        FileID = movement.DocumentNumber,
+                        Value = custId,
+                        TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovement),
+                        UID = movement.Pk
+                    });
+                }
             }
 
-            //verificar as linhas
-            foreach (var line in movement.Line)
+            var lines = movement.Line ?? [];
+            bool isExcludedFromTotals = movement.DocumentStatus?.MovementStatus is MovementStatus.A or MovementStatus.F;
+
+            if (!isExcludedFromTotals)
+                quantity += lines.Sum(l => l.Quantity);
+
+            if (movement.DocumentTotals != null && movement.DocumentTotals.GrossTotal > 0)
             {
-                ValidateMovementOfGoodsStockMovementLine(line, movement);
+                decimal netTotal = Math.Round(lines.Sum(l => l.CreditAmount ?? l.DebitAmount ?? l.Item), 2, MidpointRounding.AwayFromZero);
+                decimal taxPayable = Math.Round(lines.Sum(l => (l.CreditAmount ?? l.DebitAmount ?? l.Item) * (l.Tax != null ? l.Tax.TaxPercentage : 0m) * 0.01m), 2, MidpointRounding.AwayFromZero);
+                decimal grossTotal = Math.Round(netTotal + taxPayable, 2, MidpointRounding.AwayFromZero);
+
+                if (Math.Abs(netTotal - movement.DocumentTotals.NetTotal) > 0.01m)
+                    AddError(new ValidationError { Value = movement.DocumentTotals.NetTotal.ToString(), FileID = movement.DocumentNumber, Field = "StockMovement/DocumentTotals/NetTotal", TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovement), Description = $"Documento: {movement.DocumentNumber}, NetTotal: {movement.DocumentTotals.NetTotal} esperado: {netTotal}", UID = movement.Pk });
+                if (Math.Abs(grossTotal - movement.DocumentTotals.GrossTotal) > 0.01m)
+                    AddError(new ValidationError { Value = movement.DocumentTotals.GrossTotal.ToString(), FileID = movement.DocumentNumber, Field = "StockMovement/DocumentTotals/GrossTotal", TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovement), Description = $"Documento: {movement.DocumentNumber}, GrossTotal: {movement.DocumentTotals.GrossTotal} esperado: {grossTotal}", UID = movement.Pk });
+                if (Math.Abs(taxPayable - movement.DocumentTotals.TaxPayable) > 0.01m)
+                    AddError(new ValidationError { Value = movement.DocumentTotals.TaxPayable.ToString(), FileID = movement.DocumentNumber, Field = "StockMovement/DocumentTotals/TaxPayable", TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovement), Description = $"Documento: {movement.DocumentNumber}, TaxPayable: {movement.DocumentTotals.TaxPayable} esperado: {taxPayable}", UID = movement.Pk });
+                if (Math.Abs(movement.DocumentTotals.GrossTotal - (movement.DocumentTotals.NetTotal + movement.DocumentTotals.TaxPayable)) > 0.01m)
+                    AddError(new ValidationError { Value = movement.DocumentTotals.GrossTotal.ToString(), FileID = movement.DocumentNumber, Field = "StockMovement/DocumentTotals", TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovement), Description = $"Documento: {movement.DocumentNumber}, NetTotal + TaxPayable = {movement.DocumentTotals.NetTotal + movement.DocumentTotals.TaxPayable} != GrossTotal {movement.DocumentTotals.GrossTotal}", UID = movement.Pk });
+            }
+
+            int numLinha = 1;
+            foreach (var line in lines)
+            {
+                int num = -1;
+                if (!string.IsNullOrEmpty(line.LineNumber))
+                    int.TryParse(line.LineNumber, out num);
+
+                if (numLinha != num)
+                {
+                    AddError(new ValidationError
+                    {
+                        Value = line.LineNumber,
+                        FileID = movement.DocumentNumber,
+                        Field = "StockMovement/Line/LineNumber",
+                        TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovementLine),
+                        Description = $"Número de linha incorrecto, Documento: {movement.DocumentNumber}, esperado: {numLinha}, valor: {line.LineNumber}",
+                        UID = line.Pk,
+                        SupUID = movement.Pk
+                    });
+                }
+                numLinha++;
+
+                ValidateMovementOfGoodsStockMovementLine(line, movement, productCodes, taxKeys);
             }
         }
 
         if (quantity != movements.TotalQuantityIssued)
-            AddError(new ValidationError { Value = movements.TotalQuantityIssued.ToString(), Field = "MovementOfGoods", TypeofError = typeof(SourceDocumentsMovementOfGoods), Description = string.Format("Total da quantidade incorrecto. valor: {0}, esperado: {1}", movements.TotalQuantityIssued, quantity) });
+        {
+            AddError(new ValidationError
+            {
+                Value = movements.TotalQuantityIssued.ToString(),
+                Field = "MovementOfGoods/TotalQuantityIssued",
+                TypeofError = typeof(SourceDocumentsMovementOfGoods),
+                Description = $"Total da quantidade incorrecto. valor: {movements.TotalQuantityIssued}, esperado: {quantity}"
+            });
+        }
     }
 
-    void ValidateMovementOfGoodsStockMovementLine(SourceDocumentsMovementOfGoodsStockMovementLine line, SourceDocumentsMovementOfGoodsStockMovement movement)
+    void ValidateMovementOfGoodsStockMovementLine(
+        SourceDocumentsMovementOfGoodsStockMovementLine line,
+        SourceDocumentsMovementOfGoodsStockMovement movement,
+        HashSet<string> productCodes,
+        HashSet<(TaxType, string, string)> taxKeys)
     {
         AddError(line.ValidateLineNumber(movement.Pk));
         AddError(line.ValidateProductCode(movement.Pk));
@@ -1186,23 +2204,99 @@ public class SaftValidator : ISaftValidator
         AddError(line.ValidateQuantity(movement.Pk));
         AddError(line.ValidateUnitOfMeasure(movement.Pk));
         AddError(line.ValidateUnitPrice(movement.Pk));
+        AddError(line.ValidateDescription(movement.Pk));
+        AddError(line.ValidateSettlementAmount(movement.Pk));
         AddError(line.ValidateOrderReferences(movement.Pk));
         AddError(line.ValidateTax(movement.Pk));
+        AddError(line.ValidateTaxExemption(movement.Pk, movement.MovementDate));
+
+        if (productCodes != null && !string.IsNullOrEmpty(line.ProductCode) && !productCodes.Contains(line.ProductCode))
+        {
+            AddError(new ValidationError
+            {
+                Description = $"Produto {line.ProductCode} na linha nº {line.LineNumber} do documento {movement.DocumentNumber} não existe na tabela de produtos.",
+                Field = "StockMovement/Line/ProductCode",
+                FileID = movement.DocumentNumber,
+                Value = line.ProductCode,
+                TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovementLine),
+                UID = line.Pk,
+                SupUID = movement.Pk
+            });
+        }
+
+        if (taxKeys != null && line.Tax != null)
+        {
+            var mappedTaxType = line.Tax.TaxType switch
+            {
+                SAFTPTMovementTaxType.IVA => TaxType.IVA,
+                SAFTPTMovementTaxType.NS => TaxType.NS,
+                _ => TaxType.INVALIDO
+            };
+            if (!taxKeys.Contains((mappedTaxType, line.Tax.TaxCountryRegion ?? string.Empty, line.Tax.TaxCode ?? string.Empty)))
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Taxa ({line.Tax.TaxType}/{line.Tax.TaxCountryRegion}/{line.Tax.TaxCode}) na linha nº {line.LineNumber} do documento {movement.DocumentNumber} não existe na tabela de impostos.",
+                    Field = "StockMovement/Line/Tax",
+                    FileID = movement.DocumentNumber,
+                    Value = line.Tax.TaxCode,
+                    TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovementLine),
+                    UID = line.Pk,
+                    SupUID = movement.Pk
+                });
+            }
+        }
 
         var value = line.UnitPrice * line.Quantity;
-        var amount = line.CreditAmount ?? line.DebitAmount ?? 0;
+        var amount = line.CreditAmount ?? line.DebitAmount ?? line.Item;
         var difference = Math.Abs(value - amount);
 
         if (value != amount && difference > 0.01m)
-            AddError(new ValidationError { Value = amount.ToString(), Field = "Item", TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovementLine), Description = string.Format("Valor da linha incorrecto. Valor: {0}, esperado: {1}, diferença: {2}", amount, value, difference), UID = line.Pk, SupUID = movement.Pk });
+        {
+            AddError(new ValidationError
+            {
+                Value = amount.ToString(),
+                FileID = movement.DocumentNumber,
+                Field = $"StockMovement/Line/{line.ItemElementName}",
+                TypeofError = typeof(SourceDocumentsMovementOfGoodsStockMovementLine),
+                Description = $"Valor da linha incorrecto. Valor: {amount}, esperado: {value}, diferença: {difference}",
+                UID = line.Pk,
+                SupUID = movement.Pk
+            });
+        }
     }
 
-    void ValidateInvoices(SourceDocumentsSalesInvoices invoices)
+    internal void ValidateInvoices(SourceDocumentsSalesInvoices invoices, Header header = null, AuditFileMasterFiles masterFiles = null)
     {
-        if (Convert.ToInt32(invoices.NumberOfEntries) != invoices.Invoice.Length)
-            AddError(new ValidationError { Value = invoices.NumberOfEntries, Field = "SalesInvoices", TypeofError = typeof(SourceDocumentsSalesInvoices), Description = string.Format("Nº de registos de documentos comerciais incorrecto. valor: {0}, esperado: {1}", invoices.NumberOfEntries, invoices.Invoice.Length) });
+        if (invoices == null) return;
 
-        foreach (var invoice in invoices.Invoice)
+        var invoiceList = invoices.Invoice ?? [];
+        if (!int.TryParse(invoices.NumberOfEntries, out int declaredEntries) || declaredEntries != invoiceList.Length)
+        {
+            AddError(new ValidationError
+            {
+                Value = invoices.NumberOfEntries,
+                Field = "SalesInvoices/NumberOfEntries",
+                TypeofError = typeof(SourceDocumentsSalesInvoices),
+                Description = $"Nº de registos de documentos comerciais incorrecto. valor: {invoices.NumberOfEntries}, esperado: {invoiceList.Length}"
+            });
+        }
+
+        var (customerIds, _, productCodes, taxKeys) = BuildMasterLookups(masterFiles);
+
+        ValidateDocumentSequenceAndDates(
+            invoiceList,
+            i => i.InvoiceNo,
+            i => i.InvoiceDate,
+            i => i.SystemEntryDate,
+            i => i.Pk,
+            "Invoice/InvoiceNo",
+            typeof(SourceDocumentsSalesInvoicesInvoice));
+
+        decimal headerTotalDebit = 0m;
+        decimal headerTotalCredit = 0m;
+
+        foreach (var invoice in invoiceList)
         {
             AddError(invoice.ValidateInvoiceNo());
             AddError(invoice.ValidateATCUD());
@@ -1214,141 +2308,646 @@ public class SaftValidator : ISaftValidator
             AddError(invoice.ValidateTransactionID());
             AddError(invoice.ValidateCustomerID());
             AddError(invoice.ValidateSourceID());
+            AddError(invoice.ValidateEACCode());
             AddError(invoice.ValidateMovementEndTime());
             AddError(invoice.ValidateMovementStartTime());
+            AddError(invoice.ValidateMovementTimeRange());
             AddError(invoice.ValidateSpecialRegimes());
             AddError(invoice.ValidateDocumentStatus());
             AddError(invoice.ValidateShipTo());
             AddError(invoice.ValidateShipFrom());
             AddError(invoice.ValidateDocumentTotals());
+            AddError(invoice.ValidateWithholdingTax());
 
-            decimal total = 0, incidencia = 0, iva = 0;
-            int numLinha = 1, num = -1;
-            foreach (var line in invoice.Line)
+            ValidateDocumentTemporalConsistency(
+                header,
+                invoice.InvoiceNo,
+                invoice.InvoiceDate,
+                invoice.SystemEntryDate,
+                invoice.DocumentStatus?.InvoiceStatusDate ?? DateTime.MinValue,
+                invoice.Period,
+                "Invoice",
+                typeof(SourceDocumentsSalesInvoicesInvoice),
+                invoice.Pk);
+
+            if (customerIds != null && !string.IsNullOrEmpty(invoice.CustomerID) && !customerIds.Contains(invoice.CustomerID))
             {
+                AddError(new ValidationError
+                {
+                    Description = $"Cliente {invoice.CustomerID} referenciado no documento {invoice.InvoiceNo} não existe na tabela de clientes.",
+                    Field = "Invoice/CustomerID",
+                    FileID = invoice.InvoiceNo,
+                    Value = invoice.CustomerID,
+                    TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice),
+                    UID = invoice.Pk
+                });
+            }
+
+            var lines = invoice.Line ?? [];
+            bool isExcludedFromTotals = invoice.DocumentStatus?.InvoiceStatus is InvoiceStatus.A or InvoiceStatus.F;
+
+            if (invoice.InvoiceType == InvoiceType.NC &&
+                !lines.Any(l => l.References != null && l.References.Any(r => !string.IsNullOrWhiteSpace(r.Reference) && !string.IsNullOrWhiteSpace(r.Reason))))
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Nota de crédito {invoice.InvoiceNo} deve referenciar o documento de origem e respetivo motivo (References/Reference e Reason).",
+                    Field = "Invoice/Line/References",
+                    FileID = invoice.InvoiceNo,
+                    Value = invoice.InvoiceNo,
+                    TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice),
+                    UID = invoice.Pk
+                });
+            }
+
+            decimal total = 0m, incidencia = 0m, iva = 0m;
+            int numLinha = 1;
+            foreach (var line in lines)
+            {
+                int num = -1;
                 if (!string.IsNullOrEmpty(line.LineNumber))
                     int.TryParse(line.LineNumber, out num);
 
                 if (numLinha != num)
-                    AddError(new ValidationError { Value = line.LineNumber, Field = "LineNumber", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine), Description = string.Format("Número de linha incorrecto, Documento: {0}, esperado: {1}, valor: {2}", invoice.InvoiceNo, numLinha, line.LineNumber), UID = line.Pk, SupUID = invoice.Pk });
+                {
+                    AddError(new ValidationError
+                    {
+                        Value = line.LineNumber,
+                        FileID = invoice.InvoiceNo,
+                        Field = "Invoice/Line/LineNumber",
+                        TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine),
+                        Description = $"Número de linha incorrecto, Documento: {invoice.InvoiceNo}, esperado: {numLinha}, valor: {line.LineNumber}",
+                        UID = line.Pk,
+                        SupUID = invoice.Pk
+                    });
+                }
                 numLinha++;
 
-                ValidateInvoiceLine(line, invoice.Pk);
+                ValidateInvoiceLine(line, invoice, productCodes, taxKeys);
 
-                if (string.IsNullOrEmpty(line.UnitOfMeasure))
-                    AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "UnitOfMeasure", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine), Description = string.Format("Unidade de medida não preenchida. Documento: {0}, linha nº: {1}", invoice.InvoiceNo, line.LineNumber), UID = invoice.Pk });
-                if (line.Tax.TaxPercentage == 0 && string.IsNullOrEmpty(line.TaxExemptionReason))
-                    AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxExemptionReason", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine), Description = string.Format("Motivo de isenção do imposto não preenchido. Documento: {0}, linha nº: {1}", invoice.InvoiceNo, line.LineNumber), UID = invoice.Pk });
+                decimal creditAmt = GetInvoiceLineCreditAmount(line);
+                decimal debitAmt = GetInvoiceLineDebitAmount(line);
+                if (!isExcludedFromTotals)
+                {
+                    headerTotalCredit += creditAmt;
+                    headerTotalDebit += debitAmt;
+                }
 
-                total += line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0) * (1 + line.Tax.TaxPercentage.GetValueOrDefault(0) * 0.01m) * Operation(invoice, line);
-                incidencia += line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0) * Operation(invoice, line);
-                iva += line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0) * line.Tax.TaxPercentage.GetValueOrDefault(0) * 0.01m * Operation(invoice, line);
+                decimal lineAmount = creditAmt > 0 ? creditAmt : debitAmt;
+                int op = Operation(invoice, line);
+
+                decimal lineTaxAmount = 0m;
+                if (line.Tax != null)
+                {
+                    if (line.Tax.ItemElementName == ItemChoiceType1.TaxPercentage)
+                        lineTaxAmount = lineAmount * line.Tax.TaxPercentage.GetValueOrDefault(0) * 0.01m;
+                    else if (line.Tax.ItemElementName == ItemChoiceType1.TaxAmount)
+                        lineTaxAmount = line.Tax.TaxAmount.GetValueOrDefault(0);
+                }
+
+                incidencia += lineAmount * op;
+                iva += lineTaxAmount * op;
+                total += (lineAmount + lineTaxAmount) * op;
             }
-            //arredondar o valor a 2 casas decimais
+
             incidencia = Math.Round(incidencia, 2, MidpointRounding.AwayFromZero);
             iva = Math.Round(iva, 2, MidpointRounding.AwayFromZero);
             total = Math.Round(total, 2, MidpointRounding.AwayFromZero);
 
-            if (Math.Abs(total - invoice.DocumentTotals.GrossTotal) > 0.01m)
-                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "GrossTotal", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Documento: {0}, total: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.GrossTotal, total), UID = invoice.Pk });
-            if (Math.Abs(incidencia - invoice.DocumentTotals.NetTotal) > 0.01m)
-                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "NetTotal", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Documento {0}, incidencia:{1} esperado:{2}", invoice.InvoiceNo, invoice.DocumentTotals.NetTotal, incidencia), UID = invoice.Pk });
-            if (Math.Abs(iva - invoice.DocumentTotals.TaxPayable) > 0.01m)
-                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxPayable", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Documento: {0}, iva: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.TaxPayable, iva), UID = invoice.Pk });
-            if (Math.Abs(invoice.DocumentTotals.TaxPayable - (invoice.DocumentTotals.GrossTotal - invoice.DocumentTotals.NetTotal)) > 0.01m)
-                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "TaxPayable", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Documento: {0}, iva: {1} esperado: {2}", invoice.InvoiceNo, invoice.DocumentTotals.TaxPayable, invoice.DocumentTotals.GrossTotal - invoice.DocumentTotals.NetTotal), UID = invoice.Pk });
-            if (Math.Abs(invoice.DocumentTotals.GrossTotal - (invoice.DocumentTotals.NetTotal + invoice.DocumentTotals.TaxPayable)) > 0.01m)
-                AddError(new ValidationError { Value = invoice.InvoiceNo, Field = "DocumentTotals", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = string.Format("Documento: {0}, NetTotal + TaxPayable = {1} != GrossTotal {2}", invoice.InvoiceNo, invoice.DocumentTotals.NetTotal + invoice.DocumentTotals.TaxPayable, invoice.DocumentTotals.GrossTotal), UID = invoice.Pk });
+            if (invoice.DocumentTotals != null)
+            {
+                if (Math.Abs(total - invoice.DocumentTotals.GrossTotal) > 0.01m)
+                    AddError(new ValidationError { Value = invoice.DocumentTotals.GrossTotal.ToString(), FileID = invoice.InvoiceNo, Field = "Invoice/DocumentTotals/GrossTotal", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = $"Documento: {invoice.InvoiceNo}, total: {invoice.DocumentTotals.GrossTotal} esperado: {total}", UID = invoice.Pk });
+                if (Math.Abs(incidencia - invoice.DocumentTotals.NetTotal) > 0.01m)
+                    AddError(new ValidationError { Value = invoice.DocumentTotals.NetTotal.ToString(), FileID = invoice.InvoiceNo, Field = "Invoice/DocumentTotals/NetTotal", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = $"Documento {invoice.InvoiceNo}, incidencia:{invoice.DocumentTotals.NetTotal} esperado:{incidencia}", UID = invoice.Pk });
+                if (Math.Abs(iva - invoice.DocumentTotals.TaxPayable) > 0.01m)
+                    AddError(new ValidationError { Value = invoice.DocumentTotals.TaxPayable.ToString(), FileID = invoice.InvoiceNo, Field = "Invoice/DocumentTotals/TaxPayable", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = $"Documento: {invoice.InvoiceNo}, iva: {invoice.DocumentTotals.TaxPayable} esperado: {iva}", UID = invoice.Pk });
+                if (Math.Abs(invoice.DocumentTotals.GrossTotal - (invoice.DocumentTotals.NetTotal + invoice.DocumentTotals.TaxPayable)) > 0.01m)
+                    AddError(new ValidationError { Value = invoice.DocumentTotals.GrossTotal.ToString(), FileID = invoice.InvoiceNo, Field = "Invoice/DocumentTotals", TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice), Description = $"Documento: {invoice.InvoiceNo}, NetTotal + TaxPayable = {invoice.DocumentTotals.NetTotal + invoice.DocumentTotals.TaxPayable} != GrossTotal {invoice.DocumentTotals.GrossTotal}", UID = invoice.Pk });
+            }
         }
-    }
 
-    void ValidateInvoiceLine(SourceDocumentsSalesInvoicesInvoiceLine line, string supPk)
-    {
-        AddError(line.ValidateLineNumber(supPk));
-        AddError(line.ValidateProductCode(supPk));
-        AddError(line.ValidateProductDescription(supPk));
-        AddError(line.ValidateQuantity(supPk));
-        AddError(line.ValidateTaxPointDate(supPk));
-        AddError(line.ValidateUnitOfMeasure(supPk));
-        AddError(line.ValidateUnitPrice(supPk));
-        AddError(line.ValidateOrderReferences(supPk));
-        AddError(line.ValidateReferences(supPk));
-        AddError(line.ValidateTax(supPk));
-
-        int numCasasDecimais = 6;// Workspace.Instance.Config.NumCasasDecimaisValidacoes;
-        bool incidencia = Math.Abs(Math.Round(line.UnitPrice * line.Quantity, numCasasDecimais, MidpointRounding.AwayFromZero) - Math.Round(line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0), numCasasDecimais, MidpointRounding.AwayFromZero)) > 0.01m;
-        if (incidencia == true)
+        if (invoices.TotalDebit != headerTotalDebit)
         {
             AddError(new ValidationError
             {
-                Value = line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0).ToString(),
-                Field = line.ItemElementName.ToString(),
-                TypeofError = typeof(SourceDocumentsSalesInvoicesInvoice),
-                Description = $"Total de linha diferente do valor unitário * quantidade ({line.UnitPrice} * {line.Quantity} <> {line.CreditAmount.GetValueOrDefault(line.DebitAmount ?? 0)}). Documento: {line.InvoiceNo}",
-                UID = line.Pk,
-                SupUID = supPk
+                Value = invoices.TotalDebit.ToString(),
+                Field = "SalesInvoices/TotalDebit",
+                TypeofError = typeof(SourceDocumentsSalesInvoices),
+                Description = $"Total de débitos de faturação incorrecto. valor: {invoices.TotalDebit}, esperado: {headerTotalDebit}"
+            });
+        }
+
+        if (invoices.TotalCredit != headerTotalCredit)
+        {
+            AddError(new ValidationError
+            {
+                Value = invoices.TotalCredit.ToString(),
+                Field = "SalesInvoices/TotalCredit",
+                TypeofError = typeof(SourceDocumentsSalesInvoices),
+                Description = $"Total de créditos de faturação incorrecto. valor: {invoices.TotalCredit}, esperado: {headerTotalCredit}"
             });
         }
     }
 
-    private void ValidatePayments(SourceDocumentsPayments payments)
+    void ValidateInvoiceLine(
+        SourceDocumentsSalesInvoicesInvoiceLine line,
+        SourceDocumentsSalesInvoicesInvoice invoice,
+        HashSet<string> productCodes,
+        HashSet<(TaxType, string, string)> taxKeys)
     {
-        if (Convert.ToInt32(payments.NumberOfEntries) != (payments.Payment?.Length ?? 0))
-            AddError(new ValidationError { Value = payments.NumberOfEntries, Field = "Payments/NumberOfEntries", TypeofError = typeof(SourceDocumentsPayments), Description = string.Format("Nº de registos dos recibos incorrecto. valor: {0}, esperado: {1}", payments.NumberOfEntries, payments.Payment?.Length ?? 0) });
+        AddError(line.ValidateLineNumber(invoice.Pk));
+        AddError(line.ValidateProductCode(invoice.Pk));
+        AddError(line.ValidateProductDescription(invoice.Pk));
+        AddError(line.ValidateQuantity(invoice.Pk));
+        AddError(line.ValidateTaxPointDate(invoice.Pk));
+        AddError(line.ValidateUnitOfMeasure(invoice.Pk));
+        AddError(line.ValidateUnitPrice(invoice.Pk));
+        AddError(line.ValidateDescription(invoice.Pk));
+        AddError(line.ValidateSettlementAmount(invoice.Pk));
+        AddError(line.ValidateTaxBase(invoice.Pk));
+        AddError(line.ValidateOrderReferences(invoice.Pk));
+        AddError(line.ValidateReferences(invoice.Pk));
+        AddError(line.ValidateTax(invoice.Pk));
+        AddError(line.ValidateTaxExemption(invoice.Pk, invoice.InvoiceDate));
 
-        if (payments.Payment != null)
+        if (productCodes != null && !string.IsNullOrEmpty(line.ProductCode) && !productCodes.Contains(line.ProductCode))
         {
-            foreach (var payment in payments.Payment)
+            AddError(new ValidationError
             {
-                AddError(payment.ValidateCustomerID());
-                AddError(payment.ValidateDescription());
-                AddError(payment.ValidateDocumentStatusSourceID());
-                AddError(payment.ValidatePaymentRefNo());
-                AddError(payment.ValidatePaymentStatusDate());
-                AddError(payment.ValidatePeriod());
-                AddError(payment.ValidateReason());
-                AddError(payment.ValidateSourceID());
-                AddError(payment.ValidateSystemEntryDate());
-                AddError(payment.ValidateSystemID());
-                AddError(payment.ValidateTransactionDate());
-                AddError(payment.ValidateTransactionID());
-                AddError(payment.ValidatePaymentMethod());
+                Description = $"Produto {line.ProductCode} na linha nº {line.LineNumber} do documento {invoice.InvoiceNo} não existe na tabela de produtos.",
+                Field = "Invoice/Line/ProductCode",
+                FileID = invoice.InvoiceNo,
+                Value = line.ProductCode,
+                TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine),
+                UID = line.Pk,
+                SupUID = invoice.Pk
+            });
+        }
 
-                int numLinha = 1, num = -1;
-                foreach (var line in payment.Line)
+        if (taxKeys != null && line.Tax != null && !taxKeys.Contains((line.Tax.TaxType, line.Tax.TaxCountryRegion ?? string.Empty, line.Tax.TaxCode ?? string.Empty)))
+        {
+            AddError(new ValidationError
+            {
+                Description = $"Taxa ({line.Tax.TaxType}/{line.Tax.TaxCountryRegion}/{line.Tax.TaxCode}) na linha nº {line.LineNumber} do documento {invoice.InvoiceNo} não existe na tabela de impostos.",
+                Field = "Invoice/Line/Tax",
+                FileID = invoice.InvoiceNo,
+                Value = line.Tax.TaxCode,
+                TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine),
+                UID = line.Pk,
+                SupUID = invoice.Pk
+            });
+        }
+
+        decimal lineAmount = line.CreditAmount ?? line.DebitAmount ?? line.Item;
+        int numCasasDecimais = 6;
+        bool incidencia = Math.Abs(Math.Round(line.UnitPrice * line.Quantity, numCasasDecimais, MidpointRounding.AwayFromZero) - Math.Round(lineAmount, numCasasDecimais, MidpointRounding.AwayFromZero)) > 0.01m;
+        if (incidencia)
+        {
+            AddError(new ValidationError
+            {
+                Value = lineAmount.ToString(),
+                FileID = invoice.InvoiceNo,
+                Field = $"Invoice/Line/{line.ItemElementName}",
+                TypeofError = typeof(SourceDocumentsSalesInvoicesInvoiceLine),
+                Description = $"Total de linha diferente do valor unitário * quantidade ({line.UnitPrice} * {line.Quantity} <> {lineAmount}). Documento: {line.InvoiceNo}",
+                UID = line.Pk,
+                SupUID = invoice.Pk
+            });
+        }
+    }
+
+    internal void ValidatePayments(SourceDocumentsPayments payments)
+    {
+        ValidatePayments(payments, header: null, masterFiles: null, includeExtendedChecks: false);
+    }
+
+    internal void ValidatePayments(SourceDocumentsPayments payments, Header header, AuditFileMasterFiles masterFiles, bool includeExtendedChecks = true)
+    {
+        if (payments == null) return;
+
+        var paymentList = payments.Payment ?? [];
+        if (!int.TryParse(payments.NumberOfEntries, out int declaredEntries) || declaredEntries != paymentList.Length)
+        {
+            AddError(new ValidationError
+            {
+                Value = payments.NumberOfEntries,
+                Field = "Payments/NumberOfEntries",
+                TypeofError = typeof(SourceDocumentsPayments),
+                Description = $"Nº de registos dos recibos incorrecto. valor: {payments.NumberOfEntries}, esperado: {paymentList.Length}"
+            });
+        }
+
+        decimal totalDebit = 0m;
+        decimal totalCredit = 0m;
+
+        foreach (var payment in paymentList)
+        {
+            // revoked documents don't add the debit or credit
+            if (payment.DocumentStatus?.PaymentStatus == PaymentStatus.A || payment.Line == null)
+                continue;
+
+            foreach (var line in payment.Line)
+            {
+                totalDebit += GetPaymentLineDebitAmount(line);
+                totalCredit += GetPaymentLineCreditAmount(line);
+            }
+        }
+
+        if (payments.TotalDebit != totalDebit)
+            AddError(new ValidationError { Value = payments.TotalDebit.ToString(), Field = "Payments/TotalDebit", TypeofError = typeof(SourceDocumentsPayments), Description = $"Total de débitos dos recibos incorrecto. valor: {payments.TotalDebit}, esperado: {totalDebit}" });
+
+        if (payments.TotalCredit != totalCredit)
+            AddError(new ValidationError { Value = payments.TotalCredit.ToString(), Field = "Payments/TotalCredit", TypeofError = typeof(SourceDocumentsPayments), Description = $"Total de créditos dos recibos incorrecto. valor: {payments.TotalCredit}, esperado: {totalCredit}" });
+
+        var (customerIds, _, _, taxKeys) = includeExtendedChecks ? BuildMasterLookups(masterFiles) : (null, null, null, null);
+
+        if (includeExtendedChecks)
+        {
+            ValidateDocumentSequenceAndDates(
+                paymentList,
+                p => p.PaymentRefNo,
+                p => p.TransactionDate,
+                p => p.SystemEntryDate,
+                p => p.Pk,
+                "Payment/PaymentRefNo",
+                typeof(SourceDocumentsPaymentsPayment));
+        }
+
+        foreach (var payment in paymentList)
+        {
+            AddError(payment.ValidateCustomerID());
+            AddError(payment.ValidateDescription());
+            AddError(payment.ValidatePaymentRefNo());
+            AddError(payment.ValidatePeriod());
+            AddError(payment.ValidateSourceID());
+            AddError(payment.ValidateSystemEntryDate());
+            AddError(payment.ValidateSystemID());
+            AddError(payment.ValidateTransactionDate());
+            AddError(payment.ValidateTransactionID());
+            AddError(payment.ValidatePaymentMethod());
+
+            if (includeExtendedChecks)
+            {
+                AddError(payment.ValidateATCUD());
+                AddError(payment.ValidateDocumentStatus());
+                AddError(payment.ValidateDocumentTotals());
+                AddError(payment.ValidateWithholdingTax());
+
+                ValidateDocumentTemporalConsistency(
+                    header,
+                    payment.PaymentRefNo,
+                    payment.TransactionDate,
+                    payment.SystemEntryDate,
+                    payment.DocumentStatus?.PaymentStatusDate ?? DateTime.MinValue,
+                    payment.Period,
+                    "Payment",
+                    typeof(SourceDocumentsPaymentsPayment),
+                    payment.Pk);
+
+                if (customerIds != null && !string.IsNullOrEmpty(payment.CustomerID) && !customerIds.Contains(payment.CustomerID))
                 {
-                    if (!string.IsNullOrEmpty(line.LineNumber))
-                        int.TryParse(line.LineNumber, out num);
+                    AddError(new ValidationError
+                    {
+                        Description = $"Cliente {payment.CustomerID} referenciado no recibo {payment.PaymentRefNo} não existe na tabela de clientes.",
+                        Field = "Payment/CustomerID",
+                        FileID = payment.PaymentRefNo,
+                        Value = payment.CustomerID,
+                        TypeofError = typeof(SourceDocumentsPaymentsPayment),
+                        UID = payment.Pk
+                    });
+                }
+            }
+            else
+            {
+                AddError(payment.ValidateDocumentStatusSourceID());
+                AddError(payment.ValidatePaymentStatusDate());
+                AddError(payment.ValidateReason());
+            }
 
-                    if (numLinha != num)
-                        AddError(new ValidationError { Value = line.LineNumber, Field = "Payments/Line/LineNumber", TypeofError = typeof(SourceDocumentsPaymentsPaymentLine), Description = string.Format("Número de linha incorrecto, Documento: {0}, esperado: {1}, valor: {2}", payment.PaymentRefNo, numLinha, line.LineNumber), UID = line.Pk, SupUID = payment.Pk });
-                    numLinha++;
+            decimal sumNetOrGrossLines = 0m;
+            decimal sumSettlementLines = 0m;
+            int numLinha = 1;
+            foreach (var line in payment.Line ?? [])
+            {
+                int num = -1;
+                if (!string.IsNullOrEmpty(line.LineNumber))
+                    int.TryParse(line.LineNumber, out num);
 
-                    ValidatePaymentLine(line, payment.Pk);
+                if (numLinha != num)
+                    AddError(new ValidationError { Value = line.LineNumber, FileID = payment.PaymentRefNo, Field = "Payments/Line/LineNumber", TypeofError = typeof(SourceDocumentsPaymentsPaymentLine), Description = $"Número de linha incorrecto, Documento: {payment.PaymentRefNo}, esperado: {numLinha}, valor: {line.LineNumber}", UID = line.Pk, SupUID = payment.Pk });
+                numLinha++;
+
+                ValidatePaymentLine(line, payment, taxKeys, includeExtendedChecks);
+
+                decimal creditAmt = GetPaymentLineCreditAmount(line);
+                decimal debitAmt = GetPaymentLineDebitAmount(line);
+                sumNetOrGrossLines += creditAmt - debitAmt;
+                sumSettlementLines += line.SettlementAmount;
+            }
+
+            if (includeExtendedChecks && payment.DocumentTotals != null)
+            {
+                var totals = payment.DocumentTotals;
+                if (Math.Abs(totals.GrossTotal - (totals.NetTotal + totals.TaxPayable)) > 0.01m)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"Recibo {payment.PaymentRefNo}: NetTotal + TaxPayable ({totals.NetTotal + totals.TaxPayable}) != GrossTotal ({totals.GrossTotal}).",
+                        Field = "Payment/DocumentTotals",
+                        FileID = payment.PaymentRefNo,
+                        Value = totals.GrossTotal.ToString(),
+                        TypeofError = typeof(SourceDocumentsPaymentsPaymentDocumentTotals),
+                        UID = payment.Pk
+                    });
+                }
+
+                decimal expectedLineSumTarget = (payment.PaymentType == SAFTPTPaymentType.RC || totals.TaxPayable > 0)
+                    ? totals.NetTotal
+                    : totals.GrossTotal;
+                decimal absSumLines = Math.Abs(Math.Round(sumNetOrGrossLines, 2, MidpointRounding.AwayFromZero));
+
+                if (Math.Abs(absSumLines - expectedLineSumTarget) > 0.01m)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"Recibo {payment.PaymentRefNo}: soma das linhas ({absSumLines}) diferente do total esperado ({expectedLineSumTarget}).",
+                        Field = "Payment/DocumentTotals",
+                        FileID = payment.PaymentRefNo,
+                        Value = expectedLineSumTarget.ToString(),
+                        TypeofError = typeof(SourceDocumentsPaymentsPaymentDocumentTotals),
+                        UID = payment.Pk
+                    });
+                }
+
+                if (totals.Settlement != null && Math.Abs(sumSettlementLines - totals.Settlement.SettlementAmount) > 0.01m)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"Recibo {payment.PaymentRefNo}: SettlementAmount ({totals.Settlement.SettlementAmount}) diferente da soma dos descontos das linhas ({sumSettlementLines}).",
+                        Field = "Payment/DocumentTotals/Settlement/SettlementAmount",
+                        FileID = payment.PaymentRefNo,
+                        Value = totals.Settlement.SettlementAmount.ToString(),
+                        TypeofError = typeof(SourceDocumentsPaymentsPaymentDocumentTotals),
+                        UID = payment.Pk
+                    });
+                }
+
+                if (payment.PaymentMethod is { Length: > 0 })
+                {
+                    decimal paidAmount = payment.PaymentMethod.Sum(m => m.PaymentAmount);
+                    decimal withholding = payment.WithholdingTax?.Sum(w => w.WithholdingTaxAmount) ?? 0m;
+                    decimal expectedPaid = totals.GrossTotal - withholding;
+                    if (Math.Abs(paidAmount - expectedPaid) > 0.01m)
+                    {
+                        AddError(new ValidationError
+                        {
+                            Description = $"Recibo {payment.PaymentRefNo}: soma dos meios de pagamento ({paidAmount}) diferente do total líquido de retenção ({expectedPaid}).",
+                            Field = "Payment/PaymentMethod/PaymentAmount",
+                            FileID = payment.PaymentRefNo,
+                            Value = paidAmount.ToString(),
+                            TypeofError = typeof(SourceDocumentsPaymentsPayment),
+                            UID = payment.Pk
+                        });
+                    }
                 }
             }
         }
     }
 
-    private void ValidatePaymentLine(SourceDocumentsPaymentsPaymentLine line, string supPk)
+    private void ValidatePaymentLine(
+        SourceDocumentsPaymentsPaymentLine line,
+        SourceDocumentsPaymentsPayment payment,
+        HashSet<(TaxType, string, string)> taxKeys,
+        bool includeExtendedChecks)
     {
-        AddError(line.ValidateItem(supPk));
-        AddError(line.ValidateLineNumber(supPk));
-        AddError(line.ValidateSettlementAmount(supPk));
-        AddError(line.ValidateTaxExemptionReason(supPk));
-        AddError(line.ValidateSourceDocumentID(supPk));
-        AddError(line.ValidateTax(supPk));
+        AddError(line.ValidateItem(payment.Pk));
+        AddError(line.ValidateLineNumber(payment.Pk));
+        AddError(line.ValidateSettlementAmount(payment.Pk));
+        AddError(line.ValidateSourceDocumentID(payment.Pk));
+        AddError(line.ValidateTax(payment.Pk));
+
+        if (includeExtendedChecks)
+        {
+            AddError(line.ValidateTaxExemption(payment.Pk, payment.TransactionDate));
+
+            if (taxKeys != null && line.Tax != null && !taxKeys.Contains((line.Tax.TaxType, line.Tax.TaxCountryRegion ?? string.Empty, line.Tax.TaxCode ?? string.Empty)))
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Taxa ({line.Tax.TaxType}/{line.Tax.TaxCountryRegion}/{line.Tax.TaxCode}) na linha nº {line.LineNumber} do recibo {payment.PaymentRefNo} não existe na tabela de impostos.",
+                    Field = "Payment/Line/Tax",
+                    FileID = payment.PaymentRefNo,
+                    Value = line.Tax.TaxCode,
+                    TypeofError = typeof(SourceDocumentsPaymentsPaymentLine),
+                    UID = line.Pk,
+                    SupUID = payment.Pk
+                });
+            }
+        }
+        else
+        {
+            AddError(line.ValidateTaxExemptionReason(payment.Pk));
+        }
     }
+
+    private static (HashSet<string> CustomerIds, HashSet<string> SupplierIds, HashSet<string> ProductCodes, HashSet<(TaxType, string, string)> TaxKeys) BuildMasterLookups(AuditFileMasterFiles masterFiles)
+    {
+        if (masterFiles == null)
+            return (null, null, null, null);
+
+        var customerIds = masterFiles.Customer != null
+            ? new HashSet<string>(masterFiles.Customer.Where(c => !string.IsNullOrEmpty(c.CustomerID)).Select(c => c.CustomerID), StringComparer.OrdinalIgnoreCase)
+            : null;
+        var supplierIds = masterFiles.Supplier != null
+            ? new HashSet<string>(masterFiles.Supplier.Where(s => !string.IsNullOrEmpty(s.SupplierID)).Select(s => s.SupplierID), StringComparer.OrdinalIgnoreCase)
+            : null;
+        var productCodes = masterFiles.Product != null
+            ? new HashSet<string>(masterFiles.Product.Where(p => !string.IsNullOrEmpty(p.ProductCode)).Select(p => p.ProductCode), StringComparer.OrdinalIgnoreCase)
+            : null;
+        var taxKeys = masterFiles.TaxTable != null
+            ? new HashSet<(TaxType, string, string)>(masterFiles.TaxTable.Select(t => (t.TaxType, t.TaxCountryRegion ?? string.Empty, t.TaxCode ?? string.Empty)))
+            : null;
+
+        return (customerIds, supplierIds, productCodes, taxKeys);
+    }
+
+    private void ValidateDocumentSequenceAndDates<TDoc>(
+        TDoc[] docs,
+        Func<TDoc, string> getDocNo,
+        Func<TDoc, DateTime> getDocDate,
+        Func<TDoc, DateTime> getSystemEntryDate,
+        Func<TDoc, string> getPk,
+        string field,
+        Type typeofError)
+    {
+        var seenNumbers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var parsedDocs = new List<(string DocNo, string Type, string Series, int Number, DateTime DocDate, DateTime SysDate, string Pk)>();
+
+        foreach (var doc in docs)
+        {
+            string docNo = getDocNo(doc);
+            if (string.IsNullOrWhiteSpace(docNo)) continue;
+
+            if (!seenNumbers.Add(docNo))
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Número de documento duplicado: {docNo}.",
+                    Field = field,
+                    FileID = docNo,
+                    Value = docNo,
+                    TypeofError = typeofError,
+                    UID = getPk(doc)
+                });
+            }
+
+            if (Validations.TryParseDocumentNumber(docNo, out string docType, out string series, out int number))
+            {
+                parsedDocs.Add((docNo, docType, series, number, getDocDate(doc), getSystemEntryDate(doc), getPk(doc)));
+            }
+        }
+
+        foreach (var group in parsedDocs.GroupBy(d => (d.Type, d.Series)))
+        {
+            var ordered = group.OrderBy(d => d.Number).ToArray();
+            for (int i = 1; i < ordered.Length; i++)
+            {
+                var prev = ordered[i - 1];
+                var curr = ordered[i];
+
+                if (prev.DocDate != DateTime.MinValue && curr.DocDate != DateTime.MinValue && curr.DocDate.Date < prev.DocDate.Date)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"Ordem cronológica inválida: data de emissão de {curr.DocNo} ({curr.DocDate:yyyy-MM-dd}) anterior à de {prev.DocNo} ({prev.DocDate:yyyy-MM-dd}).",
+                        Field = field,
+                        FileID = curr.DocNo,
+                        Value = curr.DocDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                        TypeofError = typeofError,
+                        UID = curr.Pk
+                    });
+                }
+
+                if (prev.SysDate != DateTime.MinValue && curr.SysDate != DateTime.MinValue && curr.SysDate < prev.SysDate)
+                {
+                    AddError(new ValidationError
+                    {
+                        Description = $"Ordem cronológica inválida: SystemEntryDate de {curr.DocNo} ({curr.SysDate:yyyy-MM-ddTHH:mm:ss}) anterior ao de {prev.DocNo} ({prev.SysDate:yyyy-MM-ddTHH:mm:ss}).",
+                        Field = field,
+                        FileID = curr.DocNo,
+                        Value = curr.SysDate.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture),
+                        TypeofError = typeofError,
+                        UID = curr.Pk
+                    });
+                }
+            }
+        }
+    }
+
+    private void ValidateDocumentTemporalConsistency(
+        Header header,
+        string docNo,
+        DateTime docDate,
+        DateTime systemEntryDate,
+        DateTime statusDate,
+        string period,
+        string basePath,
+        Type typeofError,
+        string uid)
+    {
+        if (header != null && docDate != DateTime.MinValue && header.StartDate != DateTime.MinValue && header.EndDate != DateTime.MinValue)
+        {
+            if (docDate.Date < header.StartDate.Date || docDate.Date > header.EndDate.Date)
+            {
+                AddError(new ValidationError
+                {
+                    Description = $"Data do documento {docNo} ({docDate:yyyy-MM-dd}) fora do período do cabeçalho ({header.StartDate:yyyy-MM-dd} a {header.EndDate:yyyy-MM-dd}).",
+                    Field = $"{basePath}/Date",
+                    FileID = docNo,
+                    Value = docDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    TypeofError = typeofError,
+                    UID = uid
+                });
+            }
+        }
+
+        if (docDate != DateTime.MinValue && systemEntryDate != DateTime.MinValue && docDate.Date > systemEntryDate.Date)
+        {
+            AddError(new ValidationError
+            {
+                Description = $"Data de emissão do documento {docNo} ({docDate:yyyy-MM-dd}) posterior à data de gravação ({systemEntryDate:yyyy-MM-dd}).",
+                Field = $"{basePath}/SystemEntryDate",
+                FileID = docNo,
+                Value = systemEntryDate.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture),
+                TypeofError = typeofError,
+                UID = uid
+            });
+        }
+
+        if (statusDate != DateTime.MinValue && systemEntryDate != DateTime.MinValue && statusDate < systemEntryDate)
+        {
+            AddError(new ValidationError
+            {
+                Description = $"Data do estado atual do documento {docNo} ({statusDate:yyyy-MM-ddTHH:mm:ss}) anterior à data de gravação ({systemEntryDate:yyyy-MM-ddTHH:mm:ss}).",
+                Field = $"{basePath}/DocumentStatus",
+                FileID = docNo,
+                Value = statusDate.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture),
+                TypeofError = typeofError,
+                UID = uid
+            });
+        }
+
+        if (!string.IsNullOrEmpty(period) && int.TryParse(period, out int p) && p is >= 1 and <= 12 && docDate != DateTime.MinValue && p != docDate.Month)
+        {
+            AddError(new ValidationError
+            {
+                Description = $"Período ({p}) do documento {docNo} não coincide com o mês da data do documento ({docDate.Month}).",
+                Field = $"{basePath}/Period",
+                FileID = docNo,
+                Value = period,
+                TypeofError = typeofError,
+                ValidationType = ValidationErrorType.WARNING,
+                UID = uid
+            });
+        }
+    }
+
+    private static decimal GetInvoiceLineDebitAmount(SourceDocumentsSalesInvoicesInvoiceLine line) =>
+        line.DebitAmount ?? (line.CreditAmount == null && line.ItemElementName == ItemChoiceType4.DebitAmount ? line.Item : 0m);
+
+    private static decimal GetInvoiceLineCreditAmount(SourceDocumentsSalesInvoicesInvoiceLine line) =>
+        line.CreditAmount ?? (line.DebitAmount == null && line.ItemElementName == ItemChoiceType4.CreditAmount ? line.Item : 0m);
+
+    private static decimal GetWorkLineDebitAmount(SourceDocumentsWorkingDocumentsWorkDocumentLine line) =>
+        line.DebitAmount ?? (line.CreditAmount == null && line.ItemElementName == ItemChoiceType7.DebitAmount ? line.Item : 0m);
+
+    private static decimal GetWorkLineCreditAmount(SourceDocumentsWorkingDocumentsWorkDocumentLine line) =>
+        line.CreditAmount ?? (line.DebitAmount == null && line.ItemElementName == ItemChoiceType7.CreditAmount ? line.Item : 0m);
+
+    private static decimal GetPaymentLineDebitAmount(SourceDocumentsPaymentsPaymentLine line) =>
+        line.DebitAmount ?? (line.CreditAmount == null && line.ItemElementName == ItemChoiceType8.DebitAmount ? line.Item : 0m);
+
+    private static decimal GetPaymentLineCreditAmount(SourceDocumentsPaymentsPaymentLine line) =>
+        line.CreditAmount ?? (line.DebitAmount == null && line.ItemElementName == ItemChoiceType8.CreditAmount ? line.Item : 0m);
 
     public static int Operation(SourceDocumentsSalesInvoicesInvoice i, SourceDocumentsSalesInvoicesInvoiceLine l)
     {
-        if (i.InvoiceType == InvoiceType.FT || i.InvoiceType == InvoiceType.VD || i.InvoiceType == InvoiceType.ND || i.InvoiceType == InvoiceType.FR || i.InvoiceType == InvoiceType.FS || i.InvoiceType == InvoiceType.TV || i.InvoiceType == InvoiceType.AA)
+        if (i.InvoiceType is InvoiceType.FT or InvoiceType.VD or InvoiceType.ND or InvoiceType.FR or InvoiceType.FS or InvoiceType.TV or InvoiceType.AA or InvoiceType.RP or InvoiceType.CS or InvoiceType.LD or InvoiceType.RA)
             return l.ItemElementName == ItemChoiceType4.CreditAmount ? 1 : -1;
 
-        if (i.InvoiceType == InvoiceType.NC || i.InvoiceType == InvoiceType.TD || i.InvoiceType == InvoiceType.DA || i.InvoiceType == InvoiceType.RE)
+        if (i.InvoiceType is InvoiceType.NC or InvoiceType.TD or InvoiceType.DA or InvoiceType.RE)
             return l.ItemElementName == ItemChoiceType4.DebitAmount ? 1 : -1;
 
         return 1;
+    }
+
+    public static int Operation(SourceDocumentsWorkingDocumentsWorkDocument d, SourceDocumentsWorkingDocumentsWorkDocumentLine l)
+    {
+        if (d.WorkType == WorkType.RE)
+            return l.ItemElementName == ItemChoiceType7.DebitAmount ? 1 : -1;
+
+        return l.ItemElementName == ItemChoiceType7.CreditAmount ? 1 : -1;
     }
 
     #endregion

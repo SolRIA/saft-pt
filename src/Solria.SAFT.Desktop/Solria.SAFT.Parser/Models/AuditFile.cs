@@ -89,6 +89,8 @@
         public string SettlementDiscount { get; set; }
         public decimal SettlementAmount { get; set; }
         public System.DateTime SettlementDate { get; set; }
+        [System.Xml.Serialization.XmlIgnore()]
+        public bool SettlementDateSpecified { get; set; }
         public string PaymentTerms { get; set; }
     }
 
@@ -100,11 +102,22 @@
 
     public partial class PaymentTax
     {
+        private decimal? _taxAmount;
+        private decimal? _taxPercentage;
+
         public TaxType TaxType { get; set; }
         public string TaxCountryRegion { get; set; }
         public string TaxCode { get; set; }
-        public decimal? TaxAmount { get; set; }
-        public decimal? TaxPercentage { get; set; }
+        public decimal? TaxAmount
+        {
+            get => _taxAmount ?? (ItemElementName == ItemChoiceType.TaxAmount ? Item : null);
+            set => _taxAmount = value;
+        }
+        public decimal? TaxPercentage
+        {
+            get => _taxPercentage ?? (ItemElementName == ItemChoiceType.TaxPercentage ? Item : null);
+            set => _taxPercentage = value;
+        }
         [System.Xml.Serialization.XmlElement("TaxAmount", typeof(decimal))]
         [System.Xml.Serialization.XmlElement("TaxPercentage", typeof(decimal))]
         [System.Xml.Serialization.XmlChoiceIdentifier("ItemElementName")]
@@ -128,6 +141,8 @@
     {
         public string OriginatingON { get; set; }
         public System.DateTime OrderDate { get; set; }
+        [System.Xml.Serialization.XmlIgnore()]
+        public bool OrderDateSpecified { get; set; }
     }
 
     public partial class MovementTax
@@ -248,13 +263,26 @@
 
     public partial class TaxTableEntry
     {
+        private decimal? _taxAmount;
+        private decimal? _taxPercentage;
+
         public TaxType TaxType { get; set; }
         public string TaxCountryRegion { get; set; }
         public string TaxCode { get; set; }
         public string Description { get; set; }
         public System.DateTime TaxExpirationDate { get; set; }
-        public decimal? TaxAmount { get; set; }
-        public decimal? TaxPercentage { get; set; }
+        [System.Xml.Serialization.XmlIgnore()]
+        public bool TaxExpirationDateSpecified { get; set; }
+        public decimal? TaxAmount
+        {
+            get => _taxAmount ?? (ItemElementName == ItemChoiceType2.TaxAmount ? Item : null);
+            set => _taxAmount = value;
+        }
+        public decimal? TaxPercentage
+        {
+            get => _taxPercentage ?? (ItemElementName == ItemChoiceType2.TaxPercentage ? Item : null);
+            set => _taxPercentage = value;
+        }
         [System.Xml.Serialization.XmlElement("TaxAmount", typeof(decimal))]
         [System.Xml.Serialization.XmlElement("TaxPercentage", typeof(decimal))]
         [System.Xml.Serialization.XmlChoiceIdentifier("ItemElementName")]
@@ -303,6 +331,8 @@
     {
         public GeneralLedgerEntriesJournalTransactionLinesDebitLine DebitLine { get; set; }
         public GeneralLedgerEntriesJournalTransactionLinesCreditLine CreditLine { get; set; }
+        public GeneralLedgerEntriesJournalTransactionLinesDebitLine[] DebitLines { get; set; }
+        public GeneralLedgerEntriesJournalTransactionLinesCreditLine[] CreditLines { get; set; }
     }
 
     public partial class GeneralLedgerEntriesJournalTransactionLinesDebitLine
@@ -391,6 +421,8 @@
     {
         public string[] DeliveryID { get; set; }
         public System.DateTime DeliveryDate { get; set; }
+        [System.Xml.Serialization.XmlIgnore()]
+        public bool DeliveryDateSpecified { get; set; }
         public string[] WarehouseID { get; set; }
         public string[] LocationID { get; set; }
         public AddressStructure Address { get; set; }

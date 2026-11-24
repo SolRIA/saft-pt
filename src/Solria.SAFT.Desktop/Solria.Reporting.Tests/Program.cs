@@ -16,7 +16,18 @@ using var stop = new CancellationTokenSource();
 var failed = false;
 Dispatcher.UIThread.Post(async () =>
 {
-    try { await RunTests(); Console.WriteLine("PASS: reporting integration checks"); }
+    try
+    {
+        if (args.Contains("--payments"))
+            await PaymentsValidation.VerifyAsync();
+        else if (args.Contains("--validations"))
+            await SaftValidationsTests.VerifyAsync();
+        else
+        {
+            await RunTests();
+            Console.WriteLine("PASS: reporting integration checks");
+        }
+    }
     catch (Exception ex) { failed = true; Console.Error.WriteLine(ex); }
     finally { stop.Cancel(); }
 });
@@ -30,6 +41,8 @@ static void Check(bool condition, string message)
 
 static async Task RunTests()
 {
+    await SaftValidationsTests.VerifyAsync();
+    await PaymentsValidation.VerifyAsync();
     await WorkingDocumentReferences.VerifyAsync();
     await OrderReferencesImport.VerifyAsync();
     await ExportRoutes.VerifyAsync();
